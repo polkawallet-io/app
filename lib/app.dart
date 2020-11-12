@@ -1,14 +1,18 @@
-import 'package:app/pages/assets.dart';
+import 'package:app/pages/account/create/backupAccountPage.dart';
+import 'package:app/pages/account/create/createAccountPage.dart';
+import 'package:app/pages/account/createAccountEntryPage.dart';
+import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/homePage.dart';
-import 'package:app/pages/profile.dart';
+import 'package:app/service/index.dart';
+import 'package:app/store/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
@@ -28,6 +32,8 @@ class _WalletAppState extends State<WalletApp> {
 
   PolkawalletPlugin _network;
   final _keyring = Keyring();
+
+  AppService _service;
 
   ThemeData _theme;
 
@@ -80,75 +86,76 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  void _setConnectedNode(NetworkParams node) {
-    if (node != null) {
-      _subscribeBalance();
+  Future<int> _startPlugin() async {
+    if (_service == null) {
+      await _keyring.init();
+
+      final connected = await _network.start(_keyring);
+      setState(() {
+        _connectedNode = connected;
+      });
+
+      final storage = GetStorage('configuration');
+      final store = AppStore(storage);
+      _service = AppService(_network, _keyring, store);
+      _service.init();
     }
-    setState(() {
-      _connectedNode = node;
-    });
+
+    return _keyring.keyPairs.length;
   }
 
-  void _subscribeBalance() async {
-    KeyPairData acc = KeyPairData();
-    if (_keyring.keyPairs.length > 0) {
-      acc = _keyring.keyPairs[0];
-    } else if (_keyring.externals.length > 0) {
-      acc = _keyring.externals[0];
-    } else {
-      acc.address = '1CTthuNVHUxWJkejKUGAoKaW1ffbXaUUHpEQvfizWP2CMQe';
-    }
-    _network.subscribeBalances(acc);
-  }
-
-  Future<void> _startPlugin() async {
-    await _keyring.init();
-
-    final connected = await _network.start(_keyring);
-    _setConnectedNode(connected);
-  }
-
-  void _showResult(BuildContext context, String title, res) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(title),
-          content: SelectableText(res, textAlign: TextAlign.left),
-          actions: [
-            CupertinoButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
+  // Future<int> _initStore(BuildContext context) async {
+  //   if (_appStore == null) {
+  //     _appStore = globalAppStore;
+  //     print('initailizing app state');
+  //     print('sys locale: ${Localizations.localeOf(context)}');
+  //     await _appStore.init(Localizations.localeOf(context).toString());
+  //
+  //     // init webApi after store initiated
+  //     webApi = Api(context, _appStore);
+  //     webApi.init();
+  //
+  //     _changeLang(context, _appStore.settings.localeCode);
+  //     _changeTheme();
+  //
+  //     _checkUpdate(context);
+  //   }
+  //   return _appStore.account.accountListAll.length;
+  // }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
-    final res = _network != null ? _network.getRoutes(_keyring) : {};
+    final pluginPages = _network != null ? _network.getRoutes(_keyring) : {};
     return {
+      HomePage.route: (context) => FutureBuilder<int>(
+            future: _startPlugin(),
+            builder: (_, AsyncSnapshot<int> snapshot) {
+              if (snapshot.hasData) {
+                return snapshot.data > 0
+                    ? HomePage(_network, _keyring)
+                    : CreateAccountEntryPage();
+              } else {
+                return Container();
+              }
+            },
+          ),
       TxConfirmPage.route: (_) => TxConfirmPage(_network, _keyring),
       QrSenderPage.route: (_) => QrSenderPage(_network, _keyring),
       ScanPage.route: (_) => ScanPage(_network, _keyring),
       AccountListPage.route: (_) => AccountListPage(_network, _keyring),
-      ...res,
+
+      /// account
+      CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
+      CreateAccountPage.route: (_) => CreateAccountPage(_service),
+      BackupAccountPage.route: (_) => BackupAccountPage(_service),
+      ImportAccountPage.route: (_) => ImportAccountPage(_service),
+
+      /// pages of plugin
+      ...pluginPages,
     };
   }
 
   @override
-  void initState() {
-    super.initState();
-    _startPlugin();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final ProfilePage profile = ProfilePage(_network, _keyring);
-    final AssetsPage assets = AssetsPage(_network, _keyring);
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
       theme: _theme ?? _getAppTheme(widget.plugins[0].primaryColor),
@@ -162,12 +169,7 @@ class _WalletAppState extends State<WalletApp> {
         const Locale('en', ''),
         const Locale('zh', ''),
       ],
-      home: MyHomePage(
-        network: _network,
-        keyring: _keyring,
-        assetsContent: assets,
-        profileContent: profile,
-      ),
+      initialRoute: HomePage.route,
       routes: _getRoutes(),
     );
   }

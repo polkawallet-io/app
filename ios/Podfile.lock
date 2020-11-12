@@ -1,4 +1,6 @@
 PODS:
+  - biometric_storage (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_aes_ecb_pkcs5 (0.0.1):
     - Flutter
@@ -20,6 +22,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - biometric_storage (from `.symlinks/plugins/biometric_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_aes_ecb_pkcs5 (from `.symlinks/plugins/flutter_aes_ecb_pkcs5/ios`)
   - flutter_qr_scan (from `.symlinks/plugins/flutter_qr_scan/ios`)
@@ -32,6 +35,8 @@ DEPENDENCIES:
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
 
 EXTERNAL SOURCES:
+  biometric_storage:
+    :path: ".symlinks/plugins/biometric_storage/ios"
   Flutter:
     :path: Flutter
   flutter_aes_ecb_pkcs5:
@@ -54,6 +59,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter/ios"
 
 SPEC CHECKSUMS:
+  biometric_storage: 1400f1382af3a4cc2bf05340e13c3d8de873ceb9
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_aes_ecb_pkcs5: fb682a7bb13f29cfbb33f88f7e1ed2211eacf5db
   flutter_qr_scan: f7c8c497584bbf395efd56ffcc3a60d27ec9de82

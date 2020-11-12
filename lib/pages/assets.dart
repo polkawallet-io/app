@@ -5,8 +5,8 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class AssetsPage extends StatefulWidget {
-  AssetsPage(this.network, this.keyring);
-  final PolkawalletPlugin network;
+  AssetsPage(this.plugin, this.keyring);
+  final PolkawalletPlugin plugin;
   final Keyring keyring;
   @override
   _AssetsPageState createState() => _AssetsPageState();

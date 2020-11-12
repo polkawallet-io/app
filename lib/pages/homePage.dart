@@ -1,3 +1,5 @@
+import 'package:app/pages/assets.dart';
+import 'package:app/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,24 +8,19 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({
-    this.network,
-    this.keyring,
-    this.assetsContent,
-    this.profileContent,
-  });
+class HomePage extends StatefulWidget {
+  HomePage(this.plugin, this.keyring);
 
-  final PolkawalletPlugin network;
+  final PolkawalletPlugin plugin;
   final Keyring keyring;
-  final Widget assetsContent;
-  final Widget profileContent;
+
+  static final String route = '/';
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
 
   int _tabIndex = 0;
@@ -53,12 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         iconActive: SvgPicture.asset(
           'assets/images/wallet.svg',
-          color: widget.network.primaryColor,
+          color: widget.plugin.primaryColor,
         ),
-        content: widget.assetsContent,
+        content: AssetsPage(widget.plugin, widget.keyring),
       )
     ];
-    pages.addAll(widget.network.getNavItems(widget.keyring));
+    pages.addAll(widget.plugin.getNavItems(widget.keyring));
     pages.add(HomeNavItem(
       text: 'Profile',
       icon: SvgPicture.asset(
@@ -67,9 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       iconActive: SvgPicture.asset(
         'assets/images/user.svg',
-        color: widget.network.primaryColor,
+        color: widget.plugin.primaryColor,
       ),
-      content: widget.profileContent,
+      content: ProfilePage(widget.plugin, widget.keyring),
     ));
     return Scaffold(
       body: PageView(

@@ -5,8 +5,8 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage(this.network, this.keyring);
-  final PolkawalletPlugin network;
+  ProfilePage(this.plugin, this.keyring);
+  final PolkawalletPlugin plugin;
   final Keyring keyring;
   @override
   _ProfilePageState createState() => _ProfilePageState();
