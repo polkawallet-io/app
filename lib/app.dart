@@ -16,6 +16,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
+import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
@@ -31,7 +32,7 @@ class _WalletAppState extends State<WalletApp> {
       : this._network = defaultPlugin;
 
   PolkawalletPlugin _network;
-  final _keyring = Keyring();
+  Keyring _keyring;
 
   AppService _service;
 
@@ -87,18 +88,24 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<int> _startPlugin() async {
-    if (_service == null) {
+    print('start plugin');
+    if (_keyring == null) {
+      _keyring = Keyring();
       await _keyring.init();
+
+      final storage = GetStorage('configuration');
+      final store = AppStore(storage);
+      await store.init();
+      final service = AppService(_network, _keyring, store);
+      service.init();
+      setState(() {
+        _service = service;
+      });
 
       final connected = await _network.start(_keyring);
       setState(() {
         _connectedNode = connected;
       });
-
-      final storage = GetStorage('configuration');
-      final store = AppStore(storage);
-      _service = AppService(_network, _keyring, store);
-      _service.init();
     }
 
     return _keyring.keyPairs.length;
@@ -129,9 +136,9 @@ class _WalletAppState extends State<WalletApp> {
       HomePage.route: (context) => FutureBuilder<int>(
             future: _startPlugin(),
             builder: (_, AsyncSnapshot<int> snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData && _service != null) {
                 return snapshot.data > 0
-                    ? HomePage(_network, _keyring)
+                    ? HomePage(_service)
                     : CreateAccountEntryPage();
               } else {
                 return Container();
@@ -140,6 +147,7 @@ class _WalletAppState extends State<WalletApp> {
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(_network, _keyring),
       QrSenderPage.route: (_) => QrSenderPage(_network, _keyring),
+      QrSignerPage.route: (_) => QrSignerPage(_network, _keyring),
       ScanPage.route: (_) => ScanPage(_network, _keyring),
       AccountListPage.route: (_) => AccountListPage(_network, _keyring),
 
@@ -159,6 +167,7 @@ class _WalletAppState extends State<WalletApp> {
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
       theme: _theme ?? _getAppTheme(widget.plugins[0].primaryColor),
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),
         GlobalMaterialLocalizations.delegate,

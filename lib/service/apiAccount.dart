@@ -20,7 +20,7 @@ class ApiAccount {
 
   Future<void> generateAccount() async {
     final mnemonic = await apiRoot.plugin.sdk.api.keyring.generateMnemonic();
-    apiRoot.store.setNewAccountKey(mnemonic);
+    apiRoot.store.account.setNewAccountKey(mnemonic);
   }
 
   Future<KeyPairData> importAccount({
@@ -28,7 +28,7 @@ class ApiAccount {
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
   }) async {
-    final acc = apiRoot.store.newAccount;
+    final acc = apiRoot.store.account.newAccount;
     final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
       apiRoot.keyring,
       keyType: keyType,
@@ -238,13 +238,7 @@ class ApiAccount {
 //     );
 //     return res;
 //   }
-//
-//   Future<Map> parseQrCode(String data) async {
-//     final res = await apiRoot.evalJavascript('account.parseQrCode("$data")');
-//     print('rawData: $data');
-//     return res;
-//   }
-//
+
 //   Future<Map> signAsync(String password) async {
 //     final res = await apiRoot.evalJavascript('account.signAsync("$password")');
 //     return res;

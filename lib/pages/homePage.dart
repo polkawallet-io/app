@@ -1,18 +1,16 @@
-import 'package:app/pages/assets.dart';
+import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/profile.dart';
+import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/ui.dart';
-import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.plugin, this.keyring);
+  HomePage(this.service);
 
-  final PolkawalletPlugin plugin;
-  final Keyring keyring;
+  final AppService service;
 
   static final String route = '/';
 
@@ -50,12 +48,13 @@ class _HomePageState extends State<HomePage> {
         ),
         iconActive: SvgPicture.asset(
           'assets/images/wallet.svg',
-          color: widget.plugin.primaryColor,
+          color: widget.service.plugin.primaryColor,
         ),
-        content: AssetsPage(widget.plugin, widget.keyring),
+        content: AssetsPage(widget.service),
+        // content: Container(),
       )
     ];
-    pages.addAll(widget.plugin.getNavItems(widget.keyring));
+    pages.addAll(widget.service.plugin.getNavItems(widget.service.keyring));
     pages.add(HomeNavItem(
       text: 'Profile',
       icon: SvgPicture.asset(
@@ -64,9 +63,9 @@ class _HomePageState extends State<HomePage> {
       ),
       iconActive: SvgPicture.asset(
         'assets/images/user.svg',
-        color: widget.plugin.primaryColor,
+        color: widget.service.plugin.primaryColor,
       ),
-      content: ProfilePage(widget.plugin, widget.keyring),
+      content: ProfilePage(widget.service.plugin, widget.service.keyring),
     ));
     return Scaffold(
       body: PageView(

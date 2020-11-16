@@ -57,7 +57,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState.validate()) {
-      widget.service.store.setNewAccount(_nameCtrl.text, _passCtrl.text);
+      widget.service.store.account
+          .setNewAccount(_nameCtrl.text, _passCtrl.text);
       final success = await widget.onSubmit();
 
       /// save password with biometrics after import success
@@ -65,7 +66,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         await _authBiometric();
       }
 
-      widget.service.store.resetNewAccount();
+      widget.service.store.account.resetNewAccount();
       Navigator.popUntil(context, ModalRoute.withName('/'));
     }
   }

@@ -423,10 +423,11 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                   return;
                 }
                 if (_keySelection == 2) {
-                  widget.service.store.setNewAccount(
+                  widget.service.store.account.setNewAccount(
                       _nameCtrl.text.trim(), _passCtrl.text.trim());
                 }
-                widget.service.store.setNewAccountKey(_keyCtrl.text.trim());
+                widget.service.store.account
+                    .setNewAccountKey(_keyCtrl.text.trim());
                 final saved = await widget.onSubmit({
                   'keyType': _keyOptions[_keySelection],
                   'cryptoType':
@@ -439,7 +440,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                     await _authBiometric();
                   }
 
-                  widget.service.store.resetNewAccount();
+                  widget.service.store.account.resetNewAccount();
                   Navigator.popUntil(context, ModalRoute.withName('/'));
                 }
               }

@@ -72,12 +72,12 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                       child: Text(
-                        widget.service.store.newAccount.key ?? '',
+                        widget.service.store.account.newAccount.key ?? '',
                         style: Theme.of(context).textTheme.headline4,
                       ),
                     ),
                     AccountAdvanceOption(
-                      seed: widget.service.store.newAccount.key ?? '',
+                      seed: widget.service.store.account.newAccount.key ?? '',
                       onChange: (data) {
                         setState(() {
                           _advanceOptions = data;
@@ -97,8 +97,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                     setState(() {
                       _step = 1;
                       _wordsSelected = <String>[];
-                      _wordsLeft =
-                          widget.service.store.newAccount.key.split(' ');
+                      _wordsLeft = widget.service.store.account.newAccount.key
+                          .split(' ');
                     });
                   },
                 ),
@@ -156,8 +156,9 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                         ),
                         onTap: () {
                           setState(() {
-                            _wordsLeft =
-                                widget.service.store.newAccount.key.split(' ');
+                            _wordsLeft = widget
+                                .service.store.account.newAccount.key
+                                .split(' ');
                             _wordsSelected = [];
                           });
                         },
@@ -188,7 +189,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                 text:
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
                 onPressed: _wordsSelected.join(' ') ==
-                        widget.service.store.newAccount.key
+                        widget.service.store.account.newAccount.key
                     ? () => Navigator.of(context).pop(_advanceOptions)
                     : null,
               ),
