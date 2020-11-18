@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:app/pages/assets/receive/receivePage.dart';
-// import 'package:app/pages/assets/transfer/detailPage.dart';
+import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/subscan.dart';
 import 'package:app/store/types/transferData.dart';
@@ -415,6 +413,9 @@ class TransferListItem extends StatelessWidget {
         border: Border(bottom: BorderSide(width: 0.5, color: Colors.black12)),
       ),
       child: ListTile(
+        leading: data.success
+            ? Icon(Icons.check_circle, color: Colors.lightGreen, size: 28)
+            : Icon(Icons.error, color: Colors.red, size: 28),
         title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
         subtitle: Text(Fmt.dateTime(
             DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000))),
@@ -438,11 +439,11 @@ class TransferListItem extends StatelessWidget {
         ),
         onTap: hasDetail
             ? () {
-                // Navigator.pushNamed(
-                //   context,
-                //   TransferDetailPage.route,
-                //   arguments: data,
-                // );
+                Navigator.pushNamed(
+                  context,
+                  TransferDetailPage.route,
+                  arguments: data,
+                );
               }
             : null,
       ),
