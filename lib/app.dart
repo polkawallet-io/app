@@ -2,6 +2,7 @@ import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
+import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
@@ -78,9 +79,14 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  void _changeNetwork(PolkawalletPlugin network) {
+  Future<void> _changeNetwork(PolkawalletPlugin network) async {
+    setState(() {
+      _connectedNode = null;
+    });
+
     /// we reuse the existing webView instance when we start a new plugin.
-    network.start(_keyring, webView: _service.plugin.sdk.webView);
+    final connected =
+        await network.start(_keyring, webView: _service.plugin.sdk.webView);
 
     _keyring.setSS58(network.basic.ss58);
 
@@ -89,6 +95,7 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _service = service;
       _theme = _getAppTheme(network.basic.primaryColor);
+      _connectedNode = connected;
     });
   }
 
@@ -116,25 +123,6 @@ class _WalletAppState extends State<WalletApp> {
     return _keyring.keyPairs.length;
   }
 
-  // Future<int> _initStore(BuildContext context) async {
-  //   if (_appStore == null) {
-  //     _appStore = globalAppStore;
-  //     print('initailizing app state');
-  //     print('sys locale: ${Localizations.localeOf(context)}');
-  //     await _appStore.init(Localizations.localeOf(context).toString());
-  //
-  //     // init webApi after store initiated
-  //     webApi = Api(context, _appStore);
-  //     webApi.init();
-  //
-  //     _changeLang(context, _appStore.settings.localeCode);
-  //     _changeTheme();
-  //
-  //     _checkUpdate(context);
-  //   }
-  //   return _appStore.account.accountListAll.length;
-  // }
-
   Map<String, Widget Function(BuildContext)> _getRoutes() {
     final pluginPages = _service != null && _service.plugin != null
         ? _service.plugin.getRoutes(_keyring)
@@ -145,7 +133,7 @@ class _WalletAppState extends State<WalletApp> {
             builder: (_, AsyncSnapshot<int> snapshot) {
               if (snapshot.hasData && _service != null) {
                 return snapshot.data > 0
-                    ? HomePage(_service)
+                    ? HomePage(_service, _connectedNode)
                     : CreateAccountEntryPage();
               } else {
                 return Container();
@@ -159,6 +147,7 @@ class _WalletAppState extends State<WalletApp> {
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
+      ReceivePage.route: (_) => ReceivePage(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

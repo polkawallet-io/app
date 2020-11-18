@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
-// import 'package:app/pages/assets/receive/receivePage.dart';
+import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_kusama/service/walletApi.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
@@ -24,9 +25,10 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AssetsPage extends StatefulWidget {
-  AssetsPage(this.service);
+  AssetsPage(this.service, this.connectedNode);
 
   final AppService service;
+  final NetworkParams connectedNode;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -158,9 +160,9 @@ class _AssetsState extends State<AssetsPage> {
 
   Widget _buildTopCard(BuildContext context) {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    String network = widget.service.store.settings.loading
+    String network = widget.connectedNode == null
         ? dic['node.connecting']
-        : widget.service.store.settings.networkName ?? dic['node.failed'];
+        : widget.service.plugin.networkState.name ?? dic['node.failed'];
 
     final acc = widget.service.keyring.current;
     final accIndex =
@@ -188,9 +190,9 @@ class _AssetsState extends State<AssetsPage> {
                     size: 24,
                   ),
                   onTap: () {
-                    // if (acc.address != '') {
-                    //   Navigator.pushNamed(context, ReceivePage.route);
-                    // }
+                    if (acc.address != '') {
+                      Navigator.pushNamed(context, ReceivePage.route);
+                    }
                   },
                 ),
                 Padding(
@@ -229,6 +231,7 @@ class _AssetsState extends State<AssetsPage> {
       widget.service.plugin.start(widget.service.keyring,
           webView: widget.service.plugin.sdk.webView);
     }
+    widget.service.assets.fetchMarketPrice();
     super.initState();
   }
 
@@ -249,7 +252,9 @@ class _AssetsState extends State<AssetsPage> {
             balancesInfo != null) {
           tokenPrice = Fmt.priceCeil(
               widget.service.store.assets.marketPrices[symbol] *
-                  Fmt.bigIntToDouble(balancesInfo.freeBalance, decimals));
+                  Fmt.bigIntToDouble(
+                      Fmt.balanceInt(balancesInfo.freeBalance.toString()),
+                      decimals));
         }
 
         return Scaffold(

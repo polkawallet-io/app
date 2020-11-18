@@ -6,11 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service);
+  HomePage(this.service, this.connectedNode);
 
   final AppService service;
+
+  final NetworkParams connectedNode;
 
   static final String route = '/';
 
@@ -50,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           'assets/images/wallet.svg',
           color: widget.service.plugin.basic.primaryColor,
         ),
-        content: AssetsPage(widget.service),
+        content: AssetsPage(widget.service, widget.connectedNode),
         // content: Container(),
       )
     ];

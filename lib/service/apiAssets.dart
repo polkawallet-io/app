@@ -30,7 +30,7 @@ class ApiAssets {
     return res;
   }
 
-  Future<void> _fetchMarketPrice() async {
+  Future<void> fetchMarketPrice() async {
     final Map res =
         await apiRoot.subScan.fetchTokenPriceAsync(apiRoot.plugin.basic.name);
     if (res['token'] == null) {
