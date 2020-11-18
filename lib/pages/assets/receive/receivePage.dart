@@ -77,8 +77,7 @@ class ReceivePage extends StatelessWidget {
                         child: QrImage(
                           data: codeAddress,
                           size: 200,
-                          embeddedImage:
-                              AssetImage('assets/images/public/app.png'),
+                          embeddedImage: AssetImage('assets/images/app.png'),
                           embeddedImageStyle:
                               QrEmbeddedImageStyle(size: Size(40, 40)),
                         ),

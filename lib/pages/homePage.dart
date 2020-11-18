@@ -45,13 +45,19 @@ class _HomePageState extends State<HomePage> {
     final List<HomeNavItem> pages = [
       HomeNavItem(
         text: 'Assets',
-        icon: SvgPicture.asset(
-          'assets/images/wallet.svg',
-          color: Theme.of(context).disabledColor,
+        icon: Padding(
+          padding: EdgeInsets.all(2),
+          child: SvgPicture.asset(
+            'assets/images/wallet.svg',
+            color: Theme.of(context).disabledColor,
+          ),
         ),
-        iconActive: SvgPicture.asset(
-          'assets/images/wallet.svg',
-          color: widget.service.plugin.basic.primaryColor,
+        iconActive: Padding(
+          padding: EdgeInsets.all(2),
+          child: SvgPicture.asset(
+            'assets/images/wallet.svg',
+            color: widget.service.plugin.basic.primaryColor,
+          ),
         ),
         content: AssetsPage(widget.service, widget.connectedNode),
         // content: Container(),
@@ -60,13 +66,19 @@ class _HomePageState extends State<HomePage> {
     pages.addAll(widget.service.plugin.getNavItems(widget.service.keyring));
     pages.add(HomeNavItem(
       text: 'Profile',
-      icon: SvgPicture.asset(
-        'assets/images/user.svg',
-        color: Theme.of(context).disabledColor,
+      icon: Padding(
+        padding: EdgeInsets.all(2),
+        child: SvgPicture.asset(
+          'assets/images/user.svg',
+          color: Theme.of(context).disabledColor,
+        ),
       ),
-      iconActive: SvgPicture.asset(
-        'assets/images/user.svg',
-        color: widget.service.plugin.basic.primaryColor,
+      iconActive: Padding(
+        padding: EdgeInsets.all(2),
+        child: SvgPicture.asset(
+          'assets/images/user.svg',
+          color: widget.service.plugin.basic.primaryColor,
+        ),
       ),
       content: ProfilePage(widget.service.plugin, widget.service.keyring),
     ));

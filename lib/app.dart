@@ -2,6 +2,7 @@ import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
+import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
@@ -80,14 +81,6 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network) async {
-    setState(() {
-      _connectedNode = null;
-    });
-
-    /// we reuse the existing webView instance when we start a new plugin.
-    final connected =
-        await network.start(_keyring, webView: _service.plugin.sdk.webView);
-
     _keyring.setSS58(network.basic.ss58);
 
     final service = AppService(network, _keyring, _store);
@@ -95,8 +88,16 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _service = service;
       _theme = _getAppTheme(network.basic.primaryColor);
+      _connectedNode = null;
+    });
+
+    /// we reuse the existing webView instance when we start a new plugin.
+    final connected =
+        await network.start(_keyring, webView: _service.plugin.sdk.webView);
+    setState(() {
       _connectedNode = connected;
     });
+    _service.assets.fetchMarketPrice();
   }
 
   Future<int> _startPlugin() async {
@@ -118,6 +119,7 @@ class _WalletAppState extends State<WalletApp> {
       setState(() {
         _connectedNode = connected;
       });
+      _service.assets.fetchMarketPrice();
     }
 
     return _keyring.keyPairs.length;
@@ -148,6 +150,7 @@ class _WalletAppState extends State<WalletApp> {
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
       ReceivePage.route: (_) => ReceivePage(_service),
+      AssetPage.route: (_) => AssetPage(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

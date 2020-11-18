@@ -9,21 +9,6 @@ part of 'settings.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$SettingsStore on _SettingsStore, Store {
-  final _$loadingAtom = Atom(name: '_SettingsStore.loading');
-
-  @override
-  bool get loading {
-    _$loadingAtom.reportRead();
-    return super.loading;
-  }
-
-  @override
-  set loading(bool value) {
-    _$loadingAtom.reportWrite(value, super.loading, () {
-      super.loading = value;
-    });
-  }
-
   final _$localeCodeAtom = Atom(name: '_SettingsStore.localeCode');
 
   @override
@@ -51,66 +36,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
   set network(String value) {
     _$networkAtom.reportWrite(value, super.network, () {
       super.network = value;
-    });
-  }
-
-  final _$customSS58FormatAtom = Atom(name: '_SettingsStore.customSS58Format');
-
-  @override
-  Map<String, dynamic> get customSS58Format {
-    _$customSS58FormatAtom.reportRead();
-    return super.customSS58Format;
-  }
-
-  @override
-  set customSS58Format(Map<String, dynamic> value) {
-    _$customSS58FormatAtom.reportWrite(value, super.customSS58Format, () {
-      super.customSS58Format = value;
-    });
-  }
-
-  final _$networkNameAtom = Atom(name: '_SettingsStore.networkName');
-
-  @override
-  String get networkName {
-    _$networkNameAtom.reportRead();
-    return super.networkName;
-  }
-
-  @override
-  set networkName(String value) {
-    _$networkNameAtom.reportWrite(value, super.networkName, () {
-      super.networkName = value;
-    });
-  }
-
-  final _$networkStateAtom = Atom(name: '_SettingsStore.networkState');
-
-  @override
-  NetworkStateData get networkState {
-    _$networkStateAtom.reportRead();
-    return super.networkState;
-  }
-
-  @override
-  set networkState(NetworkStateData value) {
-    _$networkStateAtom.reportWrite(value, super.networkState, () {
-      super.networkState = value;
-    });
-  }
-
-  final _$networkConstAtom = Atom(name: '_SettingsStore.networkConst');
-
-  @override
-  Map<dynamic, dynamic> get networkConst {
-    _$networkConstAtom.reportRead();
-    return super.networkConst;
-  }
-
-  @override
-  set networkConst(Map<dynamic, dynamic> value) {
-    _$networkConstAtom.reportWrite(value, super.networkConst, () {
-      super.networkConst = value;
     });
   }
 
@@ -151,35 +76,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadLocalCodeAsyncAction.run(() => super.loadLocalCode());
   }
 
-  final _$setNetworkStateAsyncAction =
-      AsyncAction('_SettingsStore.setNetworkState');
-
-  @override
-  Future<void> setNetworkState(Map<String, dynamic> data,
-      {bool needCache = true}) {
-    return _$setNetworkStateAsyncAction
-        .run(() => super.setNetworkState(data, needCache: needCache));
-  }
-
-  final _$loadNetworkStateCacheAsyncAction =
-      AsyncAction('_SettingsStore.loadNetworkStateCache');
-
-  @override
-  Future<void> loadNetworkStateCache() {
-    return _$loadNetworkStateCacheAsyncAction
-        .run(() => super.loadNetworkStateCache());
-  }
-
-  final _$setNetworkConstAsyncAction =
-      AsyncAction('_SettingsStore.setNetworkConst');
-
-  @override
-  Future<void> setNetworkConst(Map<String, dynamic> data,
-      {bool needCache = true}) {
-    return _$setNetworkConstAsyncAction
-        .run(() => super.setNetworkConst(data, needCache: needCache));
-  }
-
   final _$loadNetworkAsyncAction = AsyncAction('_SettingsStore.loadNetwork');
 
   @override
@@ -187,39 +83,8 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadNetworkAsyncAction.run(() => super.loadNetwork());
   }
 
-  final _$loadCustomSS58FormatAsyncAction =
-      AsyncAction('_SettingsStore.loadCustomSS58Format');
-
-  @override
-  Future<void> loadCustomSS58Format() {
-    return _$loadCustomSS58FormatAsyncAction
-        .run(() => super.loadCustomSS58Format());
-  }
-
   final _$_SettingsStoreActionController =
       ActionController(name: '_SettingsStore');
-
-  @override
-  void setNetworkLoading(bool isLoading) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setNetworkLoading');
-    try {
-      return super.setNetworkLoading(isLoading);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setNetworkName(String name) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setNetworkName');
-    try {
-      return super.setNetworkName(name);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void setNetwork(String value) {
@@ -227,17 +92,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
         name: '_SettingsStore.setNetwork');
     try {
       return super.setNetwork(value);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setCustomSS58Format(Map<String, dynamic> value) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setCustomSS58Format');
-    try {
-      return super.setCustomSS58Format(value);
     } finally {
       _$_SettingsStoreActionController.endAction(_$actionInfo);
     }
@@ -257,13 +111,8 @@ mixin _$SettingsStore on _SettingsStore, Store {
   @override
   String toString() {
     return '''
-loading: ${loading},
 localeCode: ${localeCode},
 network: ${network},
-customSS58Format: ${customSS58Format},
-networkName: ${networkName},
-networkState: ${networkState},
-networkConst: ${networkConst},
 liveModules: ${liveModules}
     ''';
   }

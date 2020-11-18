@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:app/pages/assets/announcementPage.dart';
+import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/service/index.dart';
@@ -35,9 +35,6 @@ class AssetsPage extends StatefulWidget {
 }
 
 class _AssetsState extends State<AssetsPage> {
-  bool _faucetSubmitting = false;
-  bool _preclaimChecking = false;
-
   List _announcements;
 
   Future<List> _fetchAnnouncements() async {
@@ -208,7 +205,7 @@ class _AssetsState extends State<AssetsPage> {
               icon: SvgPicture.asset(
                 'assets/images/scan.svg',
                 color: Theme.of(context).primaryColor,
-                width: 22,
+                width: 20,
               ),
               onPressed: () {
                 if (acc.address != '') {
@@ -223,25 +220,11 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
-  void initState() {
-    // if network connected failed, reconnect
-    if (!widget.service.store.settings.loading &&
-        widget.service.store.settings.networkName == null) {
-      widget.service.store.settings.setNetworkLoading(true);
-      widget.service.plugin.start(widget.service.keyring,
-          webView: widget.service.plugin.sdk.webView);
-    }
-    widget.service.assets.fetchMarketPrice();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
         final symbol = widget.service.plugin.networkState.tokenSymbol ?? '';
         final decimals = widget.service.plugin.networkState.tokenDecimals ?? 12;
-        final networkName = widget.service.plugin.networkState.name ?? '';
 
         final balancesInfo = widget.service.plugin.balances.native;
         // final tokens = widget.service.plugin.balances.tokens;
@@ -252,9 +235,7 @@ class _AssetsState extends State<AssetsPage> {
             balancesInfo != null) {
           tokenPrice = Fmt.priceCeil(
               widget.service.store.assets.marketPrices[symbol] *
-                  Fmt.bigIntToDouble(
-                      Fmt.balanceInt(balancesInfo.freeBalance.toString()),
-                      decimals));
+                  Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
         }
 
         return Scaffold(
@@ -342,9 +323,7 @@ class _AssetsState extends State<AssetsPage> {
                             Text(
                               Fmt.priceFloorBigInt(
                                   balancesInfo != null
-                                      ? Fmt.balanceInt(
-                                          (balancesInfo.freeBalance ?? 0)
-                                              .toString())
+                                      ? Fmt.balanceTotal(balancesInfo)
                                       : BigInt.zero,
                                   decimals,
                                   lengthFixed: 3),
@@ -362,9 +341,7 @@ class _AssetsState extends State<AssetsPage> {
                           ],
                         ),
                         onTap: () {
-                          // Navigator.pushNamed(context, AssetPage.route,
-                          //     arguments: TokenData(
-                          //         tokenType: TokenType.Native, id: symbol));
+                          Navigator.pushNamed(context, AssetPage.route);
                         },
                       ),
                     ),

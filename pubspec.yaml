@@ -27,6 +27,7 @@ dependencies:
     sdk: flutter
   flutter_mobx: ^1.1.0+2
   flutter_svg: ^0.18.0
+  json_annotation: ^3.1.0
   # biometric_storage: ^1.1.0+1
   polkawallet_ui:
     path: ../../coding/polkawallet/ui
@@ -42,6 +43,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.10.3
   mobx_codegen: ^1.1.2
+  json_serializable: ^3.5.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,7 +63,11 @@ flutter:
     - assets/images/wallet.svg
     - assets/images/user.svg
     - assets/images/scan.svg
+    - assets/images/app.png
     - assets/images/receive_line.png
+    - assets/images/assets_up.png
+    - assets/images/assets_down.png
+    - assets/images/assets_send.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
