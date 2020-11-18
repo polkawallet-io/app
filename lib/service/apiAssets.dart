@@ -12,7 +12,7 @@ class ApiAssets {
     Map res = await apiRoot.subScan.fetchTransfersAsync(
       acc.address,
       page,
-      network: apiRoot.plugin.name,
+      network: apiRoot.plugin.basic.name,
     );
 
     if (page == 0) {
@@ -22,7 +22,7 @@ class ApiAssets {
     await apiRoot.store.assets.addTxs(
       res,
       acc,
-      apiRoot.plugin.name,
+      apiRoot.plugin.basic.name,
       shouldCache: page == 0,
     );
 
@@ -32,7 +32,7 @@ class ApiAssets {
 
   Future<void> _fetchMarketPrice() async {
     final Map res =
-        await apiRoot.subScan.fetchTokenPriceAsync(apiRoot.plugin.name);
+        await apiRoot.subScan.fetchTokenPriceAsync(apiRoot.plugin.basic.name);
     if (res['token'] == null) {
       print('fetch market price failed');
       return;

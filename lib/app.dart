@@ -3,6 +3,7 @@ import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/homePage.dart';
+import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/store/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,16 +25,13 @@ class WalletApp extends StatefulWidget {
   WalletApp(this.plugins);
   final List<PolkawalletPlugin> plugins;
   @override
-  _WalletAppState createState() => _WalletAppState(plugins[0]);
+  _WalletAppState createState() => _WalletAppState();
 }
 
 class _WalletAppState extends State<WalletApp> {
-  _WalletAppState(PolkawalletPlugin defaultPlugin)
-      : this._network = defaultPlugin;
-
-  PolkawalletPlugin _network;
   Keyring _keyring;
 
+  AppStore _store;
   AppService _service;
 
   ThemeData _theme;
@@ -80,15 +78,21 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  void _setNetwork(PolkawalletPlugin network) {
+  void _changeNetwork(PolkawalletPlugin network) {
+    /// we reuse the existing webView instance when we start a new plugin.
+    network.start(_keyring, webView: _service.plugin.sdk.webView);
+
+    _keyring.setSS58(network.basic.ss58);
+
+    final service = AppService(network, _keyring, _store);
+    service.init();
     setState(() {
-      _network = network;
-      _theme = _getAppTheme(network.primaryColor);
+      _service = service;
+      _theme = _getAppTheme(network.basic.primaryColor);
     });
   }
 
   Future<int> _startPlugin() async {
-    print('start plugin');
     if (_keyring == null) {
       _keyring = Keyring();
       await _keyring.init();
@@ -96,13 +100,14 @@ class _WalletAppState extends State<WalletApp> {
       final storage = GetStorage('configuration');
       final store = AppStore(storage);
       await store.init();
-      final service = AppService(_network, _keyring, store);
+      final service = AppService(widget.plugins[0], _keyring, store);
       service.init();
       setState(() {
+        _store = store;
         _service = service;
       });
 
-      final connected = await _network.start(_keyring);
+      final connected = await service.plugin.start(_keyring);
       setState(() {
         _connectedNode = connected;
       });
@@ -131,7 +136,9 @@ class _WalletAppState extends State<WalletApp> {
   // }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
-    final pluginPages = _network != null ? _network.getRoutes(_keyring) : {};
+    final pluginPages = _service != null && _service.plugin != null
+        ? _service.plugin.getRoutes(_keyring)
+        : {};
     return {
       HomePage.route: (context) => FutureBuilder<int>(
             future: _startPlugin(),
@@ -145,11 +152,13 @@ class _WalletAppState extends State<WalletApp> {
               }
             },
           ),
-      TxConfirmPage.route: (_) => TxConfirmPage(_network, _keyring),
-      QrSenderPage.route: (_) => QrSenderPage(_network, _keyring),
-      QrSignerPage.route: (_) => QrSignerPage(_network, _keyring),
-      ScanPage.route: (_) => ScanPage(_network, _keyring),
-      AccountListPage.route: (_) => AccountListPage(_network, _keyring),
+      TxConfirmPage.route: (_) => TxConfirmPage(_service.plugin, _keyring),
+      QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
+      QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
+      ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
+      AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
+      NetworkSelectPage.route: (_) =>
+          NetworkSelectPage(_service, widget.plugins, _changeNetwork),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
@@ -166,7 +175,7 @@ class _WalletAppState extends State<WalletApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
-      theme: _theme ?? _getAppTheme(widget.plugins[0].primaryColor),
+      theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),

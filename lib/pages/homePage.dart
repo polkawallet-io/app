@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
         ),
         iconActive: SvgPicture.asset(
           'assets/images/wallet.svg',
-          color: widget.service.plugin.primaryColor,
+          color: widget.service.plugin.basic.primaryColor,
         ),
         content: AssetsPage(widget.service),
         // content: Container(),
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       ),
       iconActive: SvgPicture.asset(
         'assets/images/user.svg',
-        color: widget.service.plugin.primaryColor,
+        color: widget.service.plugin.basic.primaryColor,
       ),
       content: ProfilePage(widget.service.plugin, widget.service.keyring),
     ));

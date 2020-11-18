@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:app/pages/assets/announcementPage.dart';
+import 'package:app/pages/networkSelectPage.dart';
 // import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -236,7 +237,7 @@ class _AssetsState extends State<AssetsPage> {
     return Observer(
       builder: (_) {
         final symbol = widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = widget.service.plugin.networkState.tokenDecimals;
+        final decimals = widget.service.plugin.networkState.tokenDecimals ?? 12;
         final networkName = widget.service.plugin.networkState.name ?? '';
 
         final balancesInfo = widget.service.plugin.balances.native;
@@ -264,8 +265,8 @@ class _AssetsState extends State<AssetsPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
-                // onPressed: () =>
-                //     Navigator.of(context).pushNamed(NetworkSelectPage.route),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(NetworkSelectPage.route),
               ),
             ],
           ),
@@ -326,8 +327,7 @@ class _AssetsState extends State<AssetsPage> {
                       child: ListTile(
                         leading: Container(
                           width: 36,
-                          child: widget.service.plugin
-                              .getTokenIcons(context)[symbol],
+                          child: widget.service.plugin.tokenIcons[symbol],
                         ),
                         title: Text(symbol),
                         trailing: Column(
@@ -338,7 +338,8 @@ class _AssetsState extends State<AssetsPage> {
                               Fmt.priceFloorBigInt(
                                   balancesInfo != null
                                       ? Fmt.balanceInt(
-                                          balancesInfo.freeBalance.toString())
+                                          (balancesInfo.freeBalance ?? 0)
+                                              .toString())
                                       : BigInt.zero,
                                   decimals,
                                   lengthFixed: 3),
