@@ -1,5 +1,6 @@
 import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
+import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/subscan.dart';
 import 'package:app/store/types/transferData.dart';
@@ -340,14 +341,13 @@ class _AssetPageState extends State<AssetPage>
                             ],
                           ),
                           onPressed: () {
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   TransferPage.route,
-                            //   arguments: TransferPageParams(
-                            //     redirect: AssetPage.route,
-                            //     token: token,
-                            //   ),
-                            // );
+                            Navigator.pushNamed(
+                              context,
+                              TransferPage.route,
+                              arguments: TransferPageParams(
+                                redirect: AssetPage.route,
+                              ),
+                            );
                           },
                         ),
                       ),

@@ -5,6 +5,7 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
+import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
@@ -153,6 +154,7 @@ class _WalletAppState extends State<WalletApp> {
       ReceivePage.route: (_) => ReceivePage(_service),
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
+      TransferPage.route: (_) => TransferPage(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
