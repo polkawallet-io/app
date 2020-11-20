@@ -125,7 +125,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         padding: EdgeInsets.only(top: padding, bottom: padding),
         child: ListTile(
           leading: AddressIcon(i.address, svg: i.icon),
-          title: Text(UI.accountDisplayNameString(address, i.indexInfo)),
+          title: Text(UI.accountName(context, i)),
           subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
           onTap: _networkChanging ? null : () => _onSelect(i),
         ),

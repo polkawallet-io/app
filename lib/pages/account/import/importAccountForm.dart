@@ -265,7 +265,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
       );
     } else {
       final res = await widget.service.plugin.sdk.api.keyring
-          .addExternal(widget.service.keyring, acc);
+          .addContact(widget.service.keyring, acc);
       widget.service.plugin.changeAccount(res);
 
       setState(() {

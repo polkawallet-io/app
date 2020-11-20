@@ -8,6 +8,9 @@ import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
+import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/contacts/contactPage.dart';
+import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/store/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -151,16 +154,23 @@ class _WalletAppState extends State<WalletApp> {
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
-      ReceivePage.route: (_) => ReceivePage(_service),
-      AssetPage.route: (_) => AssetPage(_service),
-      TransferDetailPage.route: (_) => TransferDetailPage(_service),
-      TransferPage.route: (_) => TransferPage(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
       ImportAccountPage.route: (_) => ImportAccountPage(_service),
+
+      /// assets
+      ReceivePage.route: (_) => ReceivePage(_service),
+      AssetPage.route: (_) => AssetPage(_service),
+      TransferDetailPage.route: (_) => TransferDetailPage(_service),
+      TransferPage.route: (_) => TransferPage(_service),
+
+      /// profile
+      ContactsPage.route: (_) => ContactsPage(_service),
+      ContactPage.route: (_) => ContactPage(_service),
+      AboutPage.route: (_) => AboutPage(_service),
 
       /// pages of plugin
       ...pluginPages,

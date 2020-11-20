@@ -1,5 +1,5 @@
 import 'package:app/pages/assets/index.dart';
-import 'package:app/pages/profile.dart';
+import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
           color: widget.service.plugin.basic.primaryColor,
         ),
       ),
-      content: ProfilePage(widget.service.plugin, widget.service.keyring),
+      content: ProfilePage(widget.service, widget.connectedNode),
     ));
     return Scaffold(
       body: PageView(

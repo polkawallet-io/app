@@ -173,8 +173,7 @@ class _AssetsState extends State<AssetsPage> {
         children: <Widget>[
           ListTile(
             leading: AddressIcon(acc.address, svg: acc.icon),
-            title:
-                Text(UI.accountDisplayNameString(acc.address, acc.indexInfo)),
+            title: Text(UI.accountName(context, acc)),
             subtitle: Text(network),
           ),
           ListTile(
