@@ -1,10 +1,10 @@
 import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -68,101 +68,104 @@ class _ProfilePageState extends State<ProfilePage> {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
+    final acc = widget.service.keyring.current;
+    final primaryColor = Theme.of(context).primaryColor;
 
-    return Observer(builder: (_) {
-      final acc = widget.service.keyring.current;
-      final primaryColor = Theme.of(context).primaryColor;
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(dic['title']),
-          centerTitle: true,
-          elevation: 0.0,
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-              color: primaryColor,
-              padding: EdgeInsets.only(bottom: 16),
-              child: ListTile(
-                leading: AddressIcon(acc.address, svg: acc.icon),
-                title: Text(UI.accountName(context, acc),
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
-                subtitle: Text(
-                  Fmt.address(acc.address) ?? '',
-                  style: TextStyle(fontSize: 16, color: Colors.white70),
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(dic['title']),
+        centerTitle: true,
+        elevation: 0.0,
+      ),
+      body: ListView(
+        children: <Widget>[
+          Container(
+            color: primaryColor,
+            padding: EdgeInsets.only(bottom: 16),
+            child: ListTile(
+              leading: AddressIcon(acc.address, svg: acc.icon),
+              title: Text(UI.accountName(context, acc),
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              subtitle: Text(
+                Fmt.address(acc.address) ?? '',
+                style: TextStyle(fontSize: 16, color: Colors.white70),
               ),
             ),
-            !(acc.observation ?? false)
-                ? Container(
-                    padding: EdgeInsets.all(24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        RaisedButton(
-                          padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
-                          color: primaryColor,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24)),
-                          child: Text(
-                            dic['account'],
-                            style: Theme.of(context).textTheme.button,
-                          ),
-                          // onPressed: () => Navigator.pushNamed(
-                          //     context, AccountManagePage.route),
-                        )
-                      ],
-                    ),
-                  )
-                : Container(height: 24),
-            ListTile(
-              leading: Container(
-                width: 32,
-                child: Icon(Icons.people_outline, color: grey, size: 22),
-              ),
-              title: Text(dic['contact']),
-              trailing: Icon(Icons.arrow_forward_ios, size: 18),
-              onTap: () async {
-                await Navigator.of(context).pushNamed(ContactsPage.route);
-                setState(() {
-                  _currentAccount = widget.service.keyring.current;
-                });
-              },
+          ),
+          !(acc.observation ?? false)
+              ? Container(
+                  padding: EdgeInsets.all(24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
+                        color: primaryColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
+                        child: Text(
+                          dic['account'],
+                          style: Theme.of(context).textTheme.button,
+                        ),
+                        onPressed: () async {
+                          await Navigator.pushNamed(
+                              context, AccountManagePage.route);
+                          setState(() {
+                            _currentAccount = widget.service.keyring.current;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                )
+              : Container(height: 24),
+          ListTile(
+            leading: Container(
+              width: 32,
+              child: Icon(Icons.people_outline, color: grey, size: 22),
             ),
-            ListTile(
-              leading: Container(
-                width: 32,
-                child: Icon(Icons.settings, color: grey, size: 22),
-              ),
-              title: Text(dic['setting']),
-              trailing: Icon(Icons.arrow_forward_ios, size: 18),
-              // onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
+            title: Text(dic['contact']),
+            trailing: Icon(Icons.arrow_forward_ios, size: 18),
+            onTap: () async {
+              await Navigator.of(context).pushNamed(ContactsPage.route);
+              setState(() {
+                _currentAccount = widget.service.keyring.current;
+              });
+            },
+          ),
+          ListTile(
+            leading: Container(
+              width: 32,
+              child: Icon(Icons.settings, color: grey, size: 22),
             ),
-            widget.service.plugin.basic.name == 'kusama'
-                ? ListTile(
-                    leading: Container(
-                      width: 32,
-                      child: Icon(Icons.security, color: grey, size: 22),
-                    ),
-                    title: Text(dic['recovery']),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                    onTap: widget.connectedNode == null
-                        ? null
-                        : () => _showRecoveryMenu(context),
-                  )
-                : Container(),
-            ListTile(
-              leading: Container(
-                width: 32,
-                child: Icon(Icons.info_outline, color: grey, size: 22),
-              ),
-              title: Text(dic['about']),
-              trailing: Icon(Icons.arrow_forward_ios, size: 18),
-              onTap: () => Navigator.of(context).pushNamed(AboutPage.route),
+            title: Text(dic['setting']),
+            trailing: Icon(Icons.arrow_forward_ios, size: 18),
+            // onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
+          ),
+          widget.service.plugin.basic.name == 'kusama'
+              ? ListTile(
+                  leading: Container(
+                    width: 32,
+                    child: Icon(Icons.security, color: grey, size: 22),
+                  ),
+                  title: Text(dic['recovery']),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: widget.connectedNode == null
+                      ? null
+                      : () => _showRecoveryMenu(context),
+                )
+              : Container(),
+          ListTile(
+            leading: Container(
+              width: 32,
+              child: Icon(Icons.info_outline, color: grey, size: 22),
             ),
-          ],
-        ),
-      );
-    });
+            title: Text(dic['about']),
+            trailing: Icon(Icons.arrow_forward_ios, size: 18),
+            onTap: () => Navigator.of(context).pushNamed(AboutPage.route),
+          ),
+        ],
+      ),
+    );
   }
 }

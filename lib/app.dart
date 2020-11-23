@@ -9,6 +9,11 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/account/accountManagePage.dart';
+import 'package:app/pages/profile/account/changeNamePage.dart';
+import 'package:app/pages/profile/account/changePasswordPage.dart';
+import 'package:app/pages/profile/account/exportAccountPage.dart';
+import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/service/index.dart';
@@ -171,6 +176,11 @@ class _WalletAppState extends State<WalletApp> {
       ContactsPage.route: (_) => ContactsPage(_service),
       ContactPage.route: (_) => ContactPage(_service),
       AboutPage.route: (_) => AboutPage(_service),
+      AccountManagePage.route: (_) => AccountManagePage(_service),
+      ChangeNamePage.route: (_) => ChangeNamePage(_service),
+      ChangePasswordPage.route: (_) => ChangePasswordPage(_service),
+      ExportAccountPage.route: (_) => ExportAccountPage(_service),
+      ExportResultPage.route: (_) => ExportResultPage(),
 
       /// pages of plugin
       ...pluginPages,

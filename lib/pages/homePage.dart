@@ -12,7 +12,6 @@ class HomePage extends StatefulWidget {
   HomePage(this.service, this.connectedNode);
 
   final AppService service;
-
   final NetworkParams connectedNode;
 
   static final String route = '/';
@@ -90,12 +89,8 @@ class _HomePageState extends State<HomePage> {
             _tabIndex = index;
           });
         },
-        children: pages
-            .map((e) => Scaffold(
-                    body: PageWrapperWithBackground(SafeArea(
-                  child: e.content,
-                ))))
-            .toList(),
+        children:
+            pages.map((e) => PageWrapperWithBackground(e.content)).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tabIndex,
