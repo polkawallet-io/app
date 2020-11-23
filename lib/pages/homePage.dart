@@ -7,6 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.connectedNode);
@@ -41,9 +43,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final List<HomeNavItem> pages = [
       HomeNavItem(
-        text: 'Assets',
+        text: dic['assets'],
         icon: Padding(
           padding: EdgeInsets.all(2),
           child: SvgPicture.asset(
@@ -62,9 +65,10 @@ class _HomePageState extends State<HomePage> {
         // content: Container(),
       )
     ];
-    pages.addAll(widget.service.plugin.getNavItems(widget.service.keyring));
+    pages.addAll(
+        widget.service.plugin.getNavItems(context, widget.service.keyring));
     pages.add(HomeNavItem(
-      text: 'Profile',
+      text: dic['profile'],
       icon: Padding(
         padding: EdgeInsets.all(2),
         child: SvgPicture.asset(

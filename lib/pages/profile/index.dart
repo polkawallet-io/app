@@ -1,6 +1,7 @@
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -140,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             title: Text(dic['setting']),
             trailing: Icon(Icons.arrow_forward_ios, size: 18),
-            // onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
+            onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
           ),
           widget.service.plugin.basic.name == 'kusama'
               ? ListTile(

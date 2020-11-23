@@ -31,13 +31,13 @@ abstract class _SettingsStore with Store {
 
   @action
   Future<void> setLocalCode(String code) async {
-    await storage.write(localStorageLocaleKey, code);
     localeCode = code;
+    storage.write(localStorageLocaleKey, code);
   }
 
   @action
   Future<void> loadLocalCode() async {
-    String stored = await storage.read(localStorageLocaleKey);
+    final stored = storage.read(localStorageLocaleKey);
     if (stored != null) {
       localeCode = stored;
     }
