@@ -16,6 +16,8 @@ import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
+import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/store/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,6 +34,8 @@ import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+
+const get_storage_container = 'configuration';
 
 class WalletApp extends StatefulWidget {
   WalletApp(this.plugins);
@@ -74,6 +78,8 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   void _changeLang(String code) {
+    _service.store.settings.setLocalCode(code);
+
     Locale res;
     switch (code) {
       case 'zh':
@@ -110,12 +116,26 @@ class _WalletAppState extends State<WalletApp> {
     _service.assets.fetchMarketPrice();
   }
 
-  Future<int> _startPlugin() async {
+  Future<void> _changeNode(NetworkParams node) async {
+    if (_connectedNode != null) {
+      setState(() {
+        _connectedNode = null;
+      });
+    }
+
+    final connected =
+        await _service.plugin.sdk.api.connectNode(_keyring, [node]);
+    setState(() {
+      _connectedNode = connected;
+    });
+  }
+
+  Future<int> _startPlugin(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
       await _keyring.init();
 
-      final storage = GetStorage('configuration');
+      final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
       await store.init();
       final service = AppService(widget.plugins[0], _keyring, store);
@@ -124,6 +144,12 @@ class _WalletAppState extends State<WalletApp> {
         _store = store;
         _service = service;
       });
+
+      if (store.settings.localeCode.isNotEmpty) {
+        _changeLang(store.settings.localeCode);
+      } else {
+        _changeLang(Localizations.localeOf(context).toString());
+      }
 
       final connected = await service.plugin.start(_keyring);
       setState(() {
@@ -141,7 +167,7 @@ class _WalletAppState extends State<WalletApp> {
         : {};
     return {
       HomePage.route: (context) => FutureBuilder<int>(
-            future: _startPlugin(),
+            future: _startPlugin(context),
             builder: (_, AsyncSnapshot<int> snapshot) {
               if (snapshot.hasData && _service != null) {
                 return snapshot.data > 0
@@ -181,6 +207,10 @@ class _WalletAppState extends State<WalletApp> {
       ChangePasswordPage.route: (_) => ChangePasswordPage(_service),
       ExportAccountPage.route: (_) => ExportAccountPage(_service),
       ExportResultPage.route: (_) => ExportResultPage(),
+      SettingsPage.route: (_) =>
+          SettingsPage(_service, _changeLang, _changeNode),
+      RemoteNodeListPage.route: (_) =>
+          RemoteNodeListPage(_service, _changeNode),
 
       /// pages of plugin
       ...pluginPages,
