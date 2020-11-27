@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.1"
+  biometric_storage:
+    dependency: "direct main"
+    description:
+      name: biometric_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1+5"
   boolean_selector:
     dependency: transitive
     description:
@@ -806,7 +813,7 @@ packages:
       name: webview_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.24"
+    version: "1.0.7"
   win32:
     dependency: transitive
     description:

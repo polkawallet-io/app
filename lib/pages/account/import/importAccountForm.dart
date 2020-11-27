@@ -440,6 +440,8 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                     await _authBiometric();
                   }
 
+                  widget.service.plugin
+                      .changeAccount(widget.service.keyring.current);
                   widget.service.store.account.resetNewAccount();
                   Navigator.popUntil(context, ModalRoute.withName('/'));
                 }

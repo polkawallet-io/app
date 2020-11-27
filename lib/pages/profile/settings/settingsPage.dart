@@ -74,14 +74,14 @@ class _Settings extends State<SettingsPage> {
     }
 
     final network = widget.service.plugin.sdk.api.connectedNode == null
-        ? dic['node.connecting']
+        ? I18n.of(context)
+            .getDic(i18n_full_dic_app, 'assets')['node.connecting']
         : widget.service.plugin.sdk.api.connectedNode.endpoint ??
-            dic['node.failed'];
+            I18n.of(context).getDic(i18n_full_dic_app, 'assets')['node.failed'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            I18n.of(context).getDic(i18n_full_dic_app, 'profile')['setting']),
+        title: Text(dic['setting']),
         centerTitle: true,
       ),
       body: Observer(

@@ -99,10 +99,7 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _changeNetwork(PolkawalletPlugin network) async {
     _keyring.setSS58(network.basic.ss58);
 
-    final service = AppService(network, _keyring, _store);
-    service.init();
     setState(() {
-      _service = service;
       _theme = _getAppTheme(network.basic.primaryColor);
       _connectedNode = null;
     });
@@ -110,7 +107,11 @@ class _WalletAppState extends State<WalletApp> {
     /// we reuse the existing webView instance when we start a new plugin.
     final connected =
         await network.start(_keyring, webView: _service.plugin.sdk.webView);
+
+    final service = AppService(network, _keyring, _store);
+    service.init();
     setState(() {
+      _service = service;
       _connectedNode = connected;
     });
     _service.assets.fetchMarketPrice();

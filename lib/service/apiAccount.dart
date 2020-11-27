@@ -2,9 +2,13 @@ import 'dart:async';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_kusama/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
-// import 'package:biometric_storage/biometric_storage.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 
 class ApiAccount {
   ApiAccount(this.apiRoot);
@@ -73,21 +77,22 @@ class ApiAccount {
     return false;
   }
 
-  // Future<BiometricStorageFile> getBiometricPassStoreFile(
-  //   BuildContext context,
-  //   String pubKey,
-  // ) async {
-  //   final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-  //   return BiometricStorage().getStorage(
-  //     '$_biometricPasswordKey$pubKey',
-  //     options:
-  //         StorageFileInitOptions(authenticationValidityDurationSeconds: 30),
-  //     androidPromptInfo: AndroidPromptInfo(
-  //       title: dic['unlock.bio'],
-  //       negativeButton: dic['cancel'],
-  //     ),
-  //   );
-  // }
+  Future<BiometricStorageFile> getBiometricPassStoreFile(
+    BuildContext context,
+    String pubKey,
+  ) async {
+    return BiometricStorage().getStorage(
+      '$_biometricPasswordKey$pubKey',
+      options:
+          StorageFileInitOptions(authenticationValidityDurationSeconds: 30),
+      androidPromptInfo: AndroidPromptInfo(
+        title:
+            I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock.bio'],
+        negativeButton:
+            I18n.of(context).getDic(i18n_full_dic_kusama, 'common')['cancel'],
+      ),
+    );
+  }
 
 //   Future<Map> queryRecoverable(String address) async {
 // //    address = "J4sW13h2HNerfxTzPGpLT66B3HVvuU32S6upxwSeFJQnAzg";

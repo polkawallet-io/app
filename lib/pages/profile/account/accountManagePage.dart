@@ -1,4 +1,4 @@
-// import 'package:biometric_storage/biometric_storage.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
@@ -25,7 +25,7 @@ class AccountManagePage extends StatefulWidget {
 class _AccountManagePageState extends State<AccountManagePage> {
   bool _supportBiometric = false; // if device support biometric
   bool _isBiometricAuthorized = false; // if user authorized biometric usage
-  // BiometricStorageFile _authStorage;
+  BiometricStorageFile _authStorage;
 
   void _onDeleteAccount(BuildContext context) {
     showCupertinoDialog(
@@ -43,7 +43,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                 .then((_) {
               // refresh balance
               widget.service.plugin
-                  .onAccountChanged(widget.service.keyring.current);
+                  .changeAccount(widget.service.keyring.current);
             });
             Navigator.of(context).pop();
           },
@@ -52,64 +52,69 @@ class _AccountManagePageState extends State<AccountManagePage> {
     );
   }
 
-  // Future<void> _updateBiometricAuth(bool enable, String password) async {
-  //   final pubKey = widget.store.account.currentAccountPubKey;
-  //   bool result = !enable;
-  //   if (enable) {
-  //     try {
-  //       await _authStorage.write(password);
-  //       webApi.account.setBiometricEnabled(pubKey);
-  //       result = enable;
-  //     } catch (err) {
-  //       // user may cancel the biometric auth. then we set biometric disabled
-  //       webApi.account.setBiometricDisabled(pubKey);
-  //     }
-  //   } else {
-  //     webApi.account.setBiometricDisabled(pubKey);
-  //     result = enable;
-  //   }
-  //
-  //   if (result == enable) {
-  //     setState(() {
-  //       _isBiometricAuthorized = enable;
-  //     });
-  //   }
-  // }
+  Future<void> _updateBiometricAuth(bool enable, String password) async {
+    print('enable: $enable');
+    final pubKey = widget.service.keyring.current.pubKey;
+    bool result = !enable;
+    if (enable) {
+      try {
+        print('write: $password');
+        await _authStorage.write(password);
+        print('setBiometricEnabled');
+        widget.service.account.setBiometricEnabled(pubKey);
+        result = enable;
+      } catch (err) {
+        print(err);
+        // user may cancel the biometric auth. then we set biometric disabled
+        widget.service.account.setBiometricDisabled(pubKey);
+      }
+    } else {
+      widget.service.account.setBiometricDisabled(pubKey);
+      result = enable;
+    }
 
-  // Future<void> _checkBiometricAuth() async {
-  //   final response = await BiometricStorage().canAuthenticate();
-  //   final supportBiometric = response == CanAuthenticateResponse.success;
-  //   if (!supportBiometric) {
-  //     return;
-  //   }
-  //   setState(() {
-  //     _supportBiometric = supportBiometric;
-  //   });
-  //   final pubKey = widget.store.account.currentAccountPubKey;
-  //   final storeFile =
-  //       await webApi.account.getBiometricPassStoreFile(context, pubKey);
-  //   final isAuthorized = webApi.account.getBiometricEnabled(pubKey);
-  //   setState(() {
-  //     _isBiometricAuthorized = isAuthorized;
-  //     _authStorage = storeFile;
-  //   });
-  // }
+    if (result == enable) {
+      setState(() {
+        _isBiometricAuthorized = enable;
+      });
+    }
+  }
+
+  Future<void> _checkBiometricAuth() async {
+    final response = await BiometricStorage().canAuthenticate();
+    final supportBiometric = response == CanAuthenticateResponse.success;
+    print(response);
+    if (!supportBiometric) {
+      return;
+    }
+    setState(() {
+      _supportBiometric = supportBiometric;
+    });
+    final pubKey = widget.service.keyring.current.pubKey;
+    final storeFile =
+        await widget.service.account.getBiometricPassStoreFile(context, pubKey);
+    final isAuthorized = widget.service.account.getBiometricEnabled(pubKey);
+    setState(() {
+      _isBiometricAuthorized = isAuthorized;
+      _authStorage = storeFile;
+    });
+  }
 
   Future<void> _onChangePass() async {
     final res = await Navigator.pushNamed(context, ChangePasswordPage.route);
     // refresh biometric auth status after password changed
-    // if (res ?? false) {
-    //   _checkBiometricAuth();
-    // }
+    if (res ?? false) {
+      _checkBiometricAuth();
+    }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _checkBiometricAuth();
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkBiometricAuth();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +189,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                                           'account')['unlock']),
                                       account: widget.service.keyring.current,
                                       onOk: (password) {
-                                        // _updateBiometricAuth(v, password);
+                                        _updateBiometricAuth(v, password);
                                       },
                                     );
                                   },
