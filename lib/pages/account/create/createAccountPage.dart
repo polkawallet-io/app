@@ -44,7 +44,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     );
 
     try {
-      final acc = await widget.service.account.importAccount(
+      final json = await widget.service.account.importAccount(
+        cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
+        derivePath: _advanceOptions.path ?? '',
+      );
+      final acc = await widget.service.account.addAccount(
+        json: json,
         cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
         derivePath: _advanceOptions.path ?? '',
       );

@@ -250,8 +250,11 @@ class _AssetsState extends State<AssetsPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(NetworkSelectPage.route),
+                onPressed: () async {
+                  await Navigator.of(context)
+                      .pushNamed(NetworkSelectPage.route);
+                  setState(() {});
+                },
               ),
             ],
           ),

@@ -7,6 +7,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
@@ -430,8 +431,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                     .setNewAccountKey(_keyCtrl.text.trim());
                 final saved = await widget.onSubmit({
                   'keyType': _keyOptions[_keySelection],
-                  'cryptoType':
-                      _advanceOptions.type ?? AccountAdvanceOptionParams,
+                  'cryptoType': _advanceOptions.type ?? CryptoType.sr25519,
                   'derivePath': _advanceOptions.path ?? '',
                   'finish': _keySelection == 2 ? true : null,
                 });

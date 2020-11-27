@@ -74,7 +74,15 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       }
 
       /// check if account duplicate
-      final duplicated = await _checkAccountDuplicate(acc);
+      final duplicated = await _checkAccountDuplicate(acc['pubKey']);
+      if (!duplicated) {
+        await widget.service.account.addAccount(
+          json: acc,
+          keyType: _keyType,
+          cryptoType: _cryptoType,
+          derivePath: _derivePath,
+        );
+      }
       setState(() {
         _submitting = false;
       });
@@ -121,11 +129,11 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
     }
   }
 
-  Future<bool> _checkAccountDuplicate(KeyPairData acc) async {
+  Future<bool> _checkAccountDuplicate(String pubKey) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final index = widget.service.keyring.keyPairs
-        .indexWhere((i) => i.pubKey == acc.pubKey);
+    final index =
+        widget.service.keyring.keyPairs.indexWhere((i) => i.pubKey == pubKey);
     if (index > -1) {
       final duplicate = await showCupertinoDialog(
         context: context,
