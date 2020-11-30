@@ -27,36 +27,37 @@ class _AccountManagePageState extends State<AccountManagePage> {
   bool _isBiometricAuthorized = false; // if user authorized biometric usage
   BiometricStorageFile _authStorage;
 
-  void _onDeleteAccount(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PasswordInputDialog(
-          widget.service.plugin.sdk.api,
-          title: Text(I18n.of(context)
-              .getDic(i18n_full_dic_app, 'profile')['delete.confirm']),
-          account: widget.service.keyring.current,
-          onOk: (_) {
-            widget.service.plugin.sdk.api.keyring
-                .deleteAccount(
-                    widget.service.keyring, widget.service.keyring.current)
-                .then((_) {
-              // refresh balance
-              widget.service.plugin
-                  .changeAccount(widget.service.keyring.current);
-            });
-            Navigator.of(context).pop();
-          },
-        );
-      },
-    );
+  Future<void> _onDeleteAccount(BuildContext context) async {
+    final password = await widget.service.account
+        .getPassword(context, widget.service.keyring.current);
+    if (password != null) {
+      widget.service.plugin.sdk.api.keyring
+          .deleteAccount(widget.service.keyring, widget.service.keyring.current)
+          .then((_) {
+        // refresh balance
+        widget.service.plugin.changeAccount(widget.service.keyring.current);
+      });
+      Navigator.of(context).pop();
+    }
   }
 
-  Future<void> _updateBiometricAuth(bool enable, String password) async {
+  Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
     final pubKey = widget.service.keyring.current.pubKey;
     bool result = !enable;
     if (enable) {
+      final password = await showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return PasswordInputDialog(
+            widget.service.plugin.sdk.api,
+            title: Text(I18n.of(context)
+                .getDic(i18n_full_dic_app, 'account')['unlock']),
+            account: widget.service.keyring.current,
+          );
+        },
+      );
+
       try {
         print('write: $password');
         await _authStorage.write(password);
@@ -179,21 +180,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                             value: _isBiometricAuthorized,
                             onChanged: (v) {
                               if (v != _isBiometricAuthorized) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  builder: (_) {
-                                    return PasswordInputDialog(
-                                      widget.service.plugin.sdk.api,
-                                      title: Text(I18n.of(context).getDic(
-                                          i18n_full_dic_app,
-                                          'account')['unlock']),
-                                      account: widget.service.keyring.current,
-                                      onOk: (password) {
-                                        _updateBiometricAuth(v, password);
-                                      },
-                                    );
-                                  },
-                                );
+                                _updateBiometricAuth(v);
                               }
                             },
                           ),

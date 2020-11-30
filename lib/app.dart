@@ -167,6 +167,10 @@ class _WalletAppState extends State<WalletApp> {
         ? _service.plugin.getRoutes(_keyring)
         : {};
     return {
+      /// pages of plugin
+      ...pluginPages,
+
+      /// basic pages
       HomePage.route: (context) => FutureBuilder<int>(
             future: _startPlugin(context),
             builder: (_, AsyncSnapshot<int> snapshot) {
@@ -179,7 +183,8 @@ class _WalletAppState extends State<WalletApp> {
               }
             },
           ),
-      TxConfirmPage.route: (_) => TxConfirmPage(_service.plugin, _keyring),
+      TxConfirmPage.route: (_) => TxConfirmPage(
+          _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
@@ -212,9 +217,6 @@ class _WalletAppState extends State<WalletApp> {
           SettingsPage(_service, _changeLang, _changeNode),
       RemoteNodeListPage.route: (_) =>
           RemoteNodeListPage(_service, _changeNode),
-
-      /// pages of plugin
-      ...pluginPages,
     };
   }
 

@@ -5,7 +5,6 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -18,23 +17,15 @@ class ExportAccountPage extends StatelessWidget {
   static final String route = '/profile/export';
 
   Future<void> _onExport(BuildContext context) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PasswordInputDialog(
-          service.plugin.sdk.api,
-          title: Text(dic['delete.confirm']),
-          account: service.keyring.current,
-          onOk: (password) async {
-            final seed = await service.plugin.sdk.api.keyring
-                .getDecryptedSeed(service.keyring, password);
-            Navigator.of(context)
-                .pushNamed(ExportResultPage.route, arguments: seed);
-          },
-        );
-      },
+    final password = await service.account.getPassword(
+      context,
+      service.keyring.current,
     );
+    if (password != null) {
+      final seed = await service.plugin.sdk.api.keyring
+          .getDecryptedSeed(service.keyring, password);
+      Navigator.of(context).pushNamed(ExportResultPage.route, arguments: seed);
+    }
   }
 
   @override

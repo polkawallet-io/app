@@ -14,7 +14,6 @@ import 'package:polkawallet_plugin_kusama/service/walletApi.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
-import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
@@ -80,21 +79,10 @@ class _AssetsState extends State<AssetsPage> {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
             .parseQrCode(widget.service.keyring, data.toString().trim());
         if (senderPubKey == widget.service.keyring.current.pubKey) {
-          showCupertinoDialog(
-            context: context,
-            builder: (_) {
-              return PasswordInputDialog(
-                widget.service.plugin.sdk.api,
-                account: widget.service.keyring.current,
-                title: Text(dic['uos.title']),
-                content: Text(dic['uos.pass.warn']),
-                onOk: (password) {
-                  print('pass ok: $password');
-                  _signAsync(password);
-                },
-              );
-            },
-          );
+          final password = await widget.service.account
+              .getPassword(context, widget.service.keyring.current);
+          print('pass ok: $password');
+          _signAsync(password);
           return;
         } else {
           if (senderPubKey != null) {

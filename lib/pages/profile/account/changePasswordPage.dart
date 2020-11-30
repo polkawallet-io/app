@@ -1,4 +1,4 @@
-// import 'package:biometric_storage/biometric_storage.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
@@ -65,40 +64,33 @@ class _ChangePassword extends State<ChangePasswordPage> {
     );
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     if (_formKey.currentState.validate()) {
-      showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return PasswordInputDialog(
-            widget.service.plugin.sdk.api,
-            title: Text(I18n.of(context)
-                .getDic(i18n_full_dic_app, 'profile')['delete.confirm']),
-            account: widget.service.keyring.current,
-            onOk: (password) {
-              _doChangePass(password);
-            },
-          );
-        },
+      final password = await widget.service.account.getPassword(
+        context,
+        widget.service.keyring.current,
       );
+      if (password != null) {
+        _doChangePass(password);
+      }
     }
   }
 
-  // Future<void> _checkBiometricSupport() async {
-  //   final canAuth = await BiometricStorage().canAuthenticate();
-  //
-  //   setState(() {
-  //     _supportBiometric = canAuth == CanAuthenticateResponse.success;
-  //   });
-  // }
+  Future<void> _checkBiometricSupport() async {
+    final canAuth = await BiometricStorage().canAuthenticate();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _checkBiometricSupport();
-  //   });
-  // }
+    setState(() {
+      _supportBiometric = canAuth == CanAuthenticateResponse.success;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkBiometricSupport();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,32 +138,31 @@ class _ChangePassword extends State<ChangePasswordPage> {
                       },
                       obscureText: true,
                     ),
-                    // _supportBiometric
-                    //     ? Padding(
-                    //         padding: EdgeInsets.only(top: 24),
-                    //         child: Row(
-                    //           children: [
-                    //             SizedBox(
-                    //               height: 24,
-                    //               width: 24,
-                    //               child: Checkbox(
-                    //                 value: _enableBiometric,
-                    //                 onChanged: (v) {
-                    //                   setState(() {
-                    //                     _enableBiometric = v;
-                    //                   });
-                    //                 },
-                    //               ),
-                    //             ),
-                    //             Padding(
-                    //               padding: EdgeInsets.only(left: 16),
-                    //               child: Text(I18n.of(context)
-                    //                   .home['unlock.bio.enable']),
-                    //             )
-                    //           ],
-                    //         ),
-                    //       )
-                    //     : Container(),
+                    _supportBiometric
+                        ? Padding(
+                            padding: EdgeInsets.only(top: 24),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: Checkbox(
+                                    value: _enableBiometric,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _enableBiometric = v;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16),
+                                  child: Text(accDic['unlock.bio.enable']),
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ),
