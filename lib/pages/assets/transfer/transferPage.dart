@@ -46,8 +46,8 @@ class _TransferPageState extends State<TransferPage> {
     final to = await Navigator.of(context).pushNamed(ScanPage.route);
     if (to == null) return;
     final acc = KeyPairData();
-    acc.address = (to as QRCodeAddressResult).address;
-    acc.name = (to as QRCodeAddressResult).name;
+    acc.address = (to as QRCodeResult).address.address;
+    acc.name = (to as QRCodeResult).address.name;
     final icon = await widget.service.plugin.sdk.api.account
         .getAddressIcons([acc.address]);
     if (icon != null && icon[0] != null) {

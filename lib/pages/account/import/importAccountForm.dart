@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-// import 'package:biometric_storage/biometric_storage.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -55,29 +55,29 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
   AccountAdvanceOptionParams _advanceOptions = AccountAdvanceOptionParams();
 
   Future<void> _checkBiometricAuth() async {
-    // final response = await BiometricStorage().canAuthenticate();
-    // final supportBiometric = response == CanAuthenticateResponse.success;
-    // if (!supportBiometric) {
-    //   return;
-    // }
-    // setState(() {
-    //   _supportBiometric = supportBiometric;
-    // });
+    final response = await BiometricStorage().canAuthenticate();
+    final supportBiometric = response == CanAuthenticateResponse.success;
+    if (!supportBiometric) {
+      return;
+    }
+    setState(() {
+      _supportBiometric = supportBiometric;
+    });
   }
 
   Future<void> _authBiometric() async {
-    // final storeFile = await widget.service.account.getBiometricPassStoreFile(
-    //   context,
-    //   widget.service.keyring.current.pubKey,
-    // );
-    //
-    // try {
-    //   await storeFile.write(widget.service.store.newAccount.password);
-    //   widget.service.account
-    //       .setBiometricEnabled(widget.service.keyring.current.pubKey);
-    // } catch (err) {
-    //   // ignore
-    // }
+    final storeFile = await widget.service.account.getBiometricPassStoreFile(
+      context,
+      widget.service.keyring.current.pubKey,
+    );
+
+    try {
+      await storeFile.write(widget.service.store.account.newAccount.password);
+      widget.service.account
+          .setBiometricEnabled(widget.service.keyring.current.pubKey);
+    } catch (err) {
+      // ignore
+    }
   }
 
   Widget _buildNameAndPassInput() {
@@ -167,11 +167,11 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                 child: Icon(Icons.camera_alt),
                 onTap: () async {
                   final acc = (await Navigator.of(context)
-                      .pushNamed(ScanPage.route)) as QRCodeAddressResult;
+                      .pushNamed(ScanPage.route)) as QRCodeResult;
                   if (acc != null) {
                     setState(() {
-                      _observationAddressCtrl.text = acc.address;
-                      _observationNameCtrl.text = acc.name;
+                      _observationAddressCtrl.text = acc.address.address;
+                      _observationNameCtrl.text = acc.address.name;
                     });
                   }
                 },
@@ -416,37 +416,40 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
           padding: EdgeInsets.all(16),
           child: RoundedButton(
             text: I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
-            onPressed: () async {
-              if (_formKey.currentState.validate() &&
-                  !(_advanceOptions.error ?? false)) {
-                if (_keySelection == 3) {
-                  _onAddObservationAccount();
-                  return;
-                }
-                if (_keySelection == 2) {
-                  widget.service.store.account.setNewAccount(
-                      _nameCtrl.text.trim(), _passCtrl.text.trim());
-                }
-                widget.service.store.account
-                    .setNewAccountKey(_keyCtrl.text.trim());
-                final saved = await widget.onSubmit({
-                  'keyType': _keyOptions[_keySelection],
-                  'cryptoType': _advanceOptions.type ?? CryptoType.sr25519,
-                  'derivePath': _advanceOptions.path ?? '',
-                  'finish': _keySelection == 2 ? true : null,
-                });
-                if (saved) {
-                  if (_supportBiometric && _enableBiometric) {
-                    await _authBiometric();
-                  }
+            onPressed: _observationSubmitting
+                ? null
+                : () async {
+                    if (_formKey.currentState.validate() &&
+                        !(_advanceOptions.error ?? false)) {
+                      if (_keySelection == 3) {
+                        _onAddObservationAccount();
+                        return;
+                      }
+                      if (_keySelection == 2) {
+                        widget.service.store.account.setNewAccount(
+                            _nameCtrl.text.trim(), _passCtrl.text.trim());
+                      }
+                      widget.service.store.account
+                          .setNewAccountKey(_keyCtrl.text.trim());
+                      final saved = await widget.onSubmit({
+                        'keyType': _keyOptions[_keySelection],
+                        'cryptoType':
+                            _advanceOptions.type ?? CryptoType.sr25519,
+                        'derivePath': _advanceOptions.path ?? '',
+                        'finish': _keySelection == 2 ? true : null,
+                      });
+                      if (saved) {
+                        if (_supportBiometric && _enableBiometric) {
+                          await _authBiometric();
+                        }
 
-                  widget.service.plugin
-                      .changeAccount(widget.service.keyring.current);
-                  widget.service.store.account.resetNewAccount();
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
-                }
-              }
-            },
+                        widget.service.plugin
+                            .changeAccount(widget.service.keyring.current);
+                        widget.service.store.account.resetNewAccount();
+                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                      }
+                    }
+                  },
           ),
         ),
       ],

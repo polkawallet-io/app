@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
+import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/service/index.dart';
@@ -48,12 +49,20 @@ class _AssetsState extends State<AssetsPage> {
 
   Future<void> _handleScan() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final data = await Navigator.pushNamed(
+    final data = (await Navigator.pushNamed(
       context,
       ScanPage.route,
       arguments: 'tx',
-    );
+    )) as QRCodeResult;
     if (data != null) {
+      if (data.type == QRCodeResultType.address) {
+        Navigator.of(context).pushNamed(
+          TransferPage.route,
+          arguments: TransferPageParams(address: data.address.address),
+        );
+        return;
+      }
+
       if (widget.service.keyring.current.observation ?? false) {
         showCupertinoDialog(
           context: context,
@@ -77,7 +86,8 @@ class _AssetsState extends State<AssetsPage> {
       String errorMsg;
       try {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
-            .parseQrCode(widget.service.keyring, data.toString().trim());
+            .parseQrCode(
+                widget.service.keyring, data.rawData.toString().trim());
         if (senderPubKey == widget.service.keyring.current.pubKey) {
           final password = await widget.service.account
               .getPassword(context, widget.service.keyring.current);

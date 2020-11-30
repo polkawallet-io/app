@@ -10,7 +10,6 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ImportAccountPage extends StatefulWidget {
   const ImportAccountPage(this.service);

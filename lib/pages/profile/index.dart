@@ -143,19 +143,19 @@ class _ProfilePageState extends State<ProfilePage> {
             trailing: Icon(Icons.arrow_forward_ios, size: 18),
             onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
           ),
-          widget.service.plugin.basic.name == 'kusama'
-              ? ListTile(
-                  leading: Container(
-                    width: 32,
-                    child: Icon(Icons.security, color: grey, size: 22),
-                  ),
-                  title: Text(dic['recovery']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: widget.connectedNode == null
-                      ? null
-                      : () => _showRecoveryMenu(context),
-                )
-              : Container(),
+          // widget.service.plugin.basic.name == 'kusama'
+          //     ? ListTile(
+          //         leading: Container(
+          //           width: 32,
+          //           child: Icon(Icons.security, color: grey, size: 22),
+          //         ),
+          //         title: Text(dic['recovery']),
+          //         trailing: Icon(Icons.arrow_forward_ios, size: 18),
+          //         onTap: widget.connectedNode == null
+          //             ? null
+          //             : () => _showRecoveryMenu(context),
+          //       )
+          //     : Container(),
           ListTile(
             leading: Container(
               width: 32,

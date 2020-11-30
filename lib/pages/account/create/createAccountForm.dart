@@ -1,7 +1,7 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
-// import 'package:biometric_storage/biometric_storage.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -30,29 +30,29 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   bool _enableBiometric = true; // if the biometric usage checkbox checked
 
   Future<void> _checkBiometricAuth() async {
-    // final response = await BiometricStorage().canAuthenticate();
-    // final supportBiometric = response == CanAuthenticateResponse.success;
-    // if (!supportBiometric) {
-    //   return;
-    // }
-    // setState(() {
-    //   _supportBiometric = supportBiometric;
-    // });
+    final response = await BiometricStorage().canAuthenticate();
+    final supportBiometric = response == CanAuthenticateResponse.success;
+    if (!supportBiometric) {
+      return;
+    }
+    setState(() {
+      _supportBiometric = supportBiometric;
+    });
   }
 
   Future<void> _authBiometric() async {
-    // final pubKey = widget.service.keyring.current.pubKey;
-    // final storeFile = await widget.service.account.getBiometricPassStoreFile(
-    //   context,
-    //   pubKey,
-    // );
-    //
-    // try {
-    //   await storeFile.write(widget.service.store.newAccount.password);
-    //   widget.service.account.setBiometricEnabled(pubKey);
-    // } catch (err) {
-    //   // ignore
-    // }
+    final pubKey = widget.service.keyring.current.pubKey;
+    final storeFile = await widget.service.account.getBiometricPassStoreFile(
+      context,
+      pubKey,
+    );
+
+    try {
+      await storeFile.write(widget.service.store.account.newAccount.password);
+      widget.service.account.setBiometricEnabled(pubKey);
+    } catch (err) {
+      // ignore
+    }
   }
 
   Future<void> _onSubmit() async {
