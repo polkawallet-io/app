@@ -33,8 +33,7 @@ const Map<String, String> enAccount = {
   'import.type': 'Source Type',
   'import.encrypt': 'Encrypt Type',
   'import.invalid': 'Invalid',
-  'import.duplicate':
-      'account exist, do you want to override the existing account?',
+  'import.duplicate': 'account exist, it will override the existing account.',
   'advanced': 'Advanced Options',
   'path': 'Secret derivation path',
   'observe': 'Observation',
@@ -94,7 +93,7 @@ const Map<String, String> zhAccount = {
   'import.type': '导入类型',
   'import.encrypt': '加密类型',
   'import.invalid': '无效的',
-  'import.duplicate': '账户已存在，要覆盖原有账户吗？',
+  'import.duplicate': '账户已存在，将覆盖原有账户。',
   'advanced': '高级选项',
   'path': '加密派生路径',
   'observe': '观察账户',

@@ -401,6 +401,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                     : _keySelection == 3
                         ? _buildAddressAndNameInput()
                         : AccountAdvanceOption(
+                            api: widget.service.plugin.sdk.api.keyring,
                             seed: _keyCtrlText,
                             onChange: (data) {
                               setState(() {

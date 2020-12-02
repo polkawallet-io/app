@@ -81,6 +81,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
           cryptoType: _cryptoType,
           derivePath: _derivePath,
         );
+        widget.service.account.setBiometricDisabled(acc['pubKey']);
       }
       setState(() {
         _submitting = false;
@@ -142,10 +143,10 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
                 Fmt.address(widget.service.keyring.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),
             actions: <Widget>[
-              CupertinoButton(
-                child: Text(dicCommon['cancel']),
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
+              // CupertinoButton(
+              //   child: Text(dicCommon['cancel']),
+              //   onPressed: () => Navigator.of(context).pop(true),
+              // ),
               CupertinoButton(
                 child: Text(dicCommon['ok']),
                 onPressed: () => Navigator.of(context).pop(false),

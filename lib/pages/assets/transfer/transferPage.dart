@@ -84,6 +84,24 @@ class _TransferPageState extends State<TransferPage> {
     return null;
   }
 
+  Future<void> _initAccountTo(String address) async {
+    final acc = KeyPairData();
+    acc.address = address;
+    setState(() {
+      _accountTo = acc;
+    });
+    final icon =
+        await widget.service.plugin.sdk.api.account.getAddressIcons([address]);
+    if (icon != null) {
+      final accWithIcon = KeyPairData();
+      accWithIcon.address = address;
+      accWithIcon.icon = icon[0][1];
+      setState(() {
+        _accountTo = accWithIcon;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -91,11 +109,7 @@ class _TransferPageState extends State<TransferPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
       if (args.address != null) {
-        final KeyPairData acc = KeyPairData();
-        acc.address = args.address;
-        setState(() {
-          _accountTo = acc;
-        });
+        _initAccountTo(args.address);
       } else {
         if (widget.service.keyring.optionals.length > 0) {
           setState(() {

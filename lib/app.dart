@@ -159,7 +159,7 @@ class _WalletAppState extends State<WalletApp> {
       _service.assets.fetchMarketPrice();
     }
 
-    return _keyring.keyPairs.length;
+    return _keyring.allAccounts.length;
   }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
