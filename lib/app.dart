@@ -1,3 +1,4 @@
+import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -171,17 +172,19 @@ class _WalletAppState extends State<WalletApp> {
       ...pluginPages,
 
       /// basic pages
-      HomePage.route: (context) => FutureBuilder<int>(
-            future: _startPlugin(context),
-            builder: (_, AsyncSnapshot<int> snapshot) {
-              if (snapshot.hasData && _service != null) {
-                return snapshot.data > 0
-                    ? HomePage(_service, _connectedNode)
-                    : CreateAccountEntryPage();
-              } else {
-                return Container();
-              }
-            },
+      HomePage.route: (context) => WillPopScopWrapper(
+            FutureBuilder<int>(
+              future: _startPlugin(context),
+              builder: (_, AsyncSnapshot<int> snapshot) {
+                if (snapshot.hasData && _service != null) {
+                  return snapshot.data > 0
+                      ? HomePage(_service, _connectedNode)
+                      : CreateAccountEntryPage();
+                } else {
+                  return Container();
+                }
+              },
+            ),
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(
           _service.plugin, _keyring, _service.account.getPassword),
