@@ -59,7 +59,7 @@ class _TransferPageState extends State<TransferPage> {
     print(_accountTo.address);
   }
 
-  TxConfirmParams _getTxParams() {
+  Future<TxConfirmParams> _getTxParams() async {
     if (_formKey.currentState.validate()) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
       final symbol = widget.service.plugin.networkState.tokenSymbol;
@@ -239,9 +239,9 @@ class _TransferPageState extends State<TransferPage> {
                   child: TxButton(
                     text: dic['make'],
                     getTxParams: _getTxParams,
-                    onFinish: (success) {
-                      if (success ?? false) {
-                        Navigator.of(context).pop();
+                    onFinish: (res) {
+                      if (res != null) {
+                        Navigator.of(context).pop(res);
                       }
                     },
                   ),

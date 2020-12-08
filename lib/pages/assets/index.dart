@@ -13,6 +13,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_kusama/service/walletApi.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
@@ -224,8 +225,8 @@ class _AssetsState extends State<AssetsPage> {
         final decimals = widget.service.plugin.networkState.tokenDecimals ?? 12;
 
         final balancesInfo = widget.service.plugin.balances.native;
-        // final tokens = widget.service.plugin.balances.tokens;
-        // final extraTokens = widget.service.plugin.balances.extraTokens;
+        final tokens = widget.service.plugin.balances.tokens;
+        final extraTokens = widget.service.plugin.balances.extraTokens;
 
         String tokenPrice;
         if (widget.service.store.assets.marketPrices[symbol] != null &&
@@ -299,7 +300,7 @@ class _AssetsState extends State<AssetsPage> {
               ),
               Expanded(
                 child: ListView(
-                  padding: EdgeInsets.only(left: 16, right: 16),
+                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 32),
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.only(top: 4),
@@ -345,49 +346,39 @@ class _AssetsState extends State<AssetsPage> {
                         },
                       ),
                     ),
-//                   Column(
-//                     children: currencyIds.map((i) {
-// //                  print(store.assets.balances[i]);
-//                       String token =
-//                           i == acala_stable_coin ? acala_stable_coin_view : i;
-//
-//                       bool hasIcon = true;
-//                       if (isLaminar && token != acala_stable_coin_view) {
-//                         hasIcon = false;
-//                       }
-//                       return RoundedCard(
-//                         margin: EdgeInsets.only(top: 16),
-//                         child: ListTile(
-//                           leading: Container(
-//                             width: 36,
-//                             child: hasIcon
-//                                 ? Image.asset('assets/images/assets/$i.png')
-//                                 : CircleAvatar(
-//                                     child: Text(token.substring(0, 2)),
-//                                   ),
-//                           ),
-//                           title: Text(token),
-//                           trailing: Text(
-//                             Fmt.priceFloorBigInt(
-//                                 Fmt.balanceInt(store.assets.tokenBalances[i]),
-//                                 decimals,
-//                                 lengthFixed: 3),
-//                             style: TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 20,
-//                                 color: Colors.black54),
-//                           ),
-//                           onTap: () {
-//                             Navigator.pushNamed(context, AssetPage.route,
-//                                 arguments: TokenData(
-//                                     tokenType: TokenType.Token, id: token));
-//                           },
-//                         ),
-//                       );
-//                     }).toList(),
-//                   ),
-                    Container(
-                      padding: EdgeInsets.only(bottom: 32),
+                    Column(
+                      children: tokens == null || tokens.length == 0
+                          ? [Container()]
+                          : tokens
+                              .map((i) => TokenItem(
+                                    i,
+                                    decimals,
+                                    icon: widget
+                                        .service.plugin.tokenIcons[i.symbol],
+                                  ))
+                              .toList(),
+                    ),
+                    Column(
+                      children: extraTokens == null || extraTokens.length == 0
+                          ? [Container()]
+                          : extraTokens.map((ExtraTokenData i) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: BorderedTitle(
+                                      title: i.title,
+                                    ),
+                                  ),
+                                  Column(
+                                    children: i.tokens
+                                        .map((e) => TokenItem(e, decimals))
+                                        .toList(),
+                                  )
+                                ],
+                              );
+                            }).toList(),
                     ),
                   ],
                 ),
@@ -396,6 +387,45 @@ class _AssetsState extends State<AssetsPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class TokenItem extends StatelessWidget {
+  TokenItem(this.item, this.decimals, {this.icon});
+  final TokenBalanceData item;
+  final int decimals;
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return RoundedCard(
+      margin: EdgeInsets.only(top: 16),
+      child: ListTile(
+        leading: Container(
+          height: 36,
+          width: 45,
+          alignment: Alignment.centerLeft,
+          child: icon ??
+              CircleAvatar(
+                child: Text(item.symbol.substring(0, 2)),
+              ),
+        ),
+        title: Text(item.name),
+        trailing: Text(
+          Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
+              lengthFixed: 3),
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black54),
+        ),
+        onTap: () {
+          // Navigator.pushNamed(
+          //     context, AssetPage.route,
+          //     arguments: TokenData(
+          //         tokenType: TokenType.Token,
+          //         id: token));
+        },
+      ),
     );
   }
 }

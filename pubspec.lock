@@ -534,6 +534,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  polkawallet_plugin_acala:
+    dependency: "direct main"
+    description:
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
+    version: "0.0.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:

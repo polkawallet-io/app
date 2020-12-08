@@ -34,6 +34,8 @@ dependencies:
     path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
     path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
