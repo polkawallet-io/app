@@ -4,7 +4,6 @@ import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
-import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
@@ -31,6 +30,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
@@ -192,6 +192,8 @@ class _WalletAppState extends State<WalletApp> {
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
+      AccountQrCodePage.route: (_) =>
+          AccountQrCodePage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
 
@@ -202,7 +204,6 @@ class _WalletAppState extends State<WalletApp> {
       ImportAccountPage.route: (_) => ImportAccountPage(_service),
 
       /// assets
-      ReceivePage.route: (_) => ReceivePage(_service),
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),

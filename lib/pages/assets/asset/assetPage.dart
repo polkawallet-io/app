@@ -1,4 +1,3 @@
-import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/service/index.dart';
@@ -13,6 +12,7 @@ import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AssetPage extends StatefulWidget {
@@ -372,7 +372,8 @@ class _AssetPageState extends State<AssetPage>
                             ],
                           ),
                           onPressed: () {
-                            Navigator.pushNamed(context, ReceivePage.route);
+                            Navigator.pushNamed(
+                                context, AccountQrCodePage.route);
                           },
                         ),
                       ),

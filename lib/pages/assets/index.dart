@@ -4,7 +4,6 @@ import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
-import 'package:app/pages/assets/receive/receivePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +18,7 @@ import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -186,7 +186,7 @@ class _AssetsState extends State<AssetsPage> {
                   ),
                   onTap: () {
                     if (acc.address != '') {
-                      Navigator.pushNamed(context, ReceivePage.route);
+                      Navigator.pushNamed(context, AccountQrCodePage.route);
                     }
                   },
                 ),
@@ -353,6 +353,7 @@ class _AssetsState extends State<AssetsPage> {
                               .map((i) => TokenItem(
                                     i,
                                     decimals,
+                                    detailPageRoute: i.detailPageRoute,
                                     icon: widget
                                         .service.plugin.tokenIcons[i.symbol],
                                   ))
@@ -373,7 +374,14 @@ class _AssetsState extends State<AssetsPage> {
                                   ),
                                   Column(
                                     children: i.tokens
-                                        .map((e) => TokenItem(e, decimals))
+                                        .map((e) => TokenItem(
+                                              e,
+                                              decimals,
+                                              detailPageRoute:
+                                                  e.detailPageRoute,
+                                              icon: widget.service.plugin
+                                                  .tokenIcons[e.symbol],
+                                            ))
                                         .toList(),
                                   )
                                 ],
@@ -392,9 +400,10 @@ class _AssetsState extends State<AssetsPage> {
 }
 
 class TokenItem extends StatelessWidget {
-  TokenItem(this.item, this.decimals, {this.icon});
+  TokenItem(this.item, this.decimals, {this.detailPageRoute, this.icon});
   final TokenBalanceData item;
   final int decimals;
+  final String detailPageRoute;
   final Widget icon;
 
   @override
@@ -418,13 +427,12 @@ class TokenItem extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black54),
         ),
-        onTap: () {
-          // Navigator.pushNamed(
-          //     context, AssetPage.route,
-          //     arguments: TokenData(
-          //         tokenType: TokenType.Token,
-          //         id: token));
-        },
+        onTap: detailPageRoute == null
+            ? null
+            : () {
+                Navigator.of(context)
+                    .pushNamed(detailPageRoute, arguments: item);
+              },
       ),
     );
   }

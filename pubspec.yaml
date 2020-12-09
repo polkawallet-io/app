@@ -67,7 +67,6 @@ flutter:
     - assets/images/user.svg
     - assets/images/scan.svg
     - assets/images/app.png
-    - assets/images/receive_line.png
     - assets/images/assets_up.png
     - assets/images/assets_down.png
     - assets/images/assets_send.png
