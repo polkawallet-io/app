@@ -19,7 +19,7 @@ abstract class _SettingsStore with Store {
   String localeCode = '';
 
   @observable
-  String network = 'kusama';
+  String network = 'polkadot';
 
   @observable
   Map liveModules = Map();
@@ -27,6 +27,7 @@ abstract class _SettingsStore with Store {
   @action
   Future<void> init() async {
     await loadLocalCode();
+    await loadNetwork();
   }
 
   @action

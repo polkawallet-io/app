@@ -97,24 +97,34 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
+  Future<void> _startPlugin() async {
+    setState(() {
+      _connectedNode = null;
+    });
+    final connected = await _service.plugin.start(_keyring);
+    setState(() {
+      _connectedNode = connected;
+    });
+  }
+
   Future<void> _changeNetwork(PolkawalletPlugin network) async {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
       _theme = _getAppTheme(network.basic.primaryColor);
-      _connectedNode = null;
     });
+    _store.settings.setNetwork(network.basic.name);
 
     /// we reuse the existing webView instance when we start a new plugin.
-    final connected =
-        await network.start(_keyring, webView: _service.plugin.sdk.webView);
+    await network.beforeStart(_keyring, webView: _service.plugin.sdk.webView);
 
     final service = AppService(network, _keyring, _store);
     service.init();
     setState(() {
       _service = service;
-      _connectedNode = connected;
     });
+
+    _startPlugin();
     _service.assets.fetchMarketPrice();
   }
 
@@ -132,7 +142,7 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  Future<int> _startPlugin(BuildContext context) async {
+  Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
       await _keyring.init();
@@ -140,11 +150,16 @@ class _WalletAppState extends State<WalletApp> {
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
       await store.init();
-      final service = AppService(widget.plugins[0], _keyring, store);
+      final service = AppService(
+          widget.plugins
+              .firstWhere((e) => e.basic.name == store.settings.network),
+          _keyring,
+          store);
       service.init();
       setState(() {
         _store = store;
         _service = service;
+        _theme = _getAppTheme(service.plugin.basic.primaryColor);
       });
 
       if (store.settings.localeCode.isNotEmpty) {
@@ -153,10 +168,8 @@ class _WalletAppState extends State<WalletApp> {
         _changeLang(Localizations.localeOf(context).toString());
       }
 
-      final connected = await service.plugin.start(_keyring);
-      setState(() {
-        _connectedNode = connected;
-      });
+      await service.plugin.beforeStart(_keyring);
+      _startPlugin();
       _service.assets.fetchMarketPrice();
     }
 
@@ -174,7 +187,7 @@ class _WalletAppState extends State<WalletApp> {
       /// basic pages
       HomePage.route: (context) => WillPopScopWrapper(
             FutureBuilder<int>(
-              future: _startPlugin(context),
+              future: _startApp(context),
               builder: (_, AsyncSnapshot<int> snapshot) {
                 if (snapshot.hasData && _service != null) {
                   return snapshot.data > 0

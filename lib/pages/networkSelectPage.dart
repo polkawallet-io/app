@@ -44,7 +44,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         );
       },
     );
-    widget.changeNetwork(_selectedNetwork);
+    await widget.changeNetwork(_selectedNetwork);
 
     if (mounted) {
       Navigator.of(context).pop();
@@ -59,14 +59,17 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     if (i.address != widget.service.keyring.current.address ||
         !isCurrentNetwork) {
+      /// set current account
+      widget.service.keyring.setCurrent(i);
+
       if (!isCurrentNetwork) {
         /// set new network and reload web view
         await _reloadNetwork();
-      }
 
-      /// set current account
-      widget.service.keyring.setCurrent(i);
-      widget.service.plugin.changeAccount(i);
+        _selectedNetwork.changeAccount(i);
+      } else {
+        widget.service.plugin.changeAccount(i);
+      }
     }
     Navigator.of(context).pop();
   }

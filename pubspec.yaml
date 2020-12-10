@@ -30,6 +30,7 @@ dependencies:
   json_annotation: ^3.1.0
   biometric_storage: 1.0.1+5
   update_app: ^0.1.5
+  device_info: ^0.4.2
   polkawallet_ui:
     path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:

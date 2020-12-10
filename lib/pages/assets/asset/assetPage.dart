@@ -425,12 +425,15 @@ class TransferListItem extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Expanded(
-                  child: Text(
-                '${data.amount} $token',
-                style: Theme.of(context).textTheme.headline4,
-              )),
-              SizedBox(
-                height: 14,
+                child: Text(
+                  Fmt.priceFloor(double.parse(data.amount), lengthMax: 3),
+                  style: Theme.of(context).textTheme.headline4,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 4),
+                width: 16,
                 child: isOut
                     ? Image.asset('assets/images/assets_up.png')
                     : Image.asset('assets/images/assets_down.png'),

@@ -298,17 +298,33 @@ class _AssetsState extends State<AssetsPage> {
                   );
                 },
               ),
+              Container(
+                margin: EdgeInsets.only(left: 16, bottom: 8),
+                padding: EdgeInsets.only(top: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    BorderedTitle(
+                      title: I18n.of(context)
+                          .getDic(i18n_full_dic_app, 'assets')['assets'],
+                    ),
+                    widget.service.plugin.basic.isTestNet
+                        ? TextTag(
+                            I18n.of(context).getDic(
+                                i18n_full_dic_app, 'assets')['assets.test'],
+                            fontSize: 16,
+                            color: Colors.red,
+                            margin: EdgeInsets.only(left: 12),
+                            padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                          )
+                        : Container()
+                  ],
+                ),
+              ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.only(left: 16, right: 16, bottom: 32),
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 4),
-                      child: BorderedTitle(
-                        title: I18n.of(context)
-                            .getDic(i18n_full_dic_app, 'assets')['assets'],
-                      ),
-                    ),
                     RoundedCard(
                       margin: EdgeInsets.only(top: 16),
                       child: ListTile(

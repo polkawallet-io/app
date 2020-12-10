@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.all(2),
           child: SvgPicture.asset(
             'assets/images/wallet.svg',
-            color: widget.service.plugin.basic.primaryColor,
+            color: Theme.of(context).primaryColor,
           ),
         ),
         content: AssetsPage(widget.service, widget.connectedNode),
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(2),
         child: SvgPicture.asset(
           'assets/images/user.svg',
-          color: widget.service.plugin.basic.primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
       ),
       content: ProfilePage(widget.service, widget.connectedNode),
