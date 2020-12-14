@@ -16,6 +16,13 @@ import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
+import 'package:app/pages/profile/recovery/friendListPage.dart';
+import 'package:app/pages/profile/recovery/initiateRecoveryPage.dart';
+import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
+import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
+import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
+import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
@@ -234,6 +241,13 @@ class _WalletAppState extends State<WalletApp> {
           SettingsPage(_service, _changeLang, _changeNode),
       RemoteNodeListPage.route: (_) =>
           RemoteNodeListPage(_service, _changeNode),
+      CreateRecoveryPage.route: (_) => CreateRecoveryPage(_service),
+      FriendListPage.route: (_) => FriendListPage(_service),
+      RecoverySettingPage.route: (_) => RecoverySettingPage(_service),
+      RecoveryStatePage.route: (_) => RecoveryStatePage(_service),
+      RecoveryProofPage.route: (_) => RecoveryProofPage(_service),
+      InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
+      VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
     };
   }
 

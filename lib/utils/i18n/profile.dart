@@ -49,6 +49,7 @@ const Map<String, String> enProfile = {
   'update.install': 'Installing...',
   'update.error': 'Update Failed',
   'update.js.up': 'Metadata needs to be updated to continue.',
+  'input.invalid': 'Invalid input',
   'recovery': 'Social Recovery',
   'recovery.brief':
       'Setup your account as recoverable with trusted social recovery helpers.\n\nThe recoverable account is protected against the loss of seed/access by a social process.',
@@ -144,6 +145,7 @@ const Map<String, String> zhProfile = {
   'update.install': '开始安装',
   'update.error': '更新失败',
   'update.js.up': '发现网络 Metadata 更新，需要下载才能继续使用。',
+  'input.invalid': '输入格式错误',
   'recovery': '社交恢复',
   'recovery.brief':
       '通过设置可信的好友账户，将您的账户配置为可恢复账户。\n\n若您的私钥丢失，可通过社交恢复流程在好友账户的帮助下将该账户资产转移至新的账户。',

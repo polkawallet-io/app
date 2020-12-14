@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_kusama/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -139,72 +140,23 @@ class ApiAccount {
     return password;
   }
 
-//   Future<Map> queryRecoverable(String address) async {
-// //    address = "J4sW13h2HNerfxTzPGpLT66B3HVvuU32S6upxwSeFJQnAzg";
-//     Map res = await apiRoot
-//         .evalJavascript('api.query.recovery.recoverable("$address")');
-//     if (res != null) {
-//       res['address'] = address;
-//     }
-//     store.account.setAccountRecoveryInfo(res);
-//
-//     if (res != null && List.of(res['friends']).length > 0) {
-//       getAddressIcons(res['friends']);
-//     }
-//     return res;
-//   }
-//
-//   Future<List> queryRecoverableList(List<String> addresses) async {
-//     List queries =
-//         addresses.map((e) => 'api.query.recovery.recoverable("$e")').toList();
-//     final List ls = await apiRoot.evalJavascript(
-//       'Promise.all([${queries.join(',')}])',
-//       allowRepeat: true,
-//     );
-//
-//     List res = [];
-//     ls.asMap().forEach((k, v) {
-//       if (v != null) {
-//         v['address'] = addresses[k];
-//       }
-//       res.add(v);
-//     });
-//
-//     return res;
-//   }
-//
-//   Future<List> queryActiveRecoveryAttempts(
-//       String address, List<String> addressNew) async {
-//     List queries = addressNew
-//         .map((e) => 'api.query.recovery.activeRecoveries("$address", "$e")')
-//         .toList();
-//     final res = await apiRoot.evalJavascript(
-//       'Promise.all([${queries.join(',')}])',
-//       allowRepeat: true,
-//     );
-//     return res;
-//   }
-//
-//   Future<List> queryActiveRecoveries(
-//       List<String> addresses, String addressNew) async {
-//     List queries = addresses
-//         .map((e) => 'api.query.recovery.activeRecoveries("$e", "$addressNew")')
-//         .toList();
-//     final res = await apiRoot.evalJavascript(
-//       'Promise.all([${queries.join(',')}])',
-//       allowRepeat: true,
-//     );
-//     return res;
-//   }
-//
-//   Future<List> queryRecoveryProxies(List<String> addresses) async {
-//     List queries =
-//         addresses.map((e) => 'api.query.recovery.proxy("$e")').toList();
-//     final res = await apiRoot.evalJavascript(
-//       'Promise.all([${queries.join(',')}])',
-//       allowRepeat: true,
-//     );
-//     return res;
-//   }
+  Future<void> queryAddressIcons(List addresses) async {
+    addresses.retainWhere(
+        (e) => !apiRoot.store.account.addressIconsMap.containsKey(e));
+    if (addresses.length == 0) return;
 
+    final icons =
+        await apiRoot.plugin.sdk.api.account.getAddressIcons(addresses);
+    apiRoot.store.account.setAddressIconsMap(icons);
+  }
+
+  Future<RecoveryInfo> queryRecoverable(String address) async {
+//    address = "J4sW13h2HNerfxTzPGpLT66B3HVvuU32S6upxwSeFJQnAzg";
+    final res = await apiRoot.plugin.sdk.api.recovery.queryRecoverable(address);
+
+    if (res != null && res.friends.length > 0) {
+      queryAddressIcons(res.friends);
+    }
+    return res;
+  }
 }

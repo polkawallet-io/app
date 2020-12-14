@@ -1,6 +1,9 @@
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
+import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
+import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -36,21 +39,21 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           CupertinoActionSheetAction(
             child: Text(dic['recovery.make']),
-            // onPressed: () {
-            //   Navigator.of(context).popAndPushNamed(RecoverySettingPage.route);
-            // },
+            onPressed: () {
+              Navigator.of(context).popAndPushNamed(RecoverySettingPage.route);
+            },
           ),
           CupertinoActionSheetAction(
             child: Text(dic['recovery.init']),
-            // onPressed: () {
-            //   Navigator.of(context).popAndPushNamed(RecoveryStatePage.route);
-            // },
+            onPressed: () {
+              Navigator.of(context).popAndPushNamed(RecoveryStatePage.route);
+            },
           ),
           CupertinoActionSheetAction(
             child: Text(dic['recovery.help']),
-            // onPressed: () {
-            //   Navigator.of(context).popAndPushNamed(RecoveryProofPage.route);
-            // },
+            onPressed: () {
+              Navigator.of(context).popAndPushNamed(RecoveryProofPage.route);
+            },
           )
         ],
         cancelButton: CupertinoActionSheetAction(
@@ -143,19 +146,19 @@ class _ProfilePageState extends State<ProfilePage> {
             trailing: Icon(Icons.arrow_forward_ios, size: 18),
             onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
           ),
-          // widget.service.plugin.basic.name == 'kusama'
-          //     ? ListTile(
-          //         leading: Container(
-          //           width: 32,
-          //           child: Icon(Icons.security, color: grey, size: 22),
-          //         ),
-          //         title: Text(dic['recovery']),
-          //         trailing: Icon(Icons.arrow_forward_ios, size: 18),
-          //         onTap: widget.connectedNode == null
-          //             ? null
-          //             : () => _showRecoveryMenu(context),
-          //       )
-          //     : Container(),
+          widget.service.plugin.recoveryEnabled
+              ? ListTile(
+                  leading: Container(
+                    width: 32,
+                    child: Icon(Icons.security, color: grey, size: 22),
+                  ),
+                  title: Text(dic['recovery']),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: widget.connectedNode == null
+                      ? null
+                      : () => _showRecoveryMenu(context),
+                )
+              : Container(),
           ListTile(
             leading: Container(
               width: 32,

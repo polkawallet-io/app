@@ -162,7 +162,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
               children: <Widget>[
                 // left side bar
                 Container(
-                  padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                  padding: EdgeInsets.fromLTRB(8, 16, 0, 0),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     boxShadow: [
@@ -180,7 +180,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                       final isCurrent = network == _selectedNetwork.basic.name;
                       return Container(
                         margin: EdgeInsets.only(bottom: 8),
-                        padding: EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.only(right: 6),
                         decoration: isCurrent
                             ? BoxDecoration(
                                 border: Border(

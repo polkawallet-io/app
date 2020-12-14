@@ -5,7 +5,9 @@ import 'package:app/common/consts.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:update_app/update_app.dart';
@@ -138,5 +140,31 @@ class AppUI {
         );
       },
     );
+  }
+
+  static bool checkBalanceAndAlert(
+      BuildContext context, BalanceData balance, BigInt amountNeeded) {
+    if (Fmt.balanceInt(balance.availableBalance.toString()) <= amountNeeded) {
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(I18n.of(context)
+                .getDic(i18n_full_dic_app, 'assets')['amount.low']),
+            content: Container(),
+            actions: <Widget>[
+              CupertinoButton(
+                child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        },
+      );
+      return false;
+    } else {
+      return true;
+    }
   }
 }

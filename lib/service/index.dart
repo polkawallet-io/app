@@ -1,8 +1,8 @@
 import 'package:app/service/apiAccount.dart';
 import 'package:app/service/apiAssets.dart';
-import 'package:app/service/subscan.dart';
 import 'package:app/store/index.dart';
 
+import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 
