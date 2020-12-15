@@ -32,11 +32,17 @@ dependencies:
   update_app: ^0.1.5
   device_info: ^0.4.2
   polkawallet_ui:
-    path: ../../coding/polkawallet/ui
+    git:
+      url: https://github.com/polkawallet-io/ui.git
+      ref: master
   polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
+      ref: master
   polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_acala.git
+      ref: master
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
