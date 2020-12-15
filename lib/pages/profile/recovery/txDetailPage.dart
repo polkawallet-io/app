@@ -48,7 +48,9 @@ class TxDetailPage extends StatelessWidget {
       );
     }));
     return TxDetail(
-      networkName: plugin.basic.name,
+      networkName: plugin.basic.isTestNet
+          ? '${plugin.basic.name}-testnet'
+          : plugin.basic.name,
       success: detail.success,
       action: detail.call,
       hash: detail.hash,

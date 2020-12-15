@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
@@ -219,8 +220,10 @@ class _TransferPageState extends State<TransferPage> {
                                         color: Theme.of(context)
                                             .unselectedWidgetColor),
                                   ),
-                                  CurrencyWithIcon(symbol,
-                                      widget.service.plugin.tokenIcons[symbol]),
+                                  CurrencyWithIcon(
+                                      symbol,
+                                      TokenIcon(symbol,
+                                          widget.service.plugin.tokenIcons)),
                                 ],
                               ),
                               Icon(
