@@ -43,6 +43,10 @@ dependencies:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_acala.git
       ref: master
+  polkawallet_plugin_laminar:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+      ref: master
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
