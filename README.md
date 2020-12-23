@@ -24,18 +24,21 @@ __ polkawallet-io/app
     |
     |__ polkawallet-io/ui
     |    |__ polkawallet-io/sdk
-    |         |__ polkawallet-io/js_api
+    |        |__ polkawallet-io/js_api
     |
-    |__ polkawallet-io/polkawallet_plugin_kusama
+    |__ polkawallet_plugin_kusama
     |    |__ polkawallet-io/sdk
     |    |__ polkawallet-io/ui
     |
-    |__ polkawallet-io/polkawallet_plugin_acala
+    |__ polkawallet_plugin_acala
+    |    |__ polkawallet-io/sdk
+    |    |__ polkawallet-io/ui
+    |
+    |__ polkawallet_plugin_laminar
     |    |__ polkawallet-io/sdk
     |    |__ polkawallet-io/ui
     |
     |__ <plugin of another substrate based chain>
-    |__ <another plugin ...>
     |__ <...>
 ```
 
@@ -81,3 +84,7 @@ __ lib
     |__ service (the Actions fired by UI to mutate the store)
     |__ ...
 ```
+
+### 6. Submit your plugin
+While your plugin was finished and tested, you may submit an issue in this repo.
+We will check into your plugin and add it into the App.

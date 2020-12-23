@@ -24,6 +24,51 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
+  final _$pubKeyAddressMapAtom = Atom(name: '_AccountStore.pubKeyAddressMap');
+
+  @override
+  ObservableMap<int, Map<String, String>> get pubKeyAddressMap {
+    _$pubKeyAddressMapAtom.reportRead();
+    return super.pubKeyAddressMap;
+  }
+
+  @override
+  set pubKeyAddressMap(ObservableMap<int, Map<String, String>> value) {
+    _$pubKeyAddressMapAtom.reportWrite(value, super.pubKeyAddressMap, () {
+      super.pubKeyAddressMap = value;
+    });
+  }
+
+  final _$addressIconsMapAtom = Atom(name: '_AccountStore.addressIconsMap');
+
+  @override
+  ObservableMap<String, String> get addressIconsMap {
+    _$addressIconsMapAtom.reportRead();
+    return super.addressIconsMap;
+  }
+
+  @override
+  set addressIconsMap(ObservableMap<String, String> value) {
+    _$addressIconsMapAtom.reportWrite(value, super.addressIconsMap, () {
+      super.addressIconsMap = value;
+    });
+  }
+
+  final _$recoveryInfoAtom = Atom(name: '_AccountStore.recoveryInfo');
+
+  @override
+  RecoveryInfo get recoveryInfo {
+    _$recoveryInfoAtom.reportRead();
+    return super.recoveryInfo;
+  }
+
+  @override
+  set recoveryInfo(RecoveryInfo value) {
+    _$recoveryInfoAtom.reportWrite(value, super.recoveryInfo, () {
+      super.recoveryInfo = value;
+    });
+  }
+
   final _$_AccountStoreActionController =
       ActionController(name: '_AccountStore');
 
@@ -61,9 +106,45 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
+  void setPubKeyAddressMap(Map<String, Map<dynamic, dynamic>> data) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setPubKeyAddressMap');
+    try {
+      return super.setPubKeyAddressMap(data);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAddressIconsMap(List<dynamic> list) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setAddressIconsMap');
+    try {
+      return super.setAddressIconsMap(list);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAccountRecoveryInfo(Map<dynamic, dynamic> json) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setAccountRecoveryInfo');
+    try {
+      return super.setAccountRecoveryInfo(json);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
-newAccount: ${newAccount}
+newAccount: ${newAccount},
+pubKeyAddressMap: ${pubKeyAddressMap},
+addressIconsMap: ${addressIconsMap},
+recoveryInfo: ${recoveryInfo}
     ''';
   }
 }
