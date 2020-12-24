@@ -88,14 +88,19 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       });
       Navigator.of(context).pop();
       return !duplicated;
-    } catch (err) {
-      if (err.toString() == 'unreachable') {
-        showCupertinoDialog(
+    } on Exception catch (err) {
+      Navigator.of(context).pop();
+      setState(() {
+        _submitting = false;
+      });
+      if (err.toString().contains('unreachable')) {
+        await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: Container(),
-              content: Text('${dic['import.invalid']} ${dic[_keyType]}'),
+              content: Text(
+                  '${dic['import.invalid']} ${dic[_keyType.toString().split('.')[1]]}'),
               actions: <Widget>[
                 CupertinoButton(
                   child: Text(dicCommon['ok']),
@@ -111,7 +116,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
           },
         );
       } else {
-        AppUI.alertWASM(
+        await AppUI.alertWASM(
           context,
           () {
             setState(() {
@@ -121,10 +126,6 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
           isImport: true,
         );
       }
-      Navigator.of(context).pop();
-      setState(() {
-        _submitting = false;
-      });
       return false;
     }
   }

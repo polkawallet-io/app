@@ -73,6 +73,7 @@ The common used flutter widgets for `polkawallet-io/app`, like:
 Examples:
  1. [polkawallet-io/polkawallet_plugin_kusama](https://github.com/polkawallet-io/polkawallet_plugin_kusama)
  2. [polkawallet-io/polkawallet_plugin_acala](https://github.com/polkawallet-io/polkawallet_plugin_acala)
+ 3. [polkawallet-io/polkawallet_plugin_laminar](https://github.com/polkawallet-io/polkawallet_plugin_laminar)
 
 ### 5. App state management
 We use [https://pub.dev/packages/mobx](https://pub.dev/packages/mobx).
@@ -88,3 +89,9 @@ __ lib
 ### 6. Submit your plugin
 While your plugin was finished and tested, you may submit an issue in this repo.
 We will check into your plugin and add it into the App.
+
+### 7. Plugin update
+Submit a update request issue to update your plugin. There are two different kinds of update:
+ 1. Update the dart package. We will rebuild the App and publish a new release.
+ 2. Update the js code of your plugin. We will rebuild the js bundle file
+  and the app will perform a hot-update through polkawallet-api.

@@ -61,14 +61,16 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           .setNewAccount(_nameCtrl.text, _passCtrl.text);
       final success = await widget.onSubmit();
 
-      /// save password with biometrics after import success
-      if (success && _supportBiometric && _enableBiometric) {
-        await _authBiometric();
-      }
+      if (success) {
+        /// save password with biometrics after import success
+        if (_supportBiometric && _enableBiometric) {
+          await _authBiometric();
+        }
 
-      widget.service.plugin.changeAccount(widget.service.keyring.current);
-      widget.service.store.account.resetNewAccount();
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+        widget.service.plugin.changeAccount(widget.service.keyring.current);
+        widget.service.store.account.resetNewAccount();
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      }
     }
   }
 

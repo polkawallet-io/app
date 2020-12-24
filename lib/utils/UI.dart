@@ -23,7 +23,7 @@ class AppUI {
     if (!isImport) {
       msg += dic['backup.error.2'];
     }
-    showCupertinoDialog(
+    await showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
