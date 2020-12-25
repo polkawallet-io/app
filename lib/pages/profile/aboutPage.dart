@@ -1,10 +1,10 @@
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_kusama/service/walletApi.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/jumpToBrowserLink.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
@@ -27,7 +27,7 @@ class _AboutPage extends State<AboutPage> {
     setState(() {
       _loading = true;
     });
-    Map versions = await WalletApi.getLatestVersion();
+    final versions = await WalletApi.getLatestVersion();
     setState(() {
       _loading = false;
     });
@@ -38,9 +38,9 @@ class _AboutPage extends State<AboutPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final currentJSVersion = WalletApi.getPolkadotJSVersion(
-      widget.service.store.storage,
-      widget.service.plugin.basic.name,
-    );
+        widget.service.store.storage,
+        widget.service.plugin.basic.name,
+        widget.service.plugin.basic.jsCodeVersion);
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(

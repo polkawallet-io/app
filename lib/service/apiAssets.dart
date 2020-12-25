@@ -31,6 +31,8 @@ class ApiAssets {
   }
 
   Future<void> fetchMarketPrice() async {
+    if (apiRoot.plugin.basic.isTestNet) return;
+
     final Map res =
         await apiRoot.subScan.fetchTokenPriceAsync(apiRoot.plugin.basic.name);
     if (res['token'] == null) {

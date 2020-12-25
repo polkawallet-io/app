@@ -26,10 +26,13 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
+import 'package:app/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -114,7 +117,8 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  Future<void> _changeNetwork(PolkawalletPlugin network) async {
+  Future<void> _changeNetwork(
+      BuildContext context, PolkawalletPlugin network) async {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
@@ -122,8 +126,14 @@ class _WalletAppState extends State<WalletApp> {
     });
     _store.settings.setNetwork(network.basic.name);
 
-    /// we reuse the existing webView instance when we start a new plugin.
-    await network.beforeStart(_keyring, webView: _service.plugin.sdk.webView);
+    // check js code update and do update before webView start.
+    await _checkJSCodeUpdate(context, network);
+    // we reuse the existing webView instance when we start a new plugin.
+    await network.beforeStart(
+      _keyring,
+      webView: _service.plugin.sdk.webView,
+      jsCode: WalletApi.getPolkadotJSCode(_store.storage, network.basic.name),
+    );
 
     final service = AppService(network, _keyring, _store);
     service.init();
@@ -132,6 +142,7 @@ class _WalletAppState extends State<WalletApp> {
     });
 
     _startPlugin();
+
     _service.assets.fetchMarketPrice();
   }
 
@@ -147,6 +158,33 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _connectedNode = connected;
     });
+  }
+
+  Future<void> _checkUpdate(BuildContext context) async {
+    final versions = await WalletApi.getLatestVersion();
+    AppUI.checkUpdate(context, versions, autoCheck: true);
+  }
+
+  Future<void> _checkJSCodeUpdate(
+      BuildContext context, PolkawalletPlugin plugin) async {
+    // check js code update
+    final jsVersions = await WalletApi.fetchPolkadotJSVersion();
+    if (jsVersions == null) return;
+
+    final network = plugin.basic.name;
+    final version = jsVersions[network];
+    final versionMin = jsVersions['$network-min'];
+    final currentVersion = WalletApi.getPolkadotJSVersion(
+      _store.storage,
+      network,
+      plugin.basic.jsCodeVersion,
+    );
+    print('js update: $network $currentVersion $version $versionMin');
+    final bool needUpdate = await AppUI.checkJSCodeUpdate(
+        context, _store.storage, currentVersion, version, versionMin, network);
+    if (needUpdate) {
+      await AppUI.updateJSCode(context, _store.storage, network, version);
+    }
   }
 
   Future<int> _startApp(BuildContext context) async {
@@ -175,7 +213,15 @@ class _WalletAppState extends State<WalletApp> {
         _changeLang(Localizations.localeOf(context).toString());
       }
 
-      await service.plugin.beforeStart(_keyring);
+      _checkUpdate(context);
+      await _checkJSCodeUpdate(context, service.plugin);
+
+      await service.plugin.beforeStart(
+        _keyring,
+        jsCode: WalletApi.getPolkadotJSCode(
+            _store.storage, service.plugin.basic.name),
+      );
+
       _startPlugin();
       _service.assets.fetchMarketPrice();
     }
@@ -192,17 +238,23 @@ class _WalletAppState extends State<WalletApp> {
       ...pluginPages,
 
       /// basic pages
-      HomePage.route: (context) => WillPopScopWrapper(
-            FutureBuilder<int>(
-              future: _startApp(context),
-              builder: (_, AsyncSnapshot<int> snapshot) {
-                if (snapshot.hasData && _service != null) {
-                  return snapshot.data > 0
-                      ? HomePage(_service, _connectedNode)
-                      : CreateAccountEntryPage();
-                } else {
-                  return Container();
-                }
+      HomePage.route: (_) => WillPopScopWrapper(
+            Observer(
+              builder: (BuildContext context) {
+                final balance = _service?.plugin?.balances?.native;
+                final networkName = _service?.plugin?.networkState?.name;
+                return FutureBuilder<int>(
+                  future: _startApp(context),
+                  builder: (_, AsyncSnapshot<int> snapshot) {
+                    if (snapshot.hasData && _service != null) {
+                      return snapshot.data > 0
+                          ? HomePage(_service, _connectedNode)
+                          : CreateAccountEntryPage();
+                    } else {
+                      return Container(color: Theme.of(context).canvasColor);
+                    }
+                  },
+                );
               },
             ),
           ),
@@ -252,7 +304,7 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(_) {
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
       theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),

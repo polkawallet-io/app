@@ -26,7 +26,10 @@ class TransferDetailPage extends StatelessWidget {
         ? dic['transfer']
         : dic['receive'];
 
-    print(tx.success);
+    String networkName = service.plugin.basic.name;
+    if (service.plugin.basic.isTestNet) {
+      networkName = '${networkName.split('-')[0]}-testnet';
+    }
     return TxDetail(
       success: tx.success,
       action: txType,
@@ -35,7 +38,7 @@ class TransferDetailPage extends StatelessWidget {
       blockTime: Fmt.dateTime(
           DateTime.fromMillisecondsSinceEpoch(tx.blockTimestamp * 1000)),
       blockNum: tx.blockNum,
-      networkName: service.plugin.basic.name,
+      networkName: networkName,
       infoItems: <TxDetailInfoItem>[
         TxDetailInfoItem(
           label: dic['value'],

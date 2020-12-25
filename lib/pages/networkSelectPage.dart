@@ -20,7 +20,7 @@ class NetworkSelectPage extends StatefulWidget {
 
   final AppService service;
   final List<PolkawalletPlugin> plugins;
-  final Future<void> Function(PolkawalletPlugin) changeNetwork;
+  final Future<void> Function(BuildContext, PolkawalletPlugin) changeNetwork;
 
   @override
   _NetworkSelectPageState createState() => _NetworkSelectPageState();
@@ -44,7 +44,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         );
       },
     );
-    await widget.changeNetwork(_selectedNetwork);
+    await widget.changeNetwork(context, _selectedNetwork);
 
     if (mounted) {
       Navigator.of(context).pop();
