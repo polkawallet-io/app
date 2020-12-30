@@ -195,11 +195,11 @@ class _WalletAppState extends State<WalletApp> {
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
       await store.init();
+
+      final pluginIndex = widget.plugins
+          .indexWhere((e) => e.basic.name == store.settings.network);
       final service = AppService(
-          widget.plugins
-              .firstWhere((e) => e.basic.name == store.settings.network),
-          _keyring,
-          store);
+          widget.plugins[pluginIndex > -1 ? pluginIndex : 0], _keyring, store);
       service.init();
       setState(() {
         _store = store;

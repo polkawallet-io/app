@@ -52,6 +52,11 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
         derivePath: _derivePath,
       );
       if (acc == null) {
+        setState(() {
+          _submitting = false;
+        });
+        Navigator.of(context).pop();
+
         showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {

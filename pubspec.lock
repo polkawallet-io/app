@@ -323,14 +323,14 @@ packages:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.23.1"
+    version: "3.24.0"
   get_storage:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: get_storage
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2"
+    version: "1.4.0"
   glob:
     dependency: transitive
     description:
@@ -393,7 +393,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.7+15"
+    version: "0.6.7+17"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -602,7 +602,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "9b075e37ca15de909bc1e368a1deff5e433e7338"
+      resolved-ref: c89ca6bf316df61d262e2c458d54548c2e9f214e
       url: "https://github.com/polkawallet-io/polkawallet_plugin_acala.git"
     source: git
     version: "0.0.1"
@@ -611,7 +611,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "324faec4c8d14292ccd1e05737c891508dbb70bc"
+      resolved-ref: d21adb7fb5d793d7e8dca3f9b8a7249849909e72
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.0.1"
@@ -620,7 +620,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "55c9b6a338fc9e31576cff79af9bb301600f1114"
+      resolved-ref: cc6b1b1b9a47fed97c792164b48b4b25d2b18ae7
       url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
     source: git
     version: "0.0.1"
@@ -630,16 +630,16 @@ packages:
       name: polkawallet_sdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.5"
   polkawallet_ui:
     dependency: "direct main"
     description:
       path: "."
       ref: master
-      resolved-ref: bdcee63f10339a54351c7d0f4a98691d2edec05f
+      resolved-ref: "41dac5872999e267b47fa3dbf7f3a21a03111727"
       url: "https://github.com/polkawallet-io/ui.git"
     source: git
-    version: "0.0.1"
+    version: "0.0.2"
   pool:
     dependency: transitive
     description:
