@@ -16,6 +16,8 @@ import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -109,6 +111,50 @@ class _AssetPageState extends State<AssetPage>
     await _updateData();
   }
 
+  void _showAction() async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(I18n.of(context)
+                    .getDic(i18n_full_dic_app, 'assets')['address.subscan']),
+                Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(
+                    Icons.open_in_new,
+                    size: 16,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                )
+              ],
+            ),
+            onPressed: () {
+              String networkName = widget.service.plugin.basic.name;
+              if (widget.service.plugin.basic.isTestNet) {
+                networkName = '${networkName.split('-')[0]}-testnet';
+              }
+              final snLink =
+                  'https://$networkName.subscan.io/account/${widget.service.keyring.current.address}';
+              UI.launchURL(snLink);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(
+              I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -190,6 +236,9 @@ class _AssetPageState extends State<AssetPage>
         title: Text(symbol),
         centerTitle: true,
         elevation: 0.0,
+        actions: [
+          IconButton(icon: Icon(Icons.more_horiz), onPressed: _showAction),
+        ],
       ),
       body: SafeArea(
         child: Observer(
