@@ -12,7 +12,9 @@ import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
+import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
+import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AssetPage extends StatefulWidget {
@@ -38,12 +40,49 @@ class _AssetPageState extends State<AssetPage>
   bool _isLastPage = false;
   ScrollController _scrollController;
 
+  List _unlocks = [];
+
+  Future<void> _queryDemocracyUnlocks() async {
+    final List unlocks = await widget.service.plugin.sdk.api.gov
+        .getDemocracyUnlocks(widget.service.keyring.current.address);
+    if (mounted && unlocks != null && unlocks.length > 0) {
+      setState(() {
+        _unlocks = unlocks;
+      });
+    }
+  }
+
+  void _onUnlock() async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+    final txs = _unlocks
+        .map(
+            (e) => 'api.tx.democracy.removeVote(${BigInt.parse(e.toString())})')
+        .toList();
+    txs.add(
+        'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
+    final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
+        arguments: TxConfirmParams(
+          txTitle: dic['lock.unlock'],
+          module: 'utility',
+          call: 'batch',
+          txDisplay: {
+            "actions": ['democracy.removeVote', 'democracy.unlock'],
+          },
+          params: [],
+          rawParams: '[[${txs.join(',')}]]',
+        ));
+    if (res != null) {
+      _refreshKey.currentState.show();
+    }
+  }
+
   Future<void> _updateData() async {
     if (widget.service.plugin.sdk.api.connectedNode == null || _loading) return;
     setState(() {
       _loading = true;
     });
 
+    _queryDemocracyUnlocks();
     final res = await widget.service.assets.updateTxs(_txsPage);
 
     if (!mounted) return;
@@ -247,6 +286,19 @@ class _AssetPageState extends State<AssetPage>
                                     ),
                                     style: TextStyle(color: titleColor),
                                   ),
+                                  _unlocks.length > 0
+                                      ? GestureDetector(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(left: 6),
+                                            child: Icon(
+                                              Icons.lock_open,
+                                              size: 16,
+                                              color: titleColor,
+                                            ),
+                                          ),
+                                          onTap: _onUnlock,
+                                        )
+                                      : Container(),
                                 ],
                               ),
                             ],
