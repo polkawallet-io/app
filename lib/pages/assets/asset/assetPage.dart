@@ -47,7 +47,7 @@ class _AssetPageState extends State<AssetPage>
   Future<void> _queryDemocracyUnlocks() async {
     final List unlocks = await widget.service.plugin.sdk.api.gov
         .getDemocracyUnlocks(widget.service.keyring.current.address);
-    if (mounted && unlocks != null && unlocks.length > 0) {
+    if (mounted && unlocks != null) {
       setState(() {
         _unlocks = unlocks;
       });
@@ -84,7 +84,11 @@ class _AssetPageState extends State<AssetPage>
       _loading = true;
     });
 
-    _queryDemocracyUnlocks();
+    if (widget.service.plugin.basic.name == 'polkadot' ||
+        widget.service.plugin.basic.name == 'kusama') {
+      _queryDemocracyUnlocks();
+    }
+
     final res = await widget.service.assets.updateTxs(_txsPage);
 
     if (!mounted) return;

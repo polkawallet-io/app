@@ -35,22 +35,22 @@ dependencies:
   polkawallet_ui:
     git:
       url: https://github.com/polkawallet-io/ui.git
-      ref: master
+      ref: 3124d34e1cf2472b00903e4bc498177435f36cd1
 #    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: fe947f278ad0f4982550c38dca00cac702dad07b
+      ref: 8938770a67dac13c46de6910d9e3aee71f4a2603
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: c89ca6bf316df61d262e2c458d54548c2e9f214e
+      ref: f6deb15e9914e4efbb4a39872be300f37bd9f91c
 #    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: cc6b1b1b9a47fed97c792164b48b4b25d2b18ae7
+      ref: 8b25591bf1fb9110a3cc2ddd75769a744df36c1c
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 
   # The following adds the Cupertino Icons font to your application.
