@@ -91,6 +91,9 @@ class _ContactsPageState extends State<ContactsPage> {
                   if (widget.service.keyring.allAccounts.length > 0) {
                     widget.service.keyring
                         .setCurrent(widget.service.keyring.allAccounts[0]);
+
+                    widget.service.plugin
+                        .changeAccount(widget.service.keyring.allAccounts[0]);
                   } else {
                     widget.service.keyring.setCurrent(KeyPairData());
                   }

@@ -79,6 +79,8 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
 
       /// check if account duplicate
       final duplicated = await _checkAccountDuplicate(acc['pubKey']);
+      // _checkAccountDuplicate always return false because account
+      // was imported and duplicated account was updated.
       if (!duplicated) {
         await widget.service.account.addAccount(
           json: acc,
@@ -161,7 +163,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
           );
         },
       );
-      return duplicate;
+      return duplicate ?? false;
     }
     return false;
   }

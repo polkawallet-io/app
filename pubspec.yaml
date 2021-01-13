@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.1.1+1111
+version: 1.1.1+1112
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -35,22 +35,22 @@ dependencies:
   polkawallet_ui:
     git:
       url: https://github.com/polkawallet-io/ui.git
-      ref: 3124d34e1cf2472b00903e4bc498177435f36cd1
+      ref: 225debc79aa5e3aca6783a3506bcc3e596398e7c
 #    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 8938770a67dac13c46de6910d9e3aee71f4a2603
+      ref: 1bfaca218f55183d010de8ce9052fd8ec0e03c13
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: f6deb15e9914e4efbb4a39872be300f37bd9f91c
+      ref: 0991e6b388f0b465155f451ba5daaf656b8c1244
 #    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: 8b25591bf1fb9110a3cc2ddd75769a744df36c1c
+      ref: f3171608e30f595cf6ec88aae4bdc1e6f88be294
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 
   # The following adds the Cupertino Icons font to your application.

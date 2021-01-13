@@ -87,8 +87,9 @@ class _Contact extends State<ContactPage> {
           });
           return;
         } else {
-          await widget.service.plugin.sdk.api.keyring
+          final res = await widget.service.plugin.sdk.api.keyring
               .addContact(widget.service.keyring, con);
+          widget.service.plugin.changeAccount(res);
         }
       } else {
         // edit contact
