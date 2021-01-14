@@ -6,8 +6,8 @@
 
 ----
 
-[![Release](https://img.shields.io/github/v/release/polkawallet-io/polkawallet-flutter)](https://github.com/polkawallet-io/polkawallet-flutter/releases)
-[![tag](https://img.shields.io/github/v/tag/polkawallet-io/polkawallet-flutter)](https://github.com/polkawallet-io/polkawallet-flutter/tags)
+[![Release](https://img.shields.io/github/v/release/polkawallet-io/app)](https://github.com/polkawallet-io/app/releases)
+[![tag](https://img.shields.io/github/v/tag/polkawallet-io/app)](https://github.com/polkawallet-io/app/tags)
 
 Polkawallet built with Flutter, https://polkawallet.io
 
