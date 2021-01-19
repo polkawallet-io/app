@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
@@ -26,10 +27,11 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AssetsPage extends StatefulWidget {
-  AssetsPage(this.service, this.connectedNode);
+  AssetsPage(this.service, this.connectedNode, this.checkJSCodeUpdate);
 
   final AppService service;
   final NetworkParams connectedNode;
+  final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -250,9 +252,12 @@ class _AssetsState extends State<AssetsPage> {
               IconButton(
                 icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
                 onPressed: () async {
-                  await Navigator.of(context)
+                  final selected = await Navigator.of(context)
                       .pushNamed(NetworkSelectPage.route);
                   setState(() {});
+                  if (selected != null) {
+                    widget.checkJSCodeUpdate(selected);
+                  }
                 },
               ),
             ],

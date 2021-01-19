@@ -7,3 +7,7 @@
 # 1.1.1-beta
 - Add staking rebond action for unlocking Tokens.
 - Add staking yearly return display and ranking for validators.
+
+# 1.1.2-beta
+- add sign and verify page.
+- fix change network loading issue.

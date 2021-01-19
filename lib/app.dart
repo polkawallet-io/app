@@ -25,6 +25,7 @@ import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
+import 'package:app/pages/profile/sign/signPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
@@ -117,8 +118,7 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
-  Future<void> _changeNetwork(
-      BuildContext context, PolkawalletPlugin network) async {
+  Future<void> _changeNetwork(PolkawalletPlugin network) async {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
@@ -126,8 +126,6 @@ class _WalletAppState extends State<WalletApp> {
     });
     _store.settings.setNetwork(network.basic.name);
 
-    // check js code update and do update before webView start.
-    await _checkJSCodeUpdate(context, network);
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
       _keyring,
@@ -166,7 +164,8 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<void> _checkJSCodeUpdate(
-      BuildContext context, PolkawalletPlugin plugin) async {
+      BuildContext context, PolkawalletPlugin plugin,
+      {bool needReload = true}) async {
     // check js code update
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
     if (jsVersions == null) return;
@@ -183,7 +182,11 @@ class _WalletAppState extends State<WalletApp> {
     final bool needUpdate = await AppUI.checkJSCodeUpdate(
         context, _store.storage, currentVersion, version, versionMin, network);
     if (needUpdate) {
-      await AppUI.updateJSCode(context, _store.storage, network, version);
+      final res =
+          await AppUI.updateJSCode(context, _store.storage, network, version);
+      if (needReload && res) {
+        _changeNetwork(plugin);
+      }
     }
   }
 
@@ -214,7 +217,7 @@ class _WalletAppState extends State<WalletApp> {
       }
 
       _checkUpdate(context);
-      await _checkJSCodeUpdate(context, service.plugin);
+      await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
       await service.plugin.beforeStart(
         _keyring,
@@ -248,7 +251,8 @@ class _WalletAppState extends State<WalletApp> {
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
                       return snapshot.data > 0
-                          ? HomePage(_service, _connectedNode)
+                          ? HomePage(
+                              _service, _connectedNode, _checkJSCodeUpdate)
                           : CreateAccountEntryPage();
                     } else {
                       return Container(color: Theme.of(context).canvasColor);
@@ -281,6 +285,7 @@ class _WalletAppState extends State<WalletApp> {
       TransferPage.route: (_) => TransferPage(_service),
 
       /// profile
+      SignMessagePage.route: (_) => SignMessagePage(_service),
       ContactsPage.route: (_) => ContactsPage(_service),
       ContactPage.route: (_) => ContactPage(_service),
       AboutPage.route: (_) => AboutPage(_service),

@@ -5,6 +5,7 @@ import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
+import 'package:app/pages/profile/sign/signPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -123,6 +124,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 )
               : Container(height: 24),
+          !(acc.observation ?? false)
+              ? ListTile(
+                  leading: Container(
+                    width: 32,
+                    child: Icon(Icons.edit_outlined, color: grey, size: 22),
+                  ),
+                  title: Text(dic['sign']),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(SignMessagePage.route);
+                  },
+                )
+              : Container(),
           ListTile(
             leading: Container(
               width: 32,

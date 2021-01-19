@@ -188,7 +188,7 @@ class AppUI {
     return false;
   }
 
-  static Future<void> updateJSCode(
+  static Future<bool> updateJSCode(
     BuildContext context,
     GetStorage jsStorage,
     String network,
@@ -207,7 +207,6 @@ class AppUI {
     );
     final String code = await WalletApi.fetchPolkadotJSCode(network);
     print('downloaded jsCode for $network:');
-    print(code);
     Navigator.of(context).pop();
     await showCupertinoDialog(
       context: context,
@@ -232,6 +231,7 @@ class AppUI {
         );
       },
     );
+    return code != null;
   }
 
   static bool checkBalanceAndAlert(

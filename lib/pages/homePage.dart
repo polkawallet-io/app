@@ -5,16 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/ui.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service, this.connectedNode);
+  HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate);
 
   final AppService service;
   final NetworkParams connectedNode;
+  final Future<void> Function(BuildContext, PolkawalletPlugin,
+      {bool needReload}) checkJSCodeUpdate;
 
   static final String route = '/';
 
@@ -61,7 +64,12 @@ class _HomePageState extends State<HomePage> {
             color: Theme.of(context).primaryColor,
           ),
         ),
-        content: AssetsPage(widget.service, widget.connectedNode),
+        content: AssetsPage(
+          widget.service,
+          widget.connectedNode,
+          (PolkawalletPlugin plugin) =>
+              widget.checkJSCodeUpdate(context, plugin),
+        ),
         // content: Container(),
       )
     ];
