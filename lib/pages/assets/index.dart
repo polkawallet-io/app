@@ -265,6 +265,24 @@ class _AssetsState extends State<AssetsPage> {
           body: Column(
             children: <Widget>[
               _buildTopCard(context),
+              widget.service.plugin.basic.isTestNet
+                  ? Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      child: Row(
+                        children: [
+                          Flexible(
+                              child: TextTag(
+                            I18n.of(context).getDic(
+                                i18n_full_dic_app, 'assets')['assets.warn'],
+                            color: Colors.deepOrange,
+                            fontSize: 12,
+                            margin: EdgeInsets.all(0),
+                            padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                          ))
+                        ],
+                      ),
+                    )
+                  : Container(height: 24),
               FutureBuilder(
                 future: _fetchAnnouncements(),
                 builder: (_, AsyncSnapshot<List> snapshot) {
@@ -273,7 +291,7 @@ class _AssetsState extends State<AssetsPage> {
                           ? 'zh'
                           : 'en';
                   if (!snapshot.hasData || snapshot.data.length == 0) {
-                    return Container(height: 24);
+                    return Container();
                   }
                   final Map announce = snapshot.data[0][lang];
                   return GestureDetector(

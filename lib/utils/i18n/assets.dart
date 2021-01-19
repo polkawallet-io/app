@@ -57,6 +57,8 @@ const Map<String, String> enAssets = {
   'cross.chain': 'Cross chain',
   'assets': 'Assets',
   'assets.test': 'Test Tokens',
+  'assets.warn':
+      'WARNING: All assets in the current TESTNET are for testing purposes only and have no real value.',
   'announce': 'Announcement',
 };
 
@@ -116,5 +118,6 @@ const Map<String, String> zhAssets = {
   'cross.chain': '跨链转账',
   'assets': '资产',
   'assets.test': '测试 Token',
+  'assets.warn': '警告：当前测试网中所有资产仅供测试使用，无真实价值。',
   'announce': '通知',
 };
