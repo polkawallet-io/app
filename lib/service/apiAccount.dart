@@ -38,6 +38,7 @@ class ApiAccount {
       key: acc.key,
       name: acc.name,
       password: acc.password,
+      derivePath: derivePath,
     );
     return res;
   }
