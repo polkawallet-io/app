@@ -259,7 +259,7 @@ class _AssetPageState extends State<AssetPage>
                   lockedInfo += '${Fmt.priceFloorBigInt(
                     amt,
                     decimals,
-                    lengthMax: 3,
+                    lengthMax: 4,
                   )} $symbol ${dic['lock.${i.use.trim()}']}\n';
                 }
               });
@@ -335,7 +335,7 @@ class _AssetPageState extends State<AssetPage>
                                       Fmt.balanceInt(balancesInfo.lockedBalance
                                           .toString()),
                                       decimals,
-                                      lengthMax: 3,
+                                      lengthMax: 4,
                                     ),
                                     style: TextStyle(color: titleColor),
                                   ),
@@ -368,7 +368,7 @@ class _AssetPageState extends State<AssetPage>
                                   Fmt.balanceInt(
                                       balancesInfo.availableBalance.toString()),
                                   decimals,
-                                  lengthMax: 3,
+                                  lengthMax: 4,
                                 ),
                                 style: TextStyle(color: titleColor),
                               )
@@ -386,7 +386,7 @@ class _AssetPageState extends State<AssetPage>
                                   Fmt.balanceInt(
                                       balancesInfo.reservedBalance.toString()),
                                   decimals,
-                                  lengthMax: 3,
+                                  lengthMax: 4,
                                 ),
                                 style: TextStyle(color: titleColor),
                               )
@@ -531,7 +531,7 @@ class TransferListItem extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  Fmt.priceFloor(double.parse(data.amount), lengthMax: 3),
+                  Fmt.priceFloor(double.parse(data.amount), lengthFixed: 4),
                   style: Theme.of(context).textTheme.headline4,
                   textAlign: TextAlign.right,
                 ),

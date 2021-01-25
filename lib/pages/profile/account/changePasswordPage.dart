@@ -39,10 +39,21 @@ class _ChangePassword extends State<ChangePasswordPage> {
 
     await widget.service.plugin.sdk.api.keyring
         .changePassword(widget.service.keyring, passOld, passNew);
+
+    final pubKey = widget.service.keyring.current.pubKey;
+    if (_enableBiometric) {
+      final storeFile = await widget.service.account
+          .getBiometricPassStoreFile(context, pubKey);
+      storeFile.write(passNew);
+
+      widget.service.account.setBiometricEnabled(pubKey);
+    } else {
+      widget.service.account.setBiometricDisabled(pubKey);
+    }
+
     setState(() {
       _submitting = false;
     });
-
     showCupertinoDialog(
       context: context,
       builder: (_) {

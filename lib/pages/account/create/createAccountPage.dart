@@ -54,7 +54,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         derivePath: _advanceOptions.path ?? '',
       );
 
-      widget.service.plugin.changeAccount(acc);
       setState(() {
         _submitting = false;
       });
@@ -112,6 +111,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       if (advancedOptions != null) {
         setState(() {
           _step = 1;
+          _advanceOptions = (advancedOptions as AccountAdvanceOptionParams);
         });
       }
     }

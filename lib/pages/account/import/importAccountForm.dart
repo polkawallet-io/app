@@ -268,6 +268,8 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
       final res = await widget.service.plugin.sdk.api.keyring
           .addContact(widget.service.keyring, acc);
       widget.service.plugin.changeAccount(res);
+      widget.service.store.assets
+          .loadCache(res, widget.service.plugin.basic.name);
 
       setState(() {
         _observationSubmitting = false;
@@ -403,7 +405,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                         : AccountAdvanceOption(
                             api: widget.service.plugin.sdk.api.keyring,
                             seed: _keyCtrlText,
-                            onChange: (data) {
+                            onChange: (AccountAdvanceOptionParams data) {
                               setState(() {
                                 _advanceOptions = data;
                               });
@@ -446,6 +448,9 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
 
                         widget.service.plugin
                             .changeAccount(widget.service.keyring.current);
+                        widget.service.store.assets.loadCache(
+                            widget.service.keyring.current,
+                            widget.service.plugin.basic.name);
                         widget.service.store.account.resetNewAccount();
                         Navigator.popUntil(context, ModalRoute.withName('/'));
                       }

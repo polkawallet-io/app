@@ -11,3 +11,6 @@
 # 1.1.2-beta
 - add sign and verify page.
 - fix change network loading issue.
+- rebuild staking bond&nominate process.
+- fix import account derive path issue.
+- update tx confirm page estimate fee display.

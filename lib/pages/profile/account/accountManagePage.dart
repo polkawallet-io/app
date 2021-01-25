@@ -36,6 +36,9 @@ class _AccountManagePageState extends State<AccountManagePage> {
           .then((_) {
         // refresh balance
         widget.service.plugin.changeAccount(widget.service.keyring.current);
+
+        widget.service.store.assets.loadCache(
+            widget.service.keyring.current, widget.service.plugin.basic.name);
       });
       Navigator.of(context).pop();
     }

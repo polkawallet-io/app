@@ -70,6 +70,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       } else {
         widget.service.plugin.changeAccount(i);
       }
+
+      widget.service.store.assets
+          .loadCache(i, widget.service.plugin.basic.name);
     }
     Navigator.of(context).pop(_selectedNetwork);
   }
@@ -112,8 +115,11 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       final bool isCurrentNetwork =
           _selectedNetwork.basic.name == widget.service.plugin.basic.name;
       final accInfo = widget.service.keyring.current.indexInfo;
-      final address = widget.service.keyring.store
-          .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()][i.pubKey];
+      final addressMap = widget.service.keyring.store
+          .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
+      final address = addressMap != null
+          ? addressMap[i.pubKey]
+          : widget.service.keyring.current.address;
       final String accIndex =
           isCurrentNetwork && accInfo != null && accInfo['accountIndex'] != null
               ? '${accInfo['accountIndex']}\n'

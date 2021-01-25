@@ -251,14 +251,16 @@ class _AssetsState extends State<AssetsPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
-                onPressed: () async {
-                  final selected = await Navigator.of(context)
-                      .pushNamed(NetworkSelectPage.route);
-                  setState(() {});
-                  if (selected != null) {
-                    widget.checkJSCodeUpdate(selected);
-                  }
-                },
+                onPressed: widget.service.keyring.allAccounts.length > 0
+                    ? () async {
+                        final selected = await Navigator.of(context)
+                            .pushNamed(NetworkSelectPage.route);
+                        setState(() {});
+                        if (selected != null) {
+                          widget.checkJSCodeUpdate(selected);
+                        }
+                      }
+                    : null,
               ),
             ],
           ),
@@ -267,17 +269,17 @@ class _AssetsState extends State<AssetsPage> {
               _buildTopCard(context),
               widget.service.plugin.basic.isTestNet
                   ? Padding(
-                      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: Row(
                         children: [
-                          Flexible(
+                          Expanded(
                               child: TextTag(
                             I18n.of(context).getDic(
                                 i18n_full_dic_app, 'assets')['assets.warn'],
                             color: Colors.deepOrange,
                             fontSize: 12,
                             margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                            padding: EdgeInsets.all(8),
                           ))
                         ],
                       ),
@@ -330,17 +332,7 @@ class _AssetsState extends State<AssetsPage> {
                     BorderedTitle(
                       title: I18n.of(context)
                           .getDic(i18n_full_dic_app, 'assets')['assets'],
-                    ),
-                    widget.service.plugin.basic.isTestNet
-                        ? TextTag(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'assets')['assets.test'],
-                            fontSize: 16,
-                            color: Colors.red,
-                            margin: EdgeInsets.only(left: 12),
-                            padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                          )
-                        : Container()
+                    )
                   ],
                 ),
               ),
@@ -366,7 +358,7 @@ class _AssetsState extends State<AssetsPage> {
                                       ? Fmt.balanceTotal(balancesInfo)
                                       : BigInt.zero,
                                   decimals,
-                                  lengthFixed: 3),
+                                  lengthFixed: 4),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -462,7 +454,7 @@ class TokenItem extends StatelessWidget {
         title: Text(item.name),
         trailing: Text(
           Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
-              lengthFixed: 3),
+              lengthFixed: 4),
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black54),
         ),

@@ -35,10 +35,11 @@ class ApiAccount {
     final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
       apiRoot.keyring,
       keyType: keyType,
+      cryptoType: cryptoType,
+      derivePath: derivePath,
       key: acc.key,
       name: acc.name,
       password: acc.password,
-      derivePath: derivePath,
     );
     return res;
   }

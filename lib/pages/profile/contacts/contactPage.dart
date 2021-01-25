@@ -89,7 +89,12 @@ class _Contact extends State<ContactPage> {
         } else {
           final res = await widget.service.plugin.sdk.api.keyring
               .addContact(widget.service.keyring, con);
-          widget.service.plugin.changeAccount(res);
+
+          if (_isObservation) {
+            widget.service.plugin.changeAccount(res);
+            widget.service.store.assets
+                .loadCache(res, widget.service.plugin.basic.name);
+          }
         }
       } else {
         // edit contact
