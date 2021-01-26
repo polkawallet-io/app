@@ -17,7 +17,6 @@ class AccountAdvanceOption extends StatefulWidget {
 }
 
 class _AccountAdvanceOption extends State<AccountAdvanceOption> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _pathCtrl = new TextEditingController();
 
   final List<CryptoType> _typeOptions = [
@@ -31,26 +30,25 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
   String _derivePath = '';
   String _pathError;
 
-  String _checkDerivePath(String path) {
-    if (widget.seed != "" && path != _derivePath) {
+  String _checkDerivePath(String path, {bool forceCheck = false}) {
+    if (widget.seed != "" && path != _derivePath || forceCheck) {
       final invalidPath = 'Invalid derive path';
-      if (path.startsWith('/')) {
-        widget.api
-            .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection])
-            .then((res) {
-          setState(() {
-            _derivePath = path;
-            _pathError = res != null ? invalidPath : null;
-          });
-          widget.onChange(AccountAdvanceOptionParams(
-            type: _typeOptions[_typeSelection],
-            path: path,
-            error: res != null,
-          ));
-        });
-      } else {
+      if (!path.startsWith('/')) {
         return invalidPath;
       }
+      widget.api
+          .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection])
+          .then((res) {
+        setState(() {
+          _derivePath = path;
+          _pathError = res != null ? invalidPath : null;
+        });
+        widget.onChange(AccountAdvanceOptionParams(
+          type: _typeOptions[_typeSelection],
+          path: path,
+          error: res != null,
+        ));
+      });
     }
     return _pathError;
   }
@@ -125,9 +123,13 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
                           setState(() {
                             _typeSelection = v;
                           });
+                          if (_pathCtrl.text.isNotEmpty) {
+                            _checkDerivePath(_pathCtrl.text, forceCheck: true);
+                          }
                           widget.onChange(AccountAdvanceOptionParams(
                             type: _typeOptions[v],
-                            path: _derivePath,
+                            // path: _derivePath,
+                            path: _pathCtrl.text,
                           ));
                         },
                       ),
@@ -139,17 +141,14 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
         _expanded
             ? Padding(
                 padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: '//hard/soft///password',
-                      labelText: dic['path'],
-                    ),
-                    controller: _pathCtrl,
-                    validator: _checkDerivePath,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: '//hard/soft///password',
+                    labelText: dic['path'],
                   ),
+                  controller: _pathCtrl,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: _checkDerivePath,
                 ),
               )
             : Container(),
