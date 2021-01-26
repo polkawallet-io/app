@@ -111,8 +111,6 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final primary = Theme.of(context).primaryColor;
     final grey = Theme.of(context).disabledColor;
-    final List<KeyPairData> friends = ModalRoute.of(context).settings.arguments;
-    final symbol = widget.service.plugin.networkState.tokenSymbol;
 
     return Scaffold(
       appBar: AppBar(

@@ -223,8 +223,14 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final symbol = widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = widget.service.plugin.networkState.tokenDecimals ?? 12;
+        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
+            widget.service.plugin.basic.name == 'polkadot';
+        final symbol = isKSMOrDOT
+            ? (widget.service.plugin.networkState.tokenSymbol ?? [''])[0]
+            : widget.service.plugin.networkState.tokenSymbol ?? '';
+        final decimals = isKSMOrDOT
+            ? (widget.service.plugin.networkState.tokenDecimals ?? [12])[0]
+            : widget.service.plugin.networkState.tokenDecimals ?? 12;
 
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens;

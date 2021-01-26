@@ -100,7 +100,7 @@ class _FriendListPage extends State<FriendListPage> {
           children: [
             Observer(
               builder: (_) {
-                final contacts = widget.service.keyring.contacts;
+                final contacts = widget.service.keyring.allWithContacts;
                 contacts.retainWhere((i) =>
                     _selected.indexWhere((e) => e.address == i.address) < 0);
                 final list = List<KeyPairData>();

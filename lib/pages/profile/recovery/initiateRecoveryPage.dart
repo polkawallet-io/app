@@ -45,7 +45,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
 
   Future<void> _onValidateSubmit() async {
     /// check if balance enough for deposit
-    final decimals = widget.service.plugin.networkState.tokenDecimals;
+    final decimals = widget.service.plugin.networkState.tokenDecimals[0];
     if (!AppUI.checkBalanceAndAlert(
       context,
       widget.service.plugin.balances.native,
@@ -101,7 +101,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
       txDisplay: {
         'accountId': _recoverable.address,
         'deposit':
-            '${Fmt.doubleFormat(_recoveryDeposit)} ${widget.service.plugin.networkState.tokenSymbol}'
+            '${Fmt.doubleFormat(_recoveryDeposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
       },
       params: [_recoverable.address],
     );
@@ -116,7 +116,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    final symbol = widget.service.plugin.networkState.tokenSymbol;
+    final symbol = widget.service.plugin.networkState.tokenSymbol[0];
 
     return Scaffold(
       appBar: AppBar(

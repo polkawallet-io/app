@@ -190,7 +190,11 @@ class _AssetPageState extends State<AssetPage>
   }
 
   List<Widget> _buildTxList() {
-    final symbol = widget.service.plugin.networkState.tokenSymbol;
+    final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
+        widget.service.plugin.basic.name == 'polkadot';
+    final symbol = isKSMOrDOT
+        ? widget.service.plugin.networkState.tokenSymbol[0]
+        : widget.service.plugin.networkState.tokenSymbol ?? '';
     final txs = widget.service.store.assets.txs.toList();
     txs.retainWhere((e) {
       switch (_tab) {
@@ -229,8 +233,14 @@ class _AssetPageState extends State<AssetPage>
       Tab(text: dic['out']),
     ];
 
-    final decimals = widget.service.plugin.networkState.tokenDecimals;
-    final symbol = widget.service.plugin.networkState.tokenSymbol;
+    final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
+        widget.service.plugin.basic.name == 'polkadot';
+    final symbol = isKSMOrDOT
+        ? widget.service.plugin.networkState.tokenSymbol[0]
+        : widget.service.plugin.networkState.tokenSymbol ?? '';
+    final decimals = isKSMOrDOT
+        ? widget.service.plugin.networkState.tokenDecimals[0]
+        : widget.service.plugin.networkState.tokenDecimals ?? 12;
 
     final primaryColor = Theme.of(context).primaryColor;
     final titleColor = Theme.of(context).cardColor;

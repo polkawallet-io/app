@@ -78,7 +78,7 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
   }
 
   void _onValidateSubmit() {
-    final decimals = widget.service.plugin.networkState.tokenDecimals;
+    final decimals = widget.service.plugin.networkState.tokenDecimals[0];
     String deposit =
         (_configDepositBase + _friends.length * _friendDepositFactor)
             .toString();
@@ -145,7 +145,7 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
         'threshold': _threshold.toInt(),
         'delay': '$_delay ${dic['recovery.day']}',
         'deposit':
-            '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol}'
+            '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
       },
       params: [friends, _threshold.toInt(), delayBlocks],
     );
@@ -162,7 +162,7 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final primary = Theme.of(context).primaryColor;
     final grey = Theme.of(context).disabledColor;
-    final symbol = widget.service.plugin.networkState.tokenSymbol;
+    final symbol = widget.service.plugin.networkState.tokenSymbol[0];
 
     final String depositMsg = '''
 

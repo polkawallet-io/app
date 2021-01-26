@@ -19,7 +19,14 @@ class TxDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dicStaking = I18n.of(context).getDic(i18n_full_dic_kusama, 'staking');
-    final decimals = plugin.networkState.tokenDecimals;
+    final isKSMOrDOT =
+        plugin.basic.name == 'kusama' || plugin.basic.name == 'polkadot';
+    final symbol = isKSMOrDOT
+        ? plugin.networkState.tokenSymbol[0]
+        : plugin.networkState.tokenSymbol ?? '';
+    final decimals = isKSMOrDOT
+        ? plugin.networkState.tokenDecimals[0]
+        : plugin.networkState.tokenDecimals ?? 12;
     final TxData detail = ModalRoute.of(context).settings.arguments;
     List<TxDetailInfoItem> info = <TxDetailInfoItem>[
       TxDetailInfoItem(label: dicStaking['action'], title: detail.call),
@@ -32,7 +39,6 @@ class TxDetailPage extends StatelessWidget {
           value = Fmt.address(value);
           break;
         case "Compact<BalanceOf>":
-          final symbol = plugin.networkState.tokenSymbol;
           value = '${Fmt.balance(value, decimals)} $symbol';
           break;
         case "AccountId":

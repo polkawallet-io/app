@@ -601,8 +601,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0991e6b388f0b465155f451ba5daaf656b8c1244"
-      resolved-ref: "0991e6b388f0b465155f451ba5daaf656b8c1244"
+      ref: "4da24bf729c0cdde055f5f8c1706681206ca87e0"
+      resolved-ref: "4da24bf729c0cdde055f5f8c1706681206ca87e0"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.0.1"
@@ -610,8 +610,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "550a1daf04254c4996f4e3ddc5e625053680254f"
-      resolved-ref: "550a1daf04254c4996f4e3ddc5e625053680254f"
+      ref: "9b67c63986e22747019e10fd1df3d695e94f92ce"
+      resolved-ref: "9b67c63986e22747019e10fd1df3d695e94f92ce"
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.0.1"
@@ -619,8 +619,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f3171608e30f595cf6ec88aae4bdc1e6f88be294
-      resolved-ref: f3171608e30f595cf6ec88aae4bdc1e6f88be294
+      ref: c11d572fc55257c2bb28a75d6620155a771010b4
+      resolved-ref: c11d572fc55257c2bb28a75d6620155a771010b4
       url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
     source: git
     version: "0.0.1"
@@ -630,13 +630,13 @@ packages:
       name: polkawallet_sdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.8"
+    version: "0.1.0"
   polkawallet_ui:
     dependency: "direct main"
     description:
       path: "."
-      ref: "225debc79aa5e3aca6783a3506bcc3e596398e7c"
-      resolved-ref: "225debc79aa5e3aca6783a3506bcc3e596398e7c"
+      ref: "9ff8f1ebbaad3bbda904756f650414cf7cfe3163"
+      resolved-ref: "9ff8f1ebbaad3bbda904756f650414cf7cfe3163"
       url: "https://github.com/polkawallet-io/ui.git"
     source: git
     version: "0.0.2"

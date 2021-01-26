@@ -33,19 +33,24 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
 
   String _checkDerivePath(String path) {
     if (widget.seed != "" && path != _derivePath) {
-      widget.api
-          .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection])
-          .then((res) {
-        setState(() {
-          _derivePath = path;
-          _pathError = res != null ? 'Invalid derive path' : null;
+      final invalidPath = 'Invalid derive path';
+      if (path.startsWith('/')) {
+        widget.api
+            .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection])
+            .then((res) {
+          setState(() {
+            _derivePath = path;
+            _pathError = res != null ? invalidPath : null;
+          });
+          widget.onChange(AccountAdvanceOptionParams(
+            type: _typeOptions[_typeSelection],
+            path: path,
+            error: res != null,
+          ));
         });
-        widget.onChange(AccountAdvanceOptionParams(
-          type: _typeOptions[_typeSelection],
-          path: path,
-          error: res != null,
-        ));
-      });
+      } else {
+        return invalidPath;
+      }
     }
     return _pathError;
   }

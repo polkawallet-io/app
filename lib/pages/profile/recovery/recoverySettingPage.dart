@@ -163,8 +163,15 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final decimals = widget.service.plugin.networkState.tokenDecimals;
-            final symbol = widget.service.plugin.networkState.tokenSymbol;
+            final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
+                widget.service.plugin.basic.name == 'polkadot';
+            final symbol = isKSMOrDOT
+                ? widget.service.plugin.networkState.tokenSymbol[0]
+                : widget.service.plugin.networkState.tokenSymbol ?? '';
+            final decimals = isKSMOrDOT
+                ? widget.service.plugin.networkState.tokenDecimals[0]
+                : widget.service.plugin.networkState.tokenDecimals ?? 12;
+
             final info = widget.service.store.account.recoveryInfo;
             final friends = List<KeyPairData>();
             if (info.friends != null) {
@@ -188,8 +195,8 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
               }
             });
 
-            final int blockDuration =
-                widget.service.plugin.networkConst['babe']['expectedBlockTime'];
+            final blockDuration = int.parse(widget
+                .service.plugin.networkConst['babe']['expectedBlockTime']);
             final String delay =
                 Fmt.blockToTime(info.delayPeriod, blockDuration);
             return Column(
@@ -514,7 +521,7 @@ class ActiveRecovery extends StatelessWidget {
               InfoItem(
                 title: dic['recovery.deposit'],
                 content:
-                    '${Fmt.balance(status['deposit'].toString(), networkState.tokenDecimals)} ${networkState.tokenSymbol}',
+                    '${Fmt.balance(status['deposit'].toString(), networkState.tokenDecimals[0])} ${networkState.tokenSymbol[0]}',
               ),
               Expanded(
                 child: Column(

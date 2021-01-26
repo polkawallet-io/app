@@ -145,8 +145,8 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
       ]);
     });
 
-    final int blockDuration =
-        widget.service.plugin.networkConst['babe']['expectedBlockTime'];
+    final blockDuration = int.parse(
+        widget.service.plugin.networkConst['babe']['expectedBlockTime']);
 
     return Scaffold(
       appBar: AppBar(
