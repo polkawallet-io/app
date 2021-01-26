@@ -118,16 +118,11 @@ class _TransferPageState extends State<TransferPage> {
       if (args.address != null) {
         _initAccountTo(args.address);
       } else {
-        if (widget.service.keyring.optionals.length > 0) {
+        if (widget.service.keyring.allWithContacts.length > 0) {
           setState(() {
-            _accountTo = widget.service.keyring.optionals[0];
+            _accountTo = widget.service.keyring.allWithContacts[0];
           });
         }
-        // else if (widget.store.settings.contactList.length > 0) {
-        //   setState(() {
-        //     _accountTo = widget.store.settings.contactList[0];
-        //   });
-        // }
       }
     });
   }

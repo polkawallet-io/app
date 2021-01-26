@@ -45,7 +45,7 @@ dependencies:
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 4da24bf729c0cdde055f5f8c1706681206ca87e0
+      ref: 98d87811368010c674e2e859455a25b53ec17c4d
 #    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
     git:
