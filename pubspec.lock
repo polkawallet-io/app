@@ -601,8 +601,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4da24bf729c0cdde055f5f8c1706681206ca87e0"
-      resolved-ref: "4da24bf729c0cdde055f5f8c1706681206ca87e0"
+      ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
+      resolved-ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.0.1"
