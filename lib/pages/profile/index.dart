@@ -124,19 +124,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 )
               : Container(height: 24),
-          !(acc.observation ?? false)
-              ? ListTile(
-                  leading: Container(
-                    width: 32,
-                    child: Icon(Icons.edit_outlined, color: grey, size: 22),
-                  ),
-                  title: Text(dic['sign']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(SignMessagePage.route);
-                  },
-                )
-              : Container(),
           ListTile(
             leading: Container(
               width: 32,
@@ -151,15 +138,19 @@ class _ProfilePageState extends State<ProfilePage> {
               });
             },
           ),
-          ListTile(
-            leading: Container(
-              width: 32,
-              child: Icon(Icons.settings, color: grey, size: 22),
-            ),
-            title: Text(dic['setting']),
-            trailing: Icon(Icons.arrow_forward_ios, size: 18),
-            onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
-          ),
+          !(acc.observation ?? false)
+              ? ListTile(
+                  leading: Container(
+                    width: 32,
+                    child: Icon(Icons.edit_outlined, color: grey, size: 22),
+                  ),
+                  title: Text(dic['sign']),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(SignMessagePage.route);
+                  },
+                )
+              : Container(),
           widget.service.plugin.recoveryEnabled
               ? ListTile(
                   leading: Container(
@@ -173,6 +164,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       : () => _showRecoveryMenu(context),
                 )
               : Container(),
+          ListTile(
+            leading: Container(
+              width: 32,
+              child: Icon(Icons.settings, color: grey, size: 22),
+            ),
+            title: Text(dic['setting']),
+            trailing: Icon(Icons.arrow_forward_ios, size: 18),
+            onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
+          ),
           ListTile(
             leading: Container(
               width: 32,
