@@ -204,9 +204,7 @@ class _TransferPageState extends State<TransferPage> {
                             if (v.isEmpty) {
                               return dic['amount.error'];
                             }
-                            if (double.parse(v.trim()) >=
-                                available / BigInt.from(pow(10, decimals)) -
-                                    0.001) {
+                            if (Fmt.tokenInt(v, decimals) >= available) {
                               return dic['amount.low'];
                             }
                             return null;
