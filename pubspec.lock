@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.1"
+  auth_header:
+    dependency: transitive
+    description:
+      name: auth_header
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.4"
   biometric_storage:
     dependency: "direct main"
     description:
@@ -387,6 +394,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.4"
+  http_server:
+    dependency: transitive
+    description:
+      name: http_server
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.8+3"
   image_picker:
     dependency: transitive
     description:
@@ -415,6 +429,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
+  jaguar:
+    dependency: transitive
+    description:
+      name: jaguar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.46"
+  jaguar_common:
+    dependency: transitive
+    description:
+      name: jaguar_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.4"
+  jaguar_flutter_asset:
+    dependency: transitive
+    description:
+      name: jaguar_flutter_asset
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
+  jaguar_serializer:
+    dependency: transitive
+    description:
+      name: jaguar_serializer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.12"
   js:
     dependency: transitive
     description:
@@ -555,6 +597,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.4+3"
+  path_tree:
+    dependency: transitive
+    description:
+      name: path_tree
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.4"
   pedantic:
     dependency: transitive
     description:
@@ -600,46 +649,38 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
-      resolved-ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.0.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "9b67c63986e22747019e10fd1df3d695e94f92ce"
-      resolved-ref: "9b67c63986e22747019e10fd1df3d695e94f92ce"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
     version: "0.0.1"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: c11d572fc55257c2bb28a75d6620155a771010b4
-      resolved-ref: c11d572fc55257c2bb28a75d6620155a771010b4
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
+      relative: true
+    source: path
     version: "0.0.1"
   polkawallet_sdk:
     dependency: transitive
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0"
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
+    version: "0.1.1"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "9ff8f1ebbaad3bbda904756f650414cf7cfe3163"
-      resolved-ref: "9ff8f1ebbaad3bbda904756f650414cf7cfe3163"
-      url: "https://github.com/polkawallet-io/ui.git"
-    source: git
-    version: "0.0.2"
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
+    version: "0.1.1"
   pool:
     dependency: transitive
     description:

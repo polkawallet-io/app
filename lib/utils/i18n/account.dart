@@ -61,6 +61,10 @@ const Map<String, String> enAccount = {
       'Safety Warning!!! DO NOT send this QR to anyone or you may LOSE your assets!!!',
   'uos.pass.warn':
       'Safety Warning!!! You are using offline signature to send transaction!!! Please make sure you fully understand the security risks of this operation!!!',
+  'wc.connect': 'Connect to',
+  'wc.permission': 'with permissions',
+  'wc.reject': 'Reject',
+  'wc.approve': 'Approve',
 };
 
 const Map<String, String> zhAccount = {
@@ -118,4 +122,8 @@ const Map<String, String> zhAccount = {
   'uos.qr.invalid': '无效二维码',
   'uos.warn': '安全警告!!! 不要将该二维码发送给任何人!!! 泄露该二维码会导致账户资产丢失!!!',
   'uos.pass.warn': '安全警告!!! 您正在使用离线签名发送交易，请确保自己完全理解当前操作的安全风险!!!',
+  'wc.connect': '连接到',
+  'wc.permission': '并授权以下权限',
+  'wc.reject': '拒绝',
+  'wc.approve': '授权',
 };
