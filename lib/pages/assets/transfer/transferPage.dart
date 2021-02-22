@@ -63,12 +63,11 @@ class _TransferPageState extends State<TransferPage> {
   Future<TxConfirmParams> _getTxParams() async {
     if (_formKey.currentState.validate()) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-      final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-          widget.service.plugin.basic.name == 'polkadot';
-      final symbol = isKSMOrDOT
+      final isList = widget.service.plugin.networkState.tokenSymbol is List;
+      final symbol = isList
           ? widget.service.plugin.networkState.tokenSymbol[0]
           : widget.service.plugin.networkState.tokenSymbol ?? '';
-      final decimals = isKSMOrDOT
+      final decimals = isList
           ? widget.service.plugin.networkState.tokenDecimals[0]
           : widget.service.plugin.networkState.tokenDecimals ?? 12;
       return TxConfirmParams(
@@ -138,12 +137,11 @@ class _TransferPageState extends State<TransferPage> {
     return Observer(
       builder: (_) {
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-            widget.service.plugin.basic.name == 'polkadot';
-        final symbol = isKSMOrDOT
+        final isList = widget.service.plugin.networkState.tokenSymbol is List;
+        final symbol = isList
             ? widget.service.plugin.networkState.tokenSymbol[0]
             : widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = isKSMOrDOT
+        final decimals = isList
             ? widget.service.plugin.networkState.tokenDecimals[0]
             : widget.service.plugin.networkState.tokenDecimals ?? 12;
 

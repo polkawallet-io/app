@@ -17,12 +17,11 @@ class TransferDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final isKSMOrDOT = service.plugin.basic.name == 'kusama' ||
-        service.plugin.basic.name == 'polkadot';
-    final symbol = isKSMOrDOT
+    final isList = service.plugin.networkState.tokenSymbol is List;
+    final symbol = isList
         ? service.plugin.networkState.tokenSymbol[0]
         : service.plugin.networkState.tokenSymbol ?? '';
-    final decimals = isKSMOrDOT
+    final decimals = isList
         ? service.plugin.networkState.tokenDecimals[0]
         : service.plugin.networkState.tokenDecimals ?? 12;
 

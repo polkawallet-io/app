@@ -202,6 +202,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                             if (!isCurrent) {
                               setState(() {
                                 _selectedNetwork = i;
+                                _reloadNetwork();
                               });
                             }
                           },

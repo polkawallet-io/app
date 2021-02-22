@@ -606,6 +606,15 @@ packages:
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.0.1"
+  polkawallet_plugin_edgeware:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: fb505d0df92d9a29b80569a080302da0ddf82f16
+      resolved-ref: fb505d0df92d9a29b80569a080302da0ddf82f16
+      url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
+    source: git
+    version: "0.0.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:

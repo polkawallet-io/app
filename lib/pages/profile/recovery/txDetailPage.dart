@@ -19,12 +19,11 @@ class TxDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dicStaking = I18n.of(context).getDic(i18n_full_dic_kusama, 'staking');
-    final isKSMOrDOT =
-        plugin.basic.name == 'kusama' || plugin.basic.name == 'polkadot';
-    final symbol = isKSMOrDOT
+    final isList = plugin.networkState.tokenSymbol is List;
+    final symbol = isList
         ? plugin.networkState.tokenSymbol[0]
         : plugin.networkState.tokenSymbol ?? '';
-    final decimals = isKSMOrDOT
+    final decimals = isList
         ? plugin.networkState.tokenDecimals[0]
         : plugin.networkState.tokenDecimals ?? 12;
     final TxData detail = ModalRoute.of(context).settings.arguments;

@@ -163,12 +163,12 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-                widget.service.plugin.basic.name == 'polkadot';
-            final symbol = isKSMOrDOT
+            final isList =
+                widget.service.plugin.networkState.tokenSymbol is List;
+            final symbol = isList
                 ? widget.service.plugin.networkState.tokenSymbol[0]
                 : widget.service.plugin.networkState.tokenSymbol ?? '';
-            final decimals = isKSMOrDOT
+            final decimals = isList
                 ? widget.service.plugin.networkState.tokenDecimals[0]
                 : widget.service.plugin.networkState.tokenDecimals ?? 12;
 
