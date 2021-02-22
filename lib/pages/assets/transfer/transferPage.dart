@@ -63,14 +63,10 @@ class _TransferPageState extends State<TransferPage> {
   Future<TxConfirmParams> _getTxParams() async {
     if (_formKey.currentState.validate()) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-      final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-          widget.service.plugin.basic.name == 'polkadot';
-      final symbol = isKSMOrDOT
-          ? widget.service.plugin.networkState.tokenSymbol[0]
-          : widget.service.plugin.networkState.tokenSymbol ?? '';
-      final decimals = isKSMOrDOT
-          ? widget.service.plugin.networkState.tokenDecimals[0]
-          : widget.service.plugin.networkState.tokenDecimals ?? 12;
+      final symbol =
+          (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+      final decimals =
+          (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
@@ -138,14 +134,10 @@ class _TransferPageState extends State<TransferPage> {
     return Observer(
       builder: (_) {
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-            widget.service.plugin.basic.name == 'polkadot';
-        final symbol = isKSMOrDOT
-            ? widget.service.plugin.networkState.tokenSymbol[0]
-            : widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = isKSMOrDOT
-            ? widget.service.plugin.networkState.tokenDecimals[0]
-            : widget.service.plugin.networkState.tokenDecimals ?? 12;
+        final symbol =
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final decimals =
+            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final available = Fmt.balanceInt(
             widget.service.plugin.balances.native.availableBalance.toString());

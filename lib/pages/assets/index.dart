@@ -27,11 +27,17 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AssetsPage extends StatefulWidget {
-  AssetsPage(this.service, this.connectedNode, this.checkJSCodeUpdate);
+  AssetsPage(
+    this.service,
+    this.connectedNode,
+    this.checkJSCodeUpdate,
+    this.handleWalletConnect,
+  );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
+  final Future<void> Function(String) handleWalletConnect;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -58,6 +64,12 @@ class _AssetsState extends State<AssetsPage> {
       arguments: 'tx',
     )) as QRCodeResult;
     if (data != null) {
+      if (data.type == QRCodeResultType.rawData &&
+          data.rawData.substring(0, 3) == 'wc:') {
+        widget.handleWalletConnect(data.rawData);
+        return;
+      }
+
       if (data.type == QRCodeResultType.address) {
         Navigator.of(context).pushNamed(
           TransferPage.route,
@@ -223,14 +235,10 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-            widget.service.plugin.basic.name == 'polkadot';
-        final symbol = isKSMOrDOT
-            ? (widget.service.plugin.networkState.tokenSymbol ?? [''])[0]
-            : widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = isKSMOrDOT
-            ? (widget.service.plugin.networkState.tokenDecimals ?? [12])[0]
-            : widget.service.plugin.networkState.tokenDecimals ?? 12;
+        final symbol =
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final decimals =
+            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens;

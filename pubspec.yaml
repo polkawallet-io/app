@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.1.2+1121
+version: 1.1.5+1151
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -33,25 +33,25 @@ dependencies:
   update_app: ^0.1.5
   device_info: ^0.4.2
   polkawallet_ui:
-    git:
-      url: https://github.com/polkawallet-io/ui.git
-      ref: 9ff8f1ebbaad3bbda904756f650414cf7cfe3163
-#    path: ../../coding/polkawallet/ui
+#    git:
+#      url: https://github.com/polkawallet-io/ui.git
+#      ref: 9ff8f1ebbaad3bbda904756f650414cf7cfe3163
+    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
-    git:
-      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 9b67c63986e22747019e10fd1df3d695e94f92ce
-#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#    git:
+#      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
+#      ref: 9b67c63986e22747019e10fd1df3d695e94f92ce
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
-    git:
-      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
-#    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#    git:
+#      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
+#      ref: ac2bdc78fcbc5775bae87686f2d2947a23534884
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
-    git:
-      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: c11d572fc55257c2bb28a75d6620155a771010b4
-#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+#    git:
+#      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+#      ref: c11d572fc55257c2bb28a75d6620155a771010b4
+    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -86,6 +86,8 @@ flutter:
     - assets/images/assets_up.png
     - assets/images/assets_down.png
     - assets/images/assets_send.png
+    - assets/images/wallet_connect_logo.png
+    - assets/images/wallet_connect_banner.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

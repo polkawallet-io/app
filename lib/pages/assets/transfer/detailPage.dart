@@ -17,14 +17,8 @@ class TransferDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final isKSMOrDOT = service.plugin.basic.name == 'kusama' ||
-        service.plugin.basic.name == 'polkadot';
-    final symbol = isKSMOrDOT
-        ? service.plugin.networkState.tokenSymbol[0]
-        : service.plugin.networkState.tokenSymbol ?? '';
-    final decimals = isKSMOrDOT
-        ? service.plugin.networkState.tokenDecimals[0]
-        : service.plugin.networkState.tokenDecimals ?? 12;
+    final symbol = (service.plugin.networkState.tokenSymbol ?? [''])[0];
+    final decimals = (service.plugin.networkState.tokenDecimals ?? [12])[0];
 
     final TransferData tx = ModalRoute.of(context).settings.arguments;
 
