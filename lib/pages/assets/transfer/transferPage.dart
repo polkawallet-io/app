@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -42,6 +43,7 @@ class _TransferPageState extends State<TransferPage> {
   final TextEditingController _amountCtrl = new TextEditingController();
 
   KeyPairData _accountTo;
+  bool _keepAlive = true;
 
   Future<void> _onScan() async {
     final to = await Navigator.of(context).pushNamed(ScanPage.route);
@@ -70,7 +72,7 @@ class _TransferPageState extends State<TransferPage> {
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
-        call: 'transfer',
+        call: _keepAlive ? 'transferKeepAlive' : 'transfer',
         txDisplay: {
           "destination": _accountTo.address,
           "currency": symbol,
@@ -229,6 +231,31 @@ class _TransferPageState extends State<TransferPage> {
                               )
                             ],
                           ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TapTooltip(
+                              message: dic['transfer.alive.msg'],
+                              child: Icon(
+                                Icons.info,
+                                size: 16,
+                                color: Theme.of(context).unselectedWidgetColor,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 4, right: 8),
+                              child: Text(dic['transfer.alive']),
+                            ),
+                            CupertinoSwitch(
+                              value: _keepAlive,
+                              onChanged: (res) {
+                                setState(() {
+                                  _keepAlive = res;
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),

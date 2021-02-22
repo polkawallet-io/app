@@ -2,6 +2,9 @@ const Map<String, String> enAssets = {
   'node.connecting': 'Connecting remote node...',
   'node.failed': 'Remote node connection failed',
   'transfer': 'Transfer',
+  'transfer.alive': 'keep-alive',
+  'transfer.alive.msg':
+      'With the keep-alive option set, the account is protected against removal due to low balances.',
   'receive': 'Receive',
   'lock.unlock': 'Clear expired locks',
   'copy': 'Copy',
@@ -66,6 +69,8 @@ const Map<String, String> zhAssets = {
   'node.connecting': '正在连接远程节点...',
   'node.failed': '远程节点连接失败',
   'transfer': '转账',
+  'transfer.alive': '保持存活',
+  'transfer.alive.msg': '保持存活开关打开，可以保护账户不会因为余额过低而被网络移除。',
   'receive': '收款',
   'lock.unlock': '释放到期锁定',
   'copy': '复制',
