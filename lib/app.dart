@@ -212,9 +212,8 @@ class _WalletAppState extends State<WalletApp> {
         _connectedNode = null;
       });
     }
-
-    final connected =
-        await _service.plugin.sdk.api.connectNode(_keyring, [node]);
+    _service.plugin.sdk.api.account.unsubscribeBalance();
+    final connected = await _service.plugin.start(_keyring, nodes: [node]);
     setState(() {
       _connectedNode = connected;
     });
