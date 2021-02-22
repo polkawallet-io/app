@@ -26,7 +26,9 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/profile/sign/signPage.dart';
+import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
@@ -38,6 +40,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -109,7 +113,55 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
+  void _initWalletConnect() {
+    _service.plugin.sdk.api.walletConnect.initClient((WCPairingData proposal) {
+      print('get wc pairing');
+      _handleWCPairing(proposal);
+    }, (WCPairedData session) {
+      print('get wc session');
+      _service.store.account.createWCSession(session);
+      _service.store.account.setWCPairing(false);
+    }, (WCPayloadData payload) {
+      print('get wc payload');
+      _handleWCPayload(payload);
+    });
+  }
+
+  Future<void> _handleWCPairing(WCPairingData pairingReq) async {
+    final approved = await Navigator.of(context)
+        .pushNamed(WCPairingConfirmPage.route, arguments: pairingReq);
+    final address = _service.keyring.current.address;
+    if (approved ?? false) {
+      _service.store.account.setWCPairing(true);
+      await _service.plugin.sdk.api.walletConnect
+          .approvePairing(pairingReq, '$address@polkadot:acalatc5');
+      print('wallet connect alive');
+    } else {
+      _service.plugin.sdk.api.walletConnect.rejectPairing(pairingReq);
+    }
+  }
+
+  Future<void> _handleWCPayload(WCPayloadData payload) async {
+    final res = await Navigator.of(context)
+        .pushNamed(WalletConnectSignPage.route, arguments: payload);
+    if (res == null) {
+      print('user rejected signing');
+      await _service.plugin.sdk.api.walletConnect
+          .payloadRespond(payload, error: {
+        'code': -32000,
+        'message': "User rejected JSON-RPC request",
+      });
+    } else {
+      print('user signed payload:');
+      print(res);
+      // await _service.plugin.sdk.api.walletConnect
+      //     .payloadRespond(payload, response: );
+    }
+  }
+
   Future<void> _startPlugin() async {
+    // _initWalletConnect();
+
     setState(() {
       _connectedNode = null;
     });
@@ -283,8 +335,6 @@ class _WalletAppState extends State<WalletApp> {
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(
           _service.plugin, _keyring, _service.account.getPassword),
-      WCPairingConfirmPage.route: (_) =>
-          WCPairingConfirmPage(_service.plugin, _keyring),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
@@ -293,6 +343,10 @@ class _WalletAppState extends State<WalletApp> {
           AccountQrCodePage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
+      WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
+      WCSessionsPage.route: (_) => WCSessionsPage(_service),
+      WalletConnectSignPage.route: (_) =>
+          WalletConnectSignPage(_service, _service.account.getPassword),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

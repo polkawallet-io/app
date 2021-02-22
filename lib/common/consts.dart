@@ -14,5 +14,5 @@ const prefixList = [
 ];
 
 /// app versions
-const String app_beta_version = 'v1.1.2-beta.1';
-const int app_beta_version_code = 1121;
+const String app_beta_version = 'v1.1.5-beta.1';
+const int app_beta_version_code = 1151;

@@ -1,15 +1,15 @@
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/profile/index.dart';
-import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
@@ -31,61 +31,11 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
 
   int _tabIndex = 0;
-  WCPairingData _walletConnectPairingRequest;
-  bool _walletConnecting = false;
-  bool _walletConnectAlive = false;
 
   Future<void> _handleWalletConnect(String uri) async {
     print('wallet connect uri:');
     print(uri);
-    setState(() {
-      _walletConnecting = true;
-    });
-    await widget.service.plugin.sdk.api.walletConnect.connect(uri,
-        (WCPairingData proposal) {
-      _handleWCPairing(proposal);
-    }, (Map payload) {
-      _handleWCPayload(payload);
-    });
-  }
-
-  Future<void> _handleWCPairing(WCPairingData pairingReq) async {
-    final approved = await Navigator.of(context).pushNamed(
-        WCPairingConfirmPage.route,
-        arguments: WCPairingConfirmPageParams(
-            req: pairingReq, connected: _walletConnectAlive));
-    final address = widget.service.keyring.current.address;
-    if (approved ?? false) {
-      final res = await widget.service.plugin.sdk.api.walletConnect
-          .approvePairing(pairingReq, '$address@polkadot:acalatc5');
-      print('wallet connect alive:');
-      print(res);
-      setState(() {
-        _walletConnectAlive = true;
-        _walletConnecting = false;
-      });
-    } else {
-      widget.service.plugin.sdk.api.walletConnect.rejectPairing(pairingReq);
-      setState(() {
-        _walletConnecting = false;
-      });
-    }
-  }
-
-  Future<void> _onWCPressed() async {
-    final res = await Navigator.of(context).pushNamed(
-        WCPairingConfirmPage.route,
-        arguments: WCPairingConfirmPageParams(
-            req: _walletConnectPairingRequest, connected: _walletConnectAlive));
-    if (res ?? false) {
-      widget.service.plugin.sdk.api.walletConnect
-          .rejectPairing(_walletConnectPairingRequest);
-    }
-  }
-
-  Future<void> _handleWCPayload(Map payload) async {
-    print('wallet connect payload:');
-    print(payload);
+    await widget.service.plugin.sdk.api.walletConnect.connect(uri);
   }
 
   List<BottomNavigationBarItem> _buildNavItems(List<HomeNavItem> items) {
@@ -165,19 +115,31 @@ class _HomePageState extends State<HomePage> {
             children:
                 pages.map((e) => PageWrapperWithBackground(e.content)).toList(),
           ),
-          // _walletConnectAlive || _walletConnecting
-          //     ? Container(
-          //         margin: EdgeInsets.only(
-          //             bottom: MediaQuery.of(context).size.height / 4),
-          //         child: FloatingActionButton(
-          //           backgroundColor: Theme.of(context).cardColor,
-          //           child: _walletConnecting
-          //               ? CupertinoActivityIndicator()
-          //               : Image.asset('assets/images/wallet_connect_logo.png'),
-          //           onPressed: _onWCPressed,
-          //         ),
-          //       )
-          //     : Container()
+          Observer(builder: (_) {
+            final walletConnectAlive =
+                widget.service.store.account.wcSessions.length > 0;
+            final walletConnecting =
+                widget.service.store.account.walletConnectPairing;
+            return walletConnectAlive || walletConnecting
+                ? Container(
+                    margin: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).size.height / 4),
+                    child: FloatingActionButton(
+                      backgroundColor: Theme.of(context).cardColor,
+                      child: walletConnecting
+                          ? CupertinoActivityIndicator()
+                          : Image.asset(
+                              'assets/images/wallet_connect_logo.png'),
+                      onPressed: walletConnectAlive
+                          ? () {
+                              Navigator.of(context)
+                                  .pushNamed(WCSessionsPage.route);
+                            }
+                          : () => null,
+                    ),
+                  )
+                : Container();
+          })
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
