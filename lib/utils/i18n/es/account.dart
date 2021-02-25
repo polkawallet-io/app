@@ -1,4 +1,5 @@
 const Map<String, String> enAccount = {
+  'add': 'Add Account',
   'create': 'Create Account',
   'import': 'Import Account',
   'mnemonic': 'Mnemonic',
