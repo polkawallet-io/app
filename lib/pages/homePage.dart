@@ -112,8 +112,14 @@ class _HomePageState extends State<HomePage> {
                 _tabIndex = index;
               });
             },
-            children:
-                pages.map((e) => PageWrapperWithBackground(e.content)).toList(),
+            children: pages
+                .map((e) => PageWrapperWithBackground(
+                      e.content,
+                      height: 200,
+                      backgroundImage:
+                          widget.service.plugin.basic.backgroundImage,
+                    ))
+                .toList(),
           ),
           Observer(builder: (_) {
             final walletConnectAlive =

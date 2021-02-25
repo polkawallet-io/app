@@ -88,6 +88,11 @@ flutter:
     - assets/images/assets_send.png
     - assets/images/wallet_connect_logo.png
     - assets/images/wallet_connect_banner.png
+    - assets/images/network_icon_bg.svg
+    - assets/images/network_icon_border.svg
+    - assets/images/menu.svg
+    - assets/images/qr.svg
+    - assets/images/scan.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

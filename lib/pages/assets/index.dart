@@ -181,22 +181,25 @@ class _AssetsState extends State<AssetsPage> {
             : '';
     return RoundedCard(
       margin: EdgeInsets.fromLTRB(16, 4, 16, 0),
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(16),
       child: Column(
         children: <Widget>[
-          ListTile(
-            leading: AddressIcon(acc.address, svg: acc.icon),
-            title: Text(UI.accountName(context, acc)),
-            subtitle: Text(network),
+          Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: AddressIcon(acc.address, svg: acc.icon),
+              title: Text(UI.accountName(context, acc)),
+              subtitle: Text(network),
+            ),
           ),
           ListTile(
             title: Row(
               children: [
                 GestureDetector(
-                  child: Icon(
-                    Icons.qr_code,
+                  child: SvgPicture.asset(
+                    'assets/images/qr.svg',
                     color: Theme.of(context).primaryColor,
-                    size: 24,
+                    width: 32,
                   ),
                   onTap: () {
                     if (acc.address != '') {
@@ -208,7 +211,7 @@ class _AssetsState extends State<AssetsPage> {
                   padding: EdgeInsets.only(left: 8),
                   child: Text(
                     '$accIndex${Fmt.address(acc.address)}',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 16),
                   ),
                 )
               ],
@@ -217,7 +220,7 @@ class _AssetsState extends State<AssetsPage> {
               icon: SvgPicture.asset(
                 'assets/images/scan.svg',
                 color: Theme.of(context).primaryColor,
-                width: 20,
+                width: 32,
               ),
               onPressed: () {
                 if (acc.address != '') {
@@ -264,7 +267,12 @@ class _AssetsState extends State<AssetsPage> {
             elevation: 0.0,
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
+                padding: EdgeInsets.only(right: 8),
+                icon: SvgPicture.asset(
+                  'assets/images/menu.svg',
+                  color: Theme.of(context).cardColor,
+                  width: 24,
+                ),
                 onPressed: widget.service.keyring.allAccounts.length > 0
                     ? () async {
                         final selected = await Navigator.of(context)
@@ -278,82 +286,74 @@ class _AssetsState extends State<AssetsPage> {
               ),
             ],
           ),
-          body: Column(
+          body: Stack(
             children: <Widget>[
-              _buildTopCard(context),
-              widget.service.plugin.basic.isTestNet
-                  ? Padding(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: TextTag(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'assets')['assets.warn'],
-                            color: Colors.deepOrange,
-                            fontSize: 12,
-                            margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.all(8),
-                          ))
-                        ],
-                      ),
-                    )
-                  : Container(height: 24),
-              FutureBuilder(
-                future: _fetchAnnouncements(),
-                builder: (_, AsyncSnapshot<List> snapshot) {
-                  final String lang =
-                      I18n.of(context).locale.toString().contains('zh')
-                          ? 'zh'
-                          : 'en';
-                  if (!snapshot.hasData || snapshot.data.length == 0) {
-                    return Container();
-                  }
-                  final Map announce = snapshot.data[0][lang];
-                  return GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.all(16),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: TextTag(
-                              announce['title'],
-                              padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-                              color: Colors.lightGreen,
+              Container(
+                margin: EdgeInsets.only(top: 120),
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
+                  children: [
+                    widget.service.plugin.basic.isTestNet
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: 16, top: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: TextTag(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'assets')['assets.warn'],
+                                  color: Colors.deepOrange,
+                                  fontSize: 12,
+                                  margin: EdgeInsets.all(0),
+                                  padding: EdgeInsets.all(8),
+                                ))
+                              ],
                             ),
                           )
-                        ],
-                      ),
+                        : Container(height: 24),
+                    FutureBuilder(
+                      future: _fetchAnnouncements(),
+                      builder: (_, AsyncSnapshot<List> snapshot) {
+                        final String lang =
+                            I18n.of(context).locale.toString().contains('zh')
+                                ? 'zh'
+                                : 'en';
+                        if (!snapshot.hasData || snapshot.data.length == 0) {
+                          return Container();
+                        }
+                        final Map announce = snapshot.data[0][lang];
+                        return GestureDetector(
+                          child: Container(
+                            margin: EdgeInsets.all(16),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: TextTag(
+                                    announce['title'],
+                                    padding:
+                                        EdgeInsets.fromLTRB(16, 12, 16, 12),
+                                    color: Colors.lightGreen,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              AnnouncementPage.route,
+                              arguments: AnnouncePageParams(
+                                title: announce['title'],
+                                link: announce['link'],
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        AnnouncementPage.route,
-                        arguments: AnnouncePageParams(
-                          title: announce['title'],
-                          link: announce['link'],
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, bottom: 8),
-                padding: EdgeInsets.only(top: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
                     BorderedTitle(
                       title: I18n.of(context)
                           .getDic(i18n_full_dic_app, 'assets')['assets'],
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 32),
-                  children: <Widget>[
+                    ),
                     RoundedCard(
                       margin: EdgeInsets.only(top: 16),
                       child: ListTile(
@@ -435,6 +435,12 @@ class _AssetsState extends State<AssetsPage> {
                     ),
                   ],
                 ),
+              ),
+              Column(
+                children: [
+                  _buildTopCard(context),
+                  Expanded(child: Container())
+                ],
               )
             ],
           ),

@@ -1,4 +1,5 @@
 const Map<String, String> zhAccount = {
+  'add': '添加账户',
   'create': '新建账户',
   'import': '导入账户',
   'mnemonic': '助记词',

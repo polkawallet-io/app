@@ -3,11 +3,13 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -87,22 +89,24 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   }
 
   List<Widget> _buildAccountList() {
-    Color primaryColor = Theme.of(context).primaryColor;
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     List<Widget> res = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            _selectedNetwork.basic.name.toUpperCase(),
-            style: Theme.of(context).textTheme.headline4,
-          ),
-          IconButton(
-            icon: Icon(Icons.add_circle_outline),
-            color: primaryColor,
-            onPressed: () => _onCreateAccount(),
-          )
-        ],
+      Text(
+        _selectedNetwork.basic.name.toUpperCase(),
+        style: Theme.of(context).textTheme.headline4,
       ),
+      Padding(
+        padding: EdgeInsets.only(top: 8, bottom: 16),
+        child: RoundedButton(
+          gradientColor: widget.service.plugin.basic.gradientColor,
+          icon: Icon(
+            Icons.add_circle_outline,
+            color: Theme.of(context).cardColor,
+          ),
+          text: dic['add'],
+          onPressed: () => _onCreateAccount(),
+        ),
+      )
     ];
 
     /// first item is current account
@@ -167,48 +171,49 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           : Row(
               children: <Widget>[
                 // left side bar
-                Container(
-                  padding: EdgeInsets.fromLTRB(8, 16, 0, 0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius:
-                            8.0, // has the effect of softening the shadow
-                        spreadRadius: 2.0, // ha
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    children: widget.plugins.map((i) {
-                      final network = i.basic.name;
-                      final isCurrent = network == _selectedNetwork.basic.name;
-                      return Container(
-                        margin: EdgeInsets.only(bottom: 8),
-                        padding: EdgeInsets.only(right: 6),
-                        decoration: isCurrent
-                            ? BoxDecoration(
-                                border: Border(
-                                    right: BorderSide(
-                                        width: 2,
-                                        color: Theme.of(context).primaryColor)),
-                              )
-                            : null,
-                        child: IconButton(
-                          padding: EdgeInsets.all(8),
-                          icon: isCurrent ? i.basic.icon : i.basic.iconDisabled,
-                          onPressed: () {
-                            if (!isCurrent) {
-                              setState(() {
-                                _selectedNetwork = i;
-                              });
-                            }
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      width: 56,
+                      // color: Theme.of(context).cardColor,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey[100],
+                            blurRadius: 24.0,
+                            spreadRadius: 0,
+                          )
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: widget.plugins.map((i) {
+                        final network = i.basic.name;
+                        final isCurrent =
+                            network == _selectedNetwork.basic.name;
+                        return isCurrent
+                            ? _NetworkItemActive(icon: i.basic.icon)
+                            : Container(
+                                margin: EdgeInsets.all(8),
+                                child: IconButton(
+                                  padding: EdgeInsets.all(8),
+                                  icon: isCurrent
+                                      ? i.basic.icon
+                                      : i.basic.iconDisabled,
+                                  onPressed: () {
+                                    if (!isCurrent) {
+                                      setState(() {
+                                        _selectedNetwork = i;
+                                      });
+                                    }
+                                  },
+                                ),
+                              );
+                      }).toList(),
+                    )
+                  ],
                 ),
                 Expanded(
                   child: ListView(
@@ -218,6 +223,58 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 )
               ],
             ),
+    );
+  }
+}
+
+class _NetworkItemActive extends StatelessWidget {
+  _NetworkItemActive({this.icon});
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.centerEnd,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(right: 8),
+          child: SvgPicture.asset(
+            'assets/images/network_icon_bg.svg',
+            color: Colors.grey[100],
+            width: 56,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(right: 44),
+          child: SvgPicture.asset(
+            'assets/images/network_icon_border.svg',
+            color: Theme.of(context).primaryColor,
+            width: 10,
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(8),
+          child: SizedBox(
+            child: icon,
+            width: 28,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(const Radius.circular(24)),
+            color: Theme.of(context).cardColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 12.0, // has the effect of softening the shadow
+                spreadRadius: 0, // has the effect of extending the shadow
+                offset: Offset(
+                  6.0, // horizontal, move right 10
+                  1.0, // vertical, move down 10
+                ),
+              )
+            ],
+          ),
+        )
+      ],
     );
   }
 }
