@@ -6,6 +6,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
@@ -29,14 +30,12 @@ class AssetPage extends StatefulWidget {
   _AssetPageState createState() => _AssetPageState();
 }
 
-class _AssetPageState extends State<AssetPage>
-    with SingleTickerProviderStateMixin {
+class _AssetPageState extends State<AssetPage> {
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       new GlobalKey<RefreshIndicatorState>();
 
   bool _loading = false;
 
-  TabController _tabController;
   int _tab = 0;
   int _txsPage = 0;
   bool _isLastPage = false;
@@ -162,14 +161,13 @@ class _AssetPageState extends State<AssetPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 3);
 
     _scrollController = ScrollController();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent) {
         setState(() {
-          if (_tabController.index == 0 && !_isLastPage) {
+          if (_tab == 0 && !_isLastPage) {
             _txsPage += 1;
             _updateData();
           }
@@ -184,7 +182,6 @@ class _AssetPageState extends State<AssetPage>
 
   @override
   void dispose() {
-    _tabController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -223,11 +220,6 @@ class _AssetPageState extends State<AssetPage>
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final List<Tab> _myTabs = <Tab>[
-      Tab(text: dic['all']),
-      Tab(text: dic['in']),
-      Tab(text: dic['out']),
-    ];
 
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
     final decimals =
@@ -238,13 +230,22 @@ class _AssetPageState extends State<AssetPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(symbol),
+        title: Text(
+          symbol,
+          style: TextStyle(fontSize: 20, color: Colors.black87),
+        ),
         centerTitle: true,
-        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black87),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(icon: Icon(Icons.more_horiz), onPressed: _showAction),
         ],
       ),
+      backgroundColor: Theme.of(context).cardColor,
       body: SafeArea(
         child: Observer(
           builder: (_) {
@@ -277,26 +278,59 @@ class _AssetPageState extends State<AssetPage>
             return Column(
               children: <Widget>[
                 Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: primaryColor,
-                  padding: EdgeInsets.only(bottom: 24),
+                  margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  padding: EdgeInsets.fromLTRB(8, 24, 8, 24),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        const BorderRadius.all(const Radius.circular(16)),
+                    gradient: LinearGradient(
+                      colors: [primaryColor, Theme.of(context).accentColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: [0.1, 0.9],
+                    ),
+                    image: DecorationImage(
+                      image: widget.service.plugin.basic.backgroundImage,
+                      fit: BoxFit.cover,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryColor.withAlpha(100),
+                        blurRadius:
+                            16.0, // has the effect of softening the shadow
+                        spreadRadius:
+                            2.0, // has the effect of extending the shadow
+                        offset: Offset(
+                          2.0, // horizontal, move right 10
+                          6.0, // vertical, move down 10
+                        ),
+                      )
+                    ],
+                  ),
                   child: Column(
                     children: <Widget>[
                       Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          dic['balance'],
+                          style: TextStyle(color: titleColor),
+                        ),
+                      ),
+                      Padding(
                         padding: EdgeInsets.only(
-                            bottom: tokenPrice != null ? 4 : 16),
+                            bottom: tokenPrice != null ? 4 : 24),
                         child: Text(
                           Fmt.token(balance, decimals, length: 8),
                           style: TextStyle(
                             color: titleColor,
-                            fontSize: 28,
+                            fontSize: 36,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       tokenPrice != null
                           ? Padding(
-                              padding: EdgeInsets.only(bottom: 16),
+                              padding: EdgeInsets.only(bottom: 24),
                               child: Text(
                                 '≈ \$ ${tokenPrice ?? '--.--'}',
                                 style: TextStyle(
@@ -308,6 +342,42 @@ class _AssetPageState extends State<AssetPage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
+                          Column(
+                            children: [
+                              Text(
+                                dic['reserved'],
+                                style:
+                                    TextStyle(color: titleColor, fontSize: 12),
+                              ),
+                              Text(
+                                Fmt.priceFloorBigInt(
+                                  Fmt.balanceInt(
+                                      balancesInfo.reservedBalance.toString()),
+                                  decimals,
+                                  lengthMax: 4,
+                                ),
+                                style: TextStyle(color: titleColor),
+                              )
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                dic['available'],
+                                style:
+                                    TextStyle(color: titleColor, fontSize: 12),
+                              ),
+                              Text(
+                                Fmt.priceFloorBigInt(
+                                  Fmt.balanceInt(
+                                      balancesInfo.availableBalance.toString()),
+                                  decimals,
+                                  lengthMax: 4,
+                                ),
+                                style: TextStyle(color: titleColor),
+                              )
+                            ],
+                          ),
                           Column(
                             children: [
                               Text(
@@ -357,57 +427,22 @@ class _AssetPageState extends State<AssetPage>
                               ),
                             ],
                           ),
-                          Column(
-                            children: [
-                              Text(
-                                dic['available'],
-                                style:
-                                    TextStyle(color: titleColor, fontSize: 12),
-                              ),
-                              Text(
-                                Fmt.priceFloorBigInt(
-                                  Fmt.balanceInt(
-                                      balancesInfo.availableBalance.toString()),
-                                  decimals,
-                                  lengthMax: 4,
-                                ),
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                dic['reserved'],
-                                style:
-                                    TextStyle(color: titleColor, fontSize: 12),
-                              ),
-                              Text(
-                                Fmt.priceFloorBigInt(
-                                  Fmt.balanceInt(
-                                      balancesInfo.reservedBalance.toString()),
-                                  decimals,
-                                  lengthMax: 4,
-                                ),
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
-                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                TabBar(
-                  labelColor: Colors.black87,
-                  labelStyle: TextStyle(fontSize: 18),
-                  controller: _tabController,
-                  tabs: _myTabs,
-                  onTap: (i) {
-                    setState(() {
-                      _tab = i;
-                    });
-                  },
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: MainTabBar(
+                    tabs: [dic['all'], dic['in'], dic['out']],
+                    activeTab: _tab,
+                    onTap: (i) {
+                      setState(() {
+                        _tab = i;
+                      });
+                    },
+                  ),
                 ),
                 Expanded(
                   child: Container(
@@ -512,51 +547,102 @@ class TransferListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String address = isOut ? data.to : data.from;
-    String title =
+    final address = isOut ? data.to : data.from;
+    final title =
         Fmt.address(address) ?? data.extrinsicIndex ?? Fmt.address(data.hash);
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(width: 0.5, color: Colors.black12)),
+    final colorIn = Color(0xFF62CFE4);
+    final colorOut = Color(0xFF3394FF);
+    final colorFailed = Theme.of(context).unselectedWidgetColor;
+    final amount = Fmt.priceFloor(double.parse(data.amount), lengthFixed: 4);
+    return ListTile(
+      leading: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          data.success
+              ? isOut
+                  ? SvgPicture.asset('assets/images/assets_up.svg', width: 32)
+                  : SvgPicture.asset('assets/images/assets_down.svg', width: 32)
+              : SvgPicture.asset('assets/images/tx_failed.svg', width: 32)
+        ],
       ),
-      child: ListTile(
-        leading: data.success
-            ? Icon(Icons.check_circle, color: Colors.lightGreen, size: 28)
-            : Icon(Icons.error, color: Colors.red, size: 28),
-        title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
-        subtitle: Text(Fmt.dateTime(
-            DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000))),
-        trailing: Container(
-          width: 110,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  Fmt.priceFloor(double.parse(data.amount), lengthFixed: 4),
-                  style: Theme.of(context).textTheme.headline4,
-                  textAlign: TextAlign.right,
-                ),
+      title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
+      subtitle: Text(Fmt.dateTime(
+          DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000))),
+      trailing: Container(
+        width: 110,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                '${isOut ? '-' : '+'} $amount',
+                style: TextStyle(
+                    color: data.success
+                        ? isOut
+                            ? colorOut
+                            : colorIn
+                        : colorFailed,
+                    fontSize: 16),
+                textAlign: TextAlign.right,
               ),
-              Container(
-                margin: EdgeInsets.only(left: 4),
-                width: 16,
-                child: isOut
-                    ? Image.asset('assets/images/assets_up.png')
-                    : Image.asset('assets/images/assets_down.png'),
-              )
-            ],
-          ),
+            ),
+          ],
         ),
-        onTap: hasDetail
-            ? () {
-                Navigator.pushNamed(
-                  context,
-                  TransferDetailPage.route,
-                  arguments: data,
-                );
-              }
-            : null,
       ),
+      onTap: hasDetail
+          ? () {
+              Navigator.pushNamed(
+                context,
+                TransferDetailPage.route,
+                arguments: data,
+              );
+            }
+          : null,
+    );
+  }
+}
+
+class MainTabBar extends StatelessWidget {
+  MainTabBar({this.tabs, this.activeTab, this.onTap});
+
+  final List<String> tabs;
+  final Function(int) onTap;
+  final int activeTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: tabs.map((e) {
+        final isActive = tabs[activeTab] == e;
+        return GestureDetector(
+          child: isActive
+              ? Padding(
+                  padding: EdgeInsets.only(right: 24),
+                  child: Column(
+                    children: [
+                      Text(e.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      Container(
+                        width: 24,
+                        height: 8,
+                        margin: EdgeInsets.only(top: 4),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: Theme.of(context).primaryColor),
+                      )
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(right: 24),
+                  child: Column(children: [
+                    Text(e.toUpperCase(), style: TextStyle(fontSize: 20)),
+                    Container(width: 24, height: 8)
+                  ]),
+                ),
+          onTap: () => onTap(tabs.indexOf(e)),
+        );
+      }).toList(),
     );
   }
 }

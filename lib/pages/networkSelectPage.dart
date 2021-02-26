@@ -95,18 +95,29 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         _selectedNetwork.basic.name.toUpperCase(),
         style: Theme.of(context).textTheme.headline4,
       ),
-      Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 16),
-        child: RoundedButton(
-          gradientColor: widget.service.plugin.basic.gradientColor,
-          icon: Icon(
-            Icons.add_circle_outline,
-            color: Theme.of(context).cardColor,
+      GestureDetector(
+        child: RoundedCard(
+          margin: EdgeInsets.only(top: 8, bottom: 16),
+          padding: EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.add_circle_outline,
+                color: Theme.of(context).unselectedWidgetColor,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text(
+                  dic['add'],
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              )
+            ],
           ),
-          text: dic['add'],
-          onPressed: () => _onCreateAccount(),
         ),
-      )
+        onTap: () => _onCreateAccount(),
+      ),
     ];
 
     /// first item is current account
@@ -129,9 +140,10 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
               ? '${accInfo['accountIndex']}\n'
               : '';
       final double padding = accIndex.isEmpty ? 0 : 7;
+      final isCurrent = isCurrentNetwork &&
+          i.address == widget.service.keyring.current.address;
       return RoundedCard(
-        border: isCurrentNetwork &&
-                i.address == widget.service.keyring.current.address
+        border: isCurrent
             ? Border.all(color: Theme.of(context).primaryColorLight)
             : Border.all(color: Theme.of(context).cardColor),
         margin: EdgeInsets.only(bottom: 16),
@@ -140,6 +152,12 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           leading: AddressIcon(address, svg: i.icon),
           title: Text(UI.accountName(context, i)),
           subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
+          trailing: isCurrent
+              ? Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).primaryColor,
+                )
+              : Container(width: 8),
           onTap: _networkChanging ? null : () => _onSelect(i),
         ),
       );

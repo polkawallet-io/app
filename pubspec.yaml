@@ -83,8 +83,9 @@ flutter:
     - assets/images/user.svg
     - assets/images/scan.svg
     - assets/images/app.png
-    - assets/images/assets_up.png
-    - assets/images/assets_down.png
+    - assets/images/assets_up.svg
+    - assets/images/assets_down.svg
+    - assets/images/tx_failed.svg
     - assets/images/assets_send.png
     - assets/images/wallet_connect_logo.png
     - assets/images/wallet_connect_banner.png

@@ -14,6 +14,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -103,15 +104,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      RaisedButton(
-                        padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
-                        color: primaryColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24)),
-                        child: Text(
-                          dic['account'],
-                          style: Theme.of(context).textTheme.button,
-                        ),
+                      RoundedButton(
+                        text: dic['account'],
                         onPressed: () async {
                           await Navigator.pushNamed(
                               context, AccountManagePage.route);

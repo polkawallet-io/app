@@ -197,6 +197,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       return Scaffold(
         appBar: AppBar(
           title: Text(dic['import']),
+          centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -216,7 +217,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: Text(dic['import'])),
+      appBar: AppBar(title: Text(dic['import']), centerTitle: true),
       body: SafeArea(
         child: ImportAccountForm(widget.service, _onNext),
       ),

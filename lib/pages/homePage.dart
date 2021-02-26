@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
             children: pages
                 .map((e) => PageWrapperWithBackground(
                       e.content,
-                      height: 200,
+                      height: 220,
                       backgroundImage:
                           widget.service.plugin.basic.backgroundImage,
                     ))

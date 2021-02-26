@@ -73,9 +73,10 @@ class _WalletAppState extends State<WalletApp> {
 
   NetworkParams _connectedNode;
 
-  ThemeData _getAppTheme(MaterialColor color) {
+  ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
       primarySwatch: color,
+      accentColor: secondaryColor,
       textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 24,
@@ -175,7 +176,10 @@ class _WalletAppState extends State<WalletApp> {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
-      _theme = _getAppTheme(network.basic.primaryColor);
+      _theme = _getAppTheme(
+        network.basic.primaryColor,
+        secondaryColor: network.basic.gradientColor,
+      );
     });
     _store.settings.setNetwork(network.basic.name);
 
@@ -268,7 +272,10 @@ class _WalletAppState extends State<WalletApp> {
       setState(() {
         _store = store;
         _service = service;
-        _theme = _getAppTheme(service.plugin.basic.primaryColor);
+        _theme = _getAppTheme(
+          service.plugin.basic.primaryColor,
+          secondaryColor: service.plugin.basic.gradientColor,
+        );
       });
 
       if (store.settings.localeCode.isNotEmpty) {
@@ -386,7 +393,11 @@ class _WalletAppState extends State<WalletApp> {
   Widget build(_) {
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
-      theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),
+      theme: _theme ??
+          _getAppTheme(
+            widget.plugins[0].basic.primaryColor,
+            secondaryColor: widget.plugins[0].basic.gradientColor,
+          ),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),
