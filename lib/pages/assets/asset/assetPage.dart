@@ -12,6 +12,7 @@ import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
@@ -33,6 +34,9 @@ class AssetPage extends StatefulWidget {
 class _AssetPageState extends State<AssetPage> {
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       new GlobalKey<RefreshIndicatorState>();
+
+  final colorIn = Color(0xFF62CFE4);
+  final colorOut = Color(0xFF3394FF);
 
   bool _loading = false;
 
@@ -206,6 +210,8 @@ class _AssetPageState extends State<AssetPage> {
         token: symbol,
         isOut: i.from == widget.service.keyring.current.address,
         hasDetail: true,
+        colorIn: colorIn,
+        colorOut: colorOut,
       );
     }));
 
@@ -225,7 +231,6 @@ class _AssetPageState extends State<AssetPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
-    final primaryColor = Theme.of(context).primaryColor;
     final titleColor = Theme.of(context).cardColor;
 
     return Scaffold(
@@ -245,205 +250,14 @@ class _AssetPageState extends State<AssetPage> {
           IconButton(icon: Icon(Icons.more_horiz), onPressed: _showAction),
         ],
       ),
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: titleColor,
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            BigInt balance =
-                Fmt.balanceTotal(widget.service.plugin.balances.native);
-
             BalanceData balancesInfo = widget.service.plugin.balances.native;
-            String lockedInfo = '\n';
-            if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
-              balancesInfo.lockedBreakdown.forEach((i) {
-                final amt = Fmt.balanceInt(i.amount.toString());
-                if (amt > BigInt.zero) {
-                  lockedInfo += '${Fmt.priceFloorBigInt(
-                    amt,
-                    decimals,
-                    lengthMax: 4,
-                  )} $symbol ${dic['lock.${i.use.trim()}']}\n';
-                }
-              });
-            }
-
-            String tokenPrice;
-            if (widget.service.store.assets.marketPrices[symbol] != null &&
-                balancesInfo != null) {
-              tokenPrice = Fmt.priceFloor(
-                  widget.service.store.assets.marketPrices[symbol] *
-                      Fmt.bigIntToDouble(balance, decimals));
-            }
 
             return Column(
               children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  padding: EdgeInsets.fromLTRB(8, 24, 8, 24),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        const BorderRadius.all(const Radius.circular(16)),
-                    gradient: LinearGradient(
-                      colors: [primaryColor, Theme.of(context).accentColor],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.1, 0.9],
-                    ),
-                    image: DecorationImage(
-                      image: widget.service.plugin.basic.backgroundImage,
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: primaryColor.withAlpha(100),
-                        blurRadius:
-                            16.0, // has the effect of softening the shadow
-                        spreadRadius:
-                            2.0, // has the effect of extending the shadow
-                        offset: Offset(
-                          2.0, // horizontal, move right 10
-                          6.0, // vertical, move down 10
-                        ),
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          dic['balance'],
-                          style: TextStyle(color: titleColor),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: tokenPrice != null ? 4 : 24),
-                        child: Text(
-                          Fmt.token(balance, decimals, length: 8),
-                          style: TextStyle(
-                            color: titleColor,
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      tokenPrice != null
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: 24),
-                              child: Text(
-                                '≈ \$ ${tokenPrice ?? '--.--'}',
-                                style: TextStyle(
-                                  color: Theme.of(context).cardColor,
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Column(
-                            children: [
-                              Text(
-                                dic['reserved'],
-                                style:
-                                    TextStyle(color: titleColor, fontSize: 12),
-                              ),
-                              Text(
-                                Fmt.priceFloorBigInt(
-                                  Fmt.balanceInt(
-                                      balancesInfo.reservedBalance.toString()),
-                                  decimals,
-                                  lengthMax: 4,
-                                ),
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                dic['available'],
-                                style:
-                                    TextStyle(color: titleColor, fontSize: 12),
-                              ),
-                              Text(
-                                Fmt.priceFloorBigInt(
-                                  Fmt.balanceInt(
-                                      balancesInfo.availableBalance.toString()),
-                                  decimals,
-                                  lengthMax: 4,
-                                ),
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                dic['locked'],
-                                style:
-                                    TextStyle(color: titleColor, fontSize: 12),
-                              ),
-                              Row(
-                                children: [
-                                  lockedInfo.length > 2
-                                      ? TapTooltip(
-                                          message: lockedInfo,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 6),
-                                            child: Icon(
-                                              Icons.info,
-                                              size: 16,
-                                              color: titleColor,
-                                            ),
-                                          ),
-                                          waitDuration: Duration(seconds: 0),
-                                        )
-                                      : Container(),
-                                  Text(
-                                    Fmt.priceFloorBigInt(
-                                      Fmt.balanceInt(balancesInfo.lockedBalance
-                                          .toString()),
-                                      decimals,
-                                      lengthMax: 4,
-                                    ),
-                                    style: TextStyle(color: titleColor),
-                                  ),
-                                  _unlocks.length > 0
-                                      ? GestureDetector(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(left: 6),
-                                            child: Icon(
-                                              Icons.lock_open,
-                                              size: 16,
-                                              color: titleColor,
-                                            ),
-                                          ),
-                                          onTap: _onUnlock,
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: MainTabBar(
-                    tabs: [dic['all'], dic['in'], dic['out']],
-                    activeTab: _tab,
-                    onTap: (i) {
-                      setState(() {
-                        _tab = i;
-                      });
-                    },
-                  ),
-                ),
                 Expanded(
                   child: Container(
                     color: Colors.white,
@@ -452,7 +266,32 @@ class _AssetPageState extends State<AssetPage> {
                       onRefresh: _refreshData,
                       child: ListView(
                         controller: _scrollController,
-                        children: _buildTxList(),
+                        children: [
+                          BalanceCard(
+                            balancesInfo,
+                            symbol: symbol,
+                            decimals: decimals,
+                            marketPrices:
+                                widget.service.store.assets.marketPrices,
+                            backgroundImage:
+                                widget.service.plugin.basic.backgroundImage,
+                            unlocks: _unlocks,
+                            onUnlock: _onUnlock,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(16),
+                            child: MainTabBar(
+                              tabs: [dic['all'], dic['in'], dic['out']],
+                              activeTab: _tab,
+                              onTap: (i) {
+                                setState(() {
+                                  _tab = i;
+                                });
+                              },
+                            ),
+                          ),
+                          ..._buildTxList()
+                        ],
                       ),
                     ),
                   ),
@@ -461,26 +300,29 @@ class _AssetPageState extends State<AssetPage> {
                   children: <Widget>[
                     Expanded(
                       child: Container(
-                        color: Colors.lightBlue,
-                        child: FlatButton(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: SizedBox(
-                                  height: 24,
-                                  child: Image.asset(
-                                      'assets/images/assets_send.png'),
-                                ),
-                              ),
-                              Text(
-                                dic['transfer'],
-                                style: TextStyle(color: Colors.white),
-                              )
-                            ],
+                        padding: EdgeInsets.fromLTRB(16, 8, 8, 8),
+                        child: RoundedButton(
+                          icon:
+                              Icon(Icons.qr_code, color: titleColor, size: 24),
+                          text: dic['receive'],
+                          color: colorIn,
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, AccountQrCodePage.route);
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+                        child: RoundedButton(
+                          icon: SizedBox(
+                            height: 24,
+                            child: Image.asset('assets/images/assets_send.png'),
                           ),
+                          text: dic['transfer'],
+                          color: colorOut,
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
@@ -493,38 +335,233 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        color: Colors.lightGreen,
-                        child: FlatButton(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: Icon(Icons.qr_code,
-                                    color: titleColor, size: 24),
-                              ),
-                              Text(
-                                dic['receive'],
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, AccountQrCodePage.route);
-                          },
-                        ),
-                      ),
-                    )
                   ],
                 )
               ],
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class BalanceCard extends StatelessWidget {
+  BalanceCard(this.balancesInfo,
+      {this.marketPrices,
+      this.symbol,
+      this.decimals,
+      this.backgroundImage,
+      this.unlocks,
+      this.onUnlock});
+
+  final String symbol;
+  final int decimals;
+  final BalanceData balancesInfo;
+  final Map marketPrices;
+  final ImageProvider backgroundImage;
+  final List unlocks;
+  final Function onUnlock;
+
+  @override
+  Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+
+    final balance = Fmt.balanceTotal(balancesInfo);
+
+    String lockedInfo = '\n';
+    if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
+      balancesInfo.lockedBreakdown.forEach((i) {
+        final amt = Fmt.balanceInt(i.amount.toString());
+        if (amt > BigInt.zero) {
+          lockedInfo += '${Fmt.priceFloorBigInt(
+            amt,
+            decimals,
+            lengthMax: 4,
+          )} $symbol ${dic['lock.${i.use.trim()}']}\n';
+        }
+      });
+    }
+
+    String tokenPrice;
+    if (marketPrices[symbol] != null && balancesInfo != null) {
+      tokenPrice = Fmt.priceFloor(
+          marketPrices[symbol] * Fmt.bigIntToDouble(balance, decimals));
+    }
+
+    final primaryColor = Theme.of(context).primaryColor;
+    final titleColor = Theme.of(context).cardColor;
+    return Container(
+      margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: EdgeInsets.fromLTRB(4, 24, 4, 24),
+      height: MediaQuery.of(context).size.width / 2,
+      constraints: BoxConstraints(maxHeight: 240, maxWidth: 480),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(const Radius.circular(16)),
+        gradient: LinearGradient(
+          colors: [primaryColor, Theme.of(context).accentColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.1, 0.9],
+        ),
+        image: backgroundImage != null
+            ? DecorationImage(
+                image: backgroundImage,
+                fit: BoxFit.cover,
+              )
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withAlpha(100),
+            blurRadius: 16.0,
+            spreadRadius: 2.0,
+            offset: Offset(2.0, 6.0),
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: Text(
+              dic['balance'],
+              style: TextStyle(color: titleColor),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: tokenPrice != null ? 4 : 24),
+            child: Text(
+              Fmt.token(balance, decimals, length: 8),
+              style: TextStyle(
+                color: titleColor,
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          tokenPrice != null
+              ? Padding(
+                  padding: EdgeInsets.only(bottom: 24),
+                  child: Text(
+                    '≈ \$ ${tokenPrice ?? '--.--'}',
+                    style: TextStyle(
+                      color: Theme.of(context).cardColor,
+                    ),
+                  ),
+                )
+              : Container(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                height: 24,
+                width: 0,
+              ),
+              Column(
+                children: [
+                  Text(
+                    dic['reserved'],
+                    style: TextStyle(color: titleColor, fontSize: 12),
+                  ),
+                  Text(
+                    Fmt.priceFloorBigInt(
+                      Fmt.balanceInt(balancesInfo.reservedBalance.toString()),
+                      decimals,
+                      lengthMax: 4,
+                    ),
+                    style: TextStyle(color: titleColor),
+                  )
+                ],
+              ),
+              Container(
+                height: 24,
+                width: 0,
+                decoration: BoxDecoration(
+                    border: Border(
+                  left: BorderSide(
+                      color: Theme.of(context).cardColor, width: 0.5),
+                )),
+              ),
+              Column(
+                children: [
+                  Text(
+                    dic['available'],
+                    style: TextStyle(color: titleColor, fontSize: 12),
+                  ),
+                  Text(
+                    Fmt.priceFloorBigInt(
+                      Fmt.balanceInt(balancesInfo.availableBalance.toString()),
+                      decimals,
+                      lengthMax: 4,
+                    ),
+                    style: TextStyle(color: titleColor),
+                  )
+                ],
+              ),
+              Container(
+                height: 24,
+                width: 0,
+                decoration: BoxDecoration(
+                    border: Border(
+                  left: BorderSide(
+                      color: Theme.of(context).cardColor, width: 0.5),
+                )),
+              ),
+              Column(
+                children: [
+                  Text(
+                    dic['locked'],
+                    style: TextStyle(color: titleColor, fontSize: 12),
+                  ),
+                  Row(
+                    children: [
+                      lockedInfo.length > 2
+                          ? TapTooltip(
+                              message: lockedInfo,
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 6),
+                                child: Icon(
+                                  Icons.info,
+                                  size: 16,
+                                  color: titleColor,
+                                ),
+                              ),
+                              waitDuration: Duration(seconds: 0),
+                            )
+                          : Container(),
+                      Text(
+                        Fmt.priceFloorBigInt(
+                          Fmt.balanceInt(balancesInfo.lockedBalance.toString()),
+                          decimals,
+                          lengthMax: 4,
+                        ),
+                        style: TextStyle(color: titleColor),
+                      ),
+                      unlocks.length > 0
+                          ? GestureDetector(
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 6),
+                                child: Icon(
+                                  Icons.lock_open,
+                                  size: 16,
+                                  color: titleColor,
+                                ),
+                              ),
+                              onTap: onUnlock,
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                height: 24,
+                width: 0,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -537,6 +574,8 @@ class TransferListItem extends StatelessWidget {
     this.isOut,
     this.hasDetail,
     this.crossChain,
+    this.colorIn,
+    this.colorOut,
   });
 
   final TransferData data;
@@ -544,14 +583,14 @@ class TransferListItem extends StatelessWidget {
   final String crossChain;
   final bool isOut;
   final bool hasDetail;
+  final Color colorIn;
+  final Color colorOut;
 
   @override
   Widget build(BuildContext context) {
     final address = isOut ? data.to : data.from;
     final title =
         Fmt.address(address) ?? data.extrinsicIndex ?? Fmt.address(data.hash);
-    final colorIn = Color(0xFF62CFE4);
-    final colorOut = Color(0xFF3394FF);
     final colorFailed = Theme.of(context).unselectedWidgetColor;
     final amount = Fmt.priceFloor(double.parse(data.amount), lengthFixed: 4);
     return ListTile(

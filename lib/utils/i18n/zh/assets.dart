@@ -13,6 +13,8 @@ const Map<String, String> zhAssets = {
   'amount': '数量',
   'amount.error': '格式错误',
   'amount.low': '余额不足',
+  'amount.exist': '存活余额',
+  'amount.exist.msg': '账户在网络上存活所需要的最小余额。',
   'currency': '币种',
   'currency.select': '选择币种',
   'make': '添加转账',

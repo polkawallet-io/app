@@ -144,6 +144,8 @@ class _TransferPageState extends State<TransferPage> {
         final available = Fmt.balanceInt(
             widget.service.plugin.balances.native.availableBalance.toString());
 
+        final amountExist = widget.service.plugin.networkConst['balances']
+            ['existentialDeposit'];
         return Scaffold(
           appBar: AppBar(
             title: Text(dic['transfer']),
@@ -153,7 +155,7 @@ class _TransferPageState extends State<TransferPage> {
                 icon: SvgPicture.asset(
                   'assets/images/scan.svg',
                   color: Theme.of(context).cardColor,
-                  width: 20,
+                  width: 24,
                 ),
                 onPressed: _onScan,
               )
@@ -213,11 +215,15 @@ class _TransferPageState extends State<TransferPage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    dic['currency'],
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 4),
+                                    child: Text(
+                                      dic['currency'],
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .unselectedWidgetColor,
+                                          fontSize: 12),
+                                    ),
                                   ),
                                   CurrencyWithIcon(
                                       symbol,
@@ -232,9 +238,37 @@ class _TransferPageState extends State<TransferPage> {
                             ],
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8, bottom: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dic['amount.exist']),
+                              ),
+                              TapTooltip(
+                                message: dic['amount.exist.msg'],
+                                child: Icon(
+                                  Icons.info,
+                                  size: 16,
+                                  color:
+                                      Theme.of(context).unselectedWidgetColor,
+                                ),
+                              ),
+                              Expanded(child: Container(width: 2)),
+                              Text(
+                                  '${Fmt.balance(amountExist, decimals)} $symbol'),
+                            ],
+                          ),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 4),
+                              child: Text(dic['transfer.alive']),
+                            ),
                             TapTooltip(
                               message: dic['transfer.alive.msg'],
                               child: Icon(
@@ -243,10 +277,7 @@ class _TransferPageState extends State<TransferPage> {
                                 color: Theme.of(context).unselectedWidgetColor,
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 4, right: 8),
-                              child: Text(dic['transfer.alive']),
-                            ),
+                            Expanded(child: Container(width: 2)),
                             CupertinoSwitch(
                               value: _keepAlive,
                               onChanged: (res) {
@@ -254,7 +285,7 @@ class _TransferPageState extends State<TransferPage> {
                                   _keepAlive = res;
                                 });
                               },
-                            ),
+                            )
                           ],
                         ),
                       ],
