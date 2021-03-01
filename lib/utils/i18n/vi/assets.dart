@@ -14,6 +14,9 @@ const Map<String, String> enAssets = {
   'amount': 'Amount',
   'amount.error': 'Invalid amount',
   'amount.low': 'Insufficient balance',
+  'amount.exist': 'existential deposit',
+  'amount.exist.msg':
+      'The minimum amount that an account should have to be deemed active.',
   'currency': 'Currency',
   'currency.select': 'Select Currency',
   'make': 'Make Transfer',
