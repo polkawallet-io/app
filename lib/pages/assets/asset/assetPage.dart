@@ -15,6 +15,7 @@ import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/MainTabBar.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -210,8 +211,6 @@ class _AssetPageState extends State<AssetPage> {
         token: symbol,
         isOut: i.from == widget.service.keyring.current.address,
         hasDetail: true,
-        colorIn: colorIn,
-        colorOut: colorOut,
       );
     }));
 
@@ -318,7 +317,7 @@ class _AssetPageState extends State<AssetPage> {
                         padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
                         child: RoundedButton(
                           icon: SizedBox(
-                            height: 24,
+                            height: 20,
                             child: Image.asset('assets/images/assets_send.png'),
                           ),
                           text: dic['transfer'],
@@ -393,9 +392,8 @@ class BalanceCard extends StatelessWidget {
     final titleColor = Theme.of(context).cardColor;
     return Container(
       margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
-      padding: EdgeInsets.fromLTRB(4, 24, 4, 24),
-      height: MediaQuery.of(context).size.width / 2,
-      constraints: BoxConstraints(maxHeight: 240, maxWidth: 480),
+      padding: EdgeInsets.fromLTRB(4, 16, 4, 16),
+      constraints: BoxConstraints(maxHeight: 220, maxWidth: 480),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(const Radius.circular(16)),
         gradient: LinearGradient(
@@ -423,7 +421,7 @@ class BalanceCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(bottom: 16),
+            padding: EdgeInsets.only(bottom: 4),
             child: Text(
               dic['balance'],
               style: TextStyle(color: titleColor),
@@ -436,13 +434,14 @@ class BalanceCard extends StatelessWidget {
               style: TextStyle(
                 color: titleColor,
                 fontSize: 36,
+                height: 0.8,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
           tokenPrice != null
               ? Padding(
-                  padding: EdgeInsets.only(bottom: 24),
+                  padding: EdgeInsets.only(bottom: 16),
                   child: Text(
                     '≈ \$ ${tokenPrice ?? '--.--'}',
                     style: TextStyle(
@@ -574,8 +573,6 @@ class TransferListItem extends StatelessWidget {
     this.isOut,
     this.hasDetail,
     this.crossChain,
-    this.colorIn,
-    this.colorOut,
   });
 
   final TransferData data;
@@ -583,8 +580,9 @@ class TransferListItem extends StatelessWidget {
   final String crossChain;
   final bool isOut;
   final bool hasDetail;
-  final Color colorIn;
-  final Color colorOut;
+
+  final colorIn = Color(0xFF62CFE4);
+  final colorOut = Color(0xFF3394FF);
 
   @override
   Widget build(BuildContext context) {
@@ -636,52 +634,6 @@ class TransferListItem extends StatelessWidget {
               );
             }
           : null,
-    );
-  }
-}
-
-class MainTabBar extends StatelessWidget {
-  MainTabBar({this.tabs, this.activeTab, this.onTap});
-
-  final List<String> tabs;
-  final Function(int) onTap;
-  final int activeTab;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: tabs.map((e) {
-        final isActive = tabs[activeTab] == e;
-        return GestureDetector(
-          child: isActive
-              ? Padding(
-                  padding: EdgeInsets.only(right: 24),
-                  child: Column(
-                    children: [
-                      Text(e.toUpperCase(),
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Container(
-                        width: 24,
-                        height: 8,
-                        margin: EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Theme.of(context).primaryColor),
-                      )
-                    ],
-                  ),
-                )
-              : Padding(
-                  padding: EdgeInsets.only(right: 24),
-                  child: Column(children: [
-                    Text(e.toUpperCase(), style: TextStyle(fontSize: 20)),
-                    Container(width: 24, height: 8)
-                  ]),
-                ),
-          onTap: () => onTap(tabs.indexOf(e)),
-        );
-      }).toList(),
     );
   }
 }

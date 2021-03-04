@@ -1,3 +1,4 @@
+import 'package:app/pages/profile/account/signPage.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
@@ -168,6 +169,13 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     title: Text(dic['pass.change']),
                     trailing: Icon(Icons.arrow_forward_ios, size: 18),
                     onTap: () => _onChangePass(),
+                  ),
+                  ListTile(
+                    title: Text(dic['sign']),
+                    trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(SignMessagePage.route);
+                    },
                   ),
                   ListTile(
                     title: Text(dic['export']),

@@ -42,7 +42,8 @@ class _HomePageState extends State<HomePage> {
     return items.map((e) {
       final active = items[_tabIndex].text == e.text;
       return BottomNavigationBarItem(
-        icon: SizedBox(
+        icon: Container(
+          padding: EdgeInsets.all(active ? 0 : 2),
           child: active ? e.iconActive : e.icon,
           width: 32,
           height: 32,
@@ -58,19 +59,13 @@ class _HomePageState extends State<HomePage> {
     final List<HomeNavItem> pages = [
       HomeNavItem(
         text: dic['assets'],
-        icon: Padding(
-          padding: EdgeInsets.all(2),
-          child: SvgPicture.asset(
-            'assets/images/wallet.svg',
-            color: Theme.of(context).disabledColor,
-          ),
+        icon: SvgPicture.asset(
+          'assets/images/nav_assets.svg',
+          color: Theme.of(context).disabledColor,
         ),
-        iconActive: Padding(
-          padding: EdgeInsets.all(2),
-          child: SvgPicture.asset(
-            'assets/images/wallet.svg',
-            color: Theme.of(context).primaryColor,
-          ),
+        iconActive: SvgPicture.asset(
+          'assets/images/nav_assets.svg',
+          color: Theme.of(context).primaryColor,
         ),
         content: AssetsPage(
             widget.service,
@@ -85,19 +80,13 @@ class _HomePageState extends State<HomePage> {
         widget.service.plugin.getNavItems(context, widget.service.keyring));
     pages.add(HomeNavItem(
       text: dic['profile'],
-      icon: Padding(
-        padding: EdgeInsets.all(2),
-        child: SvgPicture.asset(
-          'assets/images/user.svg',
-          color: Theme.of(context).disabledColor,
-        ),
+      icon: SvgPicture.asset(
+        'assets/images/nav_profile.svg',
+        color: Theme.of(context).disabledColor,
       ),
-      iconActive: Padding(
-        padding: EdgeInsets.all(2),
-        child: SvgPicture.asset(
-          'assets/images/user.svg',
-          color: Theme.of(context).primaryColor,
-        ),
+      iconActive: SvgPicture.asset(
+        'assets/images/nav_profile.svg',
+        color: Theme.of(context).primaryColor,
       ),
       content: ProfilePage(widget.service, widget.connectedNode),
     ));

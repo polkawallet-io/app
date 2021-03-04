@@ -152,10 +152,11 @@ class _TransferPageState extends State<TransferPage> {
             centerTitle: true,
             actions: <Widget>[
               IconButton(
+                padding: EdgeInsets.only(right: 8),
                 icon: SvgPicture.asset(
                   'assets/images/scan.svg',
                   color: Theme.of(context).cardColor,
-                  width: 24,
+                  width: 28,
                 ),
                 onPressed: _onScan,
               )

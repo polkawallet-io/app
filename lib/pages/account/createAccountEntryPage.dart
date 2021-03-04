@@ -20,7 +20,10 @@ class CreateAccountEntryPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Image.asset('assets/images/logo_about.png'),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                child: Image.asset('assets/images/logo_about.png'),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(16),

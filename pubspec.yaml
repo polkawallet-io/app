@@ -78,9 +78,9 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/logo_about.png
+    - assets/images/nav_assets.svg
+    - assets/images/nav_profile.svg
     - assets/images/screenshot.png
-    - assets/images/wallet.svg
-    - assets/images/user.svg
     - assets/images/scan.svg
     - assets/images/app.png
     - assets/images/assets_up.svg
@@ -104,7 +104,7 @@ flutter:
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
+  # list giving the asset and other desxcriptors for the font. For
   # example:
   # fonts:
   #   - family: Schyler

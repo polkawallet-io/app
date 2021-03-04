@@ -141,8 +141,8 @@ class _AssetsState extends State<AssetsPage> {
   Future<void> _signAsync(String password) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     try {
-      final signed =
-          await widget.service.plugin.sdk.api.uos.signAsync(password);
+      final signed = await widget.service.plugin.sdk.api.uos
+          .signAsync(widget.service.plugin.basic.name, password);
       print('signed: $signed');
       Navigator.of(context).pushNamed(
         QrSignerPage.route,
@@ -259,7 +259,7 @@ class _AssetsState extends State<AssetsPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: SizedBox(
-              height: 28,
+              height: 32,
               child: Image.asset('assets/images/logo.png'),
             ),
             centerTitle: false,

@@ -51,8 +51,9 @@ class _AboutPage extends State<AboutPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(
+            Container(
               padding: EdgeInsets.all(48),
+              width: MediaQuery.of(context).size.width / 2,
               child: Image.asset('assets/images/logo_about.png'),
             ),
             Row(
