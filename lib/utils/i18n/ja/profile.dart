@@ -37,6 +37,10 @@ const Map<String, String> enProfile = {
   'pass.success.txt': 'Password changed successfully',
   'pass.error': 'Wrong Password',
   'pass.error.txt': 'Failed to unlock account, please check password.',
+  'pass.forget': 'Forget password?',
+  'pass.reset': 'How to reset password',
+  'pass.reset.text':
+      'If you forgot your password, the only way to reset it is to re-import the account from your Mnemonic/Seed.',
   'export': 'Export Account',
   'export.warn': 'Write these words down on paper. Keep the backup paper safe. '
       'These words allows anyone to recover this account and access its funds.',
