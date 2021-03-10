@@ -142,10 +142,12 @@ class _TransferPageState extends State<TransferPage> {
             (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final available = Fmt.balanceInt(
-            widget.service.plugin.balances.native.availableBalance.toString());
+            (widget.service.plugin.balances.native?.availableBalance ?? 0)
+                .toString());
 
-        final amountExist = widget.service.plugin.networkConst['balances']
-            ['existentialDeposit'];
+        final amountExist = widget
+            .service.plugin.networkConst['balances']['existentialDeposit']
+            .toString();
         return Scaffold(
           appBar: AppBar(
             title: Text(dic['transfer']),
@@ -162,116 +164,93 @@ class _TransferPageState extends State<TransferPage> {
               )
             ],
           ),
-          body: SafeArea(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      padding: EdgeInsets.all(16),
-                      children: <Widget>[
-                        AddressInputField(
-                          widget.service.plugin.sdk.api,
-                          widget.service.keyring.allAccounts,
-                          label: dic['address'],
-                          initialValue: _accountTo,
-                          onChanged: (KeyPairData acc) {
-                            setState(() {
-                              _accountTo = acc;
-                            });
-                          },
-                          key: ValueKey<KeyPairData>(_accountTo),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    padding: EdgeInsets.all(16),
+                    children: <Widget>[
+                      AddressInputField(
+                        widget.service.plugin.sdk.api,
+                        widget.service.keyring.allAccounts,
+                        label: dic['address'],
+                        initialValue: _accountTo,
+                        onChanged: (KeyPairData acc) {
+                          setState(() {
+                            _accountTo = acc;
+                          });
+                        },
+                        key: ValueKey<KeyPairData>(_accountTo),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: dic['amount'],
+                          labelText:
+                              '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                            available,
+                            decimals,
+                            lengthMax: 6,
+                          )})',
                         ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            hintText: dic['amount'],
-                            labelText:
-                                '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
-                              available,
-                              decimals,
-                              lengthMax: 6,
-                            )})',
-                          ),
-                          inputFormatters: [UI.decimalInputFormatter(decimals)],
-                          controller: _amountCtrl,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          validator: (v) {
-                            if (v.isEmpty) {
-                              return dic['amount.error'];
-                            }
-                            if (Fmt.tokenInt(v, decimals) >= available) {
-                              return dic['amount.low'];
-                            }
-                            return null;
-                          },
-                        ),
-                        Container(
-                          color: Theme.of(context).canvasColor,
-                          margin: EdgeInsets.only(top: 16, bottom: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.only(bottom: 4),
-                                    child: Text(
-                                      dic['currency'],
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .unselectedWidgetColor,
-                                          fontSize: 12),
-                                    ),
+                        inputFormatters: [UI.decimalInputFormatter(decimals)],
+                        controller: _amountCtrl,
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        validator: (v) {
+                          if (v.isEmpty) {
+                            return dic['amount.error'];
+                          }
+                          if (Fmt.tokenInt(v, decimals) >= available) {
+                            return dic['amount.low'];
+                          }
+                          return null;
+                        },
+                      ),
+                      Container(
+                        color: Theme.of(context).canvasColor,
+                        margin: EdgeInsets.only(top: 16, bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    dic['currency'],
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .unselectedWidgetColor,
+                                        fontSize: 12),
                                   ),
-                                  CurrencyWithIcon(
-                                      symbol,
-                                      TokenIcon(symbol,
-                                          widget.service.plugin.tokenIcons)),
-                                ],
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 18,
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dic['amount.exist']),
-                              ),
-                              TapTooltip(
-                                message: dic['amount.exist.msg'],
-                                child: Icon(
-                                  Icons.info,
-                                  size: 16,
-                                  color:
-                                      Theme.of(context).unselectedWidgetColor,
                                 ),
-                              ),
-                              Expanded(child: Container(width: 2)),
-                              Text(
-                                  '${Fmt.balance(amountExist, decimals)} $symbol'),
-                            ],
-                          ),
+                                CurrencyWithIcon(
+                                    symbol,
+                                    TokenIcon(symbol,
+                                        widget.service.plugin.tokenIcons)),
+                              ],
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 18,
+                            )
+                          ],
                         ),
-                        Row(
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Padding(
                               padding: EdgeInsets.only(right: 4),
-                              child: Text(dic['transfer.alive']),
+                              child: Text(dic['amount.exist']),
                             ),
                             TapTooltip(
-                              message: dic['transfer.alive.msg'],
+                              message: dic['amount.exist.msg'],
                               child: Icon(
                                 Icons.info,
                                 size: 16,
@@ -279,34 +258,54 @@ class _TransferPageState extends State<TransferPage> {
                               ),
                             ),
                             Expanded(child: Container(width: 2)),
-                            CupertinoSwitch(
-                              value: _keepAlive,
-                              onChanged: (res) {
-                                setState(() {
-                                  _keepAlive = res;
-                                });
-                              },
-                            )
+                            Text(
+                                '${Fmt.balance(amountExist, decimals)} $symbol'),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Text(dic['transfer.alive']),
+                          ),
+                          TapTooltip(
+                            message: dic['transfer.alive.msg'],
+                            child: Icon(
+                              Icons.info,
+                              size: 16,
+                              color: Theme.of(context).unselectedWidgetColor,
+                            ),
+                          ),
+                          Expanded(child: Container(width: 2)),
+                          CupertinoSwitch(
+                            value: _keepAlive,
+                            onChanged: (res) {
+                              setState(() {
+                                _keepAlive = res;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: TxButton(
-                    text: dic['make'],
-                    getTxParams: _getTxParams,
-                    onFinish: (res) {
-                      if (res != null) {
-                        Navigator.of(context).pop(res);
-                      }
-                    },
-                  ),
-                )
-              ],
-            ),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                child: TxButton(
+                  text: dic['make'],
+                  getTxParams: _getTxParams,
+                  onFinish: (res) {
+                    if (res != null) {
+                      Navigator.of(context).pop(res);
+                    }
+                  },
+                ),
+              )
+            ],
           ),
         );
       },

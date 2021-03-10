@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/infoItem.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
@@ -392,8 +393,8 @@ class BalanceCard extends StatelessWidget {
     final titleColor = Theme.of(context).cardColor;
     return Container(
       margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
-      padding: EdgeInsets.fromLTRB(4, 16, 4, 16),
-      constraints: BoxConstraints(maxHeight: 220, maxWidth: 480),
+      padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
+      constraints: BoxConstraints(maxHeight: 200, maxWidth: 480),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(const Radius.circular(16)),
         gradient: LinearGradient(
@@ -433,10 +434,11 @@ class BalanceCard extends StatelessWidget {
               Fmt.token(balance, decimals, length: 8),
               style: TextStyle(
                 color: titleColor,
-                fontSize: 36,
-                height: 0.8,
+                fontSize: 30,
+                letterSpacing: -0.8,
                 fontWeight: FontWeight.bold,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           tokenPrice != null
@@ -457,21 +459,42 @@ class BalanceCard extends StatelessWidget {
                 height: 24,
                 width: 0,
               ),
-              Column(
-                children: [
-                  Text(
-                    dic['reserved'],
-                    style: TextStyle(color: titleColor, fontSize: 12),
-                  ),
-                  Text(
-                    Fmt.priceFloorBigInt(
-                      Fmt.balanceInt(balancesInfo.reservedBalance.toString()),
-                      decimals,
-                      lengthMax: 4,
-                    ),
-                    style: TextStyle(color: titleColor),
-                  )
-                ],
+              InfoItem(
+                title: dic['reserved'],
+                content: Fmt.priceFloorBigInt(
+                  Fmt.balanceInt(
+                      (balancesInfo?.reservedBalance ?? 0).toString()),
+                  decimals,
+                  lengthMax: 4,
+                ),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                color: titleColor,
+                titleColor: titleColor,
+                flex: 0,
+                lowTitle: true,
+              ),
+              Container(
+                height: 24,
+                width: 0,
+                decoration: BoxDecoration(
+                    border: Border(
+                  left: BorderSide(
+                      color: Theme.of(context).cardColor, width: 0.5),
+                )),
+              ),
+              InfoItem(
+                title: dic['available'],
+                content: Fmt.priceFloorBigInt(
+                  Fmt.balanceInt(
+                      (balancesInfo?.availableBalance ?? 0).toString()),
+                  decimals,
+                  lengthMax: 4,
+                ),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                color: titleColor,
+                titleColor: titleColor,
+                flex: 0,
+                lowTitle: true,
               ),
               Container(
                 height: 24,
@@ -484,35 +507,6 @@ class BalanceCard extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Text(
-                    dic['available'],
-                    style: TextStyle(color: titleColor, fontSize: 12),
-                  ),
-                  Text(
-                    Fmt.priceFloorBigInt(
-                      Fmt.balanceInt(balancesInfo.availableBalance.toString()),
-                      decimals,
-                      lengthMax: 4,
-                    ),
-                    style: TextStyle(color: titleColor),
-                  )
-                ],
-              ),
-              Container(
-                height: 24,
-                width: 0,
-                decoration: BoxDecoration(
-                    border: Border(
-                  left: BorderSide(
-                      color: Theme.of(context).cardColor, width: 0.5),
-                )),
-              ),
-              Column(
-                children: [
-                  Text(
-                    dic['locked'],
-                    style: TextStyle(color: titleColor, fontSize: 12),
-                  ),
                   Row(
                     children: [
                       lockedInfo.length > 2
@@ -531,7 +525,8 @@ class BalanceCard extends StatelessWidget {
                           : Container(),
                       Text(
                         Fmt.priceFloorBigInt(
-                          Fmt.balanceInt(balancesInfo.lockedBalance.toString()),
+                          Fmt.balanceInt(
+                              (balancesInfo?.lockedBalance ?? 0).toString()),
                           decimals,
                           lengthMax: 4,
                         ),
@@ -551,6 +546,10 @@ class BalanceCard extends StatelessWidget {
                             )
                           : Container(),
                     ],
+                  ),
+                  Text(
+                    dic['locked'],
+                    style: TextStyle(color: titleColor, fontSize: 12),
                   ),
                 ],
               ),

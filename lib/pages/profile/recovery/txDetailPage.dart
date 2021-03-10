@@ -59,6 +59,7 @@ class TxDetailPage extends StatelessWidget {
           : plugin.basic.name,
       success: detail.success,
       action: detail.call,
+      fee: '${Fmt.balance(detail.fee, decimals)} $symbol',
       hash: detail.hash,
       eventId: detail.txNumber,
       infoItems: info,

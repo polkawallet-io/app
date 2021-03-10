@@ -259,7 +259,7 @@ class _AssetsState extends State<AssetsPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: SizedBox(
-              height: 32,
+              height: 36,
               child: Image.asset('assets/images/logo.png'),
             ),
             centerTitle: false,

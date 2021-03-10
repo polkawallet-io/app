@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _handleWalletConnect(String uri) async {
     print('wallet connect uri:');
     print(uri);
-    await widget.service.plugin.sdk.api.walletConnect.connect(uri);
+    // await widget.service.plugin.sdk.api.walletConnect.connect(uri);
   }
 
   List<BottomNavigationBarItem> _buildNavItems(List<HomeNavItem> items) {
