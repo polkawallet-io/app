@@ -1,4 +1,5 @@
 import 'package:app/common/components/willPopScopWrapper.dart';
+import 'package:app/common/consts.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -6,6 +7,7 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/guidePage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -255,6 +257,17 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
+  Future<void> _showGuide(BuildContext context, GetStorage storage) async {
+    final storeKey = '${show_guide_status_key}_$app_beta_version';
+    final showGuideStatus = storage.read(storeKey);
+    if (showGuideStatus == null) {
+      final res = await Navigator.of(context).pushNamed(GuidePage.route);
+      if (res != null) {
+        storage.write(storeKey, true);
+      }
+    }
+  }
+
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
@@ -263,6 +276,8 @@ class _WalletAppState extends State<WalletApp> {
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
       await store.init();
+
+      _showGuide(context, storage);
 
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
@@ -353,6 +368,7 @@ class _WalletAppState extends State<WalletApp> {
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
+      GuidePage.route: (_) => GuidePage(),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

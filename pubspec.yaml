@@ -104,6 +104,11 @@ flutter:
     - assets/images/menu.svg
     - assets/images/qr.svg
     - assets/images/scan.svg
+    - assets/images/public/guide_0.png
+    - assets/images/public/guide_1.png
+    - assets/images/public/guide_2.png
+    - assets/images/public/guide_3.png
+    - assets/images/public/guide_4.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
