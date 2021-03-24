@@ -513,7 +513,7 @@ class BalanceCard extends StatelessWidget {
                           ? TapTooltip(
                               message: lockedInfo,
                               child: Padding(
-                                padding: EdgeInsets.only(right: 6),
+                                padding: EdgeInsets.only(right: 4),
                                 child: Icon(
                                   Icons.info,
                                   size: 16,

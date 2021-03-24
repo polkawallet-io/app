@@ -367,12 +367,12 @@ class _AssetsState extends State<AssetsPage> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              Fmt.priceFloorBigInt(
-                                  balancesInfo != null
-                                      ? Fmt.balanceTotal(balancesInfo)
-                                      : BigInt.zero,
-                                  decimals,
-                                  lengthFixed: 4),
+                              balancesInfo != null &&
+                                      balancesInfo.freeBalance != null
+                                  ? Fmt.priceFloorBigInt(
+                                      Fmt.balanceTotal(balancesInfo), decimals,
+                                      lengthFixed: 4)
+                                  : '--.--',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -397,7 +397,7 @@ class _AssetsState extends State<AssetsPage> {
                           : tokens
                               .map((i) => TokenItem(
                                     i,
-                                    decimals,
+                                    i.decimals,
                                     detailPageRoute: i.detailPageRoute,
                                     icon: widget
                                         .service.plugin.tokenIcons[i.symbol],
@@ -421,7 +421,7 @@ class _AssetsState extends State<AssetsPage> {
                                     children: i.tokens
                                         .map((e) => TokenItem(
                                               e,
-                                              decimals,
+                                              e.decimals,
                                               detailPageRoute:
                                                   e.detailPageRoute,
                                               icon: widget.service.plugin

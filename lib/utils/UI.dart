@@ -55,18 +55,12 @@ class AppUI {
     final int latestCode = versions[platform]['version-code'];
     final String latestBeta = versions[platform]['version-beta'];
     final int latestCodeBeta = versions[platform]['version-code-beta'];
-    final int versionCodeMin = versions[platform]['version-code-min'];
 
     bool needUpdate = false;
-    bool needExit = false;
     if (autoCheck) {
       if (latestCode > app_beta_version_code) {
         // new version found
         needUpdate = true;
-        // app version lower than versionMin, force exit
-        if (versionCodeMin > app_beta_version_code) {
-          needExit = true;
-        }
       } else {
         return;
       }
@@ -108,12 +102,7 @@ class AppUI {
             CupertinoButton(
               child: Text(I18n.of(context)
                   .getDic(i18n_full_dic_ui, 'common')['cancel']),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (needUpdate && needExit) {
-                  exit(0);
-                }
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             CupertinoButton(
               child: Text(

@@ -670,38 +670,46 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
-    version: "0.1.5"
+      path: "."
+      ref: "91bd353832eda02184864dfebb212dfdd6f82085"
+      resolved-ref: "91bd353832eda02184864dfebb212dfdd6f82085"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.1.3"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
-    version: "0.0.1"
+      path: "."
+      ref: cabcc5c4035341bd067865855a77108d25954e20
+      resolved-ref: cabcc5c4035341bd067865855a77108d25954e20
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
+    version: "0.1.3"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
-      relative: true
-    source: path
+      path: "."
+      ref: "9c4ad2e82e4ecc25ab1268108fc79cf0861d1e88"
+      resolved-ref: "9c4ad2e82e4ecc25ab1268108fc79cf0861d1e88"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
+    source: git
     version: "0.1.5"
   polkawallet_sdk:
     dependency: transitive
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.1.1"
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.1.2"
+      path: "."
+      ref: "2fe52fe6542bf0715769686dfb02a289ba1aa86d"
+      resolved-ref: "2fe52fe6542bf0715769686dfb02a289ba1aa86d"
+      url: "https://github.com/polkawallet-io/ui.git"
+    source: git
+    version: "0.1.3"
   pool:
     dependency: transitive
     description:
