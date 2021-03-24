@@ -27,11 +27,17 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AssetsPage extends StatefulWidget {
-  AssetsPage(this.service, this.connectedNode, this.checkJSCodeUpdate);
+  AssetsPage(
+    this.service,
+    this.connectedNode,
+    this.checkJSCodeUpdate,
+    this.handleWalletConnect,
+  );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
+  final Future<void> Function(String) handleWalletConnect;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -58,6 +64,12 @@ class _AssetsState extends State<AssetsPage> {
       arguments: 'tx',
     )) as QRCodeResult;
     if (data != null) {
+      if (data.type == QRCodeResultType.rawData &&
+          data.rawData.substring(0, 3) == 'wc:') {
+        widget.handleWalletConnect(data.rawData);
+        return;
+      }
+
       if (data.type == QRCodeResultType.address) {
         Navigator.of(context).pushNamed(
           TransferPage.route,
@@ -129,8 +141,8 @@ class _AssetsState extends State<AssetsPage> {
   Future<void> _signAsync(String password) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     try {
-      final signed =
-          await widget.service.plugin.sdk.api.uos.signAsync(password);
+      final signed = await widget.service.plugin.sdk.api.uos
+          .signAsync(widget.service.plugin.basic.name, password);
       print('signed: $signed');
       Navigator.of(context).pushNamed(
         QrSignerPage.route,
@@ -169,22 +181,25 @@ class _AssetsState extends State<AssetsPage> {
             : '';
     return RoundedCard(
       margin: EdgeInsets.fromLTRB(16, 4, 16, 0),
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(16),
       child: Column(
         children: <Widget>[
-          ListTile(
-            leading: AddressIcon(acc.address, svg: acc.icon),
-            title: Text(UI.accountName(context, acc)),
-            subtitle: Text(network),
+          Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: AddressIcon(acc.address, svg: acc.icon),
+              title: Text(UI.accountName(context, acc)),
+              subtitle: Text(network),
+            ),
           ),
           ListTile(
             title: Row(
               children: [
                 GestureDetector(
-                  child: Icon(
-                    Icons.qr_code,
+                  child: SvgPicture.asset(
+                    'assets/images/qr.svg',
                     color: Theme.of(context).primaryColor,
-                    size: 24,
+                    width: 32,
                   ),
                   onTap: () {
                     if (acc.address != '') {
@@ -196,7 +211,7 @@ class _AssetsState extends State<AssetsPage> {
                   padding: EdgeInsets.only(left: 8),
                   child: Text(
                     '$accIndex${Fmt.address(acc.address)}',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 16),
                   ),
                 )
               ],
@@ -205,7 +220,7 @@ class _AssetsState extends State<AssetsPage> {
               icon: SvgPicture.asset(
                 'assets/images/scan.svg',
                 color: Theme.of(context).primaryColor,
-                width: 20,
+                width: 32,
               ),
               onPressed: () {
                 if (acc.address != '') {
@@ -223,14 +238,10 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-            widget.service.plugin.basic.name == 'polkadot';
-        final symbol = isKSMOrDOT
-            ? (widget.service.plugin.networkState.tokenSymbol ?? [''])[0]
-            : widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = isKSMOrDOT
-            ? (widget.service.plugin.networkState.tokenDecimals ?? [12])[0]
-            : widget.service.plugin.networkState.tokenDecimals ?? 12;
+        final symbol =
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final decimals =
+            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens;
@@ -248,7 +259,7 @@ class _AssetsState extends State<AssetsPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: SizedBox(
-              height: 28,
+              height: 36,
               child: Image.asset('assets/images/logo.png'),
             ),
             centerTitle: false,
@@ -256,7 +267,12 @@ class _AssetsState extends State<AssetsPage> {
             elevation: 0.0,
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.menu, color: Theme.of(context).cardColor),
+                padding: EdgeInsets.only(right: 8),
+                icon: SvgPicture.asset(
+                  'assets/images/menu.svg',
+                  color: Theme.of(context).cardColor,
+                  width: 24,
+                ),
                 onPressed: widget.service.keyring.allAccounts.length > 0
                     ? () async {
                         final selected = await Navigator.of(context)
@@ -270,82 +286,74 @@ class _AssetsState extends State<AssetsPage> {
               ),
             ],
           ),
-          body: Column(
+          body: Stack(
             children: <Widget>[
-              _buildTopCard(context),
-              widget.service.plugin.basic.isTestNet
-                  ? Padding(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: TextTag(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'assets')['assets.warn'],
-                            color: Colors.deepOrange,
-                            fontSize: 12,
-                            margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.all(8),
-                          ))
-                        ],
-                      ),
-                    )
-                  : Container(height: 24),
-              FutureBuilder(
-                future: _fetchAnnouncements(),
-                builder: (_, AsyncSnapshot<List> snapshot) {
-                  final String lang =
-                      I18n.of(context).locale.toString().contains('zh')
-                          ? 'zh'
-                          : 'en';
-                  if (!snapshot.hasData || snapshot.data.length == 0) {
-                    return Container();
-                  }
-                  final Map announce = snapshot.data[0][lang];
-                  return GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.all(16),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: TextTag(
-                              announce['title'],
-                              padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-                              color: Colors.lightGreen,
+              Container(
+                margin: EdgeInsets.only(top: 120),
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
+                  children: [
+                    widget.service.plugin.basic.isTestNet
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: 16, top: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: TextTag(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'assets')['assets.warn'],
+                                  color: Colors.deepOrange,
+                                  fontSize: 12,
+                                  margin: EdgeInsets.all(0),
+                                  padding: EdgeInsets.all(8),
+                                ))
+                              ],
                             ),
                           )
-                        ],
-                      ),
+                        : Container(height: 24),
+                    FutureBuilder(
+                      future: _fetchAnnouncements(),
+                      builder: (_, AsyncSnapshot<List> snapshot) {
+                        final String lang =
+                            I18n.of(context).locale.toString().contains('zh')
+                                ? 'zh'
+                                : 'en';
+                        if (!snapshot.hasData || snapshot.data.length == 0) {
+                          return Container();
+                        }
+                        final Map announce = snapshot.data[0][lang];
+                        return GestureDetector(
+                          child: Container(
+                            margin: EdgeInsets.all(16),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: TextTag(
+                                    announce['title'],
+                                    padding:
+                                        EdgeInsets.fromLTRB(16, 12, 16, 12),
+                                    color: Colors.lightGreen,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              AnnouncementPage.route,
+                              arguments: AnnouncePageParams(
+                                title: announce['title'],
+                                link: announce['link'],
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        AnnouncementPage.route,
-                        arguments: AnnouncePageParams(
-                          title: announce['title'],
-                          link: announce['link'],
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16, bottom: 8),
-                padding: EdgeInsets.only(top: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
                     BorderedTitle(
                       title: I18n.of(context)
                           .getDic(i18n_full_dic_app, 'assets')['assets'],
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 32),
-                  children: <Widget>[
+                    ),
                     RoundedCard(
                       margin: EdgeInsets.only(top: 16),
                       child: ListTile(
@@ -359,12 +367,12 @@ class _AssetsState extends State<AssetsPage> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              Fmt.priceFloorBigInt(
-                                  balancesInfo != null
-                                      ? Fmt.balanceTotal(balancesInfo)
-                                      : BigInt.zero,
-                                  decimals,
-                                  lengthFixed: 4),
+                              balancesInfo != null &&
+                                      balancesInfo.freeBalance != null
+                                  ? Fmt.priceFloorBigInt(
+                                      Fmt.balanceTotal(balancesInfo), decimals,
+                                      lengthFixed: 4)
+                                  : '--.--',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -389,7 +397,7 @@ class _AssetsState extends State<AssetsPage> {
                           : tokens
                               .map((i) => TokenItem(
                                     i,
-                                    decimals,
+                                    i.decimals,
                                     detailPageRoute: i.detailPageRoute,
                                     icon: widget
                                         .service.plugin.tokenIcons[i.symbol],
@@ -413,7 +421,7 @@ class _AssetsState extends State<AssetsPage> {
                                     children: i.tokens
                                         .map((e) => TokenItem(
                                               e,
-                                              decimals,
+                                              e.decimals,
                                               detailPageRoute:
                                                   e.detailPageRoute,
                                               icon: widget.service.plugin
@@ -427,6 +435,12 @@ class _AssetsState extends State<AssetsPage> {
                     ),
                   ],
                 ),
+              ),
+              Column(
+                children: [
+                  _buildTopCard(context),
+                  Expanded(child: Container())
+                ],
               )
             ],
           ),

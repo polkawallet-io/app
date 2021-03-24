@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 
 part 'account.g.dart';
 
@@ -26,6 +27,12 @@ abstract class _AccountStore with Store {
 
   @observable
   RecoveryInfo recoveryInfo = RecoveryInfo();
+
+  @observable
+  bool walletConnectPairing = false;
+
+  @observable
+  ObservableList<WCPairedData> wcSessions = ObservableList<WCPairedData>();
 
   @action
   void setNewAccount(String name, String password) {
@@ -68,6 +75,26 @@ abstract class _AccountStore with Store {
   @action
   void setAccountRecoveryInfo(Map json) {
     recoveryInfo = json != null ? RecoveryInfo.fromJson(json) : RecoveryInfo();
+  }
+
+  @action
+  void setWCPairing(bool pairing) {
+    walletConnectPairing = pairing;
+  }
+
+  @action
+  void setWCSessions(List<WCPairedData> sessions) {
+    wcSessions = sessions;
+  }
+
+  @action
+  void createWCSession(WCPairedData session) {
+    wcSessions.add(session);
+  }
+
+  @action
+  void deleteWCSession(WCPairedData session) {
+    wcSessions.removeWhere((e) => e.topic == session.topic);
   }
 }
 

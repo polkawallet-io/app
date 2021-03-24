@@ -17,16 +17,11 @@ class TransferDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final isKSMOrDOT = service.plugin.basic.name == 'kusama' ||
-        service.plugin.basic.name == 'polkadot';
-    final symbol = isKSMOrDOT
-        ? service.plugin.networkState.tokenSymbol[0]
-        : service.plugin.networkState.tokenSymbol ?? '';
-    final decimals = isKSMOrDOT
-        ? service.plugin.networkState.tokenDecimals[0]
-        : service.plugin.networkState.tokenDecimals ?? 12;
+    final symbol = (service.plugin.networkState.tokenSymbol ?? [''])[0];
+    final decimals = (service.plugin.networkState.tokenDecimals ?? [12])[0];
 
     final TransferData tx = ModalRoute.of(context).settings.arguments;
+    final amount = Fmt.priceFloor(double.parse(tx.amount), lengthFixed: 4);
 
     final String txType = tx.from == service.keyring.current.address
         ? dic['transfer']
@@ -39,6 +34,7 @@ class TransferDetailPage extends StatelessWidget {
     return TxDetail(
       success: tx.success,
       action: txType,
+      fee: '${Fmt.balance(tx.fee, decimals)} $symbol',
       eventId: tx.extrinsicIndex,
       hash: tx.hash,
       blockTime: Fmt.dateTime(
@@ -47,21 +43,20 @@ class TransferDetailPage extends StatelessWidget {
       networkName: networkName,
       infoItems: <TxDetailInfoItem>[
         TxDetailInfoItem(
-          label: dic['value'],
-          title: '${tx.amount} $symbol',
-        ),
-        TxDetailInfoItem(
-          label: dic['fee'],
-          title: '${Fmt.balance(tx.fee, decimals, length: decimals)} $symbol',
+          label: dic['amount'],
+          content: Text(
+            '$amount $symbol',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
         TxDetailInfoItem(
           label: dic['from'],
-          title: Fmt.address(tx.from),
+          content: Text(Fmt.address(tx.from)),
           copyText: tx.from,
         ),
         TxDetailInfoItem(
           label: dic['to'],
-          title: Fmt.address(tx.to),
+          content: Text(Fmt.address(tx.to)),
           copyText: tx.to,
         )
       ],

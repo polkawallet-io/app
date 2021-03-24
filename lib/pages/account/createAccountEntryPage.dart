@@ -15,12 +15,15 @@ class CreateAccountEntryPage extends StatelessWidget {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      appBar: AppBar(title: Text(dic['create']), centerTitle: true),
+      appBar: AppBar(title: Text(dic['add']), centerTitle: true),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Image.asset('assets/images/logo_about.png'),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                child: Image.asset('assets/images/logo_about.png'),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(16),

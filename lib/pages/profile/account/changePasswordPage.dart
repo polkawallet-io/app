@@ -121,6 +121,38 @@ class _ChangePassword extends State<ChangePasswordPage> {
                 child: ListView(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                   children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          child: Text(
+                            dic['pass.forget'],
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                decoration: TextDecoration.underline),
+                          ),
+                          onTap: () {
+                            showCupertinoDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CupertinoAlertDialog(
+                                  title: Text(dic['pass.reset']),
+                                  content: Text(dic['pass.reset.text']),
+                                  actions: <Widget>[
+                                    CupertinoButton(
+                                      child: Text(I18n.of(context).getDic(
+                                          i18n_full_dic_ui, 'common')['ok']),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                     TextFormField(
                       decoration: InputDecoration(
                         icon: Icon(Icons.lock),

@@ -14,3 +14,8 @@
 - rebuild staking bond&nominate process.
 - fix import account derive path issue.
 - update tx confirm page estimate fee display.
+
+# 2.0.0-beta
+- Brand new UI.
+- AcalaMandala-TC6 support.
+- Add existential deposit tips.

@@ -55,7 +55,6 @@ __ polkawallet-io/app
     |
     |__ polkawallet-io/ui
     |    |__ polkawallet-io/sdk
-    |        |__ polkawallet-io/js_api
     |
     |__ polkawallet_plugin_kusama
     |    |__ polkawallet-io/sdk
@@ -126,3 +125,31 @@ Submit a update request issue to update your plugin. There are two different kin
  1. Update the dart package. We will rebuild the App and publish a new release.
  2. Update the js code of your plugin (dart code was not affected). We will rebuild the
   js bundle file and the app will perform a hot-update through polkawallet-api.
+
+
+### Translation
+Polkawallet App has several translation projects on [crowdin.com](https://crowdin.com/):
+
+ - [polkawallet](https://crowdin.com/project/polkawallet)
+ - [kusama plugin](https://crowdin.com/project/polkawalletpluginkusama)
+ - [acala plugin](https://crowdin.com/project/polkawalletpluginacala)
+
+Language files in the project are written in `json-like` style:
+```dart
+final enAccount = {
+    'key': 'value',
+    'key.another': 'Another value for translation.',
+    'key.multiline': 'Multiline text are \n split with symbol \n.',
+}
+
+/// This 3 strings above will display in the App like:
+// value
+
+// Another value for translation.
+
+// Multiline text are
+// split with symbol
+// .
+```
+You need to keep the `'key'` field on the left as it is, and translate the `'value'`
+field on the right only. Note that the `\n` symbol split a long string into several lines.

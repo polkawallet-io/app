@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -42,6 +43,7 @@ class _TransferPageState extends State<TransferPage> {
   final TextEditingController _amountCtrl = new TextEditingController();
 
   KeyPairData _accountTo;
+  bool _keepAlive = true;
 
   Future<void> _onScan() async {
     final to = await Navigator.of(context).pushNamed(ScanPage.route);
@@ -63,18 +65,14 @@ class _TransferPageState extends State<TransferPage> {
   Future<TxConfirmParams> _getTxParams() async {
     if (_formKey.currentState.validate()) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-      final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-          widget.service.plugin.basic.name == 'polkadot';
-      final symbol = isKSMOrDOT
-          ? widget.service.plugin.networkState.tokenSymbol[0]
-          : widget.service.plugin.networkState.tokenSymbol ?? '';
-      final decimals = isKSMOrDOT
-          ? widget.service.plugin.networkState.tokenDecimals[0]
-          : widget.service.plugin.networkState.tokenDecimals ?? 12;
+      final symbol =
+          (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+      final decimals =
+          (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
-        call: 'transfer',
+        call: _keepAlive ? 'transferKeepAlive' : 'transfer',
         txDisplay: {
           "destination": _accountTo.address,
           "currency": symbol,
@@ -138,126 +136,176 @@ class _TransferPageState extends State<TransferPage> {
     return Observer(
       builder: (_) {
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-        final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-            widget.service.plugin.basic.name == 'polkadot';
-        final symbol = isKSMOrDOT
-            ? widget.service.plugin.networkState.tokenSymbol[0]
-            : widget.service.plugin.networkState.tokenSymbol ?? '';
-        final decimals = isKSMOrDOT
-            ? widget.service.plugin.networkState.tokenDecimals[0]
-            : widget.service.plugin.networkState.tokenDecimals ?? 12;
+        final symbol =
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final decimals =
+            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final available = Fmt.balanceInt(
-            widget.service.plugin.balances.native.availableBalance.toString());
+            (widget.service.plugin.balances.native?.availableBalance ?? 0)
+                .toString());
 
+        final amountExist = widget
+            .service.plugin.networkConst['balances']['existentialDeposit']
+            .toString();
         return Scaffold(
           appBar: AppBar(
             title: Text(dic['transfer']),
             centerTitle: true,
             actions: <Widget>[
               IconButton(
+                padding: EdgeInsets.only(right: 8),
                 icon: SvgPicture.asset(
                   'assets/images/scan.svg',
                   color: Theme.of(context).cardColor,
-                  width: 20,
+                  width: 28,
                 ),
                 onPressed: _onScan,
               )
             ],
           ),
-          body: SafeArea(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      padding: EdgeInsets.all(16),
-                      children: <Widget>[
-                        AddressInputField(
-                          widget.service.plugin.sdk.api,
-                          widget.service.keyring.allAccounts,
-                          label: dic['address'],
-                          initialValue: _accountTo,
-                          onChanged: (KeyPairData acc) {
-                            setState(() {
-                              _accountTo = acc;
-                            });
-                          },
-                          key: ValueKey<KeyPairData>(_accountTo),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    padding: EdgeInsets.all(16),
+                    children: <Widget>[
+                      AddressInputField(
+                        widget.service.plugin.sdk.api,
+                        widget.service.keyring.allAccounts,
+                        label: dic['address'],
+                        initialValue: _accountTo,
+                        onChanged: (KeyPairData acc) {
+                          setState(() {
+                            _accountTo = acc;
+                          });
+                        },
+                        key: ValueKey<KeyPairData>(_accountTo),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: dic['amount'],
+                          labelText:
+                              '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                            available,
+                            decimals,
+                            lengthMax: 6,
+                          )})',
                         ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            hintText: dic['amount'],
-                            labelText:
-                                '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
-                              available,
-                              decimals,
-                              lengthMax: 6,
-                            )})',
-                          ),
-                          inputFormatters: [UI.decimalInputFormatter(decimals)],
-                          controller: _amountCtrl,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          validator: (v) {
-                            if (v.isEmpty) {
-                              return dic['amount.error'];
-                            }
-                            if (double.parse(v.trim()) >=
-                                available / BigInt.from(pow(10, decimals)) -
-                                    0.001) {
-                              return dic['amount.low'];
-                            }
-                            return null;
-                          },
-                        ),
-                        Container(
-                          color: Theme.of(context).canvasColor,
-                          margin: EdgeInsets.only(top: 16, bottom: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
+                        inputFormatters: [UI.decimalInputFormatter(decimals)],
+                        controller: _amountCtrl,
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        validator: (v) {
+                          if (v.isEmpty) {
+                            return dic['amount.error'];
+                          }
+                          if (Fmt.tokenInt(v, decimals) >= available) {
+                            return dic['amount.low'];
+                          }
+                          return null;
+                        },
+                      ),
+                      Container(
+                        color: Theme.of(context).canvasColor,
+                        margin: EdgeInsets.only(top: 16, bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 4),
+                                  child: Text(
                                     dic['currency'],
                                     style: TextStyle(
                                         color: Theme.of(context)
-                                            .unselectedWidgetColor),
+                                            .unselectedWidgetColor,
+                                        fontSize: 12),
                                   ),
-                                  CurrencyWithIcon(
-                                      symbol,
-                                      TokenIcon(symbol,
-                                          widget.service.plugin.tokenIcons)),
-                                ],
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 18,
-                              )
-                            ],
-                          ),
+                                ),
+                                CurrencyWithIcon(
+                                    symbol,
+                                    TokenIcon(symbol,
+                                        widget.service.plugin.tokenIcons)),
+                              ],
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 18,
+                            )
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 4),
+                              child: Text(dic['amount.exist']),
+                            ),
+                            TapTooltip(
+                              message: dic['amount.exist.msg'],
+                              child: Icon(
+                                Icons.info,
+                                size: 16,
+                                color: Theme.of(context).unselectedWidgetColor,
+                              ),
+                            ),
+                            Expanded(child: Container(width: 2)),
+                            Text(
+                                '${Fmt.balance(amountExist, decimals)} $symbol'),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Text(dic['transfer.alive']),
+                          ),
+                          TapTooltip(
+                            message: dic['transfer.alive.msg'],
+                            child: Icon(
+                              Icons.info,
+                              size: 16,
+                              color: Theme.of(context).unselectedWidgetColor,
+                            ),
+                          ),
+                          Expanded(child: Container(width: 2)),
+                          CupertinoSwitch(
+                            value: _keepAlive,
+                            onChanged: (res) {
+                              setState(() {
+                                _keepAlive = res;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: TxButton(
-                    text: dic['make'],
-                    getTxParams: _getTxParams,
-                    onFinish: (res) {
-                      if (res != null) {
-                        Navigator.of(context).pop(res);
-                      }
-                    },
-                  ),
-                )
-              ],
-            ),
+              ),
+              Container(
+                padding: EdgeInsets.all(16),
+                child: TxButton(
+                  text: dic['make'],
+                  getTxParams: _getTxParams,
+                  onFinish: (res) {
+                    if (res != null) {
+                      Navigator.of(context).pop(res);
+                    }
+                  },
+                ),
+              )
+            ],
           ),
         );
       },

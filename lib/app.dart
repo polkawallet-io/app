@@ -1,4 +1,5 @@
 import 'package:app/common/components/willPopScopWrapper.dart';
+import 'package:app/common/consts.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -6,6 +7,7 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/guidePage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -25,7 +27,10 @@ import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/profile/sign/signPage.dart';
+import 'package:app/pages/profile/account/signPage.dart';
+import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
+import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
@@ -37,6 +42,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -68,9 +75,10 @@ class _WalletAppState extends State<WalletApp> {
 
   NetworkParams _connectedNode;
 
-  ThemeData _getAppTheme(MaterialColor color) {
+  ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
       primarySwatch: color,
+      accentColor: secondaryColor,
       textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 24,
@@ -108,7 +116,55 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
+  void _initWalletConnect() {
+    _service.plugin.sdk.api.walletConnect.initClient((WCPairingData proposal) {
+      print('get wc pairing');
+      _handleWCPairing(proposal);
+    }, (WCPairedData session) {
+      print('get wc session');
+      _service.store.account.createWCSession(session);
+      _service.store.account.setWCPairing(false);
+    }, (WCPayloadData payload) {
+      print('get wc payload');
+      _handleWCPayload(payload);
+    });
+  }
+
+  Future<void> _handleWCPairing(WCPairingData pairingReq) async {
+    final approved = await Navigator.of(context)
+        .pushNamed(WCPairingConfirmPage.route, arguments: pairingReq);
+    final address = _service.keyring.current.address;
+    if (approved ?? false) {
+      _service.store.account.setWCPairing(true);
+      await _service.plugin.sdk.api.walletConnect
+          .approvePairing(pairingReq, '$address@polkadot:acalatc5');
+      print('wallet connect alive');
+    } else {
+      _service.plugin.sdk.api.walletConnect.rejectPairing(pairingReq);
+    }
+  }
+
+  Future<void> _handleWCPayload(WCPayloadData payload) async {
+    final res = await Navigator.of(context)
+        .pushNamed(WalletConnectSignPage.route, arguments: payload);
+    if (res == null) {
+      print('user rejected signing');
+      await _service.plugin.sdk.api.walletConnect
+          .payloadRespond(payload, error: {
+        'code': -32000,
+        'message': "User rejected JSON-RPC request",
+      });
+    } else {
+      print('user signed payload:');
+      print(res);
+      // await _service.plugin.sdk.api.walletConnect
+      //     .payloadRespond(payload, response: );
+    }
+  }
+
   Future<void> _startPlugin() async {
+    // _initWalletConnect();
+
     setState(() {
       _connectedNode = null;
     });
@@ -122,15 +178,27 @@ class _WalletAppState extends State<WalletApp> {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
-      _theme = _getAppTheme(network.basic.primaryColor);
+      _theme = _getAppTheme(
+        network.basic.primaryColor,
+        secondaryColor: network.basic.gradientColor,
+      );
     });
     _store.settings.setNetwork(network.basic.name);
+
+    final useLocalJS = WalletApi.getPolkadotJSVersion(
+          _store.storage,
+          network.basic.name,
+          network.basic.jsCodeVersion,
+        ) >
+        network.basic.jsCodeVersion;
 
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
       _keyring,
       webView: _service.plugin.sdk.webView,
-      jsCode: WalletApi.getPolkadotJSCode(_store.storage, network.basic.name),
+      jsCode: useLocalJS
+          ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
+          : null,
     );
 
     final service = AppService(network, _keyring, _store);
@@ -150,9 +218,8 @@ class _WalletAppState extends State<WalletApp> {
         _connectedNode = null;
       });
     }
-
-    final connected =
-        await _service.plugin.sdk.api.connectNode(_keyring, [node]);
+    _service.plugin.sdk.api.account.unsubscribeBalance();
+    final connected = await _service.plugin.start(_keyring, nodes: [node]);
     setState(() {
       _connectedNode = connected;
     });
@@ -190,6 +257,17 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
+  Future<void> _showGuide(BuildContext context, GetStorage storage) async {
+    final storeKey = '${show_guide_status_key}_$app_beta_version';
+    final showGuideStatus = storage.read(storeKey);
+    if (showGuideStatus == null) {
+      final res = await Navigator.of(context).pushNamed(GuidePage.route);
+      if (res != null) {
+        storage.write(storeKey, true);
+      }
+    }
+  }
+
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
@@ -199,6 +277,8 @@ class _WalletAppState extends State<WalletApp> {
       final store = AppStore(storage);
       await store.init();
 
+      _showGuide(context, storage);
+
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
       final service = AppService(
@@ -207,7 +287,10 @@ class _WalletAppState extends State<WalletApp> {
       setState(() {
         _store = store;
         _service = service;
-        _theme = _getAppTheme(service.plugin.basic.primaryColor);
+        _theme = _getAppTheme(
+          service.plugin.basic.primaryColor,
+          secondaryColor: service.plugin.basic.gradientColor,
+        );
       });
 
       if (store.settings.localeCode.isNotEmpty) {
@@ -219,10 +302,19 @@ class _WalletAppState extends State<WalletApp> {
       _checkUpdate(context);
       await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
+      final useLocalJS = WalletApi.getPolkadotJSVersion(
+            _store.storage,
+            service.plugin.basic.name,
+            service.plugin.basic.jsCodeVersion,
+          ) >
+          service.plugin.basic.jsCodeVersion;
+
       await service.plugin.beforeStart(
         _keyring,
-        jsCode: WalletApi.getPolkadotJSCode(
-            _store.storage, service.plugin.basic.name),
+        jsCode: useLocalJS
+            ? WalletApi.getPolkadotJSCode(
+                _store.storage, service.plugin.basic.name)
+            : null,
       );
 
       _startPlugin();
@@ -272,6 +364,11 @@ class _WalletAppState extends State<WalletApp> {
           AccountQrCodePage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) =>
           NetworkSelectPage(_service, widget.plugins, _changeNetwork),
+      WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
+      WCSessionsPage.route: (_) => WCSessionsPage(_service),
+      WalletConnectSignPage.route: (_) =>
+          WalletConnectSignPage(_service, _service.account.getPassword),
+      GuidePage.route: (_) => GuidePage(),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
@@ -312,7 +409,11 @@ class _WalletAppState extends State<WalletApp> {
   Widget build(_) {
     return MaterialApp(
       title: 'Polkawallet Plugin Kusama Demo',
-      theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),
+      theme: _theme ??
+          _getAppTheme(
+            widget.plugins[0].basic.primaryColor,
+            secondaryColor: widget.plugins[0].basic.gradientColor,
+          ),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),

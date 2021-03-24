@@ -5,7 +5,6 @@ import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/profile/sign/signPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +13,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -103,15 +103,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      RaisedButton(
-                        padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
-                        color: primaryColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24)),
-                        child: Text(
-                          dic['account'],
-                          style: Theme.of(context).textTheme.button,
-                        ),
+                      RoundedButton(
+                        text: dic['account'],
                         onPressed: () async {
                           await Navigator.pushNamed(
                               context, AccountManagePage.route);
@@ -124,19 +117,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 )
               : Container(height: 24),
-          !(acc.observation ?? false)
-              ? ListTile(
-                  leading: Container(
-                    width: 32,
-                    child: Icon(Icons.edit_outlined, color: grey, size: 22),
-                  ),
-                  title: Text(dic['sign']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(SignMessagePage.route);
-                  },
-                )
-              : Container(),
           ListTile(
             leading: Container(
               width: 32,
@@ -151,15 +131,6 @@ class _ProfilePageState extends State<ProfilePage> {
               });
             },
           ),
-          ListTile(
-            leading: Container(
-              width: 32,
-              child: Icon(Icons.settings, color: grey, size: 22),
-            ),
-            title: Text(dic['setting']),
-            trailing: Icon(Icons.arrow_forward_ios, size: 18),
-            onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
-          ),
           widget.service.plugin.recoveryEnabled
               ? ListTile(
                   leading: Container(
@@ -173,6 +144,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       : () => _showRecoveryMenu(context),
                 )
               : Container(),
+          ListTile(
+            leading: Container(
+              width: 32,
+              child: Icon(Icons.settings, color: grey, size: 22),
+            ),
+            title: Text(dic['setting']),
+            trailing: Icon(Icons.arrow_forward_ios, size: 18),
+            onTap: () => Navigator.of(context).pushNamed(SettingsPage.route),
+          ),
           ListTile(
             leading: Container(
               width: 32,

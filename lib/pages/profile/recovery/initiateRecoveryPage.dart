@@ -167,7 +167,8 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
                 child: RoundedButton(
                   text: I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['next'],
-                  onPressed: () => _onValidateSubmit(),
+                  onPressed:
+                      _recoverable != null ? () => _onValidateSubmit() : null,
                   submitting: _loading,
                 ),
               )
