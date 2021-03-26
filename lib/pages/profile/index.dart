@@ -5,6 +5,7 @@ import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
+import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -97,6 +98,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
+          widget.service.plugin.basic.name.contains('acala')
+              ? AdBanner()
+              : Container(),
           !(acc.observation ?? false)
               ? Container(
                   padding: EdgeInsets.all(24),

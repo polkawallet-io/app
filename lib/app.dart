@@ -28,6 +28,7 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
+import 'package:app/pages/public/karPreAuctionPage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -369,6 +370,7 @@ class _WalletAppState extends State<WalletApp> {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
+      KarPreAuctionPage.route: (_) => KarPreAuctionPage(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

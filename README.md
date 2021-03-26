@@ -140,7 +140,7 @@ final enAccount = {
     'key': 'value',
     'key.another': 'Another value for translation.',
     'key.multiline': 'Multiline text are \n split with symbol \n.',
-}
+};
 
 /// This 3 strings above will display in the App like:
 // value
@@ -153,3 +153,14 @@ final enAccount = {
 ```
 You need to keep the `'key'` field on the left as it is, and translate the `'value'`
 field on the right only. Note that the `\n` symbol split a long string into several lines.
+
+### Release checklist
+
+ - [ ] sdk version code updated.
+ - [ ] sdk jsCodeVersion code updated.
+ - [ ] sdk version code of `polkawallet-io/ui` updated.
+ - [ ] sdk & ui dependencies of plugins updated.
+ - [ ] plugins version updated.
+ - [ ] version code in `pubspec.yaml` updated.
+ - [ ] version code in `lib/common/consts.dart` updated.
+ - [ ] version code in Xcode for IOS updated.
