@@ -1,88 +1,114 @@
 import 'dart:async';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karPreAuctionPage.dart';
+import 'package:app/service/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AdBanner extends StatelessWidget {
+  AdBanner(this.service, {this.canClose = false});
+  final AppService service;
+  final bool canClose;
+
   @override
   Widget build(BuildContext context) {
-    final startTime = DateTime.utc(2021, 3, 1, 0, 0, 0);
     final endTime = DateTime.utc(2021, 4, 11, 0, 0, 0);
     final now = DateTime.now().millisecondsSinceEpoch;
-    final show = now > startTime.millisecondsSinceEpoch &&
-        now < endTime.millisecondsSinceEpoch;
+    final show = now < endTime.millisecondsSinceEpoch;
 
     final fullWidth = MediaQuery.of(context).size.width;
     final cardColor = Theme.of(context).cardColor;
     return Container(
       child: show
           ? Stack(
+              alignment: AlignmentDirectional.topEnd,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.all(8),
-                      child: GestureDetector(
-                        child: Image.asset(
-                            'assets/images/public/banner_kar_plo.png'),
-                        onTap: () => Navigator.of(context)
-                            .pushNamed(KarPreAuctionPage.route),
-                      ),
-                    ))
-                  ],
-                ),
-                Container(
-                  constraints: BoxConstraints(maxHeight: fullWidth / 4),
-                  child: Column(
+                GestureDetector(
+                  child: Stack(
                     children: [
                       Row(
                         children: [
-                          Container(
-                            margin:
-                                EdgeInsets.only(left: 20, top: 20, bottom: 10),
-                            child: CountdownPanel(
-                              cardColor: Theme.of(context).cardColor,
-                              cardTextColor: Colors.pink,
-                              textColor: Colors.orangeAccent,
-                              endTime: endTime,
-                            ),
-                          )
+                          Expanded(
+                              child: Container(
+                            margin: EdgeInsets.all(8),
+                            child: Image.asset(
+                                'assets/images/public/banner_kar_plo.png'),
+                          ))
                         ],
                       ),
-                      Row(
-                        children: [
-                          Container(
-                            width: fullWidth / 3 + 16,
-                            margin: EdgeInsets.only(left: 24, right: 8),
-                            child: Image.asset(
-                                'assets/images/public/kar_logo.png'),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Parachain Auction',
-                                style: TextStyle(
-                                    color: cardColor,
-                                    height: 0.9,
-                                    fontSize: 14),
-                              ),
-                              Text(
-                                'Pre-support',
-                                style: TextStyle(
-                                    color: cardColor,
-                                    height: 0.9,
-                                    fontSize: 14),
-                              ),
-                            ],
-                          )
-                        ],
+                      Container(
+                        constraints: BoxConstraints(maxHeight: fullWidth / 4),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, top: 20, bottom: 10),
+                                  child: CountdownPanel(
+                                    cardColor: Theme.of(context).cardColor,
+                                    cardTextColor: Colors.pink,
+                                    textColor: Colors.orangeAccent,
+                                    endTime: endTime,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: fullWidth / 3 + 16,
+                                  margin: EdgeInsets.only(left: 24, right: 8),
+                                  child: Image.asset(
+                                      'assets/images/public/kar_logo.png'),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Parachain Auction',
+                                      style: TextStyle(
+                                          color: cardColor,
+                                          height: 0.9,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      'Pre-support',
+                                      style: TextStyle(
+                                          color: cardColor,
+                                          height: 0.9,
+                                          fontSize: 14),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       )
                     ],
                   ),
-                )
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(KarPreAuctionPage.route),
+                ),
+                canClose
+                    ? Container(
+                        padding: EdgeInsets.only(top: 12, right: 12),
+                        child: GestureDetector(
+                          child: Icon(
+                            Icons.cancel,
+                            color: Colors.white60,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            service.store.storage
+                                .write(show_banner_status_key, 'closed');
+                            service.store.account.setBannerVisible(false);
+                          },
+                        ),
+                      )
+                    : Container()
               ],
             )
           : null,

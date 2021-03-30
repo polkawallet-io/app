@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_kusama/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -162,5 +161,31 @@ class ApiAccount {
       queryAddressIcons(res.friends);
     }
     return res;
+  }
+
+  Future<void> checkBannerStatus(String pubKey) async {
+    final adClosed = apiRoot.store.storage.read(show_banner_status_key);
+    // check if banner was closed by user.
+    if (adClosed != null) {
+      apiRoot.store.account.setBannerVisible(false);
+      // check if account was submitted.
+      final status = await WalletApi.getKarPreAuctionInfo(pubKey);
+      if (status != null && !(status['status'] ?? false)) {
+        // show banner again if account was not submitted.
+        apiRoot.store.account.setBannerVisible(true);
+      }
+    } else {
+      apiRoot.store.account.setBannerVisible(true);
+    }
+  }
+
+  Future<Map> postKarPreAuction(
+      String pubKey, String email, String signature) async {
+    final submitted =
+        await WalletApi.postKarPreAuctionInfo(pubKey, email, signature);
+    if (submitted != null && (submitted['result'] ?? false)) {
+      apiRoot.store.account.setBannerVisible(false);
+    }
+    return submitted;
   }
 }

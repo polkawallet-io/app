@@ -670,38 +670,46 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
+      path: "."
+      ref: "9da6a0b31330bde27fb29084c8ec553890e6f53d"
+      resolved-ref: "9da6a0b31330bde27fb29084c8ec553890e6f53d"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
     version: "0.1.3"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
+      path: "."
+      ref: e864b0f5b253ec02efc080484c785adf904ba714
+      resolved-ref: e864b0f5b253ec02efc080484c785adf904ba714
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
     version: "0.1.3"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
-      relative: true
-    source: path
+      path: "."
+      ref: "614e42d5eba0c8cfb6b6263c31a3adac01694e72"
+      resolved-ref: "614e42d5eba0c8cfb6b6263c31a3adac01694e72"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
+    source: git
     version: "0.1.5"
   polkawallet_sdk:
     dependency: transitive
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.1.3"
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.4"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.1.3"
+      path: "."
+      ref: c73a6905201b9899522e99e01260d0a4919c177e
+      resolved-ref: c73a6905201b9899522e99e01260d0a4919c177e
+      url: "https://github.com/polkawallet-io/ui.git"
+    source: git
+    version: "0.1.4"
   pool:
     dependency: transitive
     description:

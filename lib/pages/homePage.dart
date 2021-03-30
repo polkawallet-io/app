@@ -54,6 +54,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.service.account
+          .checkBannerStatus(widget.service.keyring.current.pubKey);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final List<HomeNavItem> pages = [

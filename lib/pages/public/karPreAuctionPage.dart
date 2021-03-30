@@ -50,7 +50,7 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
   }
 
   Future<void> _signAndSubmit() async {
-    if (_submitting) return;
+    if (_submitting || !_emailValid) return;
 
     setState(() {
       _submitting = true;
@@ -63,31 +63,49 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
       params.msgType = "pub(bytes.sign)";
       params.request = {
         "address": _account.address,
-        "data": _email,
+        "data": 'Acala & Karura Testnet Festival Season 5',
       };
 
-      final res = await widget.service.plugin.sdk.api.keyring
+      final signRes = await widget.service.plugin.sdk.api.keyring
           .signAsExtension(password, params);
-      print(res.signature);
+      final submitted = await widget.service.account
+          .postKarPreAuction(_account.pubKey, _email, signRes.signature);
+      if (submitted != null && (submitted['result'] ?? false)) {
+        await showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              content: Text('Success'),
+              actions: <Widget>[
+                CupertinoButton(
+                  child: Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        await showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('Failed'),
+              content: Text(submitted['reason']),
+              actions: <Widget>[
+                CupertinoButton(
+                  child: Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+      }
 
       setState(() {
         _submitting = false;
       });
-
-      await showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            content: Text('Success'),
-            actions: <Widget>[
-              CupertinoButton(
-                child: Text('OK'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
       Navigator.of(context).pop();
     } else {
       setState(() {
@@ -99,12 +117,17 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _account = widget.service.keyring.current;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailFocusNode.dispose();
   }
 
   @override
@@ -128,20 +151,10 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
           ListView(
             padding: EdgeInsets.all(16),
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 16, bottom: 16),
-                child: Row(
-                  children: [
-                    IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: cardColor),
-                        onPressed: () => Navigator.of(context).pop())
-                  ],
-                ),
-              ),
               Row(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 4, bottom: 24),
+                    margin: EdgeInsets.only(left: 4, bottom: 24, top: 64),
                     child: Image.asset(
                       'assets/images/public/kar_logo.png',
                       width: MediaQuery.of(context).size.width * 2 / 3,
@@ -275,6 +288,16 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
                 ],
               )
             ],
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 24, left: 8),
+            child: Row(
+              children: [
+                IconButton(
+                    icon: Icon(Icons.arrow_back_ios, color: cardColor),
+                    onPressed: () => Navigator.of(context).pop())
+              ],
+            ),
           )
         ],
       ),

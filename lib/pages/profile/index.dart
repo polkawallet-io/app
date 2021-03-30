@@ -98,9 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          widget.service.plugin.basic.name.contains('acala')
-              ? AdBanner()
-              : Container(),
+          !(acc.observation ?? false) ? AdBanner(widget.service) : Container(),
           !(acc.observation ?? false)
               ? Container(
                   padding: EdgeInsets.all(24),

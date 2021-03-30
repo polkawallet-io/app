@@ -19,3 +19,8 @@
 - Brand new UI.
 - AcalaMandala-TC6 support.
 - Add existential deposit tips.
+
+# 2.0.1-beta
+- Add karura parachain auction pre-support link.
+- Add Staking operations limit while in election.
+- Fix known Bugs.

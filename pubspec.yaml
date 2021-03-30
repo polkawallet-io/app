@@ -33,25 +33,25 @@ dependencies:
   update_app: ^0.1.5
   device_info: ^0.4.2
   polkawallet_ui:
-#    git:
-#      url: https://github.com/polkawallet-io/ui.git
-#      ref: 2fe52fe6542bf0715769686dfb02a289ba1aa86d
-    path: ../../coding/polkawallet/ui
+    git:
+      url: https://github.com/polkawallet-io/ui.git
+      ref: c73a6905201b9899522e99e01260d0a4919c177e
+#    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
-#    git:
-#      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-#      ref: cabcc5c4035341bd067865855a77108d25954e20
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
+      ref: e864b0f5b253ec02efc080484c785adf904ba714
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
-#    git:
-#      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-#      ref: 91bd353832eda02184864dfebb212dfdd6f82085
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
+    git:
+      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
+      ref: 9da6a0b31330bde27fb29084c8ec553890e6f53d
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
-#    git:
-#      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-#      ref: 9c4ad2e82e4ecc25ab1268108fc79cf0861d1e88
-    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+      ref: 614e42d5eba0c8cfb6b6263c31a3adac01694e72
+#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_chainx:
 ##    git:
 ##      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
