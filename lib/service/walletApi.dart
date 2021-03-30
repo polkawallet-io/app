@@ -98,4 +98,40 @@ class WalletApi {
       return null;
     }
   }
+
+  static Future<Map> getKarPreAuctionInfo(String pubKey) async {
+    try {
+      Response res = await get('$_endpoint/crowdloan/info?address=$pubKey');
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> postKarPreAuctionInfo(
+      String pubKey, String email, String signature) async {
+    final headers = {"Content-type": "application/json", "Accept": "*/*"};
+    final body = jsonEncode({
+      "address": pubKey,
+      "email": email,
+      "signature": signature,
+    });
+    try {
+      Response res =
+          await post('$_endpoint/crowdloan/sign', headers: headers, body: body);
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
 }

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.0+2001
+version: 2.0.1+2011
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -35,22 +35,22 @@ dependencies:
   polkawallet_ui:
     git:
       url: https://github.com/polkawallet-io/ui.git
-      ref: 2fe52fe6542bf0715769686dfb02a289ba1aa86d
+      ref: c73a6905201b9899522e99e01260d0a4919c177e
 #    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: cabcc5c4035341bd067865855a77108d25954e20
+      ref: e864b0f5b253ec02efc080484c785adf904ba714
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 91bd353832eda02184864dfebb212dfdd6f82085
+      ref: 9da6a0b31330bde27fb29084c8ec553890e6f53d
 #    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: 9c4ad2e82e4ecc25ab1268108fc79cf0861d1e88
+      ref: 614e42d5eba0c8cfb6b6263c31a3adac01694e72
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_chainx:
 ##    git:
@@ -109,6 +109,9 @@ flutter:
     - assets/images/public/guide_2.png
     - assets/images/public/guide_3.png
     - assets/images/public/guide_4.png
+    - assets/images/public/banner_kar_plo.png
+    - assets/images/public/kar_bg.png
+    - assets/images/public/kar_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -116,22 +119,8 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other desxcriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family: BebasNeue
+      fonts:
+        - asset: assets/fonts/BebasNeue.otf
+          weight: 700

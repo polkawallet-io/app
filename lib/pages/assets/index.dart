@@ -4,6 +4,7 @@ import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
+import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -358,7 +359,8 @@ class _AssetsState extends State<AssetsPage> {
                       margin: EdgeInsets.only(top: 16),
                       child: ListTile(
                         leading: Container(
-                          width: 36,
+                          height: 36,
+                          width: 45,
                           child: widget.service.plugin.tokenIcons[symbol],
                         ),
                         title: Text(symbol),
@@ -439,7 +441,11 @@ class _AssetsState extends State<AssetsPage> {
               Column(
                 children: [
                   _buildTopCard(context),
-                  Expanded(child: Container())
+                  Expanded(child: Container()),
+                  widget.service.store.account.showBanner &&
+                          !(widget.service.keyring.current.observation ?? false)
+                      ? AdBanner(widget.service, canClose: true)
+                      : Container(),
                 ],
               )
             ],
