@@ -13,7 +13,6 @@ import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/utils/regInputFormatter.dart';
 
 class SignMessagePage extends StatefulWidget {
   const SignMessagePage(this.service);
@@ -146,9 +145,6 @@ class _SignMessagePageState extends State<SignMessagePage>
                           labelText: dic['sign.data'],
                         ),
                         controller: _messageCtrl,
-                        inputFormatters: [
-                          RegExInputFormatter.withRegex(r'^(.*)$')
-                        ],
                         minLines: 1,
                         maxLines: 3,
                         validator: (v) {
@@ -211,9 +207,6 @@ class _SignMessagePageState extends State<SignMessagePage>
                           labelText: dic['sign.data'],
                         ),
                         controller: _messageVerifyCtrl,
-                        inputFormatters: [
-                          RegExInputFormatter.withRegex(r'^(.*)$')
-                        ],
                         minLines: 1,
                         maxLines: 3,
                         validator: (v) {
@@ -229,9 +222,6 @@ class _SignMessagePageState extends State<SignMessagePage>
                           labelText: dic['sign.verify'],
                         ),
                         controller: _signatureCtrl,
-                        inputFormatters: [
-                          RegExInputFormatter.withRegex(r'^(\w*)$')
-                        ],
                         minLines: 1,
                         maxLines: 3,
                         validator: (v) {

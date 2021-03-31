@@ -15,7 +15,7 @@ import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/regInputFormatter.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class CreateRecoveryPage extends StatefulWidget {
   CreateRecoveryPage(this.service);
@@ -265,8 +265,7 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                                   padding: EdgeInsets.fromLTRB(12, 3, 12, 3),
                                   placeholder: dic['recovery.custom'],
                                   inputFormatters: [
-                                    RegExInputFormatter.withRegex(
-                                        '^[0-9]{0,6}(\\.[0-9]{0,2})?\$')
+                                    UI.decimalInputFormatter(6)
                                   ],
                                   keyboardType: TextInputType.numberWithOptions(
                                     decimal: true,
