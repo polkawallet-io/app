@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
