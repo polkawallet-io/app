@@ -671,8 +671,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5da386794c2e85e0ea55e0ea09b25d57446668aa"
-      resolved-ref: "5da386794c2e85e0ea55e0ea09b25d57446668aa"
+      ref: "2c6e11ba04331b402c238e5bc6b8df72f2bf06d2"
+      resolved-ref: "2c6e11ba04331b402c238e5bc6b8df72f2bf06d2"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.1.3"
@@ -680,8 +680,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "3f2a1119b7408a5166c8d92ba57e93938331aeda"
-      resolved-ref: "3f2a1119b7408a5166c8d92ba57e93938331aeda"
+      ref: ec9510beef90e25ab055ecf636352f27c4306c39
+      resolved-ref: ec9510beef90e25ab055ecf636352f27c4306c39
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.1.4"
