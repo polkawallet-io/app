@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.1+2013
+version: 2.0.2+2022
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -35,12 +35,12 @@ dependencies:
   polkawallet_ui:
     git:
       url: https://github.com/polkawallet-io/ui.git
-      ref: c4346ecf37f277d6b61480f4782a9e78c99c68e2
+      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
 #    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: ec9510beef90e25ab055ecf636352f27c4306c39
+      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     git:
@@ -52,16 +52,27 @@ dependencies:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
       ref: b115aa0ab5b341bcfa3b7f5e239ed22f2026f82b
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
-#  polkawallet_plugin_chainx:
-##    git:
-##      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
-##      ref: 959a35d4480a635d6245f7429be9b1b02a45db9c
+  polkawallet_plugin_chainx:
+    git:
+      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
+      ref: 1659c6c5b92ef7deb38e3071284634cf1b6b40b7
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
+#  polkawallet_plugin_edgeware:
+##    git:
+##      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
+##      ref: 1e06fd124615d4dfee52ff5e6232361cacd0dcff
+#    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
 
+dependency_overrides:
+  polkawallet_ui:
+    git:
+      url: https://github.com/polkawallet-io/ui.git
+      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
+#    path: ../../coding/polkawallet/ui
 dev_dependencies:
   flutter_test:
     sdk: flutter

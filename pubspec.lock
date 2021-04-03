@@ -676,14 +676,21 @@ packages:
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.1.3"
-  polkawallet_plugin_kusama:
+  polkawallet_plugin_chainx:
     dependency: "direct main"
     description:
       path: "."
-      ref: ec9510beef90e25ab055ecf636352f27c4306c39
-      resolved-ref: ec9510beef90e25ab055ecf636352f27c4306c39
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+      ref: "1659c6c5b92ef7deb38e3071284634cf1b6b40b7"
+      resolved-ref: "1659c6c5b92ef7deb38e3071284634cf1b6b40b7"
+      url: "https://github.com/true-eye/polkawallet_plugin_chainx.git"
     source: git
+    version: "0.0.1"
+  polkawallet_plugin_kusama:
+    dependency: "direct main"
+    description:
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
     version: "0.1.4"
   polkawallet_plugin_laminar:
     dependency: "direct main"
@@ -705,8 +712,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c4346ecf37f277d6b61480f4782a9e78c99c68e2
-      resolved-ref: c4346ecf37f277d6b61480f4782a9e78c99c68e2
+      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
+      resolved-ref: e81dc98d117f589f57d23d23affdf29022e81a4c
       url: "https://github.com/polkawallet-io/ui.git"
     source: git
     version: "0.1.4"
