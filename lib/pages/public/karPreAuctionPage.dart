@@ -185,7 +185,8 @@ class _KarPreAuctionPageState extends State<KarPreAuctionPage> {
                       ],
                     ),
                   ),
-                  Text('Crowdsourcing event now live!',
+                  Text(
+                      'Submit your email to be notified when the event is live!',
                       style: TextStyle(fontSize: 22, color: cardColor)),
                   Container(
                     margin: EdgeInsets.only(top: 24, bottom: 32),

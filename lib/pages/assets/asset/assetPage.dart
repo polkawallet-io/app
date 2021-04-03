@@ -84,21 +84,17 @@ class _AssetPageState extends State<AssetPage> {
   }
 
   Future<void> _updateData() async {
-    if (widget.service.plugin.sdk.api.connectedNode == null || _loading) return;
+    if (_loading) return;
     setState(() {
       _loading = true;
     });
-
-    if (widget.service.plugin.basic.name == 'polkadot' ||
-        widget.service.plugin.basic.name == 'kusama') {
-      _queryDemocracyUnlocks();
-    }
 
     final res = await widget.service.assets.updateTxs(_txsPage);
 
     if (!mounted) return;
     setState(() {
       _loading = false;
+      _txsPage += 1;
     });
 
     if (res['transfers'] == null ||
@@ -110,6 +106,13 @@ class _AssetPageState extends State<AssetPage> {
   }
 
   Future<void> _refreshData() async {
+    if (widget.service.plugin.sdk.api.connectedNode == null) return;
+
+    if (widget.service.plugin.basic.name == 'polkadot' ||
+        widget.service.plugin.basic.name == 'kusama') {
+      _queryDemocracyUnlocks();
+    }
+
     setState(() {
       _txsPage = 0;
       _isLastPage = false;
@@ -172,12 +175,9 @@ class _AssetPageState extends State<AssetPage> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent) {
-        setState(() {
-          if (_tab == 0 && !_isLastPage) {
-            _txsPage += 1;
-            _updateData();
-          }
-        });
+        if (_tab == 0 && !_isLastPage) {
+          _updateData();
+        }
       }
     });
 

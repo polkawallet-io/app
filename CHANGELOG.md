@@ -24,3 +24,8 @@
 - Add karura parachain auction pre-support link.
 - Add Staking operations limit while in election.
 - Fix known Bugs.
+
+# 2.0.2-beta
+- Add ChainX network support.
+- Hide tips by default in tx confirm page.
+- Fix known Bugs.
