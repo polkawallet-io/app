@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.2+2022
+version: 2.0.2+2023
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -32,16 +32,11 @@ dependencies:
   biometric_storage: 1.0.1+5
   update_app: ^0.1.5
   device_info: ^0.4.2
-  polkawallet_ui:
-    git:
-      url: https://github.com/polkawallet-io/ui.git
-      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
-#    path: ../../coding/polkawallet/ui
   polkawallet_plugin_kusama:
-    git:
-      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
-#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#    git:
+#      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
+#      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
@@ -53,10 +48,10 @@ dependencies:
       ref: b115aa0ab5b341bcfa3b7f5e239ed22f2026f82b
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
   polkawallet_plugin_chainx:
-    git:
-      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
-      ref: 1659c6c5b92ef7deb38e3071284634cf1b6b40b7
-#    path: ../../coding/polkawallet/polkawallet_plugin_chainx
+#    git:
+#      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
+#      ref: 1659c6c5b92ef7deb38e3071284634cf1b6b40b7
+    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 ##    git:
 ##      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
@@ -69,10 +64,13 @@ dependencies:
 
 dependency_overrides:
   polkawallet_ui:
-    git:
-      url: https://github.com/polkawallet-io/ui.git
-      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
-#    path: ../../coding/polkawallet/ui
+#    git:
+#      url: https://github.com/polkawallet-io/ui.git
+#      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
+    path: ../../coding/polkawallet/ui
+  polkawallet_sdk:
+    path: ../../coding/polkawallet/sdk
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

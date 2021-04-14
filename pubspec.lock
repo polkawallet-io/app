@@ -679,11 +679,9 @@ packages:
   polkawallet_plugin_chainx:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "1659c6c5b92ef7deb38e3071284634cf1b6b40b7"
-      resolved-ref: "1659c6c5b92ef7deb38e3071284634cf1b6b40b7"
-      url: "https://github.com/true-eye/polkawallet_plugin_chainx.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_chainx"
+      relative: true
+    source: path
     version: "0.0.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
@@ -702,20 +700,18 @@ packages:
     source: git
     version: "0.1.5"
   polkawallet_sdk:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
     version: "0.1.4"
   polkawallet_ui:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
-      path: "."
-      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
-      resolved-ref: e81dc98d117f589f57d23d23affdf29022e81a4c
-      url: "https://github.com/polkawallet-io/ui.git"
-    source: git
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
     version: "0.1.4"
   pool:
     dependency: transitive

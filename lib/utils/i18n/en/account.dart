@@ -74,6 +74,6 @@ const Map<String, String> enAccount = {
   'guide.1': 'Offline signature',
   'guide.2': 'DOT/KSM Staking & Governance',
   'guide.3': 'Kusama social recovery',
-  'guide.4': 'Acala Defi Platform',
+  'guide.4': 'Acala Defi Hub',
   'guide.enter': 'Enter Polkawallet',
 };

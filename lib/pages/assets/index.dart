@@ -32,12 +32,14 @@ class AssetsPage extends StatefulWidget {
     this.service,
     this.connectedNode,
     this.checkJSCodeUpdate,
+    this.changeToKusama,
     this.handleWalletConnect,
   );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
+  final Future<void> Function() changeToKusama;
   final Future<void> Function(String) handleWalletConnect;
 
   @override
@@ -444,7 +446,9 @@ class _AssetsState extends State<AssetsPage> {
                   Expanded(child: Container()),
                   widget.service.store.account.showBanner &&
                           !(widget.service.keyring.current.observation ?? false)
-                      ? AdBanner(widget.service, canClose: true)
+                      ? AdBanner(widget.service, widget.connectedNode,
+                          widget.changeToKusama,
+                          canClose: true)
                       : Container(),
                 ],
               )
