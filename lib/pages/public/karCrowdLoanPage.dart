@@ -84,6 +84,12 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       final acc = res as KeyPairData;
       if (acc.pubKey == _account.pubKey) return;
 
+      // change account in app so we can get the balance
+      widget.service.keyring.setCurrent(acc);
+      widget.service.plugin.changeAccount(acc);
+      widget.service.store.assets
+          .loadCache(acc, widget.service.plugin.basic.name);
+
       final signed = widget.service.store.storage
           .read('$kar_statement_store_key${acc.pubKey}');
 

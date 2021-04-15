@@ -111,8 +111,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     final res = await WalletApi.verifyKarReferralCode(v);
     print(res);
     // todo: valid2 = true for testing
-    final valid2 = true;
-    // final valid2 = res != null && res['result'];
+    // final valid2 = true;
+    final valid2 = res != null && res['result'];
     setState(() {
       _referral = v;
       _referralValid = valid2;
@@ -134,15 +134,15 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
         .read('$kar_statement_store_key${account.pubKey}');
     final amountInt = Fmt.tokenInt(_amount.toString(), decimals);
     // todo: add this post request while API is ready.
-    // final res = await WalletApi.postKarCrowdLoan(
-    //     account.address, amountInt, _email, _referral, signed);
-    // print(res);
-    final res = {'result': true};
-    if (res != null && res['result']) {
+    final signingRes = await WalletApi.postKarCrowdLoan(
+        account.address, amountInt, _email, _referral, signed);
+    print(signingRes);
+    // final signingRes = {'result': true};
+    if (signingRes != null && signingRes['result']) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       // todo: use response data while API is ready.
-      // final signingPayload = {'Sr25519': res['signingPayload']};
-      final signingPayload = {'Sr25519': signed};
+      final signingPayload = {'Sr25519': signingRes['signingPayload']};
+      // final signingPayload = {'Sr25519': signed};
       final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
           arguments: TxConfirmParams(
             module: 'crowdloan',
