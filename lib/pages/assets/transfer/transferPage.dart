@@ -11,6 +11,7 @@ import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
+import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -42,6 +43,8 @@ class _TransferPageState extends State<TransferPage> {
 
   KeyPairData _accountTo;
   bool _keepAlive = true;
+
+  TxFeeEstimateResult _fee;
 
   Future<void> _onScan() async {
     final to = await Navigator.of(context).pushNamed(ScanPage.route);
@@ -87,6 +90,22 @@ class _TransferPageState extends State<TransferPage> {
     return null;
   }
 
+  Future<String> _getTxFee({bool reload = false}) async {
+    if (_fee?.partialFee != null && !reload) {
+      return _fee.partialFee.toString();
+    }
+
+    final sender = TxSenderData(widget.service.keyring.current.address,
+        widget.service.keyring.current.pubKey);
+    final txInfo = TxInfoData('balances', 'transfer', sender);
+    final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
+        txInfo, [widget.service.keyring.current.address, '10000000000']);
+    setState(() {
+      _fee = fee;
+    });
+    return fee.partialFee.toString();
+  }
+
   Future<void> _initAccountTo(String address) async {
     final acc = KeyPairData();
     acc.address = address;
@@ -110,6 +129,8 @@ class _TransferPageState extends State<TransferPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTxFee();
+
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
       if (args.address != null) {
         _initAccountTo(args.address);
@@ -200,7 +221,17 @@ class _TransferPageState extends State<TransferPage> {
                           if (v.isEmpty) {
                             return dic['amount.error'];
                           }
-                          if (Fmt.tokenInt(v, decimals) >= available) {
+                          final feeLeft = available -
+                              Fmt.tokenInt(v, decimals) -
+                              (_keepAlive
+                                  ? Fmt.balanceInt(amountExist)
+                                  : BigInt.zero);
+                          BigInt fee = BigInt.zero;
+                          if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
+                              _fee?.partialFee != null) {
+                            fee = Fmt.balanceInt(_fee.partialFee.toString());
+                          }
+                          if (feeLeft - fee < BigInt.zero) {
                             return dic['amount.low'];
                           }
                           return null;

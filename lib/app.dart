@@ -216,9 +216,10 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<void> _changeToKusamaForKar() async {
+    final name = 'kusama';
     await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == 'kusama'));
-    _service.store.assets.loadCache(_keyring.current, 'kusama');
+        widget.plugins.firstWhere((e) => e.basic.name == name));
+    _service.store.assets.loadCache(_keyring.current, name);
   }
 
   Future<void> _changeNode(NetworkParams node) async {

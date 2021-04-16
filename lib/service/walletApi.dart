@@ -128,6 +128,21 @@ class WalletApi {
     }
   }
 
+  static Future<List> getKarCrowdLoanHistory(String address) async {
+    try {
+      final res = await get('$_karEndpoint/contributions/$address');
+      if (res == null) {
+        return null;
+      } else {
+        print(jsonDecode(utf8.decode(res.bodyBytes)));
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> verifyKarReferralCode(String code) async {
     try {
       final res = await get('$_karEndpoint/referral/$code');

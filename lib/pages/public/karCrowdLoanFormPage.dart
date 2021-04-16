@@ -157,9 +157,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
           ))) as Map;
       if (res != null) {
         if (_emailAccept) {
-          // todo: remove this await in production
-          final resTest = await WalletApi.postKarSubscribe(_email);
-          print(resTest);
+          // todo: update subscribe id in production
+          WalletApi.postKarSubscribe(_email);
         }
         await showCupertinoDialog(
           context: context,
@@ -175,7 +174,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
             );
           },
         );
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(res);
       }
 
       setState(() {

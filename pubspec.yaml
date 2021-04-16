@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.2+2023
+version: 2.0.3+2031
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -33,20 +33,20 @@ dependencies:
   update_app: ^0.1.5
   device_info: ^0.4.2
   polkawallet_plugin_kusama:
-#    git:
-#      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-#      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
+      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
-    git:
-      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 2c6e11ba04331b402c238e5bc6b8df72f2bf06d2
-#    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#    git:
+#      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
+#      ref: 2c6e11ba04331b402c238e5bc6b8df72f2bf06d2
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
-    git:
-      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: b115aa0ab5b341bcfa3b7f5e239ed22f2026f82b
-#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+#    git:
+#      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+#      ref: b115aa0ab5b341bcfa3b7f5e239ed22f2026f82b
+    path: ../../coding/polkawallet/polkawallet_plugin_laminar
   polkawallet_plugin_chainx:
 #    git:
 #      url: https://github.com/true-eye/polkawallet_plugin_chainx.git

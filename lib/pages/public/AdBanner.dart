@@ -61,16 +61,16 @@ class _AdBannerState extends State<AdBanner> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCrowdLoanStarted();
+      // todo: only available in dev now
+      if (widget.service.buildTarget == BuildTargets.dev) {
+        _getCrowdLoanStarted();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // todo: only available in dev now
-    final show = widget.connectedNode != null &&
-        _started &&
-        widget.service.buildTarget == BuildTargets.dev;
+    final show = widget.connectedNode != null && _started;
 
     final fullWidth = MediaQuery.of(context).size.width;
     final cardColor = Theme.of(context).cardColor;

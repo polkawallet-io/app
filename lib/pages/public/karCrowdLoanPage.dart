@@ -43,6 +43,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   String _statement;
   bool _signed = false;
 
+  List _contributions = [];
+
   Future<void> _updateBestNumber() async {
     final res = await widget.service.plugin.sdk.webView
         .evalJavascript('api.derive.chain.bestNumber()');
@@ -54,6 +56,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getCrowdLoanInfo() async {
+    _getCrowdLoanHistory();
+
     if (widget.connectedNode == null) return;
 
     _updateBestNumber();
@@ -62,6 +66,17 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     if (mounted) {
       setState(() {
         _fundInfo = res;
+      });
+    }
+  }
+
+  Future<void> _getCrowdLoanHistory() async {
+    final res = await WalletApi.getKarCrowdLoanHistory(
+        widget.service.keyring.current.address);
+    print(res);
+    if (mounted) {
+      setState(() {
+        _contributions = res;
       });
     }
   }
@@ -130,8 +145,11 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         _signed = true;
       });
 
-      Navigator.of(context)
+      final res = await Navigator.of(context)
           .pushNamed(KarCrowdLoanFormPage.route, arguments: _account);
+      if (res != null) {
+        _getCrowdLoanInfo();
+      }
     } else {
       setState(() {
         _submitting = false;
@@ -171,6 +189,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final decimals =
+        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
     DateTime endTime = DateTime.now();
     bool finished = false;
@@ -374,7 +394,47 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                         ],
                       ),
                 _signed
-                    ? Container()
+                    ? _contributions.length == 0
+                        ? Container()
+                        : Column(
+                            children: [
+                              Text(
+                                dic['auction.txs'],
+                                style: TextStyle(color: cardColor),
+                              ),
+                              Column(
+                                children: _contributions.map((e) {
+                                  return Row(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Tx: ${Fmt.address(e['inBlock']['eventId'])}',
+                                                style: TextStyle(
+                                                    color: Colors.white70),
+                                              ),
+                                              JumpToLink(
+                                                'https://acala.network/',
+                                                text:
+                                                    ' ${dic['auction.term.0']}',
+                                                color: karColor,
+                                              )
+                                            ],
+                                          ),
+                                          Text(Fmt.dateTime(
+                                              DateTime.parse(e['createdAt'])))
+                                        ],
+                                      ),
+                                      Text(
+                                          '${Fmt.balance(e['amount'], decimals)} KSM')
+                                    ],
+                                  );
+                                }).toList(),
+                              )
+                            ],
+                          )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [

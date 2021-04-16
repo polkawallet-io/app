@@ -26,4 +26,5 @@ const Map<String, String> zhPublic = {
   'auction.submit': '提交',
   'auction.invalid': '无效的',
   'auction.connecting': '正在连接 WSS',
+  'auction.txs': '我的贡献',
 };
