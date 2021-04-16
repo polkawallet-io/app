@@ -27,4 +27,5 @@ const Map<String, String> enPublic = {
   'auction.submit': 'Submit',
   'auction.invalid': 'Invalid',
   'auction.connecting': 'Connecting WSS',
+  'auction.txs': 'My Contributions',
 };
