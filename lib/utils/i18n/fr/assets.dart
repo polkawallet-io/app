@@ -12,6 +12,7 @@ const Map<String, String> enAssets = {
   'address.error': 'Invalid Address',
   'address.subscan': 'More on Subscan',
   'amount': 'Amount',
+  'amount.max': 'Max',
   'amount.error': 'Invalid amount',
   'amount.low': 'Insufficient balance',
   'amount.exist': 'existential deposit',
