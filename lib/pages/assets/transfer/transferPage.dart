@@ -106,6 +106,23 @@ class _TransferPageState extends State<TransferPage> {
     return fee.partialFee.toString();
   }
 
+  Future<void> _setMaxAmount(BigInt available, String amountExist) async {
+    final decimals =
+        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+    final fee = await _getTxFee();
+    // keep double amount of estimated fee
+    final max = available -
+        Fmt.balanceInt(fee) * BigInt.two -
+        (_keepAlive ? Fmt.balanceInt(amountExist) : BigInt.zero);
+    if (mounted) {
+      setState(() {
+        _amountCtrl.text = max > BigInt.zero
+            ? Fmt.bigIntToDouble(max, decimals).toStringAsFixed(8)
+            : '0';
+      });
+    }
+  }
+
   Future<void> _initAccountTo(String address) async {
     final acc = KeyPairData();
     acc.address = address;
@@ -212,6 +229,12 @@ class _TransferPageState extends State<TransferPage> {
                             decimals,
                             lengthMax: 6,
                           )})',
+                          suffix: GestureDetector(
+                            child: Text(dic['amount.max'],
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor)),
+                            onTap: () => _setMaxAmount(available, amountExist),
+                          ),
                         ),
                         inputFormatters: [UI.decimalInputFormatter(decimals)],
                         controller: _amountCtrl,

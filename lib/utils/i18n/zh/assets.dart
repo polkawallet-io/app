@@ -11,6 +11,7 @@ const Map<String, String> zhAssets = {
   'address.error': '无效地址',
   'address.subscan': '前往 Subscan 查看更多',
   'amount': '数量',
+  'amount.max': '最大值',
   'amount.error': '格式错误',
   'amount.low': '余额不足',
   'amount.exist': '存活余额',

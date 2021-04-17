@@ -35,27 +35,27 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: f6f73b6896a6239f980063589fe1e1e3ef74ad78
+      ref: a4ae23cc229016babf82fb0e6c85a6cb46ec16a3
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
-#    git:
-#      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-#      ref: 2c6e11ba04331b402c238e5bc6b8df72f2bf06d2
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
+    git:
+      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
+      ref: 8714c27a4f46e3f0277ab58b42eea547f7d33095
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
-#    git:
-#      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-#      ref: b115aa0ab5b341bcfa3b7f5e239ed22f2026f82b
-    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+      ref: a6bcda75198f64b70e0f13f6c71f067b72d536b0
+#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
   polkawallet_plugin_chainx:
-#    git:
-#      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
-#      ref: 1659c6c5b92ef7deb38e3071284634cf1b6b40b7
-    path: ../../coding/polkawallet/polkawallet_plugin_chainx
-#  polkawallet_plugin_edgeware:
-##    git:
-##      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
-##      ref: 1e06fd124615d4dfee52ff5e6232361cacd0dcff
+    git:
+      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
+      ref: 07b601d0aaae0b173e7a18006f7502b9bb55b32d
+#    path: ../../coding/polkawallet/polkawallet_plugin_chainx
+  polkawallet_plugin_edgeware:
+    git:
+      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
+      ref: acdfd8bddce2075542e4678ef55855805700c752
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,12 +64,13 @@ dependencies:
 
 dependency_overrides:
   polkawallet_ui:
-#    git:
-#      url: https://github.com/polkawallet-io/ui.git
-#      ref: e81dc98d117f589f57d23d23affdf29022e81a4c
-    path: ../../coding/polkawallet/ui
-  polkawallet_sdk:
-    path: ../../coding/polkawallet/sdk
+    git:
+      url: https://github.com/polkawallet-io/ui.git
+      ref: 51ebe9ffe2c9a0c524aadffc03cbe413d891fa57
+#    path: ../../coding/polkawallet/ui
+  polkawallet_sdk: ^0.1.5
+#  polkawallet_sdk:
+#    path: ../../coding/polkawallet/sdk
 
 dev_dependencies:
   flutter_test:
