@@ -7,7 +7,7 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
-import 'package:app/pages/guidePage.dart';
+import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -28,7 +28,8 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
-import 'package:app/pages/public/karPreAuctionPage.dart';
+import 'package:app/pages/public/karCrowdLoanFormPage.dart';
+import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -58,8 +59,9 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 const get_storage_container = 'configuration';
 
 class WalletApp extends StatefulWidget {
-  WalletApp(this.plugins);
+  WalletApp(this.plugins, this.buildTarget);
   final List<PolkawalletPlugin> plugins;
+  final BuildTargets buildTarget;
   @override
   _WalletAppState createState() => _WalletAppState();
 }
@@ -202,7 +204,7 @@ class _WalletAppState extends State<WalletApp> {
           : null,
     );
 
-    final service = AppService(network, _keyring, _store);
+    final service = AppService(network, _keyring, _store, widget.buildTarget);
     service.init();
     setState(() {
       _service = service;
@@ -211,6 +213,13 @@ class _WalletAppState extends State<WalletApp> {
     _startPlugin();
 
     _service.assets.fetchMarketPrice();
+  }
+
+  Future<void> _changeToKusamaForKar() async {
+    final name = 'kusama';
+    await _changeNetwork(
+        widget.plugins.firstWhere((e) => e.basic.name == name));
+    _service.store.assets.loadCache(_keyring.current, name);
   }
 
   Future<void> _changeNode(NetworkParams node) async {
@@ -228,7 +237,7 @@ class _WalletAppState extends State<WalletApp> {
 
   Future<void> _checkUpdate(BuildContext context) async {
     final versions = await WalletApi.getLatestVersion();
-    AppUI.checkUpdate(context, versions, autoCheck: true);
+    AppUI.checkUpdate(context, versions, widget.buildTarget, autoCheck: true);
   }
 
   Future<void> _checkJSCodeUpdate(
@@ -283,7 +292,10 @@ class _WalletAppState extends State<WalletApp> {
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
       final service = AppService(
-          widget.plugins[pluginIndex > -1 ? pluginIndex : 0], _keyring, store);
+          widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
+          _keyring,
+          store,
+          widget.buildTarget);
       service.init();
       setState(() {
         _store = store;
@@ -344,8 +356,8 @@ class _WalletAppState extends State<WalletApp> {
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
                       return snapshot.data > 0
-                          ? HomePage(
-                              _service, _connectedNode, _checkJSCodeUpdate)
+                          ? HomePage(_service, _connectedNode,
+                              _checkJSCodeUpdate, _changeToKusamaForKar)
                           : CreateAccountEntryPage();
                     } else {
                       return Container(color: Theme.of(context).canvasColor);
@@ -370,7 +382,9 @@ class _WalletAppState extends State<WalletApp> {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
-      KarPreAuctionPage.route: (_) => KarPreAuctionPage(_service),
+      KarCrowdLoanPage.route: (_) => KarCrowdLoanPage(_service, _connectedNode),
+      KarCrowdLoanFormPage.route: (_) =>
+          KarCrowdLoanFormPage(_service, _connectedNode),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

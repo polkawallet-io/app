@@ -14,12 +14,14 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate);
+  HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate,
+      this.changeToKusama);
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
+  final Future<void> Function() changeToKusama;
 
   static final String route = '/';
 
@@ -81,6 +83,7 @@ class _HomePageState extends State<HomePage> {
             widget.connectedNode,
             (PolkawalletPlugin plugin) =>
                 widget.checkJSCodeUpdate(context, plugin),
+            widget.changeToKusama,
             _handleWalletConnect),
         // content: Container(),
       )
@@ -97,7 +100,8 @@ class _HomePageState extends State<HomePage> {
         'assets/images/nav_profile.svg',
         color: Theme.of(context).primaryColor,
       ),
-      content: ProfilePage(widget.service, widget.connectedNode),
+      content: ProfilePage(
+          widget.service, widget.connectedNode, widget.changeToKusama),
     ));
     return Scaffold(
       body: Stack(

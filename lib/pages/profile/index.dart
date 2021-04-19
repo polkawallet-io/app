@@ -20,10 +20,11 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage(this.service, this.connectedNode);
+  ProfilePage(this.service, this.connectedNode, this.changeToKusama);
 
   final AppService service;
   final NetworkParams connectedNode;
+  final Future<void> Function() changeToKusama;
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -98,27 +99,32 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          !(acc.observation ?? false) ? AdBanner(widget.service) : Container(),
           !(acc.observation ?? false)
-              ? Container(
-                  padding: EdgeInsets.all(24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      RoundedButton(
-                        text: dic['account'],
-                        onPressed: () async {
-                          await Navigator.pushNamed(
-                              context, AccountManagePage.route);
-                          setState(() {
-                            _currentAccount = widget.service.keyring.current;
-                          });
-                        },
-                      )
-                    ],
-                  ),
+              ? AdBanner(
+                  widget.service, widget.connectedNode, widget.changeToKusama)
+              : Container(),
+          Container(
+            padding: EdgeInsets.all(24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                RoundedButton(
+                  text: dic['account'],
+                  onPressed: () async {
+                    if (acc.observation ?? false) {
+                      await Navigator.pushNamed(context, ContactsPage.route);
+                    } else {
+                      await Navigator.pushNamed(
+                          context, AccountManagePage.route);
+                    }
+                    setState(() {
+                      _currentAccount = widget.service.keyring.current;
+                    });
+                  },
                 )
-              : Container(height: 24),
+              ],
+            ),
+          ),
           ListTile(
             leading: Container(
               width: 32,

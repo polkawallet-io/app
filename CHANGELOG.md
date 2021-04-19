@@ -29,3 +29,9 @@
 - Add ChainX network support.
 - Hide tips by default in tx confirm page.
 - Fix known Bugs.
+
+# 2.0.3-beta
+- Add Edgeware network support.
+- Update ChainX plugin.
+- Update Laminar plugin to TC3.
+- Fix known Bugs.

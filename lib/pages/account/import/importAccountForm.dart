@@ -10,8 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/pages/scanPage.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ImportAccountForm extends StatefulWidget {
@@ -30,26 +28,18 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
     'mnemonic',
     'rawSeed',
     'keystore',
-    'observe',
   ];
 
   bool _supportBiometric = false;
   bool _enableBiometric = true; // if the biometric usage checkbox checked
 
   int _keySelection = 0;
-  bool _observationSubmitting = false;
 
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _keyCtrl = new TextEditingController();
   final TextEditingController _nameCtrl = new TextEditingController();
   final TextEditingController _passCtrl = new TextEditingController();
-
-  final TextEditingController _observationAddressCtrl =
-      new TextEditingController();
-  final TextEditingController _observationNameCtrl =
-      new TextEditingController();
-  final TextEditingController _memoCtrl = new TextEditingController();
 
   String _keyCtrlText = '';
   AccountAdvanceOptionParams _advanceOptions = AccountAdvanceOptionParams();
@@ -153,132 +143,6 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
     );
   }
 
-  Widget _buildAddressAndNameInput() {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 16, right: 16),
-          child: TextFormField(
-            decoration: InputDecoration(
-              hintText: dic['contact.address'],
-              labelText: dic['contact.address'],
-              suffix: GestureDetector(
-                child: Icon(Icons.camera_alt),
-                onTap: () async {
-                  final acc = (await Navigator.of(context)
-                      .pushNamed(ScanPage.route)) as QRCodeResult;
-                  if (acc != null) {
-                    setState(() {
-                      _observationAddressCtrl.text = acc.address.address;
-                      _observationNameCtrl.text = acc.address.name;
-                    });
-                  }
-                },
-              ),
-            ),
-            controller: _observationAddressCtrl,
-            validator: (v) {
-              if (!Fmt.isAddress(v.trim())) {
-                return dic['contact.address.error'];
-              }
-              return null;
-            },
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 16, right: 16),
-          child: TextFormField(
-            decoration: InputDecoration(
-              hintText: dic['contact.name'],
-              labelText: dic['contact.name'],
-            ),
-            controller: _observationNameCtrl,
-            validator: (v) {
-              return v.trim().length > 0 ? null : dic['contact.name.error'];
-            },
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 16, right: 16),
-          child: TextFormField(
-            decoration: InputDecoration(
-              hintText: dic['contact.memo'],
-              labelText: dic['contact.memo'],
-            ),
-            controller: _memoCtrl,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _onAddObservationAccount() async {
-    setState(() {
-      _observationSubmitting = true;
-    });
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Container(),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
-        );
-      },
-    );
-
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    final address = _observationAddressCtrl.text.trim();
-    final pubKeyAddress =
-        await widget.service.plugin.sdk.api.account.decodeAddress([address]);
-    final pubKey = pubKeyAddress.keys.toList()[0];
-    Map<String, dynamic> acc = {
-      'address': address,
-      'name': _observationNameCtrl.text,
-      'memo': _memoCtrl.text,
-      'observation': true,
-      'pubKey': pubKey,
-    };
-    // create new contact
-    int exist = widget.service.keyring.externals
-        .indexWhere((i) => i.address == address);
-    if (exist > -1) {
-      setState(() {
-        _observationSubmitting = false;
-      });
-      Navigator.of(context).pop();
-
-      showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: Container(),
-            content: Text(dic['contact.exist']),
-            actions: <Widget>[
-              CupertinoButton(
-                child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      final res = await widget.service.plugin.sdk.api.keyring
-          .addContact(widget.service.keyring, acc);
-      widget.service.plugin.changeAccount(res);
-      widget.service.store.assets
-          .loadCache(res, widget.service.plugin.basic.name);
-
-      setState(() {
-        _observationSubmitting = false;
-      });
-      // go to home page
-      Navigator.popUntil(context, ModalRoute.withName('/'));
-    }
-  }
-
   String _validateInput(String v) {
     bool passed = false;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
@@ -334,9 +198,6 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
     _nameCtrl.dispose();
     _passCtrl.dispose();
     _keyCtrl.dispose();
-    _observationAddressCtrl.dispose();
-    _observationNameCtrl.dispose();
-    _memoCtrl.dispose();
     super.dispose();
   }
 
@@ -400,17 +261,15 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                     : Container(),
                 _keySelection == 2
                     ? _buildNameAndPassInput()
-                    : _keySelection == 3
-                        ? _buildAddressAndNameInput()
-                        : AccountAdvanceOption(
-                            api: widget.service.plugin.sdk.api.keyring,
-                            seed: _keyCtrlText,
-                            onChange: (AccountAdvanceOptionParams data) {
-                              setState(() {
-                                _advanceOptions = data;
-                              });
-                            },
-                          ),
+                    : AccountAdvanceOption(
+                        api: widget.service.plugin.sdk.api.keyring,
+                        seed: _keyCtrlText,
+                        onChange: (AccountAdvanceOptionParams data) {
+                          setState(() {
+                            _advanceOptions = data;
+                          });
+                        },
+                      ),
               ],
             ),
           ),
@@ -419,43 +278,36 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
           padding: EdgeInsets.all(16),
           child: RoundedButton(
             text: I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
-            onPressed: _observationSubmitting
-                ? null
-                : () async {
-                    if (_formKey.currentState.validate() &&
-                        !(_advanceOptions.error ?? false)) {
-                      if (_keySelection == 3) {
-                        _onAddObservationAccount();
-                        return;
-                      }
-                      if (_keySelection == 2) {
-                        widget.service.store.account.setNewAccount(
-                            _nameCtrl.text.trim(), _passCtrl.text.trim());
-                      }
-                      widget.service.store.account
-                          .setNewAccountKey(_keyCtrl.text.trim());
-                      final saved = await widget.onSubmit({
-                        'keyType': _keyOptions[_keySelection],
-                        'cryptoType':
-                            _advanceOptions.type ?? CryptoType.sr25519,
-                        'derivePath': _advanceOptions.path ?? '',
-                        'finish': _keySelection == 2 ? true : null,
-                      });
-                      if (saved) {
-                        if (_supportBiometric && _enableBiometric) {
-                          await _authBiometric();
-                        }
+            onPressed: () async {
+              if (_formKey.currentState.validate() &&
+                  !(_advanceOptions.error ?? false)) {
+                if (_keySelection == 2) {
+                  widget.service.store.account.setNewAccount(
+                      _nameCtrl.text.trim(), _passCtrl.text.trim());
+                }
+                widget.service.store.account
+                    .setNewAccountKey(_keyCtrl.text.trim());
+                final saved = await widget.onSubmit({
+                  'keyType': _keyOptions[_keySelection],
+                  'cryptoType': _advanceOptions.type ?? CryptoType.sr25519,
+                  'derivePath': _advanceOptions.path ?? '',
+                  'finish': _keySelection == 2 ? true : null,
+                });
+                if (saved) {
+                  if (_supportBiometric && _enableBiometric) {
+                    await _authBiometric();
+                  }
 
-                        widget.service.plugin
-                            .changeAccount(widget.service.keyring.current);
-                        widget.service.store.assets.loadCache(
-                            widget.service.keyring.current,
-                            widget.service.plugin.basic.name);
-                        widget.service.store.account.resetNewAccount();
-                        Navigator.popUntil(context, ModalRoute.withName('/'));
-                      }
-                    }
-                  },
+                  widget.service.plugin
+                      .changeAccount(widget.service.keyring.current);
+                  widget.service.store.assets.loadCache(
+                      widget.service.keyring.current,
+                      widget.service.plugin.basic.name);
+                  widget.service.store.account.resetNewAccount();
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                }
+              }
+            },
           ),
         ),
       ],

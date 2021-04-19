@@ -164,25 +164,20 @@ class ApiAccount {
   }
 
   Future<void> checkBannerStatus(String pubKey) async {
-    final adClosed = apiRoot.store.storage.read(show_banner_status_key);
+    final adClosed =
+        apiRoot.store.storage.read('${show_banner_status_key}_$pubKey');
     // check if banner was closed by user.
     if (adClosed != null) {
       apiRoot.store.account.setBannerVisible(false);
-      // check if account was submitted.
-      final status = await WalletApi.getKarPreAuctionInfo(pubKey);
-      if (status != null && !(status['status'] ?? false)) {
-        // show banner again if account was not submitted.
-        apiRoot.store.account.setBannerVisible(true);
-      }
     } else {
       apiRoot.store.account.setBannerVisible(true);
     }
   }
 
-  Future<Map> postKarPreAuction(
-      String pubKey, String email, String signature) async {
-    final submitted =
-        await WalletApi.postKarPreAuctionInfo(pubKey, email, signature);
+  Future<Map> postKarCrowdLoan(String address, BigInt amount, String email,
+      String referral, String signature) async {
+    final submitted = await WalletApi.postKarCrowdLoan(
+        address, amount, email, referral, signature);
     if (submitted != null && (submitted['result'] ?? false)) {
       apiRoot.store.account.setBannerVisible(false);
     }

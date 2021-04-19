@@ -100,7 +100,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       setState(() {
         _submitting = false;
       });
-      if (err.toString().contains('unreachable')) {
+      if (err.toString().contains('Invalid')) {
         await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {

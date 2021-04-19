@@ -31,7 +31,7 @@ class _AboutPage extends State<AboutPage> {
     setState(() {
       _loading = false;
     });
-    AppUI.checkUpdate(context, versions);
+    AppUI.checkUpdate(context, versions, widget.service.buildTarget);
   }
 
   @override

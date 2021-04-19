@@ -46,7 +46,8 @@ class AppUI {
     );
   }
 
-  static Future<void> checkUpdate(BuildContext context, Map versions,
+  static Future<void> checkUpdate(
+      BuildContext context, Map versions, BuildTargets buildTarget,
       {bool autoCheck = false}) async {
     if (versions == null || !Platform.isAndroid && !Platform.isIOS) return;
     String platform = Platform.isAndroid ? 'android' : 'ios';
@@ -55,20 +56,18 @@ class AppUI {
     final int latestCode = versions[platform]['version-code'];
     final String latestBeta = versions[platform]['version-beta'];
     final int latestCodeBeta = versions[platform]['version-code-beta'];
+    final int latestCodeStore = versions[platform]['version-code-store'];
 
     bool needUpdate = false;
-    if (autoCheck) {
-      if (latestCode > app_beta_version_code) {
-        // new version found
-        needUpdate = true;
+    if ((autoCheck ? latestCode : latestCodeBeta) > app_beta_version_code) {
+      // new version found
+      if (Platform.isAndroid && buildTarget == BuildTargets.playStore) {
+        needUpdate = (latestCodeStore) > app_beta_version_code;
       } else {
-        return;
+        needUpdate = true;
       }
     } else {
-      if (latestCodeBeta > app_beta_version_code) {
-        // new version found
-        needUpdate = true;
-      }
+      if (autoCheck) return;
     }
 
     showCupertinoDialog(
@@ -116,6 +115,12 @@ class AppUI {
                   // go to ios download page
                   UI.launchURL('https://polkawallet.io/#download');
                 } else if (Platform.isAndroid) {
+                  if (buildTarget == BuildTargets.playStore) {
+                    // go to google play page
+                    UI.launchURL(
+                        'https://play.google.com/store/apps/details?id=io.polkawallet.www.polka_wallet');
+                    return;
+                  }
                   // download apk
                   // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
                   try {
