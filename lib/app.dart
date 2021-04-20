@@ -168,6 +168,8 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _startPlugin() async {
     // _initWalletConnect();
 
+    _service.assets.fetchMarketPrice();
+
     setState(() {
       _connectedNode = null;
     });
@@ -211,8 +213,6 @@ class _WalletAppState extends State<WalletApp> {
     });
 
     _startPlugin();
-
-    _service.assets.fetchMarketPrice();
   }
 
   Future<void> _changeToKusamaForKar() async {
@@ -331,7 +331,6 @@ class _WalletAppState extends State<WalletApp> {
       );
 
       _startPlugin();
-      _service.assets.fetchMarketPrice();
     }
 
     return _keyring.allAccounts.length;

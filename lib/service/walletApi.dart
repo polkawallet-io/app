@@ -100,6 +100,21 @@ class WalletApi {
     }
   }
 
+  static Future<Map> getTokenPrice(String network) async {
+    final url = 'https://${network.toLowerCase()}.subscan.io/api/scan/token';
+    try {
+      Response res = await get(url);
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> getKarCrowdLoanStarted() async {
     try {
       final res = await get('$_endpoint/crowdloan/health');

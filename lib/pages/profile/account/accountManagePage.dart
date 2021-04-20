@@ -48,20 +48,21 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
     final pubKey = widget.service.keyring.current.pubKey;
+    final password = await showCupertinoDialog(
+      context: context,
+      builder: (_) {
+        return PasswordInputDialog(
+          widget.service.plugin.sdk.api,
+          title: Text(
+              I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
+          account: widget.service.keyring.current,
+        );
+      },
+    );
+    if (password == null) return;
+
     bool result = !enable;
     if (enable) {
-      final password = await showCupertinoDialog(
-        context: context,
-        builder: (_) {
-          return PasswordInputDialog(
-            widget.service.plugin.sdk.api,
-            title: Text(I18n.of(context)
-                .getDic(i18n_full_dic_app, 'account')['unlock']),
-            account: widget.service.keyring.current,
-          );
-        },
-      );
-
       try {
         print('write: $password');
         await _authStorage.write(password);
