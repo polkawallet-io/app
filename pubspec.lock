@@ -678,8 +678,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "07b601d0aaae0b173e7a18006f7502b9bb55b32d"
-      resolved-ref: "07b601d0aaae0b173e7a18006f7502b9bb55b32d"
+      ref: "225f62ae68adfef0d50bdb4d2eb6a34e4f518269"
+      resolved-ref: "225f62ae68adfef0d50bdb4d2eb6a34e4f518269"
       url: "https://github.com/true-eye/polkawallet_plugin_chainx.git"
     source: git
     version: "0.0.1"
@@ -687,8 +687,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: acdfd8bddce2075542e4678ef55855805700c752
-      resolved-ref: acdfd8bddce2075542e4678ef55855805700c752
+      ref: e05ce06f0a459ae0879a7adf56295d5e25eba8be
+      resolved-ref: e05ce06f0a459ae0879a7adf56295d5e25eba8be
       url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
     source: git
     version: "0.0.1"
@@ -702,11 +702,9 @@ packages:
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: a6bcda75198f64b70e0f13f6c71f067b72d536b0
-      resolved-ref: a6bcda75198f64b70e0f13f6c71f067b72d536b0
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
+      relative: true
+    source: path
     version: "0.1.5"
   polkawallet_sdk:
     dependency: "direct overridden"

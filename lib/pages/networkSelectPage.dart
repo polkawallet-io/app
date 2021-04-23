@@ -271,22 +271,16 @@ class _NetworkItemActive extends StatelessWidget {
         ),
         Container(
           padding: EdgeInsets.all(8),
-          child: SizedBox(
-            child: icon,
-            width: 28,
-          ),
+          child: SizedBox(child: icon, height: 28, width: 28),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(const Radius.circular(24)),
             color: Theme.of(context).cardColor,
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
-                blurRadius: 12.0, // has the effect of softening the shadow
-                spreadRadius: 0, // has the effect of extending the shadow
-                offset: Offset(
-                  6.0, // horizontal, move right 10
-                  1.0, // vertical, move down 10
-                ),
+                blurRadius: 12.0,
+                spreadRadius: 0,
+                offset: Offset(6.0, 1.0),
               )
             ],
           ),
