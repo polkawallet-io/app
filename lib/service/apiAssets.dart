@@ -1,4 +1,5 @@
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 
 class ApiAssets {
   ApiAssets(this.apiRoot);
@@ -33,13 +34,13 @@ class ApiAssets {
   Future<void> fetchMarketPrice() async {
     if (apiRoot.plugin.basic.isTestNet) return;
 
-    final Map res =
-        await apiRoot.subScan.fetchTokenPriceAsync(apiRoot.plugin.basic.name);
-    if (res['token'] == null) {
+    final res = await WalletApi.getTokenPrice(apiRoot.plugin.basic.name);
+    if (res == null || res['data'] == null) {
       print('fetch market price failed');
       return;
     }
-    final String token = res['token'][0];
-    apiRoot.store.assets.setMarketPrices(token, res['detail'][token]['price']);
+    final symbol = res['data']['token'][0];
+    apiRoot.store.assets
+        .setMarketPrices(symbol, res['data']['detail'][symbol]['price']);
   }
 }

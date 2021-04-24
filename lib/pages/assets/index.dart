@@ -362,7 +362,8 @@ class _AssetsState extends State<AssetsPage> {
                       child: ListTile(
                         leading: Container(
                           height: 36,
-                          width: 45,
+                          width: 37,
+                          margin: EdgeInsets.only(right: 8),
                           child: widget.service.plugin.tokenIcons[symbol],
                         ),
                         title: Text(symbol),

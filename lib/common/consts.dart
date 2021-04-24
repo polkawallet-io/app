@@ -15,8 +15,8 @@ const prefixList = [
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.0.3-beta.2';
-const int app_beta_version_code = 2032;
+const String app_beta_version = 'v2.0.4-beta.1';
+const int app_beta_version_code = 2041;
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';
