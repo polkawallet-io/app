@@ -1,9 +1,6 @@
 PODS:
   - biometric_storage (0.0.1):
     - Flutter
-  - connectivity (0.0.1):
-    - Flutter
-    - Reachability
   - device_info (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -19,7 +16,6 @@ PODS:
     - Flutter
   - "permission_handler (4.4.0+hotfix.4)":
     - Flutter
-  - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
   - update_app (0.0.1):
@@ -31,7 +27,6 @@ PODS:
 
 DEPENDENCIES:
   - biometric_storage (from `.symlinks/plugins/biometric_storage/ios`)
-  - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - Flutter (from `Flutter`)
   - flutter_aes_ecb_pkcs5 (from `.symlinks/plugins/flutter_aes_ecb_pkcs5/ios`)
@@ -45,15 +40,9 @@ DEPENDENCIES:
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
 
-SPEC REPOS:
-  trunk:
-    - Reachability
-
 EXTERNAL SOURCES:
   biometric_storage:
     :path: ".symlinks/plugins/biometric_storage/ios"
-  connectivity:
-    :path: ".symlinks/plugins/connectivity/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   Flutter:
@@ -81,7 +70,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   biometric_storage: 1400f1382af3a4cc2bf05340e13c3d8de873ceb9
-  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_aes_ecb_pkcs5: fb682a7bb13f29cfbb33f88f7e1ed2211eacf5db
@@ -90,7 +78,6 @@ SPEC CHECKSUMS:
   image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   update_app: 03c24a56ba197e2a036d5230b02e85825b76e045
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef

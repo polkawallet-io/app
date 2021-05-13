@@ -172,20 +172,22 @@ class WalletApi {
     }
   }
 
-  static Future<Map> postKarCrowdLoan(String address, BigInt amount,
-      String email, String referral, String signature) async {
+  static Future<Map> postKarCrowdLoan(
+      String address, BigInt amount, String email, String referral) async {
     final headers = {"Content-type": "application/json", "Accept": "*/*"};
     final body = {
       "address": address,
       "amount": amount.toString(),
-      "email": email,
-      "signature": signature,
+      "isAcceptTerm": true,
     };
+    if (email.isNotEmpty) {
+      body.addAll({"email": email});
+    }
     if (referral.isNotEmpty) {
       body.addAll({"referral": referral});
     }
     try {
-      final res = await post('$_karEndpoint/sign',
+      final res = await post('$_karEndpoint/verify',
           headers: headers, body: jsonEncode(body));
       if (res == null) {
         return null;

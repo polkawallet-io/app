@@ -127,6 +127,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  charts_common:
+    dependency: transitive
+    description:
+      name: charts_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
+  charts_flutter:
+    dependency: transitive
+    description:
+      name: charts_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
   checked_yaml:
     dependency: transitive
     description:
@@ -168,7 +182,7 @@ packages:
       name: connectivity
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.9+5"
+    version: "2.0.2"
   connectivity_for_web:
     dependency: transitive
     description:
@@ -366,20 +380,62 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.4"
+  gql_dedupe_link:
+    dependency: transitive
+    description:
+      name: gql_dedupe_link
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.10"
+  gql_error_link:
+    dependency: transitive
+    description:
+      name: gql_error_link
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1-alpha+1601131172858"
+  gql_exec:
+    dependency: transitive
+    description:
+      name: gql_exec
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.5"
+  gql_http_link:
+    dependency: transitive
+    description:
+      name: gql_http_link
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.2"
+  gql_link:
+    dependency: transitive
+    description:
+      name: gql_link
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
+  gql_transform_link:
+    dependency: transitive
+    description:
+      name: gql_transform_link
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   graphql:
     dependency: transitive
     description:
       name: graphql
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.1"
   graphql_flutter:
     dependency: transitive
     description:
       name: graphql_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.1"
   graphs:
     dependency: transitive
     description:
@@ -387,6 +443,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  hive:
+    dependency: transitive
+    description:
+      name: hive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.4+1"
   http:
     dependency: transitive
     description:
@@ -499,6 +562,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.5.1"
+  liquid_progress_indicator:
+    dependency: transitive
+    description:
+      name: liquid_progress_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.2"
   logging:
     dependency: transitive
     description:
@@ -555,6 +625,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  normalize:
+    dependency: transitive
+    description:
+      name: normalize
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.7"
   package_config:
     dependency: transitive
     description:
@@ -670,63 +747,30 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: fd16946d18c84078e96c64e3dbc1b93061dc6802
-      resolved-ref: fd16946d18c84078e96c64e3dbc1b93061dc6802
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.1.6"
-  polkawallet_plugin_chainx:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "225f62ae68adfef0d50bdb4d2eb6a34e4f518269"
-      resolved-ref: "225f62ae68adfef0d50bdb4d2eb6a34e4f518269"
-      url: "https://github.com/true-eye/polkawallet_plugin_chainx.git"
-    source: git
-    version: "0.0.1"
-  polkawallet_plugin_edgeware:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: e05ce06f0a459ae0879a7adf56295d5e25eba8be
-      resolved-ref: e05ce06f0a459ae0879a7adf56295d5e25eba8be
-      url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
-    source: git
-    version: "0.0.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "5bd378a753df123014ed3dddd68ec644c23c6543"
-      resolved-ref: "5bd378a753df123014ed3dddd68ec644c23c6543"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
     version: "0.1.6"
-  polkawallet_plugin_laminar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "3011d23be5c005e088ddd7ce6c58d82ef31dca36"
-      resolved-ref: "3011d23be5c005e088ddd7ce6c58d82ef31dca36"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
-    version: "0.1.5"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.6"
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
+    version: "0.1.7"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "."
-      ref: "797d2184fb18335895b95069f94b880b539d23f6"
-      resolved-ref: "797d2184fb18335895b95069f94b880b539d23f6"
-      url: "https://github.com/polkawallet-io/ui.git"
-    source: git
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
     version: "0.1.5"
   pool:
     dependency: transitive
