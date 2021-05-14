@@ -115,9 +115,11 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     final decimals = 12;
     // final decimals = widget.service.plugin.networkState.tokenDecimals[0];
     final amountInt = Fmt.tokenInt(_amount.toString(), decimals);
-    final signingRes = await widget.service.account
-        .postKarCrowdLoan(account.address, amountInt, params.email, _referral);
-    if (signingRes) {
+    final signed = widget.service.store.storage
+        .read('$kar_statement_store_key${account.pubKey}');
+    final signingRes = await widget.service.account.postKarCrowdLoan(
+        account.address, amountInt, params.email, _referral, signed);
+    if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
           arguments: TxConfirmParams(
@@ -162,7 +164,9 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: Text('Failed'),
-            content: Text('Get Karura crowdloan info failed.'),
+            content: Text(signingRes == null
+                ? 'Get Karura crowdloan info failed.'
+                : signingRes['message']),
             actions: <Widget>[
               CupertinoButton(
                 child: Text('OK'),

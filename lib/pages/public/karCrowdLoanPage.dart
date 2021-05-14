@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
@@ -29,9 +30,6 @@ class KarCrowdLoanPage extends StatefulWidget {
   _KarCrowdLoanPageState createState() => _KarCrowdLoanPageState();
 }
 
-// todo: remove this while online
-const kar_test_para_id = '2222';
-
 class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   final _emailRegEx = RegExp(
       r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
@@ -42,6 +40,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
 
   KeyPairData _account = KeyPairData();
 
+  bool _submitting = false;
   String _email = '';
   bool _emailValid = true;
 
@@ -72,8 +71,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
 
     _updateBestNumber();
     final res = await widget.service.plugin.sdk.webView.evalJavascript(
-        // 'api.query.crowdloan.funds("${_statement['paraId'].toString()}")');
-        'api.query.crowdloan.funds("$kar_test_para_id")');
+        'api.query.crowdloan.funds("${_statement['paraId'].toString()}")');
     if (mounted) {
       setState(() {
         _fundInfo = res;
@@ -160,24 +158,45 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _acceptAndSign() async {
-    widget.service.store.storage
-        .write('$kar_statement_store_key${_account.pubKey}', true);
-
+    if (_submitting) return;
     setState(() {
-      _signed = true;
+      _submitting = true;
     });
 
-    await _goToContribute();
+    final password =
+        await widget.service.account.getPassword(context, _account);
+
+    if (password != null) {
+      final params = SignAsExtensionParam();
+      params.msgType = "pub(bytes.sign)";
+      params.request = {
+        "address": _account.address,
+        "data": _statement['statement'],
+      };
+
+      final signRes = await widget.service.plugin.sdk.api.keyring
+          .signAsExtension(password, params);
+      widget.service.store.storage.write(
+          '$kar_statement_store_key${_account.pubKey}', signRes.signature);
+
+      setState(() {
+        _submitting = false;
+        _signed = true;
+      });
+
+      await _goToContribute();
+    } else {
+      setState(() {
+        _submitting = false;
+      });
+    }
   }
 
   Future<void> _goToContribute() async {
-    final res =
-        await Navigator.of(context).pushNamed(KarCrowdLoanFormPage.route,
-            arguments: KarCrowdLoanPageParams(
-                // _account, _statement['paraId'].toString(), _email));
-                _account,
-                kar_test_para_id,
-                _email));
+    final res = await Navigator.of(context).pushNamed(
+        KarCrowdLoanFormPage.route,
+        arguments: KarCrowdLoanPageParams(
+            _account, _statement['paraId'].toString(), _email));
     if (res != null) {
       _getCrowdLoanInfo();
     }
@@ -488,9 +507,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                                     color: Colors.white70),
                                               ),
                                               JumpToLink(
-                                                'https://acala.network/',
-                                                text:
-                                                    '${e['inBlock']['eventId']}',
+                                                'https://kusama.subscan.io/extrinsic/${e['inBlock']['eventId']}',
+                                                text: e['inBlock']['eventId'],
                                                 color: karColor,
                                               )
                                             ],
@@ -594,9 +612,15 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                           onPressed: _emailValid ? _goToContribute : () => null,
                         )
                       : RoundedButton(
-                          text: dic['auction.contribute'],
-                          color: allAccepted ? karColor : Colors.grey,
-                          onPressed: allAccepted ? _acceptAndSign : () => null,
+                          icon:
+                              _submitting ? CupertinoActivityIndicator() : null,
+                          text: dic['auction.accept'],
+                          color: allAccepted && !_submitting
+                              ? karColor
+                              : Colors.grey,
+                          onPressed: allAccepted && !_submitting
+                              ? _acceptAndSign
+                              : () => null,
                         ),
                 )
               ],

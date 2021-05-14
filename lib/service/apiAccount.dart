@@ -174,15 +174,14 @@ class ApiAccount {
     }
   }
 
-  Future<bool> postKarCrowdLoan(
-      String address, BigInt amount, String email, String referral) async {
-    final submitted =
-        await WalletApi.postKarCrowdLoan(address, amount, email, referral);
+  Future<Map> postKarCrowdLoan(String address, BigInt amount, String email,
+      String referral, String signature) async {
+    final submitted = await WalletApi.postKarCrowdLoan(
+        address, amount, email, referral, signature);
     print(submitted);
     if (submitted != null && (submitted['result'] ?? false)) {
       apiRoot.store.account.setBannerVisible(false);
-      return true;
     }
-    return false;
+    return submitted;
   }
 }

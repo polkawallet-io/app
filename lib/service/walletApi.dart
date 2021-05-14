@@ -5,6 +5,8 @@ import 'package:http/http.dart';
 
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
+  // todo: change the _karEndpoint while online
+  // static const String _karEndpoint = 'https://api.aca-staging.network/';
   static const String _karEndpoint = 'https://crowdloan-api.laminar.codes';
 
   static const String _jsCodeStorageKey = 'js_service_';
@@ -172,13 +174,13 @@ class WalletApi {
     }
   }
 
-  static Future<Map> postKarCrowdLoan(
-      String address, BigInt amount, String email, String referral) async {
+  static Future<Map> postKarCrowdLoan(String address, BigInt amount,
+      String email, String referral, String signature) async {
     final headers = {"Content-type": "application/json", "Accept": "*/*"};
     final body = {
       "address": address,
       "amount": amount.toString(),
-      "isAcceptTerm": true,
+      "signature": signature,
     };
     if (email.isNotEmpty) {
       body.addAll({"email": email});
