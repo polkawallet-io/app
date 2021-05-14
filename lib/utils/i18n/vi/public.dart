@@ -10,6 +10,7 @@ const Map<String, String> enPublic = {
   'auction.term.0': 'Terms & Conditions',
   'auction.term.1': 'Qualified Person Criteria',
   'auction.term.2': 'Privacy Policy',
+  'auction.accept': 'Accept & Sign',
   'auction.contribute': 'Contribute',
   'auction.email': 'Email(optional)',
   'auction.amount': 'Amount',
