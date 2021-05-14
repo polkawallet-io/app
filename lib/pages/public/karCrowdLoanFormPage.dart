@@ -1,3 +1,4 @@
+import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
@@ -63,10 +64,9 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
 
     final amt = double.parse(v);
 
-    // todo: update decimals while online
-    final decimals = 12;
-    // final decimals = widget.service.plugin.networkState.tokenDecimals[0];
-    final valid = amt < Fmt.bigIntToDouble(balanceInt, decimals);
+    final decimals =
+        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+    final valid = amt < Fmt.bigIntToDouble(balanceInt, decimals) && amt >= 1;
     setState(() {
       _amountValid = valid;
       _amount = amt;
@@ -92,7 +92,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       });
       return;
     }
-    final res = await WalletApi.verifyKarReferralCode(v);
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final res = await WalletApi.verifyKarReferralCode(v, karApis.split('|')[0]);
     print(res);
     final valid2 = res != null && res['result'];
     setState(() {
@@ -109,16 +110,22 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     setState(() {
       _submitting = true;
     });
+    final karApi = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final karApis = karApi.split('|');
     final KarCrowdLoanPageParams params =
         ModalRoute.of(context).settings.arguments;
-    // todo: update decimals while online
-    final decimals = 12;
-    // final decimals = widget.service.plugin.networkState.tokenDecimals[0];
+    final decimals =
+        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     final amountInt = Fmt.tokenInt(_amount.toString(), decimals);
     final signed = widget.service.store.storage
         .read('$kar_statement_store_key${account.pubKey}');
     final signingRes = await widget.service.account.postKarCrowdLoan(
-        account.address, amountInt, params.email, _referral, signed);
+        account.address,
+        amountInt,
+        params.email,
+        _referral,
+        signed,
+        karApis[0]);
     if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
@@ -135,8 +142,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
           ))) as Map;
       if (res != null) {
         if (params.email.isNotEmpty && _emailAccept) {
-          // todo: update subscribe id in production
-          WalletApi.postKarSubscribe(params.email);
+          WalletApi.postKarSubscribe(params.email, karApis[1]);
         }
         await showCupertinoDialog(
           context: context,
@@ -200,9 +206,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
   Widget build(_) {
     return Observer(builder: (BuildContext context) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-      // todo: update decimals while online
-      final decimals = 12;
-      // final decimals = widget.service.plugin.networkState.tokenDecimals[0];
+      final decimals =
+          (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
       final cardColor = Theme.of(context).cardColor;
       final karColor = Colors.red;

@@ -747,31 +747,64 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
+      path: "."
+      ref: "28aff6c52cbc4fbdf22120f191b073ffd1faf3a9"
+      resolved-ref: "28aff6c52cbc4fbdf22120f191b073ffd1faf3a9"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.1.6"
+  polkawallet_plugin_chainx:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "0692cbb02da9cfd59eae2856e6e2819c072d4cd3"
+      resolved-ref: "0692cbb02da9cfd59eae2856e6e2819c072d4cd3"
+      url: "https://github.com/true-eye/polkawallet_plugin_chainx.git"
+    source: git
+    version: "0.0.1"
+  polkawallet_plugin_edgeware:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "4e0d7dffee5222c493f70a310ce5f9b5b24f4d90"
+      resolved-ref: "4e0d7dffee5222c493f70a310ce5f9b5b24f4d90"
+      url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
+    source: git
     version: "0.1.6"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
-    version: "0.1.6"
+      path: "."
+      ref: "8add53266eb2bc65aa94b378f0daeb456e39eee7"
+      resolved-ref: "8add53266eb2bc65aa94b378f0daeb456e39eee7"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
+    version: "0.1.7"
+  polkawallet_plugin_laminar:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "73b623a259fa6c31c0999625ebbfa7cdb84a6dcd"
+      resolved-ref: "73b623a259fa6c31c0999625ebbfa7cdb84a6dcd"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
+    source: git
+    version: "0.1.5"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.7"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.1.5"
+      path: "."
+      ref: b68da4b7d56dec37ddc34844b204fd095a00f7df
+      resolved-ref: b68da4b7d56dec37ddc34844b204fd095a00f7df
+      url: "https://github.com/polkawallet-io/ui.git"
+    source: git
+    version: "0.1.7"
   pool:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/pages/public/adPage.dart';
 import 'package:app/service/index.dart';
@@ -80,7 +81,9 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getCrowdLoanHistory() async {
-    final res = await WalletApi.getKarCrowdLoanHistory(_account.address);
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final res = await WalletApi.getKarCrowdLoanHistory(
+        _account.address, karApis.split('|')[0]);
     print(res);
     if (res != null && mounted) {
       setState(() {
@@ -102,8 +105,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getKarStatement() async {
-    final res = await WalletApi.getKarCrowdLoanStatement();
-    print(res);
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final res = await WalletApi.getKarCrowdLoanStatement(karApis.split('|')[0]);
     if (res != null && mounted) {
       setState(() {
         _statement = res;
@@ -656,7 +659,7 @@ class CrowdLoanPageLayout extends StatelessWidget {
           ),
           Container(
             height: 56,
-            margin: EdgeInsets.only(top: 24, left: 8),
+            margin: EdgeInsets.only(top: 32, left: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

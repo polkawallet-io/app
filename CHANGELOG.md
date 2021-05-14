@@ -35,3 +35,10 @@
 - Update ChainX plugin.
 - Update Laminar plugin to TC3.
 - Fix known Bugs.
+
+# 2.0.5-beta
+- Update Acala swap & loan UI.
+- Remove Kusama council module.
+- Update Edgeware Update.
+- Update ChainX plugin.
+- Fix known Bugs.

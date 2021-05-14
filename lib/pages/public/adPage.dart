@@ -13,7 +13,7 @@ class AdPage extends StatefulWidget {
 }
 
 class _AdPageState extends State<AdPage> {
-  int _timerCount = 6;
+  int _timerCount = 10;
 
   void _updateTimer() {
     if (_timerCount > 0) {
