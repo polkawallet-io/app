@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:app/common/consts.dart';
-import 'package:app/main.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -61,10 +60,7 @@ class _AdBannerState extends State<AdBanner> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // todo: only available in dev now
-      if (widget.service.buildTarget == BuildTargets.dev) {
-        _getCrowdLoanStarted();
-      }
+      _getCrowdLoanStarted();
     });
   }
 

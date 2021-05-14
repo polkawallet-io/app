@@ -5,7 +5,6 @@ import 'package:http/http.dart';
 
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
-  static const String _karEndpoint = 'https://crowdloan-api.laminar.codes';
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
@@ -129,9 +128,9 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getKarCrowdLoanStatement() async {
+  static Future<Map> getKarCrowdLoanStatement(String endpoint) async {
     try {
-      final res = await get('$_karEndpoint/statement');
+      final res = await get('https://$endpoint/statement');
       if (res == null) {
         return null;
       } else {
@@ -143,9 +142,10 @@ class WalletApi {
     }
   }
 
-  static Future<List> getKarCrowdLoanHistory(String address) async {
+  static Future<List> getKarCrowdLoanHistory(
+      String address, String endpoint) async {
     try {
-      final res = await get('$_karEndpoint/contributions/$address');
+      final res = await get('https://$endpoint/contributions/$address');
       if (res == null) {
         return null;
       } else {
@@ -158,9 +158,9 @@ class WalletApi {
     }
   }
 
-  static Future<Map> verifyKarReferralCode(String code) async {
+  static Future<Map> verifyKarReferralCode(String code, String endpoint) async {
     try {
-      final res = await get('$_karEndpoint/referral/$code');
+      final res = await get('https://$endpoint/referral/$code');
       if (res == null) {
         return null;
       } else {
@@ -173,19 +173,21 @@ class WalletApi {
   }
 
   static Future<Map> postKarCrowdLoan(String address, BigInt amount,
-      String email, String referral, String signature) async {
+      String email, String referral, String signature, String endpoint) async {
     final headers = {"Content-type": "application/json", "Accept": "*/*"};
     final body = {
       "address": address,
       "amount": amount.toString(),
-      "email": email,
       "signature": signature,
     };
+    if (email.isNotEmpty) {
+      body.addAll({"email": email});
+    }
     if (referral.isNotEmpty) {
       body.addAll({"referral": referral});
     }
     try {
-      final res = await post('$_karEndpoint/sign',
+      final res = await post('https://$endpoint/verify',
           headers: headers, body: jsonEncode(body));
       if (res == null) {
         return null;
@@ -198,7 +200,7 @@ class WalletApi {
     }
   }
 
-  static Future<Map> postKarSubscribe(String email) async {
+  static Future<Map> postKarSubscribe(String email, String subscribeId) async {
     final headers = {"Content-type": "application/json", "Accept": "*/*"};
     final body = {
       "fields": [
@@ -207,7 +209,7 @@ class WalletApi {
     };
     try {
       final res = await post(
-          'https://api.hsforms.com/submissions/v3/integration/submit/7522932/fc605148-482f-4302-a8d2-cece3251f7fc',
+          'https://api.hsforms.com/submissions/v3/integration/submit/7522932/$subscribeId',
           headers: headers,
           body: jsonEncode(body));
       if (res == null) {

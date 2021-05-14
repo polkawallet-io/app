@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
+import 'package:app/pages/public/adPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
-import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
@@ -30,17 +32,24 @@ class KarCrowdLoanPage extends StatefulWidget {
 }
 
 class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
+  final _emailRegEx = RegExp(
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+  final _emailFocusNode = FocusNode();
+
   int _bestNumber = 0;
   Map _fundInfo;
 
   KeyPairData _account = KeyPairData();
 
   bool _submitting = false;
+  String _email = '';
+  bool _emailValid = true;
+
   bool _accepted0 = false;
   bool _accepted1 = false;
   bool _accepted2 = false;
 
-  String _statement;
+  Map _statement;
   bool _signed = false;
 
   List _contributions = [];
@@ -56,13 +65,14 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getCrowdLoanInfo() async {
+    await _getKarStatement();
     _getCrowdLoanHistory();
 
     if (widget.connectedNode == null) return;
 
     _updateBestNumber();
-    final res = await widget.service.plugin.sdk.webView
-        .evalJavascript('api.query.crowdloan.funds("$kar_para_index")');
+    final res = await widget.service.plugin.sdk.webView.evalJavascript(
+        'api.query.crowdloan.funds("${_statement['paraId'].toString()}")');
     if (mounted) {
       setState(() {
         _fundInfo = res;
@@ -71,22 +81,35 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getCrowdLoanHistory() async {
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
     final res = await WalletApi.getKarCrowdLoanHistory(
-        widget.service.keyring.current.address);
+        _account.address, karApis.split('|')[0]);
     print(res);
-    if (mounted) {
+    if (res != null && mounted) {
       setState(() {
         _contributions = res;
       });
     }
+
+    // we can get users' statement signature if we got the history
+    if (!_signed && res.length > 0) {
+      final signed = res[0]['statement']['signature'];
+      widget.service.store.storage
+          .write('$kar_statement_store_key${_account.pubKey}', signed);
+      if (mounted) {
+        setState(() {
+          _signed = true;
+        });
+      }
+    }
   }
 
   Future<void> _getKarStatement() async {
-    final res = await WalletApi.getKarCrowdLoanStatement();
-    print(res);
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final res = await WalletApi.getKarCrowdLoanStatement(karApis.split('|')[0]);
     if (res != null && mounted) {
       setState(() {
-        _statement = res['statement'];
+        _statement = res;
       });
     }
   }
@@ -115,15 +138,34 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         _accepted2 = false;
         _signed = signed != null;
       });
+
+      _getCrowdLoanHistory();
     }
+  }
+
+  void _onEmailChange(String value) {
+    final v = value.trim();
+    if (v.isEmpty) {
+      setState(() {
+        _email = v;
+        _emailValid = true;
+      });
+      return;
+    }
+
+    final valid = _emailRegEx.hasMatch(v);
+    setState(() {
+      _emailValid = valid;
+      _email = v;
+    });
   }
 
   Future<void> _acceptAndSign() async {
     if (_submitting) return;
-
     setState(() {
       _submitting = true;
     });
+
     final password =
         await widget.service.account.getPassword(context, _account);
 
@@ -132,7 +174,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       params.msgType = "pub(bytes.sign)";
       params.request = {
         "address": _account.address,
-        "data": _statement,
+        "data": _statement['statement'],
       };
 
       final signRes = await widget.service.plugin.sdk.api.keyring
@@ -145,15 +187,21 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         _signed = true;
       });
 
-      final res = await Navigator.of(context)
-          .pushNamed(KarCrowdLoanFormPage.route, arguments: _account);
-      if (res != null) {
-        _getCrowdLoanInfo();
-      }
+      await _goToContribute();
     } else {
       setState(() {
         _submitting = false;
       });
+    }
+  }
+
+  Future<void> _goToContribute() async {
+    final res = await Navigator.of(context).pushNamed(
+        KarCrowdLoanFormPage.route,
+        arguments: KarCrowdLoanPageParams(
+            _account, _statement['paraId'].toString(), _email));
+    if (res != null) {
+      _getCrowdLoanInfo();
     }
   }
 
@@ -162,9 +210,6 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCrowdLoanInfo();
-      _getKarStatement();
-
       final acc = widget.service.keyring.current;
       final signed = widget.service.store.storage
           .read('$kar_statement_store_key${acc.pubKey}');
@@ -173,6 +218,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         _account = widget.service.keyring.current;
         _signed = signed != null;
       });
+
+      _getCrowdLoanInfo();
     });
   }
 
@@ -182,8 +229,13 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
 
     if (widget.connectedNode != null && _fundInfo == null) {
       _getCrowdLoanInfo();
-      _getKarStatement();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailFocusNode.dispose();
   }
 
   @override
@@ -209,8 +261,9 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     final cardColor = Theme.of(context).cardColor;
     final karColor = Colors.red;
     final grayColor = Colors.white70;
+    final titleStyle = TextStyle(color: grayColor, fontSize: 18);
 
-    final allAccepted = _accepted0 && _accepted1 && _accepted2;
+    final allAccepted = _accepted0 && _accepted1 && _accepted2 && _emailValid;
     return CrowdLoanPageLayout('', [
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,52 +282,16 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
             ],
           ),
           Container(
-            margin: EdgeInsets.only(top: 4),
+            margin: EdgeInsets.only(top: 4, bottom: 20),
             child: Text(dic['auction.kar'],
                 style: TextStyle(
                     fontSize: 28,
                     color: karColor,
                     fontWeight: FontWeight.bold)),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 20),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 4, top: 2),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: FittedBox(
-                              child: Text(
-                                  dic['auction.${finished ? 'finish' : 'live'}']
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                      color: karColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic))))
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(right: 4, bottom: 2),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: FittedBox(
-                              child: Text(
-                                  dic['auction.${finished ? 'finish' : 'live'}']
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                      color: cardColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic))))
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _fundInfo == null
+              ? Container()
+              : KarCrowdLoanTitleSet(finished: finished),
           Container(
             margin: EdgeInsets.only(top: 8, bottom: 32),
             child: widget.connectedNode == null || _fundInfo == null || finished
@@ -303,15 +320,16 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                   margin: EdgeInsets.only(bottom: 4),
                   child: Divider(color: grayColor),
                 ),
-                Text(
-                  dic['auction.address'],
-                  style: TextStyle(color: grayColor, fontSize: 18),
+                Container(
+                  margin: EdgeInsets.only(bottom: 8),
+                  child: Text(dic['auction.address'], style: titleStyle),
                 ),
                 GestureDetector(
                   child: Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 16),
+                    margin: EdgeInsets.only(bottom: 16),
                     padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                     decoration: BoxDecoration(
+                        color: Colors.white12,
                         border: Border.all(color: grayColor),
                         borderRadius: BorderRadius.all(Radius.circular(64))),
                     child: Row(
@@ -353,6 +371,51 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                 ),
                 _signed
                     ? Container()
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 8),
+                            child:
+                                Text(dic['auction.email'], style: titleStyle),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 4),
+                            child: CupertinoTextField(
+                              padding: EdgeInsets.all(16),
+                              placeholder: dic['auction.email'],
+                              placeholderStyle:
+                                  TextStyle(color: grayColor, fontSize: 18),
+                              style: TextStyle(color: cardColor, fontSize: 18),
+                              decoration: BoxDecoration(
+                                color: Colors.white12,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(64)),
+                                border: Border.all(
+                                    color: _emailFocusNode.hasFocus
+                                        ? karColor
+                                        : grayColor),
+                              ),
+                              cursorColor: karColor,
+                              clearButtonMode: OverlayVisibilityMode.editing,
+                              focusNode: _emailFocusNode,
+                              onChanged: _onEmailChange,
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(left: 16, bottom: 4),
+                            child: _email.isEmpty || _emailValid
+                                ? Container()
+                                : Text(
+                                    '${dic['auction.invalid']} ${dic['auction.email']}',
+                                    style: TextStyle(
+                                        color: karColor, fontSize: 10),
+                                  ),
+                          ),
+                        ],
+                      ),
+                _signed
+                    ? Container()
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -385,7 +448,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                 style: TextStyle(color: cardColor),
                               ),
                               JumpToLink(
-                                'https://acala.network/',
+                                'https://acala.network/terms',
                                 text: ' ${dic['auction.term.0']}',
                                 color: karColor,
                               )
@@ -397,41 +460,67 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                     ? _contributions.length == 0
                         ? Container()
                         : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                dic['auction.txs'],
-                                style: TextStyle(color: cardColor),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 8),
+                                child:
+                                    Text(dic['auction.txs'], style: titleStyle),
                               ),
-                              Column(
-                                children: _contributions.map((e) {
-                                  return Row(
-                                    children: [
-                                      Column(
+                              Container(
+                                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: grayColor, width: 0.5),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(16))),
+                                child: Column(
+                                  children: _contributions.map((e) {
+                                    return Container(
+                                      margin:
+                                          EdgeInsets.only(top: 8, bottom: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Row(
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Tx: ${Fmt.address(e['inBlock']['eventId'])}',
+                                                '${Fmt.balance(e['amount'], decimals)} KSM',
+                                                style: TextStyle(
+                                                    color: cardColor,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                  Fmt.dateTime(DateTime.parse(
+                                                      e['createdAt'])),
+                                                  style: TextStyle(
+                                                      color: grayColor,
+                                                      fontSize: 13))
+                                            ],
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'Event Id',
                                                 style: TextStyle(
                                                     color: Colors.white70),
                                               ),
                                               JumpToLink(
-                                                'https://acala.network/',
-                                                text:
-                                                    ' ${dic['auction.term.0']}',
+                                                'https://kusama.subscan.io/extrinsic/${e['inBlock']['eventId']}',
+                                                text: e['inBlock']['eventId'],
                                                 color: karColor,
                                               )
                                             ],
                                           ),
-                                          Text(Fmt.dateTime(
-                                              DateTime.parse(e['createdAt'])))
                                         ],
                                       ),
-                                      Text(
-                                          '${Fmt.balance(e['amount'], decimals)} KSM')
-                                    ],
-                                  );
-                                }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
                               )
                             ],
                           )
@@ -467,7 +556,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                 style: TextStyle(color: cardColor),
                               ),
                               JumpToLink(
-                                'https://acala.network/',
+                                'https://acala.network/terms#check',
                                 text: ' ${dic['auction.term.1']}',
                                 color: karColor,
                               )
@@ -509,7 +598,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                 style: TextStyle(color: cardColor),
                               ),
                               JumpToLink(
-                                'https://acala.network/',
+                                'https://acala.network/privacy',
                                 text: ' ${dic['auction.term.2']}',
                                 color: karColor,
                               )
@@ -522,19 +611,19 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                   child: _signed
                       ? RoundedButton(
                           text: dic['auction.contribute'],
-                          color: karColor,
-                          onPressed: () => Navigator.of(context).pushNamed(
-                              KarCrowdLoanFormPage.route,
-                              arguments: _account),
+                          color: _emailValid ? karColor : Colors.grey,
+                          onPressed: _emailValid ? _goToContribute : () => null,
                         )
                       : RoundedButton(
-                          text: dic['auction.accept'],
                           icon:
                               _submitting ? CupertinoActivityIndicator() : null,
+                          text: dic['auction.accept'],
                           color: allAccepted && !_submitting
                               ? karColor
                               : Colors.grey,
-                          onPressed: allAccepted ? _acceptAndSign : () => null,
+                          onPressed: allAccepted && !_submitting
+                              ? _acceptAndSign
+                              : () => null,
                         ),
                 )
               ],
@@ -570,7 +659,7 @@ class CrowdLoanPageLayout extends StatelessWidget {
           ),
           Container(
             height: 56,
-            margin: EdgeInsets.only(top: 24, left: 8),
+            margin: EdgeInsets.only(top: 32, left: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

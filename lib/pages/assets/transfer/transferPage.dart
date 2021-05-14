@@ -100,9 +100,11 @@ class _TransferPageState extends State<TransferPage> {
     final txInfo = TxInfoData('balances', 'transfer', sender);
     final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
         txInfo, [widget.service.keyring.current.address, '10000000000']);
-    setState(() {
-      _fee = fee;
-    });
+    if (mounted) {
+      setState(() {
+        _fee = fee;
+      });
+    }
     return fee.partialFee.toString();
   }
 
@@ -221,6 +223,7 @@ class _TransferPageState extends State<TransferPage> {
                         key: ValueKey<KeyPairData>(_accountTo),
                       ),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           hintText: dic['amount'],
                           labelText:

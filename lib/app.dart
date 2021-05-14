@@ -8,6 +8,7 @@ import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/public/guidePage.dart';
+import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -268,6 +269,15 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<void> _showGuide(BuildContext context, GetStorage storage) async {
+    // todo: remove this after crowd loan
+    final karStarted = await WalletApi.getKarCrowdLoanStarted();
+    if (karStarted != null && karStarted['result']) {
+      storage.write(kar_crowd_loan_api_key,
+          '${karStarted['endpoint']}|${karStarted['subscribe']}');
+      Navigator.of(context).pushNamed(AdPage.route);
+      return;
+    }
+
     final storeKey = '${show_guide_status_key}_$app_beta_version';
     final showGuideStatus = storage.read(storeKey);
     if (showGuideStatus == null) {
@@ -381,6 +391,7 @@ class _WalletAppState extends State<WalletApp> {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
+      AdPage.route: (_) => AdPage(),
       KarCrowdLoanPage.route: (_) => KarCrowdLoanPage(_service, _connectedNode),
       KarCrowdLoanFormPage.route: (_) =>
           KarCrowdLoanFormPage(_service, _connectedNode),
@@ -423,7 +434,7 @@ class _WalletAppState extends State<WalletApp> {
   @override
   Widget build(_) {
     return MaterialApp(
-      title: 'Polkawallet Plugin Kusama Demo',
+      title: 'Polkawallet',
       theme: _theme ??
           _getAppTheme(
             widget.plugins[0].basic.primaryColor,
