@@ -128,19 +128,23 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
         karApis[0]);
     if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-      final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
-          arguments: TxConfirmParams(
-            module: 'crowdloan',
-            call: 'contribute',
-            txTitle: dic['auction.contribute'],
-            txDisplay: {
-              "paraIndex": params.paraId,
-              "amount": '$_amount KSM',
-              // "signingPayload": signingPayload
-            },
-            params: [params.paraId, amountInt.toString(), null],
-          ))) as Map;
+      final txParams = [params.paraId, amountInt.toString(), null];
+      final txArgs = TxConfirmParams(
+        module: 'crowdloan',
+        call: 'contribute',
+        txTitle: dic['auction.contribute'],
+        txDisplay: {
+          "paraIndex": params.paraId,
+          "amount": '$_amount KSM',
+          // "signingPayload": signingPayload
+        },
+        params: txParams,
+      );
+      final res = (await Navigator.of(context)
+          .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
       if (res != null) {
+        _saveLocalTxData(txArgs, txParams, res);
+
         if (params.email.isNotEmpty && _emailAccept) {
           WalletApi.postKarSubscribe(params.email, karApis[1]);
         }
@@ -193,6 +197,25 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       margin: EdgeInsets.only(left: 16, bottom: 4),
       child: Text(title, style: TextStyle(fontSize: 16, color: Colors.white)),
     );
+  }
+
+  // todo: make this local-tx-storage a plugin function
+  void _saveLocalTxData(TxConfirmParams txArgs, List txParams, Map txRes) {
+    final pubKey = widget.service.keyring.current.pubKey;
+    final Map cache =
+        widget.service.store.storage.read('$local_tx_store_key:$pubKey') ?? {};
+    final txs = cache[pubKey] ?? [];
+    txs.add({
+      'module': txArgs.module,
+      'call': txArgs.call,
+      'args': txParams,
+      'hash': txRes['hash'],
+      'blockHash': txRes['blockHash'],
+      'eventId': txRes['eventId'],
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+    cache[pubKey] = txs;
+    widget.service.store.storage.write('$local_tx_store_key:$pubKey', cache);
   }
 
   @override
