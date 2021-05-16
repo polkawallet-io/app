@@ -747,11 +747,9 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "28aff6c52cbc4fbdf22120f191b073ffd1faf3a9"
-      resolved-ref: "28aff6c52cbc4fbdf22120f191b073ffd1faf3a9"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.1.6"
   polkawallet_plugin_chainx:
     dependency: "direct main"
@@ -774,11 +772,9 @@ packages:
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8add53266eb2bc65aa94b378f0daeb456e39eee7"
-      resolved-ref: "8add53266eb2bc65aa94b378f0daeb456e39eee7"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
     version: "0.1.7"
   polkawallet_plugin_laminar:
     dependency: "direct main"
@@ -792,9 +788,9 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
     version: "0.1.7"
   polkawallet_ui:
     dependency: "direct overridden"

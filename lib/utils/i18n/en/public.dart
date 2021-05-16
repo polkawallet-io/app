@@ -8,7 +8,6 @@ const Map<String, String> enPublic = {
   'auction.read': 'I have read and accept the',
   'auction.meet': 'I have checked and meet the',
   'auction.term.0': 'Terms & Conditions',
-  'auction.term.1': 'Qualified Person Criteria',
   'auction.term.2': 'Privacy Policy',
   'auction.accept': 'Accept & Sign',
   'auction.contribute': 'Contribute',
@@ -29,4 +28,5 @@ const Map<String, String> enPublic = {
   'auction.invalid': 'Invalid',
   'auction.connecting': 'Connecting WSS',
   'auction.txs': 'My Contributions',
+  'auction.tx.confirming': 'Confirming...',
 };

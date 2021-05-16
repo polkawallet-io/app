@@ -8,7 +8,6 @@ const Map<String, String> zhPublic = {
   'auction.read': '我已阅读并接受',
   'auction.meet': '我已检查并符合',
   'auction.term.0': '政策条款',
-  'auction.term.1': '参与者标准',
   'auction.term.2': '隐私条款',
   'auction.accept': '接受并签名',
   'auction.contribute': '支持竞拍',
@@ -28,4 +27,5 @@ const Map<String, String> zhPublic = {
   'auction.invalid': '无效的',
   'auction.connecting': '正在连接 WSS',
   'auction.txs': '我的贡献',
+  'auction.tx.confirming': '确认中...',
 };

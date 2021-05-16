@@ -46,13 +46,14 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   bool _emailValid = true;
 
   bool _accepted0 = false;
-  bool _accepted1 = false;
   bool _accepted2 = false;
 
   Map _statement;
   bool _signed = false;
 
   List _contributions = [];
+  Timer _txQueryTimer;
+  bool _txQuerying = true;
 
   Future<void> _updateBestNumber() async {
     final res = await widget.service.plugin.sdk.webView
@@ -61,6 +62,52 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       setState(() {
         _bestNumber = int.parse(res.toString());
       });
+    }
+  }
+
+  List _mergeLocalTxData(List txs) {
+    final pubKey = widget.service.keyring.current.pubKey;
+    final Map cache =
+        widget.service.store.storage.read('$local_tx_store_key:$pubKey') ?? {};
+    final local = cache[pubKey] ?? [];
+    if (local.length == 0) return txs;
+
+    bool isInBlock = false;
+    int inBlockTxCount = 0;
+    int inBlockTxIndex = 0;
+    local.forEach((e) {
+      if (e['module'] == 'crowdloan' && e['call'] == 'contribute') {
+        txs.forEach((tx) {
+          if (tx['blockHash'] == e['blockHash']) {
+            isInBlock = true;
+            inBlockTxIndex = inBlockTxCount;
+          }
+        });
+      }
+      inBlockTxCount++;
+    });
+    if (isInBlock) {
+      local.removeAt(inBlockTxIndex);
+      cache[pubKey] = local;
+      widget.service.store.storage.write('$local_tx_store_key:$pubKey', cache);
+      if (_txQueryTimer != null) {
+        _txQueryTimer.cancel();
+      }
+      return txs;
+    } else {
+      final tx = local[inBlockTxIndex];
+      final List res = [
+        {
+          'amount': tx['args'][1],
+          'timestamp': tx['timestamp'],
+          'inBlock': {'eventId': tx['hash']},
+        }
+      ];
+      res.addAll(txs);
+      setState(() {
+        _txQueryTimer = Timer(Duration(seconds: 6), _getCrowdLoanHistory);
+      });
+      return res;
     }
   }
 
@@ -81,13 +128,19 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getCrowdLoanHistory() async {
+    setState(() {
+      _txQuerying = true;
+    });
     final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
     final res = await WalletApi.getKarCrowdLoanHistory(
         _account.address, karApis.split('|')[0]);
     print(res);
     if (res != null && mounted) {
+      final txs = _mergeLocalTxData(res);
+      print(res);
       setState(() {
-        _contributions = res;
+        _contributions = txs;
+        _txQuerying = false;
       });
     }
 
@@ -134,7 +187,6 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       setState(() {
         _account = acc;
         _accepted0 = false;
-        _accepted1 = false;
         _accepted2 = false;
         _signed = signed != null;
       });
@@ -262,8 +314,13 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     final karColor = Colors.red;
     final grayColor = Colors.white70;
     final titleStyle = TextStyle(color: grayColor, fontSize: 18);
+    final loadingIndicator = Theme(
+        data: ThemeData(
+            cupertinoOverrideTheme:
+                CupertinoThemeData(brightness: Brightness.dark)),
+        child: CupertinoActivityIndicator());
 
-    final allAccepted = _accepted0 && _accepted1 && _accepted2 && _emailValid;
+    final allAccepted = _accepted0 && _accepted2 && _emailValid;
     return CrowdLoanPageLayout('', [
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,11 +364,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       ),
       _fundInfo == null || finished
           ? _bestNumber == 0
-              ? Theme(
-                  data: ThemeData(
-                      cupertinoOverrideTheme:
-                          CupertinoThemeData(brightness: Brightness.dark)),
-                  child: CupertinoActivityIndicator())
+              ? loadingIndicator
               : Container()
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -448,7 +501,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                 style: TextStyle(color: cardColor),
                               ),
                               JumpToLink(
-                                'https://acala.network/terms',
+                                'https://acala.network/karura/terms',
                                 text: ' ${dic['auction.term.0']}',
                                 color: karColor,
                               )
@@ -456,114 +509,88 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                           )
                         ],
                       ),
-                _signed
-                    ? _contributions.length == 0
-                        ? Container()
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(bottom: 8),
-                                child:
-                                    Text(dic['auction.txs'], style: titleStyle),
-                              ),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: grayColor, width: 0.5),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16))),
-                                child: Column(
-                                  children: _contributions.map((e) {
-                                    return Container(
-                                      margin:
-                                          EdgeInsets.only(top: 8, bottom: 8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                !_signed
+                    ? Container()
+                    : _txQuerying
+                        ? loadingIndicator
+                        : _contributions.length > 0
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 8),
+                                    child: Text(dic['auction.txs'],
+                                        style: titleStyle),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: grayColor, width: 0.5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(16))),
+                                    child: Column(
+                                      children: _contributions.map((e) {
+                                        return Container(
+                                          margin: EdgeInsets.only(
+                                              top: 8, bottom: 8),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(
-                                                '${Fmt.balance(e['amount'], decimals)} KSM',
-                                                style: TextStyle(
-                                                    color: cardColor,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    '${Fmt.balance(e['amount'], decimals)} KSM',
+                                                    style: TextStyle(
+                                                        color: cardColor,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                      Fmt.dateTime(DateTime
+                                                          .fromMillisecondsSinceEpoch(
+                                                              e['timestamp'])),
+                                                      style: TextStyle(
+                                                          color: grayColor,
+                                                          fontSize: 13))
+                                                ],
                                               ),
-                                              Text(
-                                                  Fmt.dateTime(DateTime.parse(
-                                                      e['createdAt'])),
-                                                  style: TextStyle(
-                                                      color: grayColor,
-                                                      fontSize: 13))
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    e['blockHash'] == null
+                                                        ? dic[
+                                                            'auction.tx.confirming']
+                                                        : 'Event Id',
+                                                    style: TextStyle(
+                                                        color: Colors.white70),
+                                                  ),
+                                                  JumpToLink(
+                                                    'https://kusama.subscan.io/extrinsic/${e['inBlock']['eventId']}',
+                                                    text: e['blockHash'] == null
+                                                        ? Fmt.address(
+                                                            e['inBlock']
+                                                                ['eventId'])
+                                                        : e['inBlock']
+                                                            ['eventId'],
+                                                    color: karColor,
+                                                  )
+                                                ],
+                                              ),
                                             ],
                                           ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'Event Id',
-                                                style: TextStyle(
-                                                    color: Colors.white70),
-                                              ),
-                                              JumpToLink(
-                                                'https://kusama.subscan.io/extrinsic/${e['inBlock']['eventId']}',
-                                                text: e['inBlock']['eventId'],
-                                                color: karColor,
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  )
+                                ],
                               )
-                            ],
-                          )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Theme(
-                            child: SizedBox(
-                              height: 48,
-                              width: 32,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: Checkbox(
-                                  value: _accepted1,
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _accepted1 = v;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                            data: ThemeData(
-                              primarySwatch: karColor,
-                              unselectedWidgetColor: karColor, // Your color
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dic['auction.meet'],
-                                style: TextStyle(color: cardColor),
-                              ),
-                              JumpToLink(
-                                'https://acala.network/terms#check',
-                                text: ' ${dic['auction.term.1']}',
-                                color: karColor,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                            : Container(),
                 _signed
                     ? Container()
                     : Row(
