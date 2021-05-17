@@ -438,26 +438,33 @@ class _WalletAppState extends State<WalletApp> {
 
   @override
   Widget build(_) {
-    return MaterialApp(
-      title: 'Polkawallet',
-      theme: _theme ??
-          _getAppTheme(
-            widget.plugins[0].basic.primaryColor,
-            secondaryColor: widget.plugins[0].basic.gradientColor,
-          ),
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        AppLocalizationsDelegate(_locale ?? Locale('en', '')),
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: [
-        const Locale('en', ''),
-        const Locale('zh', ''),
-      ],
-      initialRoute: HomePage.route,
-      routes: _getRoutes(),
+    final routes = _getRoutes();
+    return Listener(
+      onPointerUp: (_) {
+        FocusScope.of(context).focusedChild?.unfocus();
+      },
+      child: MaterialApp(
+        title: 'Polkawallet',
+        theme: _theme ??
+            _getAppTheme(
+              widget.plugins[0].basic.primaryColor,
+              secondaryColor: widget.plugins[0].basic.gradientColor,
+            ),
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: [
+          AppLocalizationsDelegate(_locale ?? Locale('en', '')),
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('en', ''),
+          const Locale('zh', ''),
+        ],
+        initialRoute: HomePage.route,
+        onGenerateRoute: (settings) => CupertinoPageRoute(
+            builder: routes[settings.name], settings: settings),
+      ),
     );
   }
 }
