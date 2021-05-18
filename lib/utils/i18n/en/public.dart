@@ -24,7 +24,7 @@ const Map<String, String> enPublic = {
   'auction.vest': 'Vested over the lease period',
   'auction.lease': 'Lease period',
   'auction.notify':
-      'I agree to receive email communications about Karura and Acala including exclusive launch updates and liquidity provider program.',
+      'I agree to receive email communications about Karura and Acala including exclusive launch updates and the liquidity provider program.',
   'auction.submit': 'Submit',
   'auction.invalid': 'Invalid',
   'auction.connecting': 'Connecting WSS',
