@@ -47,7 +47,17 @@ class AssetsPage extends StatefulWidget {
 }
 
 class _AssetsState extends State<AssetsPage> {
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      new GlobalKey<RefreshIndicatorState>();
+
   List _announcements;
+
+  Future<void> _updateBalances() async {
+    final balances = await widget.service.plugin.sdk.api.account
+        .queryBalance(widget.service.keyring.current.address);
+    widget.service.plugin
+        .updateBalances(widget.service.keyring.current, balances);
+  }
 
   Future<List> _fetchAnnouncements() async {
     if (_announcements != null) return _announcements;
@@ -293,152 +303,157 @@ class _AssetsState extends State<AssetsPage> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 120),
-                child: ListView(
-                  padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
-                  children: [
-                    widget.service.plugin.basic.isTestNet
-                        ? Padding(
-                            padding: EdgeInsets.only(bottom: 16, top: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    child: TextTag(
-                                  I18n.of(context).getDic(i18n_full_dic_app,
-                                      'assets')['assets.warn'],
-                                  color: Colors.deepOrange,
-                                  fontSize: 12,
-                                  margin: EdgeInsets.all(0),
-                                  padding: EdgeInsets.all(8),
-                                ))
-                              ],
-                            ),
-                          )
-                        : Container(height: 24),
-                    FutureBuilder(
-                      future: _fetchAnnouncements(),
-                      builder: (_, AsyncSnapshot<List> snapshot) {
-                        final String lang =
-                            I18n.of(context).locale.toString().contains('zh')
-                                ? 'zh'
-                                : 'en';
-                        if (!snapshot.hasData || snapshot.data.length == 0) {
-                          return Container();
-                        }
-                        final Map announce = snapshot.data[0][lang];
-                        return GestureDetector(
-                          child: Container(
-                            margin: EdgeInsets.all(16),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: TextTag(
-                                    announce['title'],
-                                    padding:
-                                        EdgeInsets.fromLTRB(16, 12, 16, 12),
-                                    color: Colors.lightGreen,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              AnnouncementPage.route,
-                              arguments: AnnouncePageParams(
-                                title: announce['title'],
-                                link: announce['link'],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    BorderedTitle(
-                      title: I18n.of(context)
-                          .getDic(i18n_full_dic_app, 'assets')['assets'],
-                    ),
-                    RoundedCard(
-                      margin: EdgeInsets.only(top: 16),
-                      child: ListTile(
-                        leading: Container(
-                          height: 36,
-                          width: 37,
-                          margin: EdgeInsets.only(right: 8),
-                          child: widget.service.plugin.tokenIcons[symbol],
-                        ),
-                        title: Text(symbol),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              balancesInfo != null &&
-                                      balancesInfo.freeBalance != null
-                                  ? Fmt.priceFloorBigInt(
-                                      Fmt.balanceTotal(balancesInfo), decimals,
-                                      lengthFixed: 4)
-                                  : '--.--',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Colors.black54),
-                            ),
-                            Text(
-                              '≈ \$ ${tokenPrice ?? '--.--'}',
-                              style: TextStyle(
-                                color: Theme.of(context).disabledColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(context, AssetPage.route);
-                        },
-                      ),
-                    ),
-                    Column(
-                      children: tokens == null || tokens.length == 0
-                          ? [Container()]
-                          : tokens
-                              .map((i) => TokenItem(
-                                    i,
-                                    i.decimals,
-                                    detailPageRoute: i.detailPageRoute,
-                                    icon: widget
-                                        .service.plugin.tokenIcons[i.symbol],
-                                  ))
-                              .toList(),
-                    ),
-                    Column(
-                      children: extraTokens == null || extraTokens.length == 0
-                          ? [Container()]
-                          : extraTokens.map((ExtraTokenData i) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                child: RefreshIndicator(
+                  key: _refreshKey,
+                  onRefresh: _updateBalances,
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
+                    children: [
+                      widget.service.plugin.basic.isTestNet
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: 16, top: 8),
+                              child: Row(
                                 children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 16),
-                                    child: BorderedTitle(
-                                      title: i.title,
+                                  Expanded(
+                                      child: TextTag(
+                                    I18n.of(context).getDic(i18n_full_dic_app,
+                                        'assets')['assets.warn'],
+                                    color: Colors.deepOrange,
+                                    fontSize: 12,
+                                    margin: EdgeInsets.all(0),
+                                    padding: EdgeInsets.all(8),
+                                  ))
+                                ],
+                              ),
+                            )
+                          : Container(height: 24),
+                      FutureBuilder(
+                        future: _fetchAnnouncements(),
+                        builder: (_, AsyncSnapshot<List> snapshot) {
+                          final String lang =
+                              I18n.of(context).locale.toString().contains('zh')
+                                  ? 'zh'
+                                  : 'en';
+                          if (!snapshot.hasData || snapshot.data.length == 0) {
+                            return Container();
+                          }
+                          final Map announce = snapshot.data[0][lang];
+                          return GestureDetector(
+                            child: Container(
+                              margin: EdgeInsets.all(16),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: TextTag(
+                                      announce['title'],
+                                      padding:
+                                          EdgeInsets.fromLTRB(16, 12, 16, 12),
+                                      color: Colors.lightGreen,
                                     ),
-                                  ),
-                                  Column(
-                                    children: i.tokens
-                                        .map((e) => TokenItem(
-                                              e,
-                                              e.decimals,
-                                              detailPageRoute:
-                                                  e.detailPageRoute,
-                                              icon: widget.service.plugin
-                                                  .tokenIcons[e.symbol],
-                                            ))
-                                        .toList(),
                                   )
                                 ],
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AnnouncementPage.route,
+                                arguments: AnnouncePageParams(
+                                  title: announce['title'],
+                                  link: announce['link'],
+                                ),
                               );
-                            }).toList(),
-                    ),
-                  ],
+                            },
+                          );
+                        },
+                      ),
+                      BorderedTitle(
+                        title: I18n.of(context)
+                            .getDic(i18n_full_dic_app, 'assets')['assets'],
+                      ),
+                      RoundedCard(
+                        margin: EdgeInsets.only(top: 16),
+                        child: ListTile(
+                          leading: Container(
+                            height: 36,
+                            width: 37,
+                            margin: EdgeInsets.only(right: 8),
+                            child: widget.service.plugin.tokenIcons[symbol],
+                          ),
+                          title: Text(symbol),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                balancesInfo != null &&
+                                        balancesInfo.freeBalance != null
+                                    ? Fmt.priceFloorBigInt(
+                                        Fmt.balanceTotal(balancesInfo),
+                                        decimals,
+                                        lengthFixed: 4)
+                                    : '--.--',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black54),
+                              ),
+                              Text(
+                                '≈ \$ ${tokenPrice ?? '--.--'}',
+                                style: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(context, AssetPage.route);
+                          },
+                        ),
+                      ),
+                      Column(
+                        children: tokens == null || tokens.length == 0
+                            ? [Container()]
+                            : tokens
+                                .map((i) => TokenItem(
+                                      i,
+                                      i.decimals,
+                                      detailPageRoute: i.detailPageRoute,
+                                      icon: widget
+                                          .service.plugin.tokenIcons[i.symbol],
+                                    ))
+                                .toList(),
+                      ),
+                      Column(
+                        children: extraTokens == null || extraTokens.length == 0
+                            ? [Container()]
+                            : extraTokens.map((ExtraTokenData i) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: BorderedTitle(
+                                        title: i.title,
+                                      ),
+                                    ),
+                                    Column(
+                                      children: i.tokens
+                                          .map((e) => TokenItem(
+                                                e,
+                                                e.decimals,
+                                                detailPageRoute:
+                                                    e.detailPageRoute,
+                                                icon: widget.service.plugin
+                                                    .tokenIcons[e.symbol],
+                                              ))
+                                          .toList(),
+                                    )
+                                  ],
+                                );
+                              }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Column(
