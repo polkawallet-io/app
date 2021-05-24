@@ -198,17 +198,18 @@ class _WalletAppState extends State<WalletApp> {
         ) >
         network.basic.jsCodeVersion;
 
+    final service = AppService(network, _keyring, _store, widget.buildTarget);
+    service.init();
+
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
       _keyring,
-      webView: _service.plugin.sdk.webView,
+      webView: _service?.plugin?.sdk?.webView,
       jsCode: useLocalJS
           ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
           : null,
     );
 
-    final service = AppService(network, _keyring, _store, widget.buildTarget);
-    service.init();
     setState(() {
       _service = service;
     });
@@ -439,8 +440,8 @@ class _WalletAppState extends State<WalletApp> {
   @override
   Widget build(_) {
     final routes = _getRoutes();
-    return Listener(
-      onPointerUp: (_) {
+    return GestureDetector(
+      onTapUp: (_) {
         FocusScope.of(context).focusedChild?.unfocus();
       },
       child: MaterialApp(
