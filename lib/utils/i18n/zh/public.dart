@@ -17,6 +17,8 @@ const Map<String, String> zhPublic = {
   'auction.balance': '可用余额',
   'auction.referral': '邀请码（选填）',
   'auction.estimate': '预估奖励（KAR）',
+  'auction.invite': '邀请奖励',
+  'auction.extra': '额外奖励',
   'auction.note':
       '如果 Karura 赢得了卡槽拍卖，KAR 奖励将会在创世区块发放。否则，质押的 KSM 将用于下一次卡槽拍卖。详见《政策条款》。',
   'auction.init': '初始释放',
@@ -28,4 +30,5 @@ const Map<String, String> zhPublic = {
   'auction.connecting': '正在连接 WSS',
   'auction.txs': '我的贡献',
   'auction.tx.confirming': '确认中...',
+  'auction.coming': '敬请期待...',
 };

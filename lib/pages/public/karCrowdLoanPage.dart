@@ -49,6 +49,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   bool _accepted2 = false;
 
   Map _statement;
+  Map _promotion;
   bool _signed = false;
 
   List _contributions = [];
@@ -58,9 +59,14 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   Future<void> _updateBestNumber() async {
     final res = await widget.service.plugin.sdk.webView
         .evalJavascript('api.derive.chain.bestNumber()');
+    final blockNumber = int.parse(res.toString());
+    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
+    final promotion = await WalletApi.getKarCrowdLoanPromotion(
+        karApis.split('|')[0], blockNumber);
     if (mounted) {
       setState(() {
-        _bestNumber = int.parse(res.toString());
+        _bestNumber = blockNumber;
+        _promotion = promotion;
       });
     }
   }
@@ -98,9 +104,9 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
       final tx = local[inBlockTxIndex];
       final List res = [
         {
-          'amount': tx['args'][1],
+          'ksmAmount': tx['args'][1],
           'timestamp': tx['timestamp'],
-          'inBlock': {'eventId': tx['hash']},
+          'eventId': tx['hash'],
         }
       ];
       res.addAll(txs);
@@ -136,7 +142,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         _account.address, karApis.split('|')[0]);
     print(res);
     if (res != null && mounted) {
-      final txs = _mergeLocalTxData(res);
+      final txs = _mergeLocalTxData(res.reversed.toList());
       print(res);
       setState(() {
         _contributions = txs;
@@ -251,7 +257,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     final res = await Navigator.of(context).pushNamed(
         KarCrowdLoanFormPage.route,
         arguments: KarCrowdLoanPageParams(
-            _account, _statement['paraId'].toString(), _email));
+            _account, _statement['paraId'].toString(), _email, _promotion));
     if (res != null) {
       _getCrowdLoanInfo();
     }
@@ -348,7 +354,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
           ),
           _fundInfo == null
               ? Container()
-              : KarCrowdLoanTitleSet(finished: finished),
+              : KarCrowdLoanTitleSet(
+                  dic['auction.${finished ? 'finish' : 'live'}']),
           Container(
             margin: EdgeInsets.only(top: 8, bottom: 32),
             child: widget.connectedNode == null || _fundInfo == null || finished
@@ -531,6 +538,43 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                             Radius.circular(16))),
                                     child: Column(
                                       children: _contributions.map((e) {
+                                        final karAmountStyle = TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12);
+                                        List<Widget> karAmount = [
+                                          Text(
+                                            dic['auction.tx.confirming'],
+                                            style: karAmountStyle,
+                                          )
+                                        ];
+                                        if (e['blockHash'] != null) {
+                                          final karAmountInt =
+                                              Fmt.balanceInt(e['karAmount']);
+                                          final karRefereeBonus =
+                                              Fmt.balanceInt(
+                                                  e['karRefereeBonus']);
+                                          final karExtraBonus =
+                                              e['promotion'] != null
+                                                  ? Fmt.balanceInt(
+                                                      e['promotion']
+                                                          ['karExtraBonus'])
+                                                  : BigInt.zero;
+                                          karAmount = [
+                                            Text(
+                                              '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} KAR',
+                                              style: karAmountStyle,
+                                            )
+                                          ];
+                                          if (e['promotion'] != null &&
+                                              Fmt.balanceInt(e['promotion']
+                                                      ['acaExtraBonus']) >
+                                                  BigInt.zero) {
+                                            karAmount.add(Text(
+                                              '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
+                                              style: karAmountStyle,
+                                            ));
+                                          }
+                                        }
                                         return Container(
                                           margin: EdgeInsets.only(
                                               top: 8, bottom: 8),
@@ -543,7 +587,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    '${Fmt.balance(e['amount'], decimals)} KSM',
+                                                    '${Fmt.balance(e['ksmAmount'], decimals)} KSM',
                                                     style: TextStyle(
                                                         color: cardColor,
                                                         fontWeight:
@@ -562,22 +606,13 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.end,
                                                 children: [
-                                                  Text(
-                                                    e['blockHash'] == null
-                                                        ? dic[
-                                                            'auction.tx.confirming']
-                                                        : 'Event Id',
-                                                    style: TextStyle(
-                                                        color: Colors.white70),
-                                                  ),
+                                                  ...karAmount,
                                                   JumpToLink(
-                                                    'https://kusama.subscan.io/extrinsic/${e['inBlock']['eventId']}',
+                                                    'https://kusama.subscan.io/extrinsic/${e['eventId']}',
                                                     text: e['blockHash'] == null
                                                         ? Fmt.address(
-                                                            e['inBlock']
-                                                                ['eventId'])
-                                                        : e['inBlock']
-                                                            ['eventId'],
+                                                            e['eventId'])
+                                                        : e['eventId'],
                                                     color: karColor,
                                                   )
                                                 ],

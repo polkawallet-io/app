@@ -16,7 +16,7 @@ class _AdPageState extends State<AdPage> {
   int _timerCount = 10;
 
   void _updateTimer() {
-    if (_timerCount > 0) {
+    if (_timerCount > 0 && mounted) {
       setState(() {
         _timerCount -= 1;
       });
@@ -67,7 +67,8 @@ class _AdPageState extends State<AdPage> {
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(top: 8, left: 24, right: 24),
-                  child: KarCrowdLoanTitleSet(),
+                  child: KarCrowdLoanTitleSet(I18n.of(context)
+                      .getDic(i18n_full_dic_app, 'public')['auction.live']),
                 ),
               ),
               Container(
@@ -86,8 +87,8 @@ class _AdPageState extends State<AdPage> {
 }
 
 class KarCrowdLoanTitleSet extends StatelessWidget {
-  KarCrowdLoanTitleSet({this.finished = false});
-  final bool finished;
+  KarCrowdLoanTitleSet(this.title);
+  final String title;
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardColor;
@@ -105,9 +106,7 @@ class KarCrowdLoanTitleSet extends StatelessWidget {
                   children: [
                     Expanded(
                         child: FittedBox(
-                            child: Text(
-                                dic['auction.${finished ? 'finish' : 'live'}']
-                                    .toUpperCase(),
+                            child: Text(title.toUpperCase(),
                                 style: TextStyle(
                                     color: karColor,
                                     fontWeight: FontWeight.bold,
@@ -121,9 +120,7 @@ class KarCrowdLoanTitleSet extends StatelessWidget {
                   children: [
                     Expanded(
                         child: FittedBox(
-                            child: Text(
-                                dic['auction.${finished ? 'finish' : 'live'}']
-                                    .toUpperCase(),
+                            child: Text(title.toUpperCase(),
                                 style: TextStyle(
                                     color: cardColor,
                                     fontWeight: FontWeight.bold,

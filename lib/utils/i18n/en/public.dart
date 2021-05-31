@@ -17,6 +17,8 @@ const Map<String, String> enPublic = {
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code (optional)',
   'auction.estimate': 'Estimated KAR Paradrop',
+  'auction.invite': 'Referral',
+  'auction.extra': 'Extra',
   'auction.note':
       'If Karura wins the auction, KAR rewards will be distributed upon genesis. Otherwise, the KSM locked will automatically bid for the next available auction. Check the Terms & Conditions for details.',
   'auction.init': 'Initial transferable',
@@ -29,4 +31,5 @@ const Map<String, String> enPublic = {
   'auction.connecting': 'Connecting WSS',
   'auction.txs': 'My Contributions',
   'auction.tx.confirming': 'Confirming...',
+  'auction.coming': 'Coming Soon...',
 };
