@@ -143,6 +143,22 @@ class WalletApi {
     }
   }
 
+  static Future<Map> getKarCrowdLoanPromotion(
+      String endpoint, int blockNumber) async {
+    try {
+      final res = await get(
+          Uri.parse('https://$endpoint/promotion?blockNumber=$blockNumber'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<List> getKarCrowdLoanHistory(
       String address, String endpoint) async {
     try {

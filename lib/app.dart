@@ -31,6 +31,7 @@ import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
+import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -273,11 +274,11 @@ class _WalletAppState extends State<WalletApp> {
     // todo: remove this after crowd loan
     final karStarted = await WalletApi.getKarCrowdLoanStarted();
     // final karStarted = {
-    //   'result': true,
+    //   'started': true,
     //   'endpoint': 'crowdloan-api.laminar.codes',
     //   'subscribe': 'fc605148-482f-4302-a8d2-cece3251f7fc',
     // };
-    if (karStarted != null && karStarted['result']) {
+    if (karStarted != null && karStarted['started']) {
       storage.write(kar_crowd_loan_api_key,
           '${karStarted['endpoint']}|${karStarted['subscribe']}');
       Navigator.of(context).pushNamed(AdPage.route);
@@ -399,6 +400,7 @@ class _WalletAppState extends State<WalletApp> {
       GuidePage.route: (_) => GuidePage(),
       AdPage.route: (_) => AdPage(),
       KarCrowdLoanPage.route: (_) => KarCrowdLoanPage(_service, _connectedNode),
+      KarCrowdLoanWaitPage.route: (_) => KarCrowdLoanWaitPage(),
       KarCrowdLoanFormPage.route: (_) =>
           KarCrowdLoanFormPage(_service, _connectedNode),
 

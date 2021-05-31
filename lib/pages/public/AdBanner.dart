@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
+import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -24,13 +25,16 @@ class AdBanner extends StatefulWidget {
 }
 
 class _AdBannerState extends State<AdBanner> {
-  bool _started = false;
+  Map _started = {
+    'visible': true,
+    'started': false,
+  };
 
   Future<void> _getCrowdLoanStarted() async {
     final res = await WalletApi.getKarCrowdLoanStarted();
-    if (res != null && res['result'] && mounted) {
+    if (res != null && mounted) {
       setState(() {
-        _started = true;
+        _started = res;
       });
     }
   }
@@ -38,21 +42,25 @@ class _AdBannerState extends State<AdBanner> {
   Future<void> _goToCrowdLoan(BuildContext context) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
 
-    if (widget.service.plugin.basic.name != 'kusama') {
-      showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: Text(dic['auction.switch']),
-            content: Container(height: 64, child: CupertinoActivityIndicator()),
-          );
-        },
-      );
-      await widget.changeToKusama();
-      Navigator.of(context).pop();
+    if (_started['started']) {
+      if (widget.service.plugin.basic.name != 'kusama') {
+        showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text(dic['auction.switch']),
+              content:
+                  Container(height: 64, child: CupertinoActivityIndicator()),
+            );
+          },
+        );
+        await widget.changeToKusama();
+        Navigator.of(context).pop();
+      }
+      Navigator.of(context).pushNamed(KarCrowdLoanPage.route);
+    } else {
+      Navigator.of(context).pushNamed(KarCrowdLoanWaitPage.route);
     }
-
-    Navigator.of(context).pushNamed(KarCrowdLoanPage.route);
   }
 
   @override
@@ -66,7 +74,7 @@ class _AdBannerState extends State<AdBanner> {
 
   @override
   Widget build(BuildContext context) {
-    final show = widget.connectedNode != null && _started;
+    final show = widget.connectedNode != null && _started['visible'];
 
     final fullWidth = MediaQuery.of(context).size.width;
     final cardColor = Theme.of(context).cardColor;
@@ -104,7 +112,7 @@ class _AdBannerState extends State<AdBanner> {
                           Container(
                             margin: EdgeInsets.only(left: 24, top: 8),
                             child: Text(
-                              'Parachain Auction Now Live',
+                              'Parachain Auction',
                               style: TextStyle(
                                   color: cardColor,
                                   height: 0.9,

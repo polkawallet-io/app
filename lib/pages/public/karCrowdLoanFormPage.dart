@@ -18,10 +18,11 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class KarCrowdLoanPageParams {
-  KarCrowdLoanPageParams(this.account, this.paraId, this.email);
+  KarCrowdLoanPageParams(this.account, this.paraId, this.email, this.promotion);
   final KeyPairData account;
   final String paraId;
   final String email;
+  final Map promotion;
 }
 
 class KarCrowdLoanFormPage extends StatefulWidget {
@@ -51,7 +52,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
 
   bool _emailAccept = true;
 
-  void _onAmountChange(String value, BigInt balanceInt) {
+  void _onAmountChange(String value, BigInt balanceInt, Map promotion) {
     final v = value.trim();
     if (v.isEmpty) {
       setState(() {
@@ -237,7 +238,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       final grayColor = Colors.white70;
       final errorStyle = TextStyle(color: karColor, fontSize: 10);
       final karStyle = TextStyle(
-          color: cardColor, fontSize: 32, fontWeight: FontWeight.bold);
+          color: cardColor, fontSize: 26, fontWeight: FontWeight.bold);
       final karKeyStyle = TextStyle(color: cardColor);
       final karInfoStyle =
           TextStyle(color: karColor, fontSize: 20, fontWeight: FontWeight.bold);
@@ -252,6 +253,18 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       final inputValid = _amountValid && (_referralValid || _referral.isEmpty);
       final isConnected = widget.connectedNode != null;
 
+      double karAmountTotal = _amountKar * (_referralValid ? 1.05 : 1);
+      double karPromotion = 0;
+      double acaPromotion = 0;
+      if (params.promotion['result']) {
+        if (params.promotion['karRate'] > 0) {
+          karPromotion = _amountKar * params.promotion['karRate'];
+        }
+        if (params.promotion['acaRate'] > 0) {
+          acaPromotion = _amountKar * params.promotion['acaRate'];
+        }
+      }
+      karAmountTotal += karPromotion;
       return CrowdLoanPageLayout(dic['auction.contribute'], [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +338,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                 clearButtonMode: OverlayVisibilityMode.editing,
                 inputFormatters: [UI.decimalInputFormatter(decimals)],
                 focusNode: _amountFocusNode,
-                onChanged: (v) => _onAmountChange(v, balanceInt),
+                onChanged: (v) =>
+                    _onAmountChange(v, balanceInt, params.promotion),
               ),
             ),
             Container(
@@ -386,20 +400,15 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                       )
                     ],
                   ),
-                  Text('${Fmt.priceFloor(_amountKar)} KAR', style: karStyle),
-                  _referralValid
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text('+ ${Fmt.priceFloor(_amountKar * 0.05)} KAR',
-                                style: TextStyle(
-                                    color: cardColor,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold)),
-                            Expanded(
-                                child: Text(' (+5%)', style: karInfoStyle)),
-                          ],
-                        )
+                  Text(
+                      '${Fmt.priceFloor(karAmountTotal, lengthMax: 4)} KAR' +
+                          (acaPromotion > 0
+                              ? ' + ${Fmt.priceFloor(acaPromotion, lengthMax: 4)} ACA'
+                              : ''),
+                      style: karStyle),
+                  _amountKar > 0
+                      ? RewardDetailPanel(_amountKar, _referralValid,
+                          params.promotion, karPromotion, acaPromotion)
                       : Container(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -480,5 +489,84 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
         )
       ]);
     });
+  }
+}
+
+class RewardDetailPanel extends StatelessWidget {
+  RewardDetailPanel(this.karAmount, this.referralValid, this.promotion,
+      this.karPromotion, this.acaPromotion);
+
+  final double karAmount;
+  final bool referralValid;
+  final Map promotion;
+  final double karPromotion;
+  final double acaPromotion;
+
+  @override
+  Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final cardColor = Theme.of(context).cardColor;
+    final karAmountStyle =
+        TextStyle(color: cardColor, fontSize: 16, fontWeight: FontWeight.bold);
+    final karInfoStyle = TextStyle(color: cardColor, fontSize: 14);
+    return Container(
+      margin: EdgeInsets.only(top: 4, bottom: 8),
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          color: Colors.white12,
+          border: Border.all(color: Colors.white54, width: 0.5),
+          borderRadius: BorderRadius.all(Radius.circular(8))),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(child: Text('1KSM : 12KAR', style: karInfoStyle)),
+              Text('${Fmt.priceFloor(karAmount, lengthMax: 4)} KAR',
+                  style: karAmountStyle),
+            ],
+          ),
+          referralValid
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text('+5% ${dic['auction.invite']}',
+                            style: karInfoStyle)),
+                    Text(
+                        '+ ${Fmt.priceFloor(karAmount * 0.05, lengthMax: 4)} KAR',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
+          karPromotion > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text(
+                            '+${Fmt.ratio(promotion['karRate'])} ${promotion['name']}',
+                            style: karInfoStyle)),
+                    Text('+ ${Fmt.priceFloor(karPromotion, lengthMax: 4)} KAR',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
+          acaPromotion > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text(
+                            '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
+                            style: karInfoStyle)),
+                    Text('+ ${Fmt.priceFloor(acaPromotion, lengthMax: 4)} ACA',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
+        ],
+      ),
+    );
   }
 }
