@@ -276,11 +276,8 @@ class _WalletAppState extends State<WalletApp> {
     // final karStarted = {
     //   'started': true,
     //   'endpoint': 'crowdloan-api.laminar.codes',
-    //   'subscribe': 'fc605148-482f-4302-a8d2-cece3251f7fc',
     // };
     if (karStarted != null && karStarted['started']) {
-      storage.write(kar_crowd_loan_api_key,
-          '${karStarted['endpoint']}|${karStarted['subscribe']}');
       Navigator.of(context).pushNamed(AdPage.route);
       return;
     }

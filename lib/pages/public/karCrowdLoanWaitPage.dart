@@ -3,6 +3,7 @@ import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
@@ -25,14 +26,14 @@ class KarCrowdLoanWaitPage extends StatelessWidget {
           ),
           Row(
             children: [
-              Image.asset(
-                'assets/images/public/kar_logo.png',
+              SvgPicture.asset(
+                'assets/images/public/kusama_logo.svg',
                 width: MediaQuery.of(context).size.width * 2 / 3,
               )
             ],
           ),
           Container(
-            margin: EdgeInsets.only(top: 4, bottom: 20),
+            margin: EdgeInsets.only(top: 4, bottom: 32),
             child: Text(dic['auction.kar'],
                 style: TextStyle(
                     fontSize: 28,

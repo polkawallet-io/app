@@ -34,15 +34,15 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 8add53266eb2bc65aa94b378f0daeb456e39eee7
+      ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 28aff6c52cbc4fbdf22120f191b073ffd1faf3a9
-#  polkawallet_plugin_laminar:
-#    git:
-#      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-#      ref: 73b623a259fa6c31c0999625ebbfa7cdb84a6dcd
+      ref: a3774223d0590e2b415bcf96936a3f6cf739be59
+  polkawallet_plugin_laminar:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+      ref: 23a558bde7170f5f441bcb29c927e35facf3d63c
 #  polkawallet_plugin_chainx:
 #    git:
 #      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
@@ -57,21 +57,21 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#  polkawallet_plugin_kusama:
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#  polkawallet_plugin_acala:
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
 #  polkawallet_plugin_laminar:
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_chainx:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  polkawallet_ui:
+#  polkawallet_ui:
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: b68da4b7d56dec37ddc34844b204fd095a00f7df
-    path: ../../coding/polkawallet/ui
+#    path: ../../coding/polkawallet/ui
 #  polkawallet_sdk: ^0.1.7
 #  polkawallet_sdk:
 #    path: ../../coding/polkawallet/sdk
@@ -128,6 +128,7 @@ flutter:
     - assets/images/public/kar_bg.png
     - assets/images/public/kar_logo.png
     - assets/images/public/kar_crowd_loan.jpg
+    - assets/images/public/kusama_logo.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

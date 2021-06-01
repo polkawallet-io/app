@@ -60,9 +60,9 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     final res = await widget.service.plugin.sdk.webView
         .evalJavascript('api.derive.chain.bestNumber()');
     final blockNumber = int.parse(res.toString());
-    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
-    final promotion = await WalletApi.getKarCrowdLoanPromotion(
-        karApis.split('|')[0], blockNumber);
+    final endpoint = ModalRoute.of(context).settings.arguments;
+    final promotion =
+        await WalletApi.getKarCrowdLoanPromotion(endpoint, blockNumber);
     if (mounted) {
       setState(() {
         _bestNumber = blockNumber;
@@ -137,9 +137,9 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
     setState(() {
       _txQuerying = true;
     });
-    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
-    final res = await WalletApi.getKarCrowdLoanHistory(
-        _account.address, karApis.split('|')[0]);
+    final endpoint = ModalRoute.of(context).settings.arguments;
+    final res =
+        await WalletApi.getKarCrowdLoanHistory(_account.address, endpoint);
     print(res);
     if (res != null && mounted) {
       final txs = _mergeLocalTxData(res.reversed.toList());
@@ -164,8 +164,8 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _getKarStatement() async {
-    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
-    final res = await WalletApi.getKarCrowdLoanStatement(karApis.split('|')[0]);
+    final endpoint = ModalRoute.of(context).settings.arguments;
+    final res = await WalletApi.getKarCrowdLoanStatement(endpoint);
     if (res != null && mounted) {
       setState(() {
         _statement = res;
@@ -254,10 +254,11 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
   }
 
   Future<void> _goToContribute() async {
+    final endpoint = ModalRoute.of(context).settings.arguments;
     final res = await Navigator.of(context).pushNamed(
         KarCrowdLoanFormPage.route,
-        arguments: KarCrowdLoanPageParams(
-            _account, _statement['paraId'].toString(), _email, _promotion));
+        arguments: KarCrowdLoanPageParams(_account,
+            _statement['paraId'].toString(), _email, endpoint, _promotion));
     if (res != null) {
       _getCrowdLoanInfo();
     }

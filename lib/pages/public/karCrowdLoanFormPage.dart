@@ -18,10 +18,12 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class KarCrowdLoanPageParams {
-  KarCrowdLoanPageParams(this.account, this.paraId, this.email, this.promotion);
+  KarCrowdLoanPageParams(
+      this.account, this.paraId, this.email, this.apiEndpoint, this.promotion);
   final KeyPairData account;
   final String paraId;
   final String email;
+  final String apiEndpoint;
   final Map promotion;
 }
 
@@ -75,7 +77,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     });
   }
 
-  Future<void> _onReferralChange(String value) async {
+  Future<void> _onReferralChange(String value, String apiEndpoint) async {
     final v = value.trim();
     if (v.isEmpty) {
       setState(() {
@@ -93,8 +95,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       });
       return;
     }
-    final karApis = widget.service.store.storage.read(kar_crowd_loan_api_key);
-    final res = await WalletApi.verifyKarReferralCode(v, karApis.split('|')[0]);
+    final res = await WalletApi.verifyKarReferralCode(v, apiEndpoint);
     print(res);
     final valid2 = res != null && res['result'];
     setState(() {
@@ -103,7 +104,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     });
   }
 
-  Future<void> _signAndSubmit(KeyPairData account) async {
+  Future<void> _signAndSubmit(KeyPairData account, String apiEndpoint) async {
     if (_submitting ||
         widget.connectedNode == null ||
         !(_amountValid && (_referralValid || _referral.isEmpty))) return;
@@ -111,8 +112,6 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     setState(() {
       _submitting = true;
     });
-    final karApi = widget.service.store.storage.read(kar_crowd_loan_api_key);
-    final karApis = karApi.split('|');
     final KarCrowdLoanPageParams params =
         ModalRoute.of(context).settings.arguments;
     final decimals =
@@ -124,9 +123,10 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
         account.address,
         amountInt,
         params.email,
+        _emailAccept,
         _referral,
         signed,
-        karApis[0]);
+        apiEndpoint);
     if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final txParams = [params.paraId, amountInt.toString(), null];
@@ -146,9 +146,6 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       if (res != null) {
         _saveLocalTxData(txArgs, txParams, res);
 
-        if (params.email.isNotEmpty && _emailAccept) {
-          WalletApi.postKarSubscribe(params.email, karApis[1]);
-        }
         await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
@@ -369,7 +366,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                 cursorColor: karColor,
                 clearButtonMode: OverlayVisibilityMode.editing,
                 focusNode: _referralFocusNode,
-                onChanged: (v) => _onReferralChange(v),
+                onChanged: (v) => _onReferralChange(v, params.apiEndpoint),
               ),
             ),
             Container(
@@ -482,7 +479,8 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                 color: inputValid && !_submitting && isConnected
                     ? karColor
                     : Colors.grey,
-                onPressed: () => _signAndSubmit(params.account),
+                onPressed: () =>
+                    _signAndSubmit(params.account, params.apiEndpoint),
               ),
             )
           ],
