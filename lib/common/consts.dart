@@ -23,4 +23,3 @@ const int app_beta_version_code = 2075;
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';
-const kar_crowd_loan_api_key = 'kar_crowd_loan_api';

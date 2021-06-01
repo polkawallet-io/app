@@ -740,17 +740,30 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
-    version: "0.1.6"
+      path: "."
+      ref: a3774223d0590e2b415bcf96936a3f6cf739be59
+      resolved-ref: a3774223d0590e2b415bcf96936a3f6cf739be59
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.1.8"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
-    version: "0.1.7"
+      path: "."
+      ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
+      resolved-ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
+    version: "0.1.8"
+  polkawallet_plugin_laminar:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "23a558bde7170f5f441bcb29c927e35facf3d63c"
+      resolved-ref: "23a558bde7170f5f441bcb29c927e35facf3d63c"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
+    source: git
+    version: "0.1.8"
   polkawallet_sdk:
     dependency: transitive
     description:
@@ -759,11 +772,13 @@ packages:
     source: hosted
     version: "0.1.8"
   polkawallet_ui:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
+      path: "."
+      ref: a181a240a0c2b098a2e4140e07d036ea8222cea1
+      resolved-ref: a181a240a0c2b098a2e4140e07d036ea8222cea1
+      url: "https://github.com/polkawallet-io/ui.git"
+    source: git
     version: "0.1.8"
   pool:
     dependency: transitive

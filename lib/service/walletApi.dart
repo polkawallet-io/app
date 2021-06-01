@@ -190,16 +190,22 @@ class WalletApi {
     }
   }
 
-  static Future<Map> postKarCrowdLoan(String address, BigInt amount,
-      String email, String referral, String signature, String endpoint) async {
+  static Future<Map> postKarCrowdLoan(
+      String address,
+      BigInt amount,
+      String email,
+      bool receiveEmail,
+      String referral,
+      String signature,
+      String endpoint) async {
     final headers = {"Content-type": "application/json", "Accept": "*/*"};
-    final body = {
+    final Map body = {
       "address": address,
       "amount": amount.toString(),
       "signature": signature,
     };
     if (email.isNotEmpty) {
-      body.addAll({"email": email});
+      body.addAll({"email": email, "receiveEmail": receiveEmail});
     }
     if (referral.isNotEmpty) {
       body.addAll({"referral": referral});
@@ -207,30 +213,6 @@ class WalletApi {
     try {
       final res = await post(Uri.parse('https://$endpoint/verify'),
           headers: headers, body: jsonEncode(body));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> postKarSubscribe(String email, String subscribeId) async {
-    final headers = {"Content-type": "application/json", "Accept": "*/*"};
-    final body = {
-      "fields": [
-        {'name': 'email', 'value': email}
-      ],
-    };
-    try {
-      final res = await post(
-          Uri.parse(
-              'https://api.hsforms.com/submissions/v3/integration/submit/7522932/$subscribeId'),
-          headers: headers,
-          body: jsonEncode(body));
       if (res == null) {
         return null;
       } else {

@@ -5,6 +5,7 @@ import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:app/service/index.dart';
@@ -57,7 +58,8 @@ class _AdBannerState extends State<AdBanner> {
         await widget.changeToKusama();
         Navigator.of(context).pop();
       }
-      Navigator.of(context).pushNamed(KarCrowdLoanPage.route);
+      Navigator.of(context)
+          .pushNamed(KarCrowdLoanPage.route, arguments: _started['endpoint']);
     } else {
       Navigator.of(context).pushNamed(KarCrowdLoanWaitPage.route);
     }
@@ -104,10 +106,13 @@ class _AdBannerState extends State<AdBanner> {
                         children: [
                           Container(
                             width: fullWidth / 3 + 24,
+                            height: 32,
                             margin:
-                                EdgeInsets.only(left: 24, top: 28, right: 8),
-                            child: Image.asset(
-                                'assets/images/public/kar_logo.png'),
+                                EdgeInsets.only(left: 16, top: 24, right: 8),
+                            // child: Image.asset(
+                            //     'assets/images/public/kar_logo.png'),
+                            child: SvgPicture.asset(
+                                'assets/images/public/kusama_logo.svg'),
                           ),
                           Container(
                             margin: EdgeInsets.only(left: 24, top: 8),
