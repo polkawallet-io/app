@@ -42,3 +42,13 @@
 - Update Edgeware Update.
 - Update ChainX plugin.
 - Fix known Bugs.
+
+# 2.0.6-beta
+- Update kar crowd loan flow.
+
+# 2.0.7-beta
+- Add Acala loan incentives.
+- Update Kusama/Polkadot plugin.
+- Edgeware plugin update.
+- Update kar crowdloan flow.
+- Fix known Bugs.

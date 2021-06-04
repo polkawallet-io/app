@@ -5,9 +5,11 @@ import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/jumpToBrowserLink.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class AboutPage extends StatefulWidget {
   AboutPage(this.service);
@@ -41,6 +43,7 @@ class _AboutPage extends State<AboutPage> {
         widget.service.store.storage,
         widget.service.plugin.basic.name,
         widget.service.plugin.basic.jsCodeVersion);
+    final githubLink = plugin_github_links[widget.service.plugin.basic.name];
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
@@ -70,6 +73,20 @@ class _AboutPage extends State<AboutPage> {
                 padding: EdgeInsets.only(top: 16),
                 child: JumpToBrowserLink('https://polkawallet.io'),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(right: 4),
+                  child:
+                      SvgPicture.asset('assets/images/public/github_logo.svg'),
+                ),
+                JumpToBrowserLink(
+                  githubLink,
+                  text: Fmt.address(githubLink, pad: 16),
+                ),
+              ],
             ),
             Padding(
               padding: EdgeInsets.all(8),
