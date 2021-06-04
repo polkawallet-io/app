@@ -34,11 +34,11 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
+      ref: f8035ccf7cadd6cb6482bc8eee3a49453e8300a2
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: a3774223d0590e2b415bcf96936a3f6cf739be59
+      ref: 440d13fdd1bcd272597c540d83ca34cc4bf51241
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
@@ -47,10 +47,10 @@ dependencies:
 #    git:
 #      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
 #      ref: 0692cbb02da9cfd59eae2856e6e2819c072d4cd3
-#  polkawallet_plugin_edgeware:
-#    git:
-#      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
-#      ref: 4e0d7dffee5222c493f70a310ce5f9b5b24f4d90
+  polkawallet_plugin_edgeware:
+    git:
+      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
+      ref: 126938955c6042da3eee9493880f2344581005f0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -129,6 +129,7 @@ flutter:
     - assets/images/public/kar_logo.png
     - assets/images/public/kar_crowd_loan.jpg
     - assets/images/public/kusama_logo.svg
+    - assets/images/public/github_logo.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

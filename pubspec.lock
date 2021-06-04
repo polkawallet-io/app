@@ -741,17 +741,26 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a3774223d0590e2b415bcf96936a3f6cf739be59
-      resolved-ref: a3774223d0590e2b415bcf96936a3f6cf739be59
+      ref: "440d13fdd1bcd272597c540d83ca34cc4bf51241"
+      resolved-ref: "440d13fdd1bcd272597c540d83ca34cc4bf51241"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.1.8"
+  polkawallet_plugin_edgeware:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "126938955c6042da3eee9493880f2344581005f0"
+      resolved-ref: "126938955c6042da3eee9493880f2344581005f0"
+      url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
     source: git
     version: "0.1.8"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
       path: "."
-      ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
-      resolved-ref: dd517afd49f3e2e4152e88b883ca6136534d0d01
+      ref: f8035ccf7cadd6cb6482bc8eee3a49453e8300a2
+      resolved-ref: f8035ccf7cadd6cb6482bc8eee3a49453e8300a2
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.1.8"
