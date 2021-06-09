@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -17,9 +18,9 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
-import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
@@ -47,14 +48,21 @@ class AssetsPage extends StatefulWidget {
 }
 
 class _AssetsState extends State<AssetsPage> {
-  final GlobalKey<RefreshIndicatorState> _refreshKey =
-      new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<CustomRefreshIndicatorState> _refreshKey =
+      new GlobalKey<CustomRefreshIndicatorState>();
+  bool _refreshing = false;
 
   List _announcements;
 
   Future<void> _updateBalances() async {
+    setState(() {
+      _refreshing = true;
+    });
     final balances = await widget.service.plugin.sdk.api.account
         .queryBalance(widget.service.keyring.current.address);
+    setState(() {
+      _refreshing = false;
+    });
     widget.service.plugin
         .updateBalances(widget.service.keyring.current, balances);
   }
@@ -248,6 +256,19 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
+  void didUpdateWidget(covariant AssetsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.connectedNode?.endpoint != widget.connectedNode?.endpoint) {
+      if (_refreshing) {
+        _refreshKey.currentState.dismiss(CustomRefreshIndicatorMode.canceled);
+        setState(() {
+          _refreshing = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -303,7 +324,8 @@ class _AssetsState extends State<AssetsPage> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 120),
-                child: RefreshIndicator(
+                child: CustomRefreshIndicator(
+                  edgeOffset: 16,
                   key: _refreshKey,
                   onRefresh: _updateBalances,
                   child: ListView(
@@ -395,7 +417,9 @@ class _AssetsState extends State<AssetsPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.black54),
+                                    color: balancesInfo?.isFromCache == false
+                                        ? Colors.black54
+                                        : Colors.black26),
                               ),
                               Text(
                                 '≈ \$ ${tokenPrice ?? '--.--'}',

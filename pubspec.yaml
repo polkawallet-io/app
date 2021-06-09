@@ -77,9 +77,9 @@ dependency_overrides:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: b68da4b7d56dec37ddc34844b204fd095a00f7df
 #    path: ../../coding/polkawallet/ui
-  polkawallet_sdk: ^0.2.0
-#  polkawallet_sdk:
-#    path: ../../coding/polkawallet/sdk
+#  polkawallet_sdk: ^0.2.0
+  polkawallet_sdk:
+    path: ../../coding/polkawallet/sdk
 
 dev_dependencies:
   flutter_test:

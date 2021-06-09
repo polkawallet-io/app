@@ -270,8 +270,10 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final acc = widget.service.keyring.current;
-      final signed = widget.service.store.storage
-          .read('$kar_statement_store_key${acc.pubKey}');
+      final signed = widget.service.buildTarget == BuildTargets.dev
+          ? null
+          : widget.service.store.storage
+              .read('$kar_statement_store_key${acc.pubKey}');
 
       setState(() {
         _account = widget.service.keyring.current;
