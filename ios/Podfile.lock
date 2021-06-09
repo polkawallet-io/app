@@ -28,6 +28,8 @@ PODS:
   - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
+  - uni_links (0.0.1):
+    - Flutter
   - update_app (0.0.1):
     - Flutter
   - url_launcher (0.0.1):
@@ -47,6 +49,7 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - update_app (from `.symlinks/plugins/update_app/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
@@ -79,6 +82,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   update_app:
     :path: ".symlinks/plugins/update_app/ios"
   url_launcher:
@@ -100,6 +105,7 @@ SPEC CHECKSUMS:
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   update_app: 03c24a56ba197e2a036d5230b02e85825b76e045
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   webview_flutter: 9f491a9b5a66f2573946a389b2677987b0ff8c0b

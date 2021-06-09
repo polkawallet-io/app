@@ -1,13 +1,15 @@
+import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
+import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:polkawallet_sdk/plugin/index.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -15,12 +17,14 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class NetworkSelectPage extends StatefulWidget {
-  NetworkSelectPage(this.service, this.plugins, this.changeNetwork);
+  NetworkSelectPage(
+      this.service, this.plugins, this.disabledPlugins, this.changeNetwork);
 
   static final String route = '/network';
 
   final AppService service;
   final List<PolkawalletPlugin> plugins;
+  final List<PluginDisabled> disabledPlugins;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   @override
@@ -28,6 +32,7 @@ class NetworkSelectPage extends StatefulWidget {
 }
 
 class _NetworkSelectPageState extends State<NetworkSelectPage> {
+  PluginDisabled _pluginDisabledSelected;
   PolkawalletPlugin _selectedNetwork;
   bool _networkChanging = false;
 
@@ -89,11 +94,16 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
 
   List<Widget> _buildAccountList() {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    List<Widget> res = [
+    final name =
+        _selectedNetwork?.basic?.name ?? _pluginDisabledSelected?.name ?? '';
+    final List<Widget> res = [
       Text(
-        _selectedNetwork.basic.name.toUpperCase(),
+        name.toUpperCase(),
         style: Theme.of(context).textTheme.headline4,
       ),
+      plugin_from_community.indexOf(name) > -1
+          ? _CommunityPluginNote(name, false)
+          : Container(),
       GestureDetector(
         child: RoundedCard(
           margin: EdgeInsets.only(top: 8, bottom: 16),
@@ -125,43 +135,56 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     /// add optional accounts
     accounts.addAll(widget.service.keyring.optionals);
 
-    res.addAll(accounts.map((i) {
-      final bool isCurrentNetwork =
-          _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-      final accInfo = widget.service.keyring.current.indexInfo;
-      final addressMap = widget.service.keyring.store
-          .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
-      final address = addressMap != null
-          ? addressMap[i.pubKey]
-          : widget.service.keyring.current.address;
-      final String accIndex =
-          isCurrentNetwork && accInfo != null && accInfo['accountIndex'] != null
-              ? '${accInfo['accountIndex']}\n'
-              : '';
-      final double padding = accIndex.isEmpty ? 0 : 7;
-      final isCurrent = isCurrentNetwork &&
-          i.address == widget.service.keyring.current.address;
-      return RoundedCard(
-        border: isCurrent
-            ? Border.all(color: Theme.of(context).primaryColorLight)
-            : Border.all(color: Theme.of(context).cardColor),
-        margin: EdgeInsets.only(bottom: 16),
-        padding: EdgeInsets.only(top: padding, bottom: padding),
-        child: ListTile(
-          leading: AddressIcon(address, svg: i.icon),
-          title: Text(UI.accountName(context, i)),
-          subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
-          trailing: isCurrent
-              ? Icon(
-                  Icons.check_circle,
-                  color: Theme.of(context).primaryColor,
-                )
-              : Container(width: 8),
-          onTap: _networkChanging ? null : () => _onSelect(i),
-        ),
-      );
-    }).toList());
+    if (_selectedNetwork != null) {
+      res.addAll(accounts.map((i) {
+        final bool isCurrentNetwork =
+            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
+        final accInfo = widget.service.keyring.current.indexInfo;
+        final addressMap = widget.service.keyring.store
+            .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
+        final address = addressMap != null
+            ? addressMap[i.pubKey]
+            : widget.service.keyring.current.address;
+        final String accIndex = isCurrentNetwork &&
+                accInfo != null &&
+                accInfo['accountIndex'] != null
+            ? '${accInfo['accountIndex']}\n'
+            : '';
+        final double padding = accIndex.isEmpty ? 0 : 7;
+        final isCurrent = isCurrentNetwork &&
+            i.address == widget.service.keyring.current.address;
+        return RoundedCard(
+          border: isCurrent
+              ? Border.all(color: Theme.of(context).primaryColorLight)
+              : Border.all(color: Theme.of(context).cardColor),
+          margin: EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(top: padding, bottom: padding),
+          child: ListTile(
+            leading: AddressIcon(address, svg: i.icon),
+            title: Text(UI.accountName(context, i)),
+            subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
+            trailing: isCurrent
+                ? Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).primaryColor,
+                  )
+                : Container(width: 8),
+            onTap: _networkChanging ? null : () => _onSelect(i),
+          ),
+        );
+      }).toList());
+    }
     return res;
+  }
+
+  List<Widget> _buildPluginDisabled() {
+    return [
+      Text(
+        _pluginDisabledSelected.name.toUpperCase(),
+        style: Theme.of(context).textTheme.headline4,
+      ),
+      _CommunityPluginNote(_pluginDisabledSelected.name, true),
+    ];
   }
 
   @override
@@ -178,68 +201,86 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   @override
   Widget build(BuildContext context) {
     final doc = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    final sideBar = widget.plugins.map((i) {
+      final isCurrent = i.basic.name == _selectedNetwork?.basic?.name;
+      return isCurrent
+          ? _NetworkItemActive(icon: i.basic.icon)
+          : Container(
+              margin: EdgeInsets.all(8),
+              child: IconButton(
+                padding: EdgeInsets.all(8),
+                icon: isCurrent ? i.basic.icon : i.basic.iconDisabled,
+                onPressed: () {
+                  if (!isCurrent) {
+                    setState(() {
+                      _selectedNetwork = i;
+                      _pluginDisabledSelected = null;
+                    });
+                  }
+                },
+              ),
+            );
+    }).toList();
+    sideBar.addAll(widget.disabledPlugins.map((e) {
+      final isCurrent = e.name == _pluginDisabledSelected?.name;
+      return isCurrent
+          ? _NetworkItemActive(icon: e.icon)
+          : Container(
+              margin: EdgeInsets.all(8),
+              child: IconButton(
+                padding: EdgeInsets.all(8),
+                icon: e.icon,
+                onPressed: () {
+                  if (_pluginDisabledSelected?.name != e.name) {
+                    setState(() {
+                      _pluginDisabledSelected = e;
+                      _selectedNetwork = null;
+                    });
+                  }
+                },
+              ),
+            );
+    }).toList());
     return Scaffold(
       appBar: AppBar(
         title: Text(doc['setting.network']),
         centerTitle: true,
       ),
-      body: _selectedNetwork == null
-          ? Container()
-          : Row(
-              children: <Widget>[
-                // left side bar
-                Stack(
-                  children: [
-                    Container(
-                      width: 56,
-                      // color: Theme.of(context).cardColor,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey[100],
-                            blurRadius: 24.0,
-                            spreadRadius: 0,
-                          )
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: widget.plugins.map((i) {
-                        final network = i.basic.name;
-                        final isCurrent =
-                            network == _selectedNetwork.basic.name;
-                        return isCurrent
-                            ? _NetworkItemActive(icon: i.basic.icon)
-                            : Container(
-                                margin: EdgeInsets.all(8),
-                                child: IconButton(
-                                  padding: EdgeInsets.all(8),
-                                  icon: isCurrent
-                                      ? i.basic.icon
-                                      : i.basic.iconDisabled,
-                                  onPressed: () {
-                                    if (!isCurrent) {
-                                      setState(() {
-                                        _selectedNetwork = i;
-                                      });
-                                    }
-                                  },
-                                ),
-                              );
-                      }).toList(),
+      body: Row(
+        children: <Widget>[
+          // left side bar
+          Stack(
+            children: [
+              Container(
+                width: 56,
+                // color: Theme.of(context).cardColor,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[100],
+                      blurRadius: 24.0,
+                      spreadRadius: 0,
                     )
                   ],
                 ),
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.all(16),
-                    children: _buildAccountList(),
-                  ),
-                )
-              ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: sideBar,
+              )
+            ],
+          ),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.all(16),
+              children: _pluginDisabledSelected == null
+                  ? _buildAccountList()
+                  : _buildPluginDisabled(),
             ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -286,6 +327,45 @@ class _NetworkItemActive extends StatelessWidget {
           ),
         )
       ],
+    );
+  }
+}
+
+class _CommunityPluginNote extends StatelessWidget {
+  _CommunityPluginNote(this.pluginName, this.disabled);
+  final String pluginName;
+  final bool disabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+    return Container(
+      padding: EdgeInsets.all(8),
+      margin: EdgeInsets.only(top: 8, bottom: 8),
+      decoration: BoxDecoration(
+          color: Colors.black12,
+          border: Border.all(color: Colors.black26, width: 0.5),
+          borderRadius: BorderRadius.all(Radius.circular(8))),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child: Text(dic['plugin.note'] +
+                      pluginName.toUpperCase() +
+                      dic['plugin.team'])),
+              SvgPicture.asset('assets/images/public/github_logo.svg',
+                  width: 16),
+              JumpToLink(
+                plugin_github_links[pluginName],
+                text: '',
+              )
+            ],
+          ),
+          disabled ? Divider() : Container(),
+          disabled ? Text(dic['plugin.disable']) : Container(),
+        ],
+      ),
     );
   }
 }

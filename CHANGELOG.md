@@ -52,3 +52,6 @@
 - Edgeware plugin update.
 - Update kar crowdloan flow.
 - Fix known Bugs.
+
+# 2.0.8-beta
+- Add Universal links support.

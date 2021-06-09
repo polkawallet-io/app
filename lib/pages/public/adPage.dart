@@ -25,7 +25,9 @@ class _AdPageState extends State<AdPage> {
         _updateTimer();
       });
     } else {
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 

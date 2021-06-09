@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:app/common/consts.dart';
-import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/pages/public/adPage.dart';
+import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
@@ -609,11 +609,10 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                                 children: [
                                                   ...karAmount,
                                                   JumpToLink(
-                                                    'https://kusama.subscan.io/extrinsic/${e['eventId']}',
-                                                    text: e['blockHash'] == null
-                                                        ? Fmt.address(
-                                                            e['eventId'])
-                                                        : e['eventId'],
+                                                    e['blockHash'] == null
+                                                        ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
+                                                        : 'https://kusama.subscan.io/account/${_account.address}',
+                                                    text: 'Subscan',
                                                     color: karColor,
                                                   )
                                                 ],

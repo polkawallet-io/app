@@ -1,5 +1,6 @@
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -7,8 +8,6 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
-import 'package:app/pages/public/guidePage.dart';
-import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -17,6 +16,7 @@ import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
+import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
@@ -28,7 +28,8 @@ import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/profile/account/signPage.dart';
+import 'package:app/pages/public/adPage.dart';
+import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
@@ -41,10 +42,10 @@ import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
@@ -57,12 +58,16 @@ import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:uni_links/uni_links.dart';
 
 const get_storage_container = 'configuration';
 
+bool _isInitialUriHandled = false;
+
 class WalletApp extends StatefulWidget {
-  WalletApp(this.plugins, this.buildTarget);
+  WalletApp(this.plugins, this.disabledPlugins, this.buildTarget);
   final List<PolkawalletPlugin> plugins;
+  final List<PluginDisabled> disabledPlugins;
   final BuildTargets buildTarget;
   @override
   _WalletAppState createState() => _WalletAppState();
@@ -388,8 +393,8 @@ class _WalletAppState extends State<WalletApp> {
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       AccountQrCodePage.route: (_) =>
           AccountQrCodePage(_service.plugin, _keyring),
-      NetworkSelectPage.route: (_) =>
-          NetworkSelectPage(_service, widget.plugins, _changeNetwork),
+      NetworkSelectPage.route: (_) => NetworkSelectPage(
+          _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
       WalletConnectSignPage.route: (_) =>
@@ -434,6 +439,45 @@ class _WalletAppState extends State<WalletApp> {
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
     };
+  }
+
+  void _handleIncomingAppLinks() {
+    uriLinkStream.listen((Uri uri) {
+      if (!mounted) return;
+      print('got uri: $uri');
+    }, onError: (Object err) {
+      if (!mounted) return;
+      print('got err: $err');
+    });
+  }
+
+  Future<void> _handleInitialAppLinks() async {
+    if (!_isInitialUriHandled) {
+      _isInitialUriHandled = true;
+      print('_handleInitialUri called');
+      try {
+        final uri = await getInitialUri();
+        if (uri == null) {
+          print('no initial uri');
+        } else {
+          print('got initial uri: $uri');
+        }
+        if (!mounted) return;
+      } on PlatformException {
+        // Platform messages may fail but we ignore the exception
+        print('falied to get initial uri');
+      } on FormatException catch (err) {
+        if (!mounted) return;
+        print('malformed initial uri');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _handleIncomingAppLinks();
+    _handleInitialAppLinks();
   }
 
   @override

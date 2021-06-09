@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.7+2075
+version: 2.0.8+2081
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -29,8 +29,9 @@ dependencies:
   flutter_svg: ^0.22.0
   get_storage: ^2.0.2
   biometric_storage: ^2.0.2
-  update_app: ^0.1.5
+  update_app: ^0.1.7
   device_info: ^2.0.1
+  uni_links: ^0.5.1
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
@@ -51,14 +52,18 @@ dependencies:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
       ref: 126938955c6042da3eee9493880f2344581005f0
+#  polkawallet_plugin_uniarts:
+#    git:
+#      url: https://github.com/uni-arts-chain/polkawallet_plugin_uniarts.git
+#      ref: a1ffcd7db1fbfcebc3514925e872b5cd6c44df79
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-#  polkawallet_plugin_kusama:
-#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
 #  polkawallet_plugin_acala:
 #    path: ../../coding/polkawallet/polkawallet_plugin_acala
 #  polkawallet_plugin_laminar:
@@ -72,7 +77,7 @@ dependency_overrides:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: b68da4b7d56dec37ddc34844b204fd095a00f7df
 #    path: ../../coding/polkawallet/ui
-#  polkawallet_sdk: ^0.1.7
+  polkawallet_sdk: ^0.2.0
 #  polkawallet_sdk:
 #    path: ../../coding/polkawallet/sdk
 
@@ -130,6 +135,7 @@ flutter:
     - assets/images/public/kar_crowd_loan.jpg
     - assets/images/public/kusama_logo.svg
     - assets/images/public/github_logo.svg
+    - assets/images/public/chainx_gray.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

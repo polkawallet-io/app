@@ -6,13 +6,13 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
+import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -48,6 +48,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
   double _amount = 0;
   String _referral = '';
   bool _amountValid = false;
+  bool _amountEnough = false;
   bool _referralValid = false;
 
   double _amountKar = 0;
@@ -69,9 +70,11 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
 
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-    final valid = amt < Fmt.bigIntToDouble(balanceInt, decimals) && amt >= 1;
+    final enough = amt < Fmt.bigIntToDouble(balanceInt, decimals);
+    final valid = enough && amt >= 0.1;
     setState(() {
       _amountValid = valid;
+      _amountEnough = enough;
       _amount = amt;
       _amountKar = valid ? amt * 12 : 0;
     });
@@ -344,7 +347,9 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
               child: _amount == 0 || _amountValid
                   ? Container()
                   : Text(
-                      '${dic['auction.invalid']} ${dic['auction.amount']}',
+                      _amountEnough
+                          ? '${dic['auction.invalid']} ${dic['auction.amount.error']}'
+                          : dic['balance.insufficient'],
                       style: errorStyle,
                     ),
             ),
