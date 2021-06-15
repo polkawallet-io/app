@@ -176,34 +176,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  connectivity:
+  connectivity_plus:
     dependency: transitive
     description:
-      name: connectivity
+      name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.6"
-  connectivity_for_web:
+    version: "1.0.2"
+  connectivity_plus_linux:
     dependency: transitive
     description:
-      name: connectivity_for_web
+      name: connectivity_plus_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0"
-  connectivity_macos:
+    version: "1.0.3"
+  connectivity_plus_macos:
     dependency: transitive
     description:
-      name: connectivity_macos
+      name: connectivity_plus_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
-  connectivity_platform_interface:
+    version: "1.0.2"
+  connectivity_plus_platform_interface:
     dependency: transitive
     description:
-      name: connectivity_platform_interface
+      name: connectivity_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "1.0.2"
+  connectivity_plus_web:
+    dependency: transitive
+    description:
+      name: connectivity_plus_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
+  connectivity_plus_windows:
+    dependency: transitive
+    description:
+      name: connectivity_plus_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   convert:
     dependency: transitive
     description:
@@ -232,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.2"
   device_info:
     dependency: "direct main"
     description:
@@ -274,6 +295,55 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.1"
+  firebase:
+    dependency: transitive
+    description:
+      name: firebase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.1"
+  firebase_analytics:
+    dependency: "direct main"
+    description:
+      name: firebase_analytics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "8.1.2"
+  firebase_analytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_analytics_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
+  firebase_analytics_web:
+    dependency: transitive
+    description:
+      name: firebase_analytics_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0+1"
+  firebase_core:
+    dependency: "direct main"
+    description:
+      name: firebase_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.0"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   fixnum:
     dependency: transitive
     description:
@@ -435,14 +505,14 @@ packages:
       name: graphql
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0-nullsafety.5"
+    version: "5.0.0"
   graphql_flutter:
     dependency: transitive
     description:
       name: graphql_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0-nullsafety.5"
+    version: "5.0.0"
   graphs:
     dependency: transitive
     description:
@@ -556,7 +626,7 @@ packages:
     source: hosted
     version: "0.6.3"
   json_annotation:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: json_annotation
       url: "https://pub.dartlang.org"
@@ -624,7 +694,7 @@ packages:
       name: normalize
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.3"
+    version: "0.5.4"
   package_config:
     dependency: transitive
     description:
@@ -715,7 +785,7 @@ packages:
       name: permission_handler_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.5.1"
+    version: "3.6.0"
   petitparser:
     dependency: transitive
     description:
@@ -740,12 +810,10 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "440d13fdd1bcd272597c540d83ca34cc4bf51241"
-      resolved-ref: "440d13fdd1bcd272597c540d83ca34cc4bf51241"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
-    version: "0.1.8"
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
+    version: "0.2.1"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:
@@ -761,23 +829,21 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_kusama"
       relative: true
     source: path
-    version: "0.1.8"
+    version: "0.2.1"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "23a558bde7170f5f441bcb29c927e35facf3d63c"
-      resolved-ref: "23a558bde7170f5f441bcb29c927e35facf3d63c"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
-    version: "0.1.8"
+      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
+      relative: true
+    source: path
+    version: "0.2.1"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.2.1"
   polkawallet_ui:
     dependency: transitive
     description:
@@ -905,7 +971,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   source_span:
     dependency: transitive
     description:

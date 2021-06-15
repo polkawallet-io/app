@@ -40,6 +40,8 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,6 +60,7 @@ import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:uni_links/uni_links.dart';
 
 const get_storage_container = 'configuration';
@@ -74,6 +77,8 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> {
+  final _analytics = FirebaseAnalytics();
+
   Keyring _keyring;
 
   AppStore _store;
@@ -278,10 +283,6 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _showGuide(BuildContext context, GetStorage storage) async {
     // todo: remove this after crowd loan
     final karStarted = await WalletApi.getKarCrowdLoanStarted();
-    // final karStarted = {
-    //   'started': true,
-    //   'endpoint': 'crowdloan-api.laminar.codes',
-    // };
     if (karStarted != null && karStarted['started']) {
       Navigator.of(context).pushNamed(AdPage.route);
       return;
@@ -386,6 +387,8 @@ class _WalletAppState extends State<WalletApp> {
             ),
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(
+          _service.plugin, _keyring, _service.account.getPassword),
+      WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
@@ -508,6 +511,7 @@ class _WalletAppState extends State<WalletApp> {
         initialRoute: HomePage.route,
         onGenerateRoute: (settings) => CupertinoPageRoute(
             builder: routes[settings.name], settings: settings),
+        navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
       ),
     );
   }
