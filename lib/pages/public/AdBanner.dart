@@ -27,7 +27,7 @@ class AdBanner extends StatefulWidget {
 
 class _AdBannerState extends State<AdBanner> {
   Map _started = {
-    'visible': true,
+    'visible': false,
     'started': false,
   };
 
