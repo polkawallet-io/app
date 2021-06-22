@@ -272,6 +272,15 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
+        bool transferEnabled = true;
+        if (widget.service.plugin.basic.name == 'karura' ||
+            widget.service.plugin.basic.name == 'acala') {
+          transferEnabled = false;
+          if (widget.service.store.settings.liveModules['assets'] != null) {
+            transferEnabled =
+                widget.service.store.settings.liveModules['assets']['enabled'];
+          }
+        }
         final symbol =
             (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
         final decimals =
@@ -429,9 +438,11 @@ class _AssetsState extends State<AssetsPage> {
                               ),
                             ],
                           ),
-                          onTap: () {
-                            Navigator.pushNamed(context, AssetPage.route);
-                          },
+                          onTap: transferEnabled
+                              ? () {
+                                  Navigator.pushNamed(context, AssetPage.route);
+                                }
+                              : null,
                         ),
                       ),
                       Column(

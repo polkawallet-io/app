@@ -1,3 +1,6 @@
+# 2.0.9-beta
+- Add Karura network support.
+
 # 1.0.9-alpha
 - App test with polkawallet_plugin_kusama
 

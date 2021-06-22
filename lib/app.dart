@@ -40,8 +40,6 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,7 +75,7 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> {
-  final _analytics = FirebaseAnalytics();
+  // final _analytics = FirebaseAnalytics();
 
   Keyring _keyring;
 
@@ -177,6 +175,17 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
+  Future<void> _getAcalaModulesConfig() async {
+    final karModulesConfig = await WalletApi.getKarModulesConfig();
+    if (karModulesConfig != null) {
+      _store.settings.setLiveModules(karModulesConfig);
+    } else {
+      _store.settings.setLiveModules({
+        'assets': {'enabled': true}
+      });
+    }
+  }
+
   Future<void> _startPlugin(AppService service) async {
     // _initWalletConnect();
 
@@ -189,6 +198,11 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _connectedNode = connected;
     });
+
+    if (_service.plugin.basic.name == 'karura' ||
+        _service.plugin.basic.name == 'acala') {
+      _getAcalaModulesConfig();
+    }
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network) async {
@@ -301,7 +315,8 @@ class _WalletAppState extends State<WalletApp> {
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
-      await _keyring.init();
+      await _keyring
+          .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
@@ -511,7 +526,7 @@ class _WalletAppState extends State<WalletApp> {
         initialRoute: HomePage.route,
         onGenerateRoute: (settings) => CupertinoPageRoute(
             builder: routes[settings.name], settings: settings),
-        navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
+        // navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
       ),
     );
   }
