@@ -63,6 +63,7 @@ class AppUI {
       // new version found
       if (Platform.isAndroid && buildTarget == BuildTargets.playStore) {
         needUpdate = (latestCodeStore) > app_beta_version_code;
+        if (!needUpdate && autoCheck) return;
       } else {
         needUpdate = true;
       }
