@@ -34,4 +34,5 @@ const Map<String, String> enPublic = {
   'auction.tx.confirming': 'Confirming...',
   'auction.coming': 'Coming Soon...',
   'balance.insufficient': 'Insufficient balance',
+  'tx.action': 'Action',
 };
