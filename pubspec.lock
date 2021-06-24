@@ -91,7 +91,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   build_runner_core:
     dependency: transitive
     description:
@@ -182,7 +182,7 @@ packages:
       name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.4"
   connectivity_plus_linux:
     dependency: transitive
     description:
@@ -761,10 +761,12 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
-    version: "0.2.1"
+      path: "."
+      ref: "8a184e89ef99c122c9cc2399cf40b12d95136265"
+      resolved-ref: "8a184e89ef99c122c9cc2399cf40b12d95136265"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.2.2"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:
@@ -780,30 +782,32 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_kusama"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.2"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
-      relative: true
-    source: path
-    version: "0.2.1"
+      path: "."
+      ref: "810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f"
+      resolved-ref: "810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
+    source: git
+    version: "0.2.2"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   polkawallet_ui:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: a181a240a0c2b098a2e4140e07d036ea8222cea1
-      resolved-ref: a181a240a0c2b098a2e4140e07d036ea8222cea1
+      ref: dee6fc6074f546e914c8794fd5e3a3e2b829b53c
+      resolved-ref: dee6fc6074f546e914c8794fd5e3a3e2b829b53c
       url: "https://github.com/polkawallet-io/ui.git"
     source: git
-    version: "0.1.8"
+    version: "0.2.2"
   pool:
     dependency: transitive
     description:

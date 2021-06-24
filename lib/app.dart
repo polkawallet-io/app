@@ -19,12 +19,15 @@ import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/crowdLoan/contributePage.dart';
+import 'package:app/pages/profile/crowdLoan/crowdLoanPage.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/friendListPage.dart';
 import 'package:app/pages/profile/recovery/initiateRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
+import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
@@ -456,6 +459,11 @@ class _WalletAppState extends State<WalletApp> {
       RecoveryProofPage.route: (_) => RecoveryProofPage(_service),
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
+      TxDetailPage.route: (_) => TxDetailPage(_service),
+
+      /// crowd loan
+      CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
+      ContributePage.route: (_) => ContributePage(_service),
     };
   }
 

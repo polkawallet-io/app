@@ -63,7 +63,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  set recoveryInfo(dynamic value) {
+  set recoveryInfo(RecoveryInfo value) {
     _$recoveryInfoAtom.reportWrite(value, super.recoveryInfo, () {
       super.recoveryInfo = value;
     });
@@ -110,7 +110,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  set wcSessions(ObservableList<dynamic> value) {
+  set wcSessions(ObservableList<WCPairedData> value) {
     _$wcSessionsAtom.reportWrite(value, super.wcSessions, () {
       super.wcSessions = value;
     });
@@ -197,7 +197,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setWCSessions(List<dynamic> sessions) {
+  void setWCSessions(List<WCPairedData> sessions) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setWCSessions');
     try {
@@ -208,7 +208,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void createWCSession(dynamic session) {
+  void createWCSession(WCPairedData session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.createWCSession');
     try {
@@ -219,7 +219,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void deleteWCSession(dynamic session) {
+  void deleteWCSession(WCPairedData session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.deleteWCSession');
     try {

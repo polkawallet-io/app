@@ -254,7 +254,12 @@ class _AssetPageState extends State<AssetPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.more_horiz), onPressed: _showAction),
+          IconButton(
+              icon: Icon(
+                Icons.more_horiz,
+                color: Colors.black87,
+              ),
+              onPressed: _showAction),
         ],
       ),
       backgroundColor: titleColor,

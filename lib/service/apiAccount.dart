@@ -4,15 +4,15 @@ import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_kusama/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:biometric_storage/biometric_storage.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ApiAccount {
   ApiAccount(this.apiRoot);
@@ -95,7 +95,7 @@ class ApiAccount {
         title:
             I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock.bio'],
         negativeButton:
-            I18n.of(context).getDic(i18n_full_dic_kusama, 'common')['cancel'],
+            I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel'],
       ),
     );
   }

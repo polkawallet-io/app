@@ -33,4 +33,5 @@ const Map<String, String> zhPublic = {
   'auction.tx.confirming': '确认中...',
   'auction.coming': '敬请期待...',
   'balance.insufficient': '余额不足',
+  'tx.action': '操作',
 };

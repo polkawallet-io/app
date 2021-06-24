@@ -109,7 +109,8 @@ mixin _$AssetsStore on _AssetsStore, Store {
   final _$addTxsAsyncAction = AsyncAction('_AssetsStore.addTxs');
 
   @override
-  Future<void> addTxs(Map<dynamic, dynamic> res, dynamic acc, String pluginName,
+  Future<void> addTxs(
+      Map<dynamic, dynamic> res, KeyPairData acc, String pluginName,
       {bool shouldCache = false}) {
     return _$addTxsAsyncAction.run(
         () => super.addTxs(res, acc, pluginName, shouldCache: shouldCache));
@@ -119,7 +120,7 @@ mixin _$AssetsStore on _AssetsStore, Store {
       AsyncAction('_AssetsStore.loadAccountCache');
 
   @override
-  Future<void> loadAccountCache(dynamic acc, String pluginName) {
+  Future<void> loadAccountCache(KeyPairData acc, String pluginName) {
     return _$loadAccountCacheAsyncAction
         .run(() => super.loadAccountCache(acc, pluginName));
   }
@@ -127,7 +128,7 @@ mixin _$AssetsStore on _AssetsStore, Store {
   final _$loadCacheAsyncAction = AsyncAction('_AssetsStore.loadCache');
 
   @override
-  Future<void> loadCache(dynamic acc, String pluginName) {
+  Future<void> loadCache(KeyPairData acc, String pluginName) {
     return _$loadCacheAsyncAction.run(() => super.loadCache(acc, pluginName));
   }
 

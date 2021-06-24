@@ -1,11 +1,11 @@
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -99,10 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          !(acc.observation ?? false)
-              ? AdBanner(
-                  widget.service, widget.connectedNode, widget.changeToKusama)
-              : Container(),
+          CrowdLoanBanner(widget.service, widget.connectedNode),
           Container(
             padding: EdgeInsets.all(24),
             child: Row(
