@@ -29,6 +29,7 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       new GlobalKey<RefreshIndicatorState>();
 
+  bool _loaded = false;
   int _tab = 0;
 
   Timer _dataQueryTimer;
@@ -43,6 +44,12 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
 
     if (mounted && res[0] != null && res[1] != null) {
       widget.service.store.parachain.setAuctionData(res[0], res[1]);
+
+      if (!_loaded) {
+        setState(() {
+          _loaded = true;
+        });
+      }
 
       _getUserContributions((res[0] as AuctionData).funds);
     }
@@ -100,6 +107,9 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
     final expectedBlockTime = int.parse(widget
         .service.plugin.networkConst['babe']['expectedBlockTime']
         .toString());
+    final endingPeriod = int.parse(widget
+        .service.plugin.networkConst['auctions']['endingPeriod']
+        .toString());
 
     final cardColor = Theme.of(context).cardColor;
     final grayColor = Theme.of(context).unselectedWidgetColor;
@@ -132,38 +142,47 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                 },
               ),
               Expanded(
-                child: RefreshIndicator(
-                  key: _refreshKey,
-                  onRefresh: _getCrowdLoans,
-                  child: Observer(
-                    builder: (_) {
-                      final auction =
-                          widget.service.store.parachain.auctionData;
-                      final config =
-                          widget.service.store.parachain.fundsVisible;
-                      final contributions =
-                          widget.service.store.parachain.userContributions;
-                      final funds = auction.funds?.toList() ?? [];
-                      final visibleFundIds = [];
-                      config.forEach((k, v) {
-                        if (v['visible'] ?? false) {
-                          visibleFundIds.add(k);
-                        }
-                      });
-                      funds.retainWhere(
-                          (e) => visibleFundIds.indexOf(e.paraId) > -1);
-                      return _tab == 0
-                          ? ListView(
-                              children: [
-                                AuctionPanel(auction, config, decimals, symbols,
-                                    expectedBlockTime)
-                              ],
-                            )
-                          : CrowdLoanList(funds, config, contributions,
-                              decimals, symbols, _goToContribute);
-                    },
-                  ),
-                ),
+                child: _loaded
+                    ? RefreshIndicator(
+                        key: _refreshKey,
+                        onRefresh: _getCrowdLoans,
+                        child: Observer(
+                          builder: (_) {
+                            final auction =
+                                widget.service.store.parachain.auctionData;
+                            final config =
+                                widget.service.store.parachain.fundsVisible;
+                            final contributions = widget
+                                .service.store.parachain.userContributions;
+                            final funds = auction.funds?.toList() ?? [];
+                            final visibleFundIds = [];
+                            config.forEach((k, v) {
+                              if (v['visible'] ?? false) {
+                                visibleFundIds.add(k);
+                              }
+                            });
+                            funds.retainWhere(
+                                (e) => visibleFundIds.indexOf(e.paraId) > -1);
+                            return _tab == 0
+                                ? ListView(
+                                    children: [
+                                      AuctionPanel(
+                                          auction,
+                                          config,
+                                          decimals,
+                                          symbols,
+                                          expectedBlockTime,
+                                          endingPeriod)
+                                    ],
+                                  )
+                                : CrowdLoanList(funds, config, contributions,
+                                    decimals, symbols, _goToContribute);
+                          },
+                        ),
+                      )
+                    : Center(
+                        child: CupertinoActivityIndicator(),
+                      ),
               )
             ],
           ),
