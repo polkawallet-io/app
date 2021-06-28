@@ -244,7 +244,7 @@ class WalletApi {
 
   static Future<Map> getKSMCrowdLoansConfig() async {
     try {
-      Response res = await get(Uri.parse('$_endpoint/config/paras.json'));
+      Response res = await get(Uri.parse('$_configEndpoint/wallet/paras.json'));
       if (res == null) {
         return null;
       } else {

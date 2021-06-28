@@ -761,11 +761,9 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8a184e89ef99c122c9cc2399cf40b12d95136265"
-      resolved-ref: "8a184e89ef99c122c9cc2399cf40b12d95136265"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.2.2"
   polkawallet_plugin_edgeware:
     dependency: "direct main"

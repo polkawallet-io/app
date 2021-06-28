@@ -189,7 +189,7 @@ class _AssetsState extends State<AssetsPage> {
     }
   }
 
-  Widget _buildTopCard(BuildContext context) {
+  Widget _buildTopCard(BuildContext context, bool transferEnabled) {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     String network = widget.connectedNode == null
         ? dic['node.connecting']
@@ -244,7 +244,7 @@ class _AssetsState extends State<AssetsPage> {
                 width: 32,
               ),
               onPressed: () {
-                if (acc.address != '') {
+                if (transferEnabled && acc.address != '') {
                   _handleScan();
                 }
               },
@@ -493,7 +493,7 @@ class _AssetsState extends State<AssetsPage> {
               ),
               Column(
                 children: [
-                  _buildTopCard(context),
+                  _buildTopCard(context, transferEnabled),
                   Expanded(child: Container()),
                   widget.service.store.account.showBanner &&
                           !(widget.service.keyring.current.observation ?? false)

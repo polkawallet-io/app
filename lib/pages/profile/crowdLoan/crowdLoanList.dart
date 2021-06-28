@@ -55,7 +55,7 @@ class CrowdLoanList extends StatelessWidget {
                             ),
                           ),
                           JumpToLink(
-                            config[fund.paraId]['website'],
+                            config[fund.paraId]['homepage'],
                             text: '',
                             color: Colors.blueAccent,
                           )

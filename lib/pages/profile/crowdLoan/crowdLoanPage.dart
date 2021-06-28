@@ -131,7 +131,7 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                 ],
               ),
               PageTitleTabs(
-                names: ['Auctions', 'Crowdloans'],
+                names: ['Auction', 'Crowdloans'],
                 activeTab: _tab,
                 onTab: (i) {
                   if (_tab != i) {

@@ -18,13 +18,14 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.0.9-beta.3';
-const int app_beta_version_code = 2093;
+const String app_beta_version = 'v2.1.0-beta.1';
+const int app_beta_version_code = 2101;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',
   'acala-tc6':
       'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
+  'karura': 'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
   'laminar-tc3':
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
   'chainx': 'https://github.com/true-eye/polkawallet_plugin_chainx/issues',
