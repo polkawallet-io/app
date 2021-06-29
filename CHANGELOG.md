@@ -1,5 +1,6 @@
 # 2.1.0-beta
 - Add auction & crowdloans support.
+- bump polkawallet_sdk: v0.2.3.
 
 # 2.0.9-beta
 - Add Karura network support.
