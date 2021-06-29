@@ -1,3 +1,6 @@
+# 2.1.0-beta
+- Add auction & crowdloans support.
+
 # 2.0.9-beta
 - Add Karura network support.
 
