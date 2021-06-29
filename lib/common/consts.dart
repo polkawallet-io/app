@@ -18,18 +18,20 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.0.7-beta.5';
-const int app_beta_version_code = 2075;
+const String app_beta_version = 'v2.1.0-beta.1';
+const int app_beta_version_code = 2101;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',
   'acala-tc6':
       'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
+  'karura': 'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
   'laminar-tc3':
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
   'chainx': 'https://github.com/true-eye/polkawallet_plugin_chainx/issues',
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
 };
+const plugin_from_community = ['chainx', 'edgeware'];
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';

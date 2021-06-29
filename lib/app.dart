@@ -1,5 +1,6 @@
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -7,8 +8,6 @@ import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
-import 'package:app/pages/public/guidePage.dart';
-import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
@@ -17,18 +16,23 @@ import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
+import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/crowdLoan/contributePage.dart';
+import 'package:app/pages/profile/crowdLoan/crowdLoanPage.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/friendListPage.dart';
 import 'package:app/pages/profile/recovery/initiateRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
+import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/profile/account/signPage.dart';
+import 'package:app/pages/public/adPage.dart';
+import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
@@ -39,12 +43,14 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
+// import 'package:firebase_analytics/firebase_analytics.dart';
+// import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
@@ -57,18 +63,25 @@ import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
+import 'package:uni_links/uni_links.dart';
 
 const get_storage_container = 'configuration';
 
+bool _isInitialUriHandled = false;
+
 class WalletApp extends StatefulWidget {
-  WalletApp(this.plugins, this.buildTarget);
+  WalletApp(this.plugins, this.disabledPlugins, this.buildTarget);
   final List<PolkawalletPlugin> plugins;
+  final List<PluginDisabled> disabledPlugins;
   final BuildTargets buildTarget;
   @override
   _WalletAppState createState() => _WalletAppState();
 }
 
 class _WalletAppState extends State<WalletApp> {
+  // final _analytics = FirebaseAnalytics();
+
   Keyring _keyring;
 
   AppStore _store;
@@ -167,7 +180,18 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _startPlugin() async {
+  Future<void> _getAcalaModulesConfig() async {
+    final karModulesConfig = await WalletApi.getKarModulesConfig();
+    if (karModulesConfig != null) {
+      _store.settings.setLiveModules(karModulesConfig);
+    } else {
+      _store.settings.setLiveModules({
+        'assets': {'enabled': true}
+      });
+    }
+  }
+
+  Future<void> _startPlugin(AppService service) async {
     // _initWalletConnect();
 
     _service.assets.fetchMarketPrice();
@@ -175,10 +199,15 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _connectedNode = null;
     });
-    final connected = await _service.plugin.start(_keyring);
+    final connected = await service.plugin.start(_keyring);
     setState(() {
       _connectedNode = connected;
     });
+
+    if (_service.plugin.basic.name == 'karura' ||
+        _service.plugin.basic.name == 'acala') {
+      _getAcalaModulesConfig();
+    }
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network) async {
@@ -215,7 +244,7 @@ class _WalletAppState extends State<WalletApp> {
       _service = service;
     });
 
-    _startPlugin();
+    _startPlugin(service);
   }
 
   Future<void> _changeToKusamaForKar() async {
@@ -272,15 +301,11 @@ class _WalletAppState extends State<WalletApp> {
 
   Future<void> _showGuide(BuildContext context, GetStorage storage) async {
     // todo: remove this after crowd loan
-    final karStarted = await WalletApi.getKarCrowdLoanStarted();
-    // final karStarted = {
-    //   'started': true,
-    //   'endpoint': 'crowdloan-api.laminar.codes',
-    // };
-    if (karStarted != null && karStarted['started']) {
-      Navigator.of(context).pushNamed(AdPage.route);
-      return;
-    }
+    // final karStarted = await WalletApi.getKarCrowdLoanStarted();
+    // if (karStarted != null && karStarted['started']) {
+    //   Navigator.of(context).pushNamed(AdPage.route);
+    //   return;
+    // }
 
     final storeKey = '${show_guide_status_key}_$app_beta_version';
     final showGuideStatus = storage.read(storeKey);
@@ -295,7 +320,8 @@ class _WalletAppState extends State<WalletApp> {
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
-      await _keyring.init();
+      await _keyring
+          .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
@@ -344,7 +370,7 @@ class _WalletAppState extends State<WalletApp> {
             : null,
       );
 
-      _startPlugin();
+      _startPlugin(service);
     }
 
     return _keyring.allAccounts.length;
@@ -382,14 +408,16 @@ class _WalletAppState extends State<WalletApp> {
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(
           _service.plugin, _keyring, _service.account.getPassword),
+      WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
+          _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       AccountQrCodePage.route: (_) =>
           AccountQrCodePage(_service.plugin, _keyring),
-      NetworkSelectPage.route: (_) =>
-          NetworkSelectPage(_service, widget.plugins, _changeNetwork),
+      NetworkSelectPage.route: (_) => NetworkSelectPage(
+          _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
       WalletConnectSignPage.route: (_) =>
@@ -433,7 +461,51 @@ class _WalletAppState extends State<WalletApp> {
       RecoveryProofPage.route: (_) => RecoveryProofPage(_service),
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
+      TxDetailPage.route: (_) => TxDetailPage(_service),
+
+      /// crowd loan
+      CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
+      ContributePage.route: (_) => ContributePage(_service),
     };
+  }
+
+  void _handleIncomingAppLinks() {
+    uriLinkStream.listen((Uri uri) {
+      if (!mounted) return;
+      print('got uri: $uri');
+    }, onError: (Object err) {
+      if (!mounted) return;
+      print('got err: $err');
+    });
+  }
+
+  Future<void> _handleInitialAppLinks() async {
+    if (!_isInitialUriHandled) {
+      _isInitialUriHandled = true;
+      print('_handleInitialUri called');
+      try {
+        final uri = await getInitialUri();
+        if (uri == null) {
+          print('no initial uri');
+        } else {
+          print('got initial uri: $uri');
+        }
+        if (!mounted) return;
+      } on PlatformException {
+        // Platform messages may fail but we ignore the exception
+        print('falied to get initial uri');
+      } on FormatException catch (err) {
+        if (!mounted) return;
+        print('malformed initial uri');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _handleIncomingAppLinks();
+    _handleInitialAppLinks();
   }
 
   @override
@@ -464,6 +536,7 @@ class _WalletAppState extends State<WalletApp> {
         initialRoute: HomePage.route,
         onGenerateRoute: (settings) => CupertinoPageRoute(
             builder: routes[settings.name], settings: settings),
+        // navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
       ),
     );
   }

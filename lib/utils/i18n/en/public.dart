@@ -14,6 +14,7 @@ const Map<String, String> enPublic = {
   'auction.email': 'Email (optional)',
   'auction.amount': 'Amount',
   'auction.amount1': 'Amount to Contribute (KSM)',
+  'auction.amount.error': 'amount, 0.1 KSM minimum',
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code (optional)',
   'auction.estimate': 'Estimated KAR Paradrop',
@@ -32,4 +33,6 @@ const Map<String, String> enPublic = {
   'auction.txs': 'My Contributions',
   'auction.tx.confirming': 'Confirming...',
   'auction.coming': 'Coming Soon...',
+  'balance.insufficient': 'Insufficient balance',
+  'tx.action': 'Action',
 };

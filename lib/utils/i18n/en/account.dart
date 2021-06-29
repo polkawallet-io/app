@@ -76,4 +76,7 @@ const Map<String, String> enAccount = {
   'guide.3': 'Kusama social recovery',
   'guide.4': 'Acala Defi Hub',
   'guide.enter': 'Enter Polkawallet',
+  'plugin.note': 'Maintained by ',
+  'plugin.team': ' team.',
+  'plugin.disable': 'This plugin is outdated and needs fix from maintainer.',
 };

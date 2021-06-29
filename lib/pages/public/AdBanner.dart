@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
+import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:app/service/index.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class AdBanner extends StatefulWidget {
   AdBanner(this.service, this.connectedNode, this.changeToKusama,
@@ -27,7 +27,7 @@ class AdBanner extends StatefulWidget {
 
 class _AdBannerState extends State<AdBanner> {
   Map _started = {
-    'visible': true,
+    'visible': false,
     'started': false,
   };
 
@@ -43,7 +43,7 @@ class _AdBannerState extends State<AdBanner> {
   Future<void> _goToCrowdLoan(BuildContext context) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
 
-    if (_started['started']) {
+    if (_started['started'] || widget.service.buildTarget == BuildTargets.dev) {
       if (widget.service.plugin.basic.name != 'kusama') {
         showCupertinoDialog(
           context: context,

@@ -7,16 +7,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/MainTabBar.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
-import 'package:polkawallet_ui/components/MainTabBar.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -255,15 +254,29 @@ class _AssetPageState extends State<AssetPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.more_horiz), onPressed: _showAction),
+          IconButton(
+              icon: Icon(
+                Icons.more_horiz,
+                color: Colors.black87,
+              ),
+              onPressed: _showAction),
         ],
       ),
       backgroundColor: titleColor,
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            BalanceData balancesInfo = widget.service.plugin.balances.native;
+            bool transferEnabled = true;
+            if (widget.service.plugin.basic.name == 'karura' ||
+                widget.service.plugin.basic.name == 'acala') {
+              transferEnabled = false;
+              if (widget.service.store.settings.liveModules['assets'] != null) {
+                transferEnabled = widget
+                    .service.store.settings.liveModules['assets']['enabled'];
+              }
+            }
 
+            BalanceData balancesInfo = widget.service.plugin.balances.native;
             return Column(
               children: <Widget>[
                 Expanded(
@@ -331,15 +344,17 @@ class _AssetPageState extends State<AssetPage> {
                           ),
                           text: dic['transfer'],
                           color: colorOut,
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              TransferPage.route,
-                              arguments: TransferPageParams(
-                                redirect: AssetPage.route,
-                              ),
-                            );
-                          },
+                          onPressed: transferEnabled
+                              ? () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    TransferPage.route,
+                                    arguments: TransferPageParams(
+                                      redirect: AssetPage.route,
+                                    ),
+                                  );
+                                }
+                              : null,
                         ),
                       ),
                     ),

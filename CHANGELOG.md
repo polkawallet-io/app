@@ -1,3 +1,10 @@
+# 2.1.0-beta
+- Add auction & crowdloans support.
+- bump polkawallet_sdk: v0.2.3.
+
+# 2.0.9-beta
+- Add Karura network support.
+
 # 1.0.9-alpha
 - App test with polkawallet_plugin_kusama
 
@@ -52,3 +59,6 @@
 - Edgeware plugin update.
 - Update kar crowdloan flow.
 - Fix known Bugs.
+
+# 2.0.8-beta
+- Add Universal links support.

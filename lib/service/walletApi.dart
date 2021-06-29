@@ -5,13 +5,15 @@ import 'package:http/http.dart';
 
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
+  static const String _configEndpoint = 'https://acala.subdao.com';
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
 
   static Future<Map> getLatestVersion() async {
     try {
-      Response res = await get(Uri.parse('$_endpoint/versions.json'));
+      Response res =
+          await get(Uri.parse('$_configEndpoint/wallet/versions.json'));
       if (res == null) {
         return null;
       } else {
@@ -25,7 +27,8 @@ class WalletApi {
 
   static Future<Map> fetchPolkadotJSVersion() async {
     try {
-      Response res = await get(Uri.parse('$_endpoint/jsCodeVersions.json'));
+      Response res =
+          await get(Uri.parse('$_configEndpoint/wallet/jsCodeVersions.json'));
       if (res == null) {
         return null;
       } else {
@@ -40,7 +43,7 @@ class WalletApi {
   static Future<String> fetchPolkadotJSCode(String networkName) async {
     try {
       Response res =
-          await get(Uri.parse('$_endpoint/js_service/$networkName.js'));
+          await get(Uri.parse('$_configEndpoint/wallet/js/$networkName.js'));
       if (res == null || res.statusCode != 200) {
         return null;
       } else {
@@ -217,6 +220,35 @@ class WalletApi {
         return null;
       } else {
         return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getKarModulesConfig() async {
+    try {
+      Response res =
+          await get(Uri.parse('$_configEndpoint/config/modules.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(res.body) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getKSMCrowdLoansConfig() async {
+    try {
+      Response res = await get(Uri.parse('$_configEndpoint/wallet/paras.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(res.body) as Map;
       }
     } catch (err) {
       print(err);

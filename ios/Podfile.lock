@@ -1,7 +1,7 @@
 PODS:
   - biometric_storage (0.0.1):
     - Flutter
-  - connectivity (0.0.1):
+  - connectivity_plus (0.0.1):
     - Flutter
     - Reachability
   - device_info (0.0.1):
@@ -28,6 +28,8 @@ PODS:
   - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
+  - uni_links (0.0.1):
+    - Flutter
   - update_app (0.0.1):
     - Flutter
   - url_launcher (0.0.1):
@@ -37,7 +39,7 @@ PODS:
 
 DEPENDENCIES:
   - biometric_storage (from `.symlinks/plugins/biometric_storage/ios`)
-  - connectivity (from `.symlinks/plugins/connectivity/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - Flutter (from `Flutter`)
   - flutter_aes_ecb_pkcs5 (from `.symlinks/plugins/flutter_aes_ecb_pkcs5/ios`)
@@ -47,6 +49,7 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - update_app (from `.symlinks/plugins/update_app/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
@@ -59,8 +62,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   biometric_storage:
     :path: ".symlinks/plugins/biometric_storage/ios"
-  connectivity:
-    :path: ".symlinks/plugins/connectivity/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   Flutter:
@@ -79,6 +82,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   update_app:
     :path: ".symlinks/plugins/update_app/ios"
   url_launcher:
@@ -88,7 +93,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   biometric_storage: 1400f1382af3a4cc2bf05340e13c3d8de873ceb9
-  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
+  connectivity_plus: 5f0eb61093bec56935f21a1699dd2758bc895587
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_aes_ecb_pkcs5: fb682a7bb13f29cfbb33f88f7e1ed2211eacf5db
@@ -100,10 +105,11 @@ SPEC CHECKSUMS:
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   update_app: 03c24a56ba197e2a036d5230b02e85825b76e045
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   webview_flutter: 9f491a9b5a66f2573946a389b2677987b0ff8c0b
 
-PODFILE CHECKSUM: 4b86a157f6715a193450122601ef5ca4f84a24d5
+PODFILE CHECKSUM: ebfbd33966dbb9b9fae0b765646a596a21072b03
 
 COCOAPODS: 1.10.1
