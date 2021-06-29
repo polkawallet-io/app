@@ -34,8 +34,8 @@ dependencies:
   update_app: ^0.1.7
   device_info: ^2.0.1
   uni_links: ^0.5.1
-#  firebase_core: 1.3.0
-#  firebase_analytics: 8.1.2
+  firebase_core: 1.3.0
+  firebase_analytics: 8.1.2
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
