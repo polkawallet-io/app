@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/common/consts.dart';
+import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/service/index.dart';
@@ -81,7 +82,7 @@ class _AdBannerState extends State<AdBanner> {
     final fullWidth = MediaQuery.of(context).size.width;
     final cardColor = Theme.of(context).cardColor;
     return !show
-        ? Container()
+        ? CrowdLoanBanner(widget.service, widget.connectedNode)
         : Stack(
             alignment: AlignmentDirectional.topEnd,
             children: [

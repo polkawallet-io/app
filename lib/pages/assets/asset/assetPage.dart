@@ -1,3 +1,4 @@
+import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/service/index.dart';
@@ -393,6 +394,7 @@ class BalanceCard extends StatelessWidget {
     final balance = Fmt.balanceTotal(balancesInfo);
 
     String lockedInfo = '\n';
+    bool hasVesting = false;
     if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
       balancesInfo.lockedBreakdown.forEach((i) {
         final amt = Fmt.balanceInt(i.amount.toString());
@@ -402,6 +404,9 @@ class BalanceCard extends StatelessWidget {
             decimals,
             lengthMax: 4,
           )} $symbol ${dic['lock.${i.use.trim()}']}\n';
+          if (i.use.contains('ormlvest')) {
+            hasVesting = true;
+          }
         }
       });
     }
@@ -533,18 +538,25 @@ class BalanceCard extends StatelessWidget {
                   Row(
                     children: [
                       lockedInfo.length > 2
-                          ? TapTooltip(
-                              message: lockedInfo,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Icon(
-                                  Icons.info,
-                                  size: 16,
-                                  color: titleColor,
-                                ),
-                              ),
-                              waitDuration: Duration(seconds: 0),
-                            )
+                          ? hasVesting
+                              ? GestureDetector(
+                                  child: Container(
+                                    padding: EdgeInsets.only(right: 4),
+                                    child: Icon(Icons.info,
+                                        size: 16, color: titleColor),
+                                  ),
+                                  onTap: () => Navigator.of(context)
+                                      .pushNamed(LocksDetailPage.route),
+                                )
+                              : TapTooltip(
+                                  message: lockedInfo,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 4),
+                                    child: Icon(Icons.info,
+                                        size: 16, color: titleColor),
+                                  ),
+                                  waitDuration: Duration(seconds: 0),
+                                )
                           : Container(),
                       Text(
                         Fmt.priceFloorBigInt(

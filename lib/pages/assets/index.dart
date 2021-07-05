@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
+import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -19,9 +20,11 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
+import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -275,10 +278,12 @@ class _AssetsState extends State<AssetsPage> {
         bool transferEnabled = true;
         if (widget.service.plugin.basic.name == 'karura' ||
             widget.service.plugin.basic.name == 'acala') {
-          transferEnabled = false;
-          if (widget.service.store.settings.liveModules['assets'] != null) {
-            transferEnabled =
-                widget.service.store.settings.liveModules['assets']['enabled'];
+          if (widget.service.buildTarget != BuildTargets.dev) {
+            transferEnabled = false;
+            if (widget.service.store.settings.liveModules['assets'] != null) {
+              transferEnabled = widget
+                  .service.store.settings.liveModules['assets']['enabled'];
+            }
           }
         }
         final symbol =
@@ -397,9 +402,26 @@ class _AssetsState extends State<AssetsPage> {
                           );
                         },
                       ),
-                      BorderedTitle(
-                        title: I18n.of(context)
-                            .getDic(i18n_full_dic_app, 'assets')['assets'],
+                      Row(
+                        children: [
+                          BorderedTitle(
+                            title: I18n.of(context)
+                                .getDic(i18n_full_dic_app, 'assets')['assets'],
+                          ),
+                          widget.service.plugin.basic.name == 'karura'
+                              ? OutlinedButtonSmall(
+                                  content: 'Claim KAR',
+                                  active: true,
+                                  margin: EdgeInsets.only(left: 8),
+                                  onPressed: () =>
+                                      Navigator.of(context).pushNamed(
+                                    DAppWrapperPage.route,
+                                    arguments:
+                                        'https://prelaunch-data-website-git-claim-acalanetwork.vercel.app/claim',
+                                  ),
+                                )
+                              : Container()
+                        ],
                       ),
                       RoundedCard(
                         margin: EdgeInsets.only(top: 16),

@@ -163,6 +163,8 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                             });
                             funds.retainWhere(
                                 (e) => visibleFundIds.indexOf(e.paraId) > -1);
+                            funds.sort((a, b) =>
+                                int.parse(a.paraId) - int.parse(b.paraId));
                             return _tab == 0
                                 ? ListView(
                                     children: [
