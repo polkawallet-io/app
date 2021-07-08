@@ -276,6 +276,7 @@ class _AssetsState extends State<AssetsPage> {
     return Observer(
       builder: (_) {
         bool transferEnabled = true;
+        bool claimKarEnabled = false;
         if (widget.service.plugin.basic.name == 'karura' ||
             widget.service.plugin.basic.name == 'acala') {
           if (widget.service.buildTarget != BuildTargets.dev) {
@@ -284,6 +285,12 @@ class _AssetsState extends State<AssetsPage> {
               transferEnabled = widget
                   .service.store.settings.liveModules['assets']['enabled'];
             }
+            if (widget.service.store.settings.liveModules['claim'] != null) {
+              claimKarEnabled =
+                  widget.service.store.settings.liveModules['claim']['enabled'];
+            }
+          } else {
+            claimKarEnabled = true;
           }
         }
         final symbol =
@@ -408,7 +415,8 @@ class _AssetsState extends State<AssetsPage> {
                             title: I18n.of(context)
                                 .getDic(i18n_full_dic_app, 'assets')['assets'],
                           ),
-                          widget.service.plugin.basic.name == 'karura'
+                          widget.service.plugin.basic.name == 'karura' &&
+                                  claimKarEnabled
                               ? OutlinedButtonSmall(
                                   content: 'Claim KAR',
                                   active: true,
@@ -417,7 +425,7 @@ class _AssetsState extends State<AssetsPage> {
                                       Navigator.of(context).pushNamed(
                                     DAppWrapperPage.route,
                                     arguments:
-                                        'https://prelaunch-data-website-git-claim-acalanetwork.vercel.app/claim',
+                                        'https://distribution.acala.network/claim',
                                   ),
                                 )
                               : Container()

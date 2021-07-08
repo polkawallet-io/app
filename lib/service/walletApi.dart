@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
+
+const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
@@ -9,6 +12,10 @@ class WalletApi {
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
+
+  static String getSnEndpoint(String relayChainName) {
+    return 'https://$relayChainName.api.subscan.io/api/scan';
+  }
 
   static Future<Map> getLatestVersion() async {
     try {
@@ -254,5 +261,21 @@ class WalletApi {
       print(err);
       return null;
     }
+  }
+
+  static Future<Map> fetchBlocksFromSn(String relayChainName,
+      {int count = 1}) async {
+    final url = '${getSnEndpoint(relayChainName)}/blocks';
+    final body = jsonEncode({
+      "page": 0,
+      "row": count,
+    });
+    final Response res =
+        await post(Uri.parse(url), headers: post_headers, body: body);
+    if (res.body != null) {
+      final obj = await compute(jsonDecode, res.body);
+      return obj['data'];
+    }
+    return {};
   }
 }

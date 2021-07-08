@@ -1,3 +1,4 @@
+import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -274,6 +275,9 @@ class _AssetPageState extends State<AssetPage> {
               if (widget.service.store.settings.liveModules['assets'] != null) {
                 transferEnabled = widget
                     .service.store.settings.liveModules['assets']['enabled'];
+              }
+              if (widget.service.buildTarget == BuildTargets.dev) {
+                transferEnabled = true;
               }
             }
 

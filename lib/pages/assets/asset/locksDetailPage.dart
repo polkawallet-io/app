@@ -1,7 +1,9 @@
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
@@ -31,13 +33,15 @@ class LocksDetailPageState extends State<LocksDetailPage> {
 
   Future<void> _updateVestingInfo() async {
     final res = await Future.wait([
-      widget.service.plugin.sdk.webView
-          .evalJavascript('api.derive.chain.bestNumber()'),
+      WalletApi.fetchBlocksFromSn(
+          widget.service.plugin.basic.name == plugin_name_karura
+              ? 'kusama'
+              : 'polkadot'),
       widget.service.plugin.sdk.webView.evalJavascript(
           'api.query.vesting.vestingSchedules("${widget.service.keyring.current.address}")')
     ]);
     if (res[0] != null && res[1] != null) {
-      final blockNow = BigInt.parse(res[0].toString());
+      final blockNow = BigInt.from(res[0]['count']);
       final vestInfo = res[1][0];
       final periodBlocks = BigInt.parse(vestInfo['period'].toString());
       final periodCount = BigInt.parse(vestInfo['periodCount'].toString());

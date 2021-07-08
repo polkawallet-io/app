@@ -849,11 +849,9 @@ packages:
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "."
-      ref: dee6fc6074f546e914c8794fd5e3a3e2b829b53c
-      resolved-ref: dee6fc6074f546e914c8794fd5e3a3e2b829b53c
-      url: "https://github.com/polkawallet-io/ui.git"
-    source: git
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
     version: "0.2.2"
   pool:
     dependency: transitive
