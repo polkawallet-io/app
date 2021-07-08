@@ -17,7 +17,7 @@ const Map<String, String> enAssets = {
   'amount.low': 'Insufficient balance',
   'amount.exist': 'existential deposit',
   'amount.exist.msg':
-      'The minimum amount that an account should have to be deemed active.',
+      '\nThe minimum amount that an account should have to be deemed active.\n',
   'currency': 'Currency',
   'currency.select': 'Select Currency',
   'make': 'Make Transfer',
@@ -39,6 +39,7 @@ const Map<String, String> enAssets = {
       '\nAdding a tip to this Tx, paying\nthe block author for greater priority.\n',
   'from': 'From',
   'to': 'To',
+  'to.chain': 'To Chain',
   'block': 'Block',
   'event': 'Event ID',
   'hash': 'TxHash',
@@ -66,7 +67,11 @@ const Map<String, String> enAssets = {
   'claim.empty': 'does not appear to have a valid claim.',
   'claim.empty2':
       'Please double check that you have signed the transaction correctly on the correct ETH account.',
+  'cross.to': 'To Address',
   'cross.chain': 'Cross chain',
+  'cross.para.select': 'Select Chain',
+  'cross.fee': 'Destination chain transfer fee',
+  'cross.exist': 'Destination chain existential deposit',
   'assets': 'Assets',
   'assets.test': 'Test Tokens',
   'assets.warn':
