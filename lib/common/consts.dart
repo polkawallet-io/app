@@ -18,8 +18,8 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.1.1-beta.1';
-const int app_beta_version_code = 2111;
+const String app_beta_version = 'v2.1.2-beta.1';
+const int app_beta_version_code = 2121;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',

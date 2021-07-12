@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.1.1+2111
+version: 2.1.2+2121
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -56,10 +56,6 @@ dependencies:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
       ref: 126938955c6042da3eee9493880f2344581005f0
-#  polkawallet_plugin_uniarts:
-#    git:
-#      url: https://github.com/uni-arts-chain/polkawallet_plugin_uniarts.git
-#      ref: ca0b0ba26c1617056ee0a0339ee0aa2f2a0aab6d
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

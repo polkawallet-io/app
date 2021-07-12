@@ -16,6 +16,7 @@ const Map<String, String> zhAssets = {
   'amount.low': '余额不足',
   'amount.exist': '存活余额',
   'amount.exist.msg': '\n账户在网络上存活所需要的最小余额。\n',
+  'amount.fee': '预估交易费',
   'currency': '币种',
   'currency.select': '选择币种',
   'make': '发起转账',

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/constants.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -133,16 +133,41 @@ class _TransferPageState extends State<TransferPage> {
     return null;
   }
 
-  Future<String> _getTxFee({bool reload = false}) async {
+  Future<String> _getTxFee({bool isXCM = false, bool reload = false}) async {
     if (_fee?.partialFee != null && !reload) {
       return _fee.partialFee.toString();
     }
 
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
-    final txInfo = TxInfoData('balances', 'transfer', sender);
+    final txInfo = TxInfoData(isXCM ? 'xcmPallet' : 'balances',
+        isXCM ? 'reserveTransferAssets' : 'transfer', sender);
     final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
-        txInfo, [widget.service.keyring.current.address, '10000000000']);
+        txInfo,
+        isXCM
+            ? [
+                {
+                  'X1': {'Parachain': '2000'}
+                },
+                {
+                  'X1': {
+                    'AccountId32': {
+                      'id': widget.service.keyring.current.address,
+                      'network': 'Any'
+                    }
+                  }
+                },
+                [
+                  {
+                    'ConcreteFungible': {
+                      'amount': xcm_dest_weight_ksm,
+                      'id': 'Null'
+                    }
+                  }
+                ],
+                xcm_dest_weight_ksm
+              ]
+            : [widget.service.keyring.current.address, '10000000000']);
     if (mounted) {
       setState(() {
         _fee = fee;
@@ -151,14 +176,15 @@ class _TransferPageState extends State<TransferPage> {
     return fee.partialFee.toString();
   }
 
-  Future<void> _setMaxAmount(BigInt available, String amountExist) async {
+  Future<void> _setMaxAmount(BigInt available, BigInt amountExist) async {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     final fee = await _getTxFee();
-    // keep double amount of estimated fee
+    // keep 1.2 * amount of estimated fee left
     final max = available -
-        Fmt.balanceInt(fee) * BigInt.two -
-        (_keepAlive ? Fmt.balanceInt(amountExist) : BigInt.zero);
+        Fmt.balanceInt(fee) -
+        (Fmt.balanceInt(fee) ~/ BigInt.from(5)) -
+        (_keepAlive ? amountExist : BigInt.zero);
     if (mounted) {
       setState(() {
         _amountCtrl.text = max > BigInt.zero
@@ -220,6 +246,10 @@ class _TransferPageState extends State<TransferPage> {
                 setState(() {
                   _chainTo = e;
                 });
+
+                // update estimated tx fee if switch ToChain
+                _getTxFee(
+                    isXCM: e.basic.name != relay_chain_name_ksm, reload: true);
               }
               Navigator.of(context).pop();
             },
@@ -285,11 +315,15 @@ class _TransferPageState extends State<TransferPage> {
         final destChainName = _chainTo?.basic?.name ?? plugin_name_karura;
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
-        final amountExist = isCrossChain
-            ? xcm_send_fees[destChainName]['existentialDeposit']
-            : widget
-                .service.plugin.networkConst['balances']['existentialDeposit']
-                .toString();
+        final existDeposit = Fmt.balanceInt(widget
+            .service.plugin.networkConst['balances']['existentialDeposit']
+            .toString());
+        final destExistDeposit = isCrossChain
+            ? Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit'])
+            : BigInt.zero;
+        final destFee = isCrossChain
+            ? Fmt.balanceInt(xcm_send_fees[destChainName]['fee'])
+            : BigInt.zero;
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
         return Scaffold(
@@ -405,7 +439,7 @@ class _TransferPageState extends State<TransferPage> {
                                   style: TextStyle(
                                       color: Theme.of(context).primaryColor)),
                               onTap: () =>
-                                  _setMaxAmount(available, amountExist),
+                                  _setMaxAmount(available, existDeposit),
                             ),
                           ),
                           inputFormatters: [UI.decimalInputFormatter(decimals)],
@@ -416,19 +450,14 @@ class _TransferPageState extends State<TransferPage> {
                             if (v.isEmpty) {
                               return dic['amount.error'];
                             }
+                            final input = Fmt.tokenInt(v, decimals);
                             final feeLeft = available -
-                                Fmt.tokenInt(v, decimals) -
-                                (_keepAlive
-                                    ? Fmt.balanceInt(amountExist)
-                                    : BigInt.zero);
+                                input -
+                                (_keepAlive ? existDeposit : BigInt.zero);
                             BigInt fee = BigInt.zero;
                             if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
                                 _fee?.partialFee != null) {
                               fee = Fmt.balanceInt(_fee.partialFee.toString());
-                              if (isCrossChain) {
-                                fee += Fmt.balanceInt(
-                                    xcm_send_fees[destChainName]['fee']);
-                              }
                             }
                             if (feeLeft - fee < BigInt.zero) {
                               return dic['amount.low'];
@@ -436,16 +465,57 @@ class _TransferPageState extends State<TransferPage> {
                             return null;
                           },
                         ),
+                        isCrossChain
+                            ? Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Text(dic['cross.exist']),
+                                    ),
+                                    TapTooltip(
+                                      message: dic['amount.exist.msg'],
+                                      child: Icon(
+                                        Icons.info,
+                                        size: 16,
+                                        color: Theme.of(context)
+                                            .unselectedWidgetColor,
+                                      ),
+                                    ),
+                                    Expanded(child: Container(width: 2)),
+                                    Text(
+                                        '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol'),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        isCrossChain
+                            ? Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Text(dic['cross.fee']),
+                                    ),
+                                    Expanded(child: Container(width: 2)),
+                                    Text(
+                                        '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
+                                  ],
+                                ),
+                              )
+                            : Container(),
                         Padding(
-                          padding: EdgeInsets.only(top: 16, bottom: 8),
+                          padding: EdgeInsets.only(top: 16),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(right: 4),
-                                child: Text(dic[isCrossChain
-                                    ? 'cross.exist'
-                                    : 'amount.exist']),
+                                child: Text(dic['amount.exist']),
                               ),
                               TapTooltip(
                                 message: dic['amount.exist.msg'],
@@ -458,53 +528,57 @@ class _TransferPageState extends State<TransferPage> {
                               ),
                               Expanded(child: Container(width: 2)),
                               Text(
-                                  '${Fmt.balance(amountExist, decimals, length: 6)} $symbol'),
+                                  '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
                             ],
                           ),
                         ),
-                        isCrossChain
+                        _fee?.partialFee != null
                             ? Padding(
-                                padding: EdgeInsets.only(top: 8, bottom: 8),
+                                padding: EdgeInsets.only(top: 16),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.fee']),
+                                      child: Text(dic['amount.fee']),
                                     ),
                                     Expanded(child: Container(width: 2)),
                                     Text(
-                                        '${Fmt.balance(xcm_send_fees[destChainName]['fee'], decimals, length: 6)} $symbol'),
+                                        '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee?.partialFee?.toString()), decimals, lengthMax: 6)} $symbol'),
                                   ],
                                 ),
                               )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 4),
-                                    child: Text(dic['transfer.alive']),
-                                  ),
-                                  TapTooltip(
-                                    message: dic['transfer.alive.msg'],
-                                    child: Icon(
-                                      Icons.info,
-                                      size: 16,
-                                      color: Theme.of(context)
-                                          .unselectedWidgetColor,
-                                    ),
-                                  ),
-                                  Expanded(child: Container(width: 2)),
-                                  CupertinoSwitch(
-                                    value: _keepAlive,
-                                    onChanged: (res) {
-                                      setState(() {
-                                        _keepAlive = res;
-                                      });
-                                    },
-                                  )
-                                ],
+                            : Container(),
+                        Container(
+                          margin: EdgeInsets.only(top: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dic['transfer.alive']),
                               ),
+                              TapTooltip(
+                                message: dic['transfer.alive.msg'],
+                                child: Icon(
+                                  Icons.info,
+                                  size: 16,
+                                  color:
+                                      Theme.of(context).unselectedWidgetColor,
+                                ),
+                              ),
+                              Expanded(child: Container(width: 2)),
+                              CupertinoSwitch(
+                                value: _keepAlive,
+                                onChanged: (res) {
+                                  setState(() {
+                                    _keepAlive = res;
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
