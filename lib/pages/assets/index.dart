@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
@@ -483,8 +484,8 @@ class _AssetsState extends State<AssetsPage> {
                                       i,
                                       i.decimals,
                                       detailPageRoute: i.detailPageRoute,
-                                      icon: widget
-                                          .service.plugin.tokenIcons[i.symbol],
+                                      icon: TokenIcon(i.symbol,
+                                          widget.service.plugin.tokenIcons),
                                     ))
                                 .toList(),
                       ),

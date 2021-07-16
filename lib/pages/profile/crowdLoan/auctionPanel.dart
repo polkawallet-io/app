@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/parachain/auctionData.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/linearProgressBar.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -83,28 +84,9 @@ class AuctionPanel extends StatelessWidget {
                 InfoItemRow('Auction Stage', '$startBlock - $endBlock'),
                 InfoItemRow('Ending Stage', '$endBlock - $closeBlock'),
                 InfoItemRow('Current Block', '#$currentBlock'),
-                Container(
-                  margin: EdgeInsets.only(top: 16, bottom: 8),
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 16,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.black12,
-                            borderRadius: BorderRadius.all(Radius.circular(8))),
-                      ),
-                      Container(
-                        height: 16,
-                        width:
-                            (MediaQuery.of(context).size.width - 64) * progress,
-                        decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.all(Radius.circular(8))),
-                      ),
-                    ],
-                  ),
-                ),
+                LinearProgressbar(
+                  width: MediaQuery.of(context).size.width - 64,
+                    progress: progress),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text('$stageTitle - $endingTime',
                       style: TextStyle(color: Colors.blue, fontSize: 12))

@@ -82,6 +82,7 @@ class _TransferPageState extends State<TransferPage> {
           module: 'xcmPallet',
           call: 'reserveTransferAssets',
           txDisplay: {
+            "chain": _chainTo.basic.name,
             "destination": _accountTo.address,
             "currency": symbol,
             "amount": _amountCtrl.text.trim(),
