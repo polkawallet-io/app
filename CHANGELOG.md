@@ -1,3 +1,8 @@
+# 2.1.1-beta
+- Add google analytics.
+- Add karura vesting redeem page.
+- Add claim KAR dApp entrance.
+
 # 2.1.0-beta
 - Add auction & crowdloans support.
 - bump polkawallet_sdk: v0.2.3.

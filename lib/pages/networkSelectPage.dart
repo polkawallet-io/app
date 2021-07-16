@@ -139,16 +139,15 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       res.addAll(accounts.map((i) {
         final bool isCurrentNetwork =
             _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-        final accInfo = widget.service.keyring.current.indexInfo;
         final addressMap = widget.service.keyring.store
             .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
         final address = addressMap != null
             ? addressMap[i.pubKey]
             : widget.service.keyring.current.address;
         final String accIndex = isCurrentNetwork &&
-                accInfo != null &&
-                accInfo['accountIndex'] != null
-            ? '${accInfo['accountIndex']}\n'
+                i.indexInfo != null &&
+                i.indexInfo['accountIndex'] != null
+            ? '${i.indexInfo['accountIndex']}\n'
             : '';
         final double padding = accIndex.isEmpty ? 0 : 7;
         final isCurrent = isCurrentNetwork &&

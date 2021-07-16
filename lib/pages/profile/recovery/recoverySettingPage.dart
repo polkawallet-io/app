@@ -7,8 +7,8 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/networkStateData.dart';
+import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/txData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -55,14 +55,17 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
     Map res = await widget.service.subScan.fetchTxsAsync(
       widget.service.subScan.moduleRecovery,
       call: 'initiate_recovery',
+      sender: widget.service.keyring.current.address,
     );
-    List<TxData> txs =
-        List.of(res['extrinsics']).map((e) => TxData.fromJson(e)).toList();
+    List<TxData> txs = List.of(res['extrinsics'] ?? [])
+        .map((e) => TxData.fromJson(e))
+        .toList();
     List pubKeys = [];
     txs.retainWhere((e) {
       if (!e.success) return false;
       List params = jsonDecode(e.params);
-      String pubKey = params[0]['valueRaw'] ?? params[0]['value_raw'];
+      String pubKey =
+          params[0]['valueRaw'] ?? params[0]['value_raw'] ?? params[0]['value'];
       if (pubKeys.contains(pubKey)) {
         return false;
       } else {

@@ -17,6 +17,7 @@ void main() async {
     PluginKusama(name: 'polkadot'),
     PluginKusama(),
     PluginAcala(),
+    PluginAcala(name: 'karura'),
     // PluginLaminar(),
     // PluginChainX(),
     // PluginEdgeware(),

@@ -6,6 +6,7 @@ import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
+import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
@@ -43,8 +44,8 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
-// import 'package:firebase_analytics/firebase_analytics.dart';
-// import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -59,6 +60,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
@@ -80,7 +82,7 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> {
-  // final _analytics = FirebaseAnalytics();
+  final _analytics = FirebaseAnalytics();
 
   Keyring _keyring;
 
@@ -228,7 +230,8 @@ class _WalletAppState extends State<WalletApp> {
         ) >
         network.basic.jsCodeVersion;
 
-    final service = AppService(network, _keyring, _store, widget.buildTarget);
+    final service = AppService(
+        widget.plugins, network, _keyring, _store, widget.buildTarget);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -332,6 +335,7 @@ class _WalletAppState extends State<WalletApp> {
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
       final service = AppService(
+          widget.plugins,
           widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           store,
@@ -434,11 +438,13 @@ class _WalletAppState extends State<WalletApp> {
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
       ImportAccountPage.route: (_) => ImportAccountPage(_service),
+      DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring),
 
       /// assets
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),
+      LocksDetailPage.route: (_) => LocksDetailPage(_service),
 
       /// profile
       SignMessagePage.route: (_) => SignMessagePage(_service),
@@ -536,7 +542,7 @@ class _WalletAppState extends State<WalletApp> {
         initialRoute: HomePage.route,
         onGenerateRoute: (settings) => CupertinoPageRoute(
             builder: routes[settings.name], settings: settings),
-        // navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
+        navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
       ),
     );
   }

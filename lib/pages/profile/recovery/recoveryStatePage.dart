@@ -6,14 +6,14 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
+import 'package:polkawallet_sdk/api/types/txData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
-import 'package:polkawallet_sdk/api/types/txData.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class RecoveryStatePage extends StatefulWidget {
@@ -62,8 +62,8 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
       final pubKeyAddressMap =
           await widget.service.plugin.sdk.api.account.encodeAddress(pubKeys);
 
-      final List<String> addresses =
-          pubKeys.map((e) => pubKeyAddressMap[e]).toList();
+      final addresses =
+          pubKeys.map((e) => pubKeyAddressMap[e] as String).toList();
 
       /// fetch active recovery status
       List status = await Future.wait([
@@ -78,8 +78,7 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
             .queryRecoveryProxies([widget.service.keyring.current.address]),
       ]);
 
-      List<RecoveryInfo> infoList =
-          List.of(status[1]).map((e) => RecoveryInfo.fromJson(e)).toList();
+      List<RecoveryInfo> infoList = List.of(status[1]);
       List statusList = List.of(status[2]);
 
       int invalidCount = 0;
@@ -96,7 +95,7 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
 
       setState(() {
         _txs = ls;
-        _currentBlock = status[0];
+        _currentBlock = int.parse(status[0]);
         _recoverableInfoList = infoList;
         _activeRecoveriesStatus = statusList;
         _proxyStatus = status[3];

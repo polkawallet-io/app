@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
+import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -19,9 +20,12 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
+import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -273,12 +277,21 @@ class _AssetsState extends State<AssetsPage> {
     return Observer(
       builder: (_) {
         bool transferEnabled = true;
+        bool claimKarEnabled = false;
         if (widget.service.plugin.basic.name == 'karura' ||
             widget.service.plugin.basic.name == 'acala') {
-          transferEnabled = false;
-          if (widget.service.store.settings.liveModules['assets'] != null) {
-            transferEnabled =
-                widget.service.store.settings.liveModules['assets']['enabled'];
+          if (widget.service.buildTarget != BuildTargets.dev) {
+            transferEnabled = false;
+            if (widget.service.store.settings.liveModules['assets'] != null) {
+              transferEnabled = widget
+                  .service.store.settings.liveModules['assets']['enabled'];
+            }
+            if (widget.service.store.settings.liveModules['claim'] != null) {
+              claimKarEnabled =
+                  widget.service.store.settings.liveModules['claim']['enabled'];
+            }
+          } else {
+            claimKarEnabled = true;
           }
         }
         final symbol =
@@ -397,9 +410,27 @@ class _AssetsState extends State<AssetsPage> {
                           );
                         },
                       ),
-                      BorderedTitle(
-                        title: I18n.of(context)
-                            .getDic(i18n_full_dic_app, 'assets')['assets'],
+                      Row(
+                        children: [
+                          BorderedTitle(
+                            title: I18n.of(context)
+                                .getDic(i18n_full_dic_app, 'assets')['assets'],
+                          ),
+                          widget.service.plugin.basic.name == 'karura' &&
+                                  claimKarEnabled
+                              ? OutlinedButtonSmall(
+                                  content: 'Claim KAR',
+                                  active: true,
+                                  margin: EdgeInsets.only(left: 8),
+                                  onPressed: () =>
+                                      Navigator.of(context).pushNamed(
+                                    DAppWrapperPage.route,
+                                    arguments:
+                                        'https://distribution.acala.network/claim',
+                                  ),
+                                )
+                              : Container()
+                        ],
                       ),
                       RoundedCard(
                         margin: EdgeInsets.only(top: 16),
@@ -453,8 +484,8 @@ class _AssetsState extends State<AssetsPage> {
                                       i,
                                       i.decimals,
                                       detailPageRoute: i.detailPageRoute,
-                                      icon: widget
-                                          .service.plugin.tokenIcons[i.symbol],
+                                      icon: TokenIcon(i.symbol,
+                                          widget.service.plugin.tokenIcons),
                                     ))
                                 .toList(),
                       ),

@@ -18,8 +18,8 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.1.0-beta.1';
-const int app_beta_version_code = 2101;
+const String app_beta_version = 'v2.1.3-beta.2';
+const int app_beta_version_code = 2132;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',
@@ -32,6 +32,22 @@ const plugin_github_links = {
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
 };
 const plugin_from_community = ['chainx', 'edgeware'];
+
+const relay_chain_name_ksm = 'kusama';
+const relay_chain_name_dot = 'polkadot';
+const xcm_base_weight = 1000000000;
+const xcm_dest_weight_ksm = 3 * xcm_base_weight;
+
+const xcm_send_fees = {
+  'statemine': {
+    'fee': '3000000000',
+    'existentialDeposit': '33333333',
+  },
+  'karura': {
+    'fee': '240000000',
+    'existentialDeposit': '100000000',
+  },
+};
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';

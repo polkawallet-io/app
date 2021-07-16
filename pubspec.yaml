@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.1.0+2101
+version: 2.1.3+2132
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -34,16 +34,16 @@ dependencies:
   update_app: ^0.1.7
   device_info: ^2.0.1
   uni_links: ^0.5.1
-#  firebase_core: 1.3.0
-#  firebase_analytics: 8.1.2
+  firebase_core: 1.3.0
+  firebase_analytics: 8.1.2
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: eb1b0692ca4941c6af464986476cab934daca56c
+      ref: e8f5aaafa6db7bc136eac33733fe614116645632
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 8a184e89ef99c122c9cc2399cf40b12d95136265
+      ref: d1e2c7541aa5ed478440badbdc57d6cadde15bef
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
@@ -56,10 +56,6 @@ dependencies:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
       ref: 126938955c6042da3eee9493880f2344581005f0
-#  polkawallet_plugin_uniarts:
-#    git:
-#      url: https://github.com/uni-arts-chain/polkawallet_plugin_uniarts.git
-#      ref: ca0b0ba26c1617056ee0a0339ee0aa2f2a0aab6d
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -77,13 +73,13 @@ dependency_overrides:
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
   polkawallet_ui:
-    git:
-      url: https://github.com/polkawallet-io/ui.git
-      ref: dee6fc6074f546e914c8794fd5e3a3e2b829b53c
-#    path: ../../coding/polkawallet/ui
-#  polkawallet_sdk: ^0.2.2
-  polkawallet_sdk:
-    path: ../../coding/polkawallet/sdk
+#    git:
+#      url: https://github.com/polkawallet-io/ui.git
+#      ref: 144a244b038e56aead4fc97a189057819bfeab08
+    path: ../../coding/polkawallet/ui
+  polkawallet_sdk: ^0.2.5
+#  polkawallet_sdk:
+#    path: ../../coding/polkawallet/sdk
 #  json_annotation: ^3.1.1
 #  mobx_codegen: ^1.1.1
 #  mobx: ^1.1.0
