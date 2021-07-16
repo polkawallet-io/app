@@ -71,8 +71,8 @@ const Map<String, String> enAssets = {
   'cross.to': 'To Address',
   'cross.chain': 'Cross chain',
   'cross.para.select': 'Select Chain',
-  'cross.fee': 'Destination chain transfer fee',
-  'cross.exist': 'Destination chain existential deposit',
+  'cross.fee': 'destination chain transfer fee',
+  'cross.exist': 'destination chain existential deposit',
   'assets': 'Assets',
   'assets.test': 'Test Tokens',
   'assets.warn':
