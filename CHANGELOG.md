@@ -1,3 +1,7 @@
+# 2.1.5-beta
+- Add address format limit for transfer.
+- update Karura plugin.
+
 # 2.1.4-beta
 - Update karura plugin.
 

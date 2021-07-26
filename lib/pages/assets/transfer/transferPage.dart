@@ -48,27 +48,43 @@ class _TransferPageState extends State<TransferPage> {
   KeyPairData _accountTo;
   bool _keepAlive = true;
 
+  String _accountToError;
+
   TxFeeEstimateResult _fee;
 
-  Future<void> _onScan() async {
-    final to = await Navigator.of(context).pushNamed(ScanPage.route);
-    if (to == null) return;
-    final acc = KeyPairData();
-    acc.address = (to as QRCodeResult).address.address;
-    acc.name = (to as QRCodeResult).address.name;
-    final icon = await widget.service.plugin.sdk.api.account
-        .getAddressIcons([acc.address]);
-    if (icon != null && icon[0] != null) {
-      acc.icon = icon[0][1];
+  Future<String> _checkAccountTo(KeyPairData acc) async {
+    final addressCheckValid = await widget.service.plugin.sdk.webView
+        .evalJavascript('(account.checkAddressFormat != undefined ? {}:null)',
+            wrapPromise: false);
+    if (addressCheckValid != null) {
+      final res = await widget.service.plugin.sdk.api.account
+          .checkAddressFormat(acc.address, _chainTo.basic.ss58);
+      if (res != null && !res) {
+        return I18n.of(context)
+            .getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
+      }
     }
+    return null;
+  }
+
+  Future<void> _validateAccountTo(KeyPairData acc) async {
+    final error = await _checkAccountTo(acc);
     setState(() {
-      _accountTo = acc;
+      _accountToError = error;
     });
-    print(_accountTo.address);
+  }
+
+  Future<void> _onScan() async {
+    final to =
+        (await Navigator.of(context).pushNamed(ScanPage.route) as QRCodeResult);
+    if (to == null) return;
+
+    _updateAccountTo(to.address.address, name: to.address.name);
+    print(to.address.address);
   }
 
   Future<TxConfirmParams> _getTxParams() async {
-    if (_formKey.currentState.validate()) {
+    if (_accountToError == null && _formKey.currentState.validate()) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
       final symbol =
           (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
@@ -195,20 +211,33 @@ class _TransferPageState extends State<TransferPage> {
     }
   }
 
-  Future<void> _initAccountTo(String address) async {
+  Future<void> _updateAccountTo(String address, {String name}) async {
     final acc = KeyPairData();
     acc.address = address;
+    if (name != null) {
+      acc.name = name;
+    }
     setState(() {
       _accountTo = acc;
     });
-    final icon =
-        await widget.service.plugin.sdk.api.account.getAddressIcons([address]);
-    if (icon != null) {
+
+    final res = await Future.wait([
+      widget.service.plugin.sdk.api.account.getAddressIcons([acc.address]),
+      _checkAccountTo(acc),
+    ]);
+    if (res != null && res[0] != null) {
       final accWithIcon = KeyPairData();
       accWithIcon.address = address;
+      if (name != null) {
+        accWithIcon.name = name;
+      }
+
+      final List icon = res[0];
       accWithIcon.icon = icon[0][1];
+
       setState(() {
         _accountTo = accWithIcon;
+        _accountToError = res[1];
       });
     }
   }
@@ -247,6 +276,7 @@ class _TransferPageState extends State<TransferPage> {
                 setState(() {
                   _chainTo = e;
                 });
+                _validateAccountTo(_accountTo);
 
                 // update estimated tx fee if switch ToChain
                 _getTxFee(
@@ -276,7 +306,7 @@ class _TransferPageState extends State<TransferPage> {
 
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
       if (args.address != null) {
-        _initAccountTo(args.address);
+        _updateAccountTo(args.address);
       } else {
         if (widget.service.keyring.allWithContacts.length > 0) {
           setState(() {
@@ -357,13 +387,23 @@ class _TransferPageState extends State<TransferPage> {
                           widget.service.keyring.allAccounts,
                           label: dic['cross.to'],
                           initialValue: _accountTo,
-                          onChanged: (KeyPairData acc) {
+                          onChanged: (KeyPairData acc) async {
+                            final accValid = await _checkAccountTo(acc);
                             setState(() {
                               _accountTo = acc;
+                              _accountToError = accValid;
                             });
                           },
                           key: ValueKey<KeyPairData>(_accountTo),
                         ),
+                        _accountToError != null
+                            ? Container(
+                                margin: EdgeInsets.only(top: 4),
+                                child: Text(_accountToError,
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.red)),
+                              )
+                            : Container(),
                         canCrossChain
                             ? GestureDetector(
                                 child: Container(
