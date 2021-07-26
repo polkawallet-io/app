@@ -122,6 +122,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                     final amt = BigInt.parse(e.amount.toString());
                     return RoundedCard(
                       padding: EdgeInsets.all(16),
+                      margin: EdgeInsets.only(bottom: 16),
                       child: e.use.contains('ormlvest')
                           ? Column(
                               children: [

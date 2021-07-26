@@ -14,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -81,7 +82,7 @@ class _AssetsState extends State<AssetsPage> {
     return res;
   }
 
-  Future<void> _handleScan() async {
+  Future<void> _handleScan(bool transferEnabled) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = (await Navigator.pushNamed(
       context,
@@ -95,7 +96,7 @@ class _AssetsState extends State<AssetsPage> {
         return;
       }
 
-      if (data.type == QRCodeResultType.address) {
+      if (transferEnabled && data.type == QRCodeResultType.address) {
         Navigator.of(context).pushNamed(
           TransferPage.route,
           arguments: TransferPageParams(address: data.address.address),
@@ -248,8 +249,8 @@ class _AssetsState extends State<AssetsPage> {
                 width: 32,
               ),
               onPressed: () {
-                if (transferEnabled && acc.address != '') {
-                  _handleScan();
+                if (acc.address != '') {
+                  _handleScan(transferEnabled);
                 }
               },
             ),
@@ -277,15 +278,19 @@ class _AssetsState extends State<AssetsPage> {
     return Observer(
       builder: (_) {
         bool transferEnabled = true;
-        bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == 'karura' ||
-            widget.service.plugin.basic.name == 'acala') {
+        // todo: fix this after new acala online
+        if (widget.service.plugin.basic.name == 'acala') {
           if (widget.service.buildTarget != BuildTargets.dev) {
             transferEnabled = false;
             if (widget.service.store.settings.liveModules['assets'] != null) {
               transferEnabled = widget
                   .service.store.settings.liveModules['assets']['enabled'];
             }
+          }
+        }
+        bool claimKarEnabled = false;
+        if (widget.service.plugin.basic.name == plugin_name_karura) {
+          if (widget.service.buildTarget != BuildTargets.dev) {
             if (widget.service.store.settings.liveModules['claim'] != null) {
               claimKarEnabled =
                   widget.service.store.settings.liveModules['claim']['enabled'];
@@ -302,6 +307,8 @@ class _AssetsState extends State<AssetsPage> {
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens;
         final extraTokens = widget.service.plugin.balances.extraTokens;
+        final isTokensFromCache =
+            widget.service.plugin.balances.isTokensFromCache;
 
         String tokenPrice;
         if (widget.service.store.assets.marketPrices[symbol] != null &&
@@ -483,6 +490,7 @@ class _AssetsState extends State<AssetsPage> {
                                 .map((i) => TokenItem(
                                       i,
                                       i.decimals,
+                                      isFromCache: isTokensFromCache,
                                       detailPageRoute: i.detailPageRoute,
                                       icon: TokenIcon(i.symbol,
                                           widget.service.plugin.tokenIcons),
@@ -507,6 +515,7 @@ class _AssetsState extends State<AssetsPage> {
                                           .map((e) => TokenItem(
                                                 e,
                                                 e.decimals,
+                                                isFromCache: isTokensFromCache,
                                                 detailPageRoute:
                                                     e.detailPageRoute,
                                                 icon: widget.service.plugin
@@ -543,11 +552,13 @@ class _AssetsState extends State<AssetsPage> {
 }
 
 class TokenItem extends StatelessWidget {
-  TokenItem(this.item, this.decimals, {this.detailPageRoute, this.icon});
+  TokenItem(this.item, this.decimals,
+      {this.detailPageRoute, this.icon, this.isFromCache = false});
   final TokenBalanceData item;
   final int decimals;
   final String detailPageRoute;
   final Widget icon;
+  final bool isFromCache;
 
   @override
   Widget build(BuildContext context) {
@@ -568,7 +579,9 @@ class TokenItem extends StatelessWidget {
           Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
               lengthFixed: 4),
           style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black54),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: isFromCache ? Colors.black26 : Colors.black54),
         ),
         onTap: detailPageRoute == null
             ? null

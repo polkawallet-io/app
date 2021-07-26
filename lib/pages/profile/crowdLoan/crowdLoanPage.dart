@@ -11,6 +11,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/parachain/auctionData.dart';
 import 'package:polkawallet_sdk/api/types/parachain/fundData.dart';
+import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/pageTitleTaps.dart';
 import 'package:polkawallet_ui/ui.dart';
 
@@ -51,11 +52,14 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
         });
       }
 
-      _getUserContributions((res[0] as AuctionData).funds);
+      if (widget.service.store.parachain.auctionData.auction.leasePeriod !=
+          null) {
+        _getUserContributions((res[0] as AuctionData).funds);
+      }
     }
 
     if (mounted) {
-      _dataQueryTimer = Timer(Duration(seconds: 6), _getCrowdLoans);
+      _dataQueryTimer = Timer(Duration(seconds: 12), _getCrowdLoans);
     }
   }
 
@@ -111,12 +115,6 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
         .service.plugin.networkConst['auctions']['endingPeriod']
         .toString());
 
-    final cardColor = Theme.of(context).cardColor;
-    final grayColor = Theme.of(context).unselectedWidgetColor;
-    final titleStyle =
-        TextStyle(color: grayColor, fontSize: 20, fontWeight: FontWeight.bold);
-    final textStyleSmall = TextStyle(fontSize: 12);
-
     return Scaffold(
       body: PageWrapperWithBackground(
         SafeArea(
@@ -168,13 +166,22 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                             return _tab == 0
                                 ? ListView(
                                     children: [
-                                      AuctionPanel(
-                                          auction,
-                                          config,
-                                          decimals,
-                                          symbols,
-                                          expectedBlockTime,
-                                          endingPeriod)
+                                      auction.auction.leasePeriod != null
+                                          ? AuctionPanel(
+                                              auction,
+                                              config,
+                                              decimals,
+                                              symbols,
+                                              expectedBlockTime,
+                                              endingPeriod)
+                                          : Container(
+                                              height: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: ListTail(
+                                                  isEmpty: true,
+                                                  isLoading: false),
+                                            )
                                     ],
                                   )
                                 : CrowdLoanList(funds, config, contributions,

@@ -1,5 +1,15 @@
+# 2.1.5-beta
+- Add address format limit for transfer.
+- update Karura plugin.
+
+# 2.1.4-beta
+- Update karura plugin.
+
+# 2.1.3-beta
+- Update karura plugin.
+
 # 2.1.1-beta
-- Add google analytics.
+- Add google analytics
 - Add karura vesting redeem page.
 - Add claim KAR dApp entrance.
 
