@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.1.5+2151
+version: 2.1.8+2182
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -50,8 +50,8 @@ dependencies:
       ref: 810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f
 #  polkawallet_plugin_chainx:
 #    git:
-#      url: https://github.com/true-eye/polkawallet_plugin_chainx.git
-#      ref: 0692cbb02da9cfd59eae2856e6e2819c072d4cd3
+#      url: https://github.com/chainx-org/polkawallet_plugin_chainx
+#      ref: d7cb7e275d8d2678df448c8a65e590f6f4b6d790
   polkawallet_plugin_edgeware:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git

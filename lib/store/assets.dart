@@ -72,8 +72,8 @@ abstract class _AssetsStore with Store {
   }
 
   @action
-  void setMarketPrices(String token, String price) {
-    marketPrices[token] = double.parse(price);
+  void setMarketPrices(Map<String, double> data) {
+    marketPrices.addAll(data);
   }
 
   @action

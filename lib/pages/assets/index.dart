@@ -59,17 +59,16 @@ class _AssetsState extends State<AssetsPage> {
 
   List _announcements;
 
+  Timer _priceUpdateTimer;
+
   Future<void> _updateBalances() async {
     setState(() {
       _refreshing = true;
     });
-    final balances = await widget.service.plugin.sdk.api.account
-        .queryBalance(widget.service.keyring.current.address);
+    await widget.service.assets.updateBalances();
     setState(() {
       _refreshing = false;
     });
-    widget.service.plugin
-        .updateBalances(widget.service.keyring.current, balances);
   }
 
   Future<List> _fetchAnnouncements() async {
@@ -80,6 +79,15 @@ class _AssetsState extends State<AssetsPage> {
       _announcements = res;
     });
     return res;
+  }
+
+  Future<void> _updateMarketPrices() async {
+    if (widget.service.plugin.balances.tokens.length > 0) {
+      widget.service.assets.fetchMarketPrices(
+          widget.service.plugin.balances.tokens.map((e) => e.symbol).toList());
+    }
+
+    _priceUpdateTimer = Timer(Duration(seconds: 30), _updateMarketPrices);
   }
 
   Future<void> _handleScan(bool transferEnabled) async {
@@ -274,6 +282,15 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateMarketPrices();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -338,10 +355,13 @@ class _AssetsState extends State<AssetsPage> {
                 ),
                 onPressed: widget.service.keyring.allAccounts.length > 0
                     ? () async {
-                        final selected = await Navigator.of(context)
-                            .pushNamed(NetworkSelectPage.route);
+                        final selected = (await Navigator.of(context)
+                                .pushNamed(NetworkSelectPage.route))
+                            as PolkawalletPlugin;
                         setState(() {});
-                        if (selected != null) {
+                        if (selected != null &&
+                            selected.basic.name !=
+                                widget.service.plugin.basic.name) {
                           widget.checkJSCodeUpdate(selected);
                         }
                       }
@@ -469,9 +489,10 @@ class _AssetsState extends State<AssetsPage> {
                                         : Colors.black26),
                               ),
                               Text(
-                                '≈ \$ ${tokenPrice ?? '--.--'}',
+                                '≈ \$${tokenPrice ?? '--.--'}',
                                 style: TextStyle(
                                   color: Theme.of(context).disabledColor,
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -492,6 +513,8 @@ class _AssetsState extends State<AssetsPage> {
                                       i.decimals,
                                       isFromCache: isTokensFromCache,
                                       detailPageRoute: i.detailPageRoute,
+                                      marketPrice: widget.service.store.assets
+                                          .marketPrices[i.symbol],
                                       icon: TokenIcon(i.symbol,
                                           widget.service.plugin.tokenIcons),
                                     ))
@@ -553,9 +576,13 @@ class _AssetsState extends State<AssetsPage> {
 
 class TokenItem extends StatelessWidget {
   TokenItem(this.item, this.decimals,
-      {this.detailPageRoute, this.icon, this.isFromCache = false});
+      {this.marketPrice,
+      this.detailPageRoute,
+      this.icon,
+      this.isFromCache = false});
   final TokenBalanceData item;
   final int decimals;
+  final double marketPrice;
   final String detailPageRoute;
   final Widget icon;
   final bool isFromCache;
@@ -575,13 +602,28 @@ class TokenItem extends StatelessWidget {
               ),
         ),
         title: Text(item.name),
-        trailing: Text(
-          Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
-              lengthFixed: 4),
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: isFromCache ? Colors.black26 : Colors.black54),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
+                  lengthFixed: 4),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: isFromCache ? Colors.black26 : Colors.black54),
+            ),
+            marketPrice != null
+                ? Text(
+                    '≈ \$${Fmt.priceFloor(Fmt.balanceDouble(item.amount, decimals) * marketPrice)}',
+                    style: TextStyle(
+                      color: Theme.of(context).disabledColor,
+                      fontSize: 12,
+                    ),
+                  )
+                : Container(height: 0, width: 8),
+          ],
         ),
         onTap: detailPageRoute == null
             ? null

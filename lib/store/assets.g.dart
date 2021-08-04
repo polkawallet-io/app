@@ -157,11 +157,11 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   @override
-  void setMarketPrices(String token, String price) {
+  void setMarketPrices(Map<String, double> data) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setMarketPrices');
     try {
-      return super.setMarketPrices(token, price);
+      return super.setMarketPrices(data);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }

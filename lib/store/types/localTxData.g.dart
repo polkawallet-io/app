@@ -10,7 +10,7 @@ LocalTxData _$LocalTxDataFromJson(Map<String, dynamic> json) {
   return LocalTxData()
     ..module = json['module'] as String
     ..call = json['call'] as String
-    ..args = json['args'] as List
+    ..args = json['args'] as List<dynamic>
     ..hash = json['hash'] as String
     ..blockHash = json['blockHash'] as String
     ..eventId = json['eventId'] as String

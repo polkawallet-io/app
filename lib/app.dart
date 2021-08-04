@@ -196,7 +196,7 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _startPlugin(AppService service) async {
     // _initWalletConnect();
 
-    _service.assets.fetchMarketPrice();
+    _service.assets.fetchMarketPriceFromSubScan();
 
     setState(() {
       _connectedNode = null;
