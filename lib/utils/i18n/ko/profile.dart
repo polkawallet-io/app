@@ -56,6 +56,8 @@ const Map<String, String> enProfile = {
   'update.up': 'New version found, update now?',
   'update.start': 'Connecting...',
   'update.download': 'Downloading...',
+  'update.download.check':
+      'Please check the download status through background tasks.',
   'update.install': 'Installing...',
   'update.error': 'Update Failed',
   'update.js.up': 'Metadata needs to be updated to continue.',
