@@ -18,6 +18,7 @@ import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
@@ -133,6 +134,7 @@ class _AssetsState extends State<AssetsPage> {
       }
 
       String errorMsg;
+      KeyPairData sender;
       try {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
             .parseQrCode(
@@ -140,12 +142,59 @@ class _AssetsState extends State<AssetsPage> {
         if (senderPubKey == widget.service.keyring.current.pubKey) {
           final password = await widget.service.account
               .getPassword(context, widget.service.keyring.current);
-          print('pass ok: $password');
-          _signAsync(password);
+          if (password != null) {
+            print('pass ok: $password');
+            _signAsync(password);
+          }
           return;
         } else {
           if (senderPubKey != null) {
-            errorMsg = dic['uos.qr.mismatch'];
+            final senderAccIndex = widget.service.keyring.optionals
+                .indexWhere((e) => e.pubKey == senderPubKey);
+            if (senderAccIndex >= 0) {
+              sender = widget.service.keyring.optionals[senderAccIndex];
+              errorMsg = dic['uos.acc.mismatch.switch'] +
+                  ' ${Fmt.address(sender.address)} ?';
+              final needSwitch = await showCupertinoDialog(
+                context: context,
+                builder: (_) {
+                  return CupertinoAlertDialog(
+                    title: Text(dic['uos.title']),
+                    content: Text(errorMsg),
+                    actions: <Widget>[
+                      CupertinoButton(
+                        child: Text(I18n.of(context)
+                            .getDic(i18n_full_dic_ui, 'common')['cancel']),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      CupertinoButton(
+                        child: Text(I18n.of(context)
+                            .getDic(i18n_full_dic_ui, 'common')['ok']),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (needSwitch) {
+                widget.service.keyring.setCurrent(sender);
+                widget.service.plugin.changeAccount(sender);
+                widget.service.store.assets
+                    .loadCache(sender, widget.service.plugin.basic.name);
+
+                final password = await widget.service.account
+                    .getPassword(context, widget.service.keyring.current);
+                if (password != null) {
+                  print('pass ok: $password');
+                  _signAsync(password);
+                }
+              }
+              return;
+            } else {
+              errorMsg = dic['uos.acc.mismatch'];
+            }
           } else {
             errorMsg = dic['uos.qr.invalid'];
           }
@@ -175,10 +224,21 @@ class _AssetsState extends State<AssetsPage> {
   Future<void> _signAsync(String password) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     try {
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: Text(dic['uos.title']),
+            content: Text(dic['uos.signing']),
+          );
+        },
+      );
+
       final signed = await widget.service.plugin.sdk.api.uos
           .signAsync(widget.service.plugin.basic.name, password);
       print('signed: $signed');
-      Navigator.of(context).pushNamed(
+
+      Navigator.of(context).popAndPushNamed(
         QrSignerPage.route,
         arguments: signed.substring(2),
       );

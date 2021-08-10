@@ -54,6 +54,7 @@ const Map<String, String> zhProfile = {
   'update.up': '发现新版本，立即更新吗？',
   'update.start': '等待连接...',
   'update.download': '正在下载...',
+  'update.download.check': '请在后台任务中查看下载进度',
   'update.install': '开始安装',
   'update.error': '更新失败',
   'update.js.up': '发现网络 Metadata 更新，需要下载才能继续使用。',
