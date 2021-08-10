@@ -72,4 +72,8 @@ const Map<String, String> zhAssets = {
   'assets.test': '测试 Token',
   'assets.warn': '警告：当前测试网中所有资产仅供测试使用，无真实价值。',
   'announce': '通知',
+  'manage': '资产列表管理',
+  'manage.filter': '通过 token 名称/简称筛选',
+  'manage.native': '原生 token',
+  'manage.save': '保存',
 };

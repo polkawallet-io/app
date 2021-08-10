@@ -852,7 +852,7 @@ packages:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.2.7"
+    version: "0.2.8"
   pool:
     dependency: transitive
     description:

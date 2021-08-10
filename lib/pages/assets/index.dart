@@ -4,6 +4,7 @@ import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
+import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -516,6 +517,24 @@ class _AssetsState extends State<AssetsPage> {
                                         'https://distribution.acala.network/claim',
                                   ),
                                 )
+                              : Container(),
+                          widget.service.plugin.balances.tokens.length > 0
+                              ? Expanded(
+                                  child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).pushNamed(
+                                              ManageAssetsPage.route);
+                                        },
+                                        child: Icon(
+                                          Icons.add_circle,
+                                          color:
+                                              Theme.of(context).disabledColor,
+                                        ))
+                                  ],
+                                ))
                               : Container()
                         ],
                       ),
@@ -661,7 +680,7 @@ class TokenItem extends StatelessWidget {
                 child: Text(item.symbol.substring(0, 2)),
               ),
         ),
-        title: Text(item.name),
+        title: Text(item.symbol),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,

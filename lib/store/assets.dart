@@ -16,6 +16,8 @@ abstract class _AssetsStore with Store {
 
   final String cacheTxsKey = 'txs';
 
+  final String customAssetsStoreKey = 'assets_list';
+
   @observable
   int cacheTxsTimestamp = 0;
 
@@ -33,6 +35,9 @@ abstract class _AssetsStore with Store {
 
   @observable
   ObservableMap<String, double> marketPrices = ObservableMap<String, double>();
+
+  @observable
+  Map<String, bool> customAssets = {};
 
   @action
   void setTxsLoading(bool isLoading) {
@@ -77,6 +82,13 @@ abstract class _AssetsStore with Store {
   }
 
   @action
+  void setCustomAssets(Map<String, bool> data, String pluginName) {
+    customAssets = data;
+
+    storage.write('${pluginName}_$customAssetsStoreKey', data);
+  }
+
+  @action
   Future<void> loadAccountCache(KeyPairData acc, String pluginName) async {
     // return if currentAccount not exist
     if (acc == null) {
@@ -95,5 +107,11 @@ abstract class _AssetsStore with Store {
   @action
   Future<void> loadCache(KeyPairData acc, String pluginName) async {
     loadAccountCache(acc, pluginName);
+
+    final cachedAssetsList =
+        await storage.read('${pluginName}_$customAssetsStoreKey');
+    if (cachedAssetsList != null) {
+      customAssets = Map<String, bool>.of(cachedAssetsList);
+    }
   }
 }
