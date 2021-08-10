@@ -75,9 +75,9 @@ dependency_overrides:
   polkawallet_ui:
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
-#      ref: 144a244b038e56aead4fc97a189057819bfeab08
+#      ref: d27fed3ce6418141be7c446e9f2bdf6e3c0d03f0
     path: ../../coding/polkawallet/ui
-#  polkawallet_sdk: ^0.2.6
+#  polkawallet_sdk: ^0.2.8
   polkawallet_sdk:
     path: ../../coding/polkawallet/sdk
 #  json_annotation: ^3.1.1
