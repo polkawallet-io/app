@@ -813,7 +813,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.2.6"
+    version: "0.2.7"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:
@@ -845,14 +845,14 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.2.6"
+    version: "0.2.8"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.2.6"
+    version: "0.2.7"
   pool:
     dependency: transitive
     description:

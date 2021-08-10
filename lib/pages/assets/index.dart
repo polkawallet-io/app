@@ -18,6 +18,7 @@ import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
@@ -59,17 +60,16 @@ class _AssetsState extends State<AssetsPage> {
 
   List _announcements;
 
+  Timer _priceUpdateTimer;
+
   Future<void> _updateBalances() async {
     setState(() {
       _refreshing = true;
     });
-    final balances = await widget.service.plugin.sdk.api.account
-        .queryBalance(widget.service.keyring.current.address);
+    await widget.service.assets.updateBalances();
     setState(() {
       _refreshing = false;
     });
-    widget.service.plugin
-        .updateBalances(widget.service.keyring.current, balances);
   }
 
   Future<List> _fetchAnnouncements() async {
@@ -80,6 +80,15 @@ class _AssetsState extends State<AssetsPage> {
       _announcements = res;
     });
     return res;
+  }
+
+  Future<void> _updateMarketPrices() async {
+    if (widget.service.plugin.balances.tokens.length > 0) {
+      widget.service.assets.fetchMarketPrices(
+          widget.service.plugin.balances.tokens.map((e) => e.symbol).toList());
+    }
+
+    _priceUpdateTimer = Timer(Duration(seconds: 30), _updateMarketPrices);
   }
 
   Future<void> _handleScan(bool transferEnabled) async {
@@ -125,6 +134,7 @@ class _AssetsState extends State<AssetsPage> {
       }
 
       String errorMsg;
+      KeyPairData sender;
       try {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
             .parseQrCode(
@@ -132,12 +142,59 @@ class _AssetsState extends State<AssetsPage> {
         if (senderPubKey == widget.service.keyring.current.pubKey) {
           final password = await widget.service.account
               .getPassword(context, widget.service.keyring.current);
-          print('pass ok: $password');
-          _signAsync(password);
+          if (password != null) {
+            print('pass ok: $password');
+            _signAsync(password);
+          }
           return;
         } else {
           if (senderPubKey != null) {
-            errorMsg = dic['uos.qr.mismatch'];
+            final senderAccIndex = widget.service.keyring.optionals
+                .indexWhere((e) => e.pubKey == senderPubKey);
+            if (senderAccIndex >= 0) {
+              sender = widget.service.keyring.optionals[senderAccIndex];
+              errorMsg = dic['uos.acc.mismatch.switch'] +
+                  ' ${Fmt.address(sender.address)} ?';
+              final needSwitch = await showCupertinoDialog(
+                context: context,
+                builder: (_) {
+                  return CupertinoAlertDialog(
+                    title: Text(dic['uos.title']),
+                    content: Text(errorMsg),
+                    actions: <Widget>[
+                      CupertinoButton(
+                        child: Text(I18n.of(context)
+                            .getDic(i18n_full_dic_ui, 'common')['cancel']),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      CupertinoButton(
+                        child: Text(I18n.of(context)
+                            .getDic(i18n_full_dic_ui, 'common')['ok']),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (needSwitch) {
+                widget.service.keyring.setCurrent(sender);
+                widget.service.plugin.changeAccount(sender);
+                widget.service.store.assets
+                    .loadCache(sender, widget.service.plugin.basic.name);
+
+                final password = await widget.service.account
+                    .getPassword(context, widget.service.keyring.current);
+                if (password != null) {
+                  print('pass ok: $password');
+                  _signAsync(password);
+                }
+              }
+              return;
+            } else {
+              errorMsg = dic['uos.acc.mismatch'];
+            }
           } else {
             errorMsg = dic['uos.qr.invalid'];
           }
@@ -167,10 +224,21 @@ class _AssetsState extends State<AssetsPage> {
   Future<void> _signAsync(String password) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     try {
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: Text(dic['uos.title']),
+            content: Text(dic['uos.signing']),
+          );
+        },
+      );
+
       final signed = await widget.service.plugin.sdk.api.uos
           .signAsync(widget.service.plugin.basic.name, password);
       print('signed: $signed');
-      Navigator.of(context).pushNamed(
+
+      Navigator.of(context).popAndPushNamed(
         QrSignerPage.route,
         arguments: signed.substring(2),
       );
@@ -274,6 +342,15 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateMarketPrices();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -338,10 +415,13 @@ class _AssetsState extends State<AssetsPage> {
                 ),
                 onPressed: widget.service.keyring.allAccounts.length > 0
                     ? () async {
-                        final selected = await Navigator.of(context)
-                            .pushNamed(NetworkSelectPage.route);
+                        final selected = (await Navigator.of(context)
+                                .pushNamed(NetworkSelectPage.route))
+                            as PolkawalletPlugin;
                         setState(() {});
-                        if (selected != null) {
+                        if (selected != null &&
+                            selected.basic.name !=
+                                widget.service.plugin.basic.name) {
                           widget.checkJSCodeUpdate(selected);
                         }
                       }
@@ -469,9 +549,10 @@ class _AssetsState extends State<AssetsPage> {
                                         : Colors.black26),
                               ),
                               Text(
-                                '≈ \$ ${tokenPrice ?? '--.--'}',
+                                '≈ \$${tokenPrice ?? '--.--'}',
                                 style: TextStyle(
                                   color: Theme.of(context).disabledColor,
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -492,6 +573,8 @@ class _AssetsState extends State<AssetsPage> {
                                       i.decimals,
                                       isFromCache: isTokensFromCache,
                                       detailPageRoute: i.detailPageRoute,
+                                      marketPrice: widget.service.store.assets
+                                          .marketPrices[i.symbol],
                                       icon: TokenIcon(i.symbol,
                                           widget.service.plugin.tokenIcons),
                                     ))
@@ -553,9 +636,13 @@ class _AssetsState extends State<AssetsPage> {
 
 class TokenItem extends StatelessWidget {
   TokenItem(this.item, this.decimals,
-      {this.detailPageRoute, this.icon, this.isFromCache = false});
+      {this.marketPrice,
+      this.detailPageRoute,
+      this.icon,
+      this.isFromCache = false});
   final TokenBalanceData item;
   final int decimals;
+  final double marketPrice;
   final String detailPageRoute;
   final Widget icon;
   final bool isFromCache;
@@ -575,13 +662,28 @@ class TokenItem extends StatelessWidget {
               ),
         ),
         title: Text(item.name),
-        trailing: Text(
-          Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
-              lengthFixed: 4),
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: isFromCache ? Colors.black26 : Colors.black54),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
+                  lengthFixed: 4),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: isFromCache ? Colors.black26 : Colors.black54),
+            ),
+            marketPrice != null
+                ? Text(
+                    '≈ \$${Fmt.priceFloor(Fmt.balanceDouble(item.amount, decimals) * marketPrice)}',
+                    style: TextStyle(
+                      color: Theme.of(context).disabledColor,
+                      fontSize: 12,
+                    ),
+                  )
+                : Container(height: 0, width: 8),
+          ],
         ),
         onTap: detailPageRoute == null
             ? null

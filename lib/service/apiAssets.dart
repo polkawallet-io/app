@@ -31,16 +31,39 @@ class ApiAssets {
     return res;
   }
 
-  Future<void> fetchMarketPrice() async {
+  Future<void> fetchMarketPriceFromSubScan() async {
     if (apiRoot.plugin.basic.isTestNet) return;
 
-    final res = await WalletApi.getTokenPrice(apiRoot.plugin.basic.name);
+    final res =
+        await WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name);
     if (res == null || res['data'] == null) {
       print('fetch market price failed');
       return;
     }
     final symbol = res['data']['token'][0];
-    apiRoot.store.assets
-        .setMarketPrices(symbol, res['data']['detail'][symbol]['price']);
+    apiRoot.store.assets.setMarketPrices(
+        {symbol: double.parse(res['data']['detail'][symbol]['price'])});
+  }
+
+  Future<void> fetchMarketPrices(List<String> tokens) async {
+    final List res = await Future.wait(
+        tokens.map((e) => WalletApi.getTokenPrice(e)).toList());
+
+    final Map<String, double> prices = {
+      'KUSD': 1.0,
+      'AUSD': 1.0,
+    };
+    res.forEach((e) {
+      if (e != null && e['price'] != null) {
+        prices[e['token']] = double.parse(e['price']);
+      }
+    });
+    apiRoot.store.assets.setMarketPrices(prices);
+  }
+
+  Future<void> updateBalances() async {
+    final balances = await apiRoot.plugin.sdk.api.account
+        .queryBalance(apiRoot.keyring.current.address);
+    apiRoot.plugin.updateBalances(apiRoot.keyring.current, balances);
   }
 }

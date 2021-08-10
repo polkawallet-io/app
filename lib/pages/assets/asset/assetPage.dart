@@ -120,7 +120,7 @@ class _AssetPageState extends State<AssetPage> {
       _isLastPage = false;
     });
 
-    widget.service.assets.fetchMarketPrice();
+    widget.service.assets.fetchMarketPriceFromSubScan();
 
     await _updateData();
   }

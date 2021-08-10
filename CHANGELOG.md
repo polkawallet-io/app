@@ -1,3 +1,11 @@
+# 2.2.1-beta
+- update uos flow.
+- add apk download notes.
+
+# 2.1.6-2.2.0-beta
+- add tokens market prices.
+- update Karura plugin.
+
 # 2.1.5-beta
 - Add address format limit for transfer.
 - update Karura plugin.
