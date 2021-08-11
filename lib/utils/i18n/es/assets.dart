@@ -82,4 +82,6 @@ const Map<String, String> enAssets = {
   'manage.filter': 'Filter by token name/symbol',
   'manage.native': 'native token',
   'manage.save': 'Save',
+  'manage.save.ok': 'success',
+  'manage.hide': 'Hide 0 assets',
 };
