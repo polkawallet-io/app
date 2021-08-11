@@ -375,6 +375,10 @@ class _WalletAppState extends State<WalletApp> {
             : null,
       );
 
+      if (_keyring.keyPairs.length > 0) {
+        _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
+      }
+
       _startPlugin(service);
     }
 

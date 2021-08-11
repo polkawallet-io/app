@@ -111,7 +111,9 @@ abstract class _AssetsStore with Store {
     final cachedAssetsList =
         await storage.read('${pluginName}_$customAssetsStoreKey');
     if (cachedAssetsList != null) {
-      customAssets = Map<String, bool>.of(cachedAssetsList);
+      customAssets = Map<String, bool>.from(cachedAssetsList);
+    } else {
+      customAssets = Map<String, bool>();
     }
   }
 }

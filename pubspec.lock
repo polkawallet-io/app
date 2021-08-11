@@ -833,12 +833,10 @@ packages:
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f"
-      resolved-ref: "810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
-    version: "0.2.2"
+      path: "../../coding/polkawallet/polkawallet_plugin_laminar"
+      relative: true
+    source: path
+    version: "0.2.8"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:

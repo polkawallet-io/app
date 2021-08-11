@@ -76,4 +76,6 @@ const Map<String, String> zhAssets = {
   'manage.filter': '通过 token 名称/简称筛选',
   'manage.native': '原生 token',
   'manage.save': '保存',
+  'manage.save.ok': '成功',
+  'manage.hide': '隐藏 0 资产',
 };

@@ -383,7 +383,22 @@ class _AssetsState extends State<AssetsPage> {
             (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final balancesInfo = widget.service.plugin.balances.native;
-        final tokens = widget.service.plugin.balances.tokens;
+        final tokens = widget.service.plugin.balances.tokens.toList();
+        final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
+
+        // add custom assets from user's config & tokensAll
+        final customTokensConfig = widget.service.store.assets.customAssets;
+        if (customTokensConfig.keys.length > 0) {
+          tokens.retainWhere((e) => customTokensConfig[e.id]);
+
+          tokensAll.retainWhere((e) => customTokensConfig[e.id]);
+          tokensAll.forEach((e) {
+            if (tokens.indexWhere((token) => token.id == e.id) < 0) {
+              tokens.add(e);
+            }
+          });
+        }
+
         final extraTokens = widget.service.plugin.balances.extraTokens;
         final isTokensFromCache =
             widget.service.plugin.balances.isTokensFromCache;
@@ -518,7 +533,7 @@ class _AssetsState extends State<AssetsPage> {
                                   ),
                                 )
                               : Container(),
-                          widget.service.plugin.balances.tokens.length > 0
+                          tokensAll.length > 0
                               ? Expanded(
                                   child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -563,6 +578,7 @@ class _AssetsState extends State<AssetsPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
+                                    letterSpacing: -0.6,
                                     color: balancesInfo?.isFromCache == false
                                         ? Colors.black54
                                         : Colors.black26),
@@ -594,7 +610,7 @@ class _AssetsState extends State<AssetsPage> {
                                       detailPageRoute: i.detailPageRoute,
                                       marketPrice: widget.service.store.assets
                                           .marketPrices[i.symbol],
-                                      icon: TokenIcon(i.symbol,
+                                      icon: TokenIcon(i.id ?? i.symbol,
                                           widget.service.plugin.tokenIcons),
                                     ))
                                 .toList(),
@@ -691,6 +707,7 @@ class TokenItem extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
+                  letterSpacing: -0.6,
                   color: isFromCache ? Colors.black26 : Colors.black54),
             ),
             marketPrice != null
