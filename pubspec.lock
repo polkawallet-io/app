@@ -837,6 +837,13 @@ packages:
       relative: true
     source: path
     version: "0.2.8"
+  polkawallet_plugin_statemine:
+    dependency: "direct main"
+    description:
+      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
+      relative: true
+    source: path
+    version: "0.0.1"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:

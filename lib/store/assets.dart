@@ -82,10 +82,11 @@ abstract class _AssetsStore with Store {
   }
 
   @action
-  void setCustomAssets(Map<String, bool> data, String pluginName) {
+  void setCustomAssets(
+      KeyPairData acc, String pluginName, Map<String, bool> data) {
     customAssets = data;
 
-    storage.write('${pluginName}_$customAssetsStoreKey', data);
+    _storeCustomAssets(acc, pluginName, data);
   }
 
   @action
@@ -102,18 +103,28 @@ abstract class _AssetsStore with Store {
     } else {
       txs = ObservableList();
     }
+
+    final cachedAssetsList =
+        await storage.read('${pluginName}_$customAssetsStoreKey');
+    if (cachedAssetsList != null && cachedAssetsList[acc.pubKey] != null) {
+      customAssets = Map<String, bool>.from(cachedAssetsList[acc.pubKey]);
+    } else {
+      customAssets = Map<String, bool>();
+    }
   }
 
   @action
   Future<void> loadCache(KeyPairData acc, String pluginName) async {
     loadAccountCache(acc, pluginName);
+  }
 
+  Future<void> _storeCustomAssets(
+      KeyPairData acc, String pluginName, Map<String, bool> data) async {
     final cachedAssetsList =
-        await storage.read('${pluginName}_$customAssetsStoreKey');
-    if (cachedAssetsList != null) {
-      customAssets = Map<String, bool>.from(cachedAssetsList);
-    } else {
-      customAssets = Map<String, bool>();
-    }
+        (await storage.read('${pluginName}_$customAssetsStoreKey')) ?? {};
+
+    cachedAssetsList[acc.pubKey] = data;
+
+    storage.write('${pluginName}_$customAssetsStoreKey', cachedAssetsList);
   }
 }

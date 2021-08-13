@@ -183,11 +183,12 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   @override
-  void setCustomAssets(Map<String, bool> data, String pluginName) {
+  void setCustomAssets(
+      KeyPairData acc, String pluginName, Map<String, bool> data) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setCustomAssets');
     try {
-      return super.setCustomAssets(data, pluginName);
+      return super.setCustomAssets(acc, pluginName, data);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }

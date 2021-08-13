@@ -67,7 +67,7 @@ class _AssetsState extends State<AssetsPage> {
     setState(() {
       _refreshing = true;
     });
-    await widget.service.assets.updateBalances();
+    await widget.service.plugin.updateBalances(widget.service.keyring.current);
     setState(() {
       _refreshing = false;
     });
@@ -352,6 +352,13 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
+  void dispose() {
+    _priceUpdateTimer?.cancel();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -533,7 +540,9 @@ class _AssetsState extends State<AssetsPage> {
                                   ),
                                 )
                               : Container(),
-                          tokensAll.length > 0
+                          (widget.service.plugin.noneNativeTokensAll ?? [])
+                                      .length >
+                                  0
                               ? Expanded(
                                   child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -610,8 +619,11 @@ class _AssetsState extends State<AssetsPage> {
                                       detailPageRoute: i.detailPageRoute,
                                       marketPrice: widget.service.store.assets
                                           .marketPrices[i.symbol],
-                                      icon: TokenIcon(i.id ?? i.symbol,
-                                          widget.service.plugin.tokenIcons),
+                                      icon: TokenIcon(
+                                        i.id ?? i.symbol,
+                                        widget.service.plugin.tokenIcons,
+                                        symbol: i.symbol,
+                                      ),
                                     ))
                                 .toList(),
                       ),

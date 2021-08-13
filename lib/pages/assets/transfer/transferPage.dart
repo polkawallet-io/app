@@ -53,6 +53,12 @@ class _TransferPageState extends State<TransferPage> {
   TxFeeEstimateResult _fee;
 
   Future<String> _checkAccountTo(KeyPairData acc) async {
+    if (widget.service.keyring.allAccounts
+            .indexWhere((e) => e.pubKey == acc.pubKey) >=
+        0) {
+      return null;
+    }
+
     final addressCheckValid = await widget.service.plugin.sdk.webView
         .evalJavascript('(account.checkAddressFormat != undefined ? {}:null)',
             wrapPromise: false);

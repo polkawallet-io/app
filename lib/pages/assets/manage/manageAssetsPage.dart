@@ -34,8 +34,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
         }
       });
     }
-    widget.service.store.assets
-        .setCustomAssets(config, widget.service.plugin.basic.name);
+    widget.service.store.assets.setCustomAssets(widget.service.keyring.current,
+        widget.service.plugin.basic.name, config);
 
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     await showCupertinoDialog(
@@ -219,8 +219,11 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                             children: [
                               Container(
                                 padding: EdgeInsets.only(right: 16),
-                                child: TokenIcon(list[i].id,
-                                    widget.service.plugin.tokenIcons),
+                                child: TokenIcon(
+                                  list[i].id,
+                                  widget.service.plugin.tokenIcons,
+                                  symbol: list[i].symbol,
+                                ),
                               ),
                               Expanded(
                                 child: Column(
@@ -254,7 +257,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                               CupertinoSwitch(
                                 value: _tokenVisible[list[i].id] ?? false,
                                 onChanged: (v) {
-                                  if (i != 0) {
+                                  if (list[i].id !=
+                                      widget.service.plugin.networkState
+                                          .tokenSymbol[0]) {
                                     setState(() {
                                       _tokenVisible[list[i].id] = v;
                                     });
