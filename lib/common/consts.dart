@@ -39,6 +39,10 @@ const xcm_base_weight = 1000000000;
 const xcm_dest_weight_ksm = 3 * xcm_base_weight;
 
 const xcm_send_fees = {
+  'kusama': {
+    'fee': '30000000000',
+    'existentialDeposit': '333333333',
+  },
   'statemine': {
     'fee': '3000000000',
     'existentialDeposit': '33333333',

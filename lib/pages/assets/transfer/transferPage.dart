@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_statemine/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -99,10 +100,14 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
+        final isToAca = _chainTo.basic.name == plugin_name_karura ||
+            _chainTo.basic.name == plugin_name_acala;
+        final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
+            _chainTo.basic.name == relay_chain_name_dot;
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
-          module: 'xcmPallet',
-          call: 'reserveTransferAssets',
+          module: isToParent ? 'polkadotXcm' : 'xcmPallet',
+          call: isToAca ? 'reserveTransferAssets' : 'teleportAssets',
           txDisplay: {
             "chain": _chainTo.basic.name,
             "destination": _accountTo.address,
@@ -112,7 +117,9 @@ class _TransferPageState extends State<TransferPage> {
           params: [
             // params.dest
             {
-              'X1': {'Parachain': _chainTo.basic.parachainId}
+              'X1': isToParent
+                  ? {'parent': 'Null'}
+                  : {'Parachain': _chainTo.basic.parachainId}
             },
             // params.beneficiary
             {
@@ -126,7 +133,11 @@ class _TransferPageState extends State<TransferPage> {
                 'ConcreteFungible': {
                   'amount': Fmt.tokenInt(_amountCtrl.text.trim(), decimals)
                       .toString(),
-                  'id': 'Null'
+                  'id': isToParent
+                      ? {
+                          'X1': {'parent': 'Null'}
+                        }
+                      : 'Null'
                 }
               }
             ],
@@ -161,16 +172,26 @@ class _TransferPageState extends State<TransferPage> {
       return _fee.partialFee.toString();
     }
 
+    final isStatemint =
+        widget.service.plugin.basic.name == network_name_statemine ||
+            widget.service.plugin.basic.name == network_name_statemint;
+
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
-    final txInfo = TxInfoData(isXCM ? 'xcmPallet' : 'balances',
-        isXCM ? 'reserveTransferAssets' : 'transfer', sender);
+    final txInfo = TxInfoData(
+        isXCM ? 'xcmPallet' : 'balances',
+        isXCM
+            ? isStatemint
+                ? 'teleportAssets'
+                : 'reserveTransferAssets'
+            : 'transfer',
+        sender);
     final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
         txInfo,
         isXCM
             ? [
                 {
-                  'X1': {'Parachain': '2000'}
+                  'X1': isStatemint ? {'parent': 'Null'} : {'Parachain': '2000'}
                 },
                 {
                   'X1': {
@@ -248,12 +269,27 @@ class _TransferPageState extends State<TransferPage> {
     }
   }
 
-  /// only support Kusama -> Karura now.
+  /// only support：
+  /// Kusama -> Karura
+  /// Kusama -> Statemine
+  /// Statemine -> Kusama
   void _onSelectChain() {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
+    final isStateMint =
+        widget.service.plugin.basic.name == network_name_statemine ||
+            widget.service.plugin.basic.name == network_name_statemine;
+
     final allPlugins = widget.service.allPlugins.toList();
-    allPlugins.retainWhere((e) => e.basic.isXCMSupport);
+
+    if (isStateMint) {
+      allPlugins.retainWhere((e) =>
+          e.basic.name == relay_chain_name_ksm ||
+          e.basic.name == network_name_statemine ||
+          e.basic.name == network_name_statemint);
+    } else {
+      allPlugins.retainWhere((e) => e.basic.isXCMSupport);
+    }
 
     showCupertinoModalPopup(
       context: context,
@@ -348,7 +384,10 @@ class _TransferPageState extends State<TransferPage> {
                 .toString());
 
         final canCrossChain =
-            widget.service.plugin.basic.name == relay_chain_name_ksm;
+            widget.service.plugin.basic.name == relay_chain_name_ksm ||
+                widget.service.plugin.basic.name == network_name_statemine ||
+                widget.service.plugin.basic.name == network_name_statemint;
+
         final destChainName = _chainTo?.basic?.name ?? plugin_name_karura;
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 

@@ -1,3 +1,7 @@
+# [2.2.2-beta] - 20210817
+- add assets management.
+- update Karura plugin.
+
 # 2.2.1-beta
 - update uos flow.
 - add apk download notes.
