@@ -79,7 +79,7 @@ const Map<String, String> enAssets = {
       'WARNING: All assets in the current TESTNET are for testing purposes only and have no real value.',
   'announce': 'Announcement',
   'manage': 'Manage Assets List',
-  'manage.filter': 'Filter by token name/symbol',
+  'manage.filter': 'Filter by ID/name/symbol',
   'manage.native': 'native token',
   'manage.save': 'Save',
   'manage.save.ok': 'success',
