@@ -2,6 +2,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_statemine/common/constants.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
@@ -102,6 +103,10 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
+    final isStateMint =
+        widget.service.plugin.basic.name == network_name_statemine ||
+            widget.service.plugin.basic.name == network_name_statemint;
+
     final List<TokenBalanceData> list = [
       TokenBalanceData(
           amount: widget.service.plugin.balances.native.freeBalance.toString(),
@@ -114,7 +119,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
 
     list.retainWhere((token) =>
         token.symbol.toUpperCase().contains(_filter) ||
-        (token.name ?? '').toUpperCase().contains(_filter));
+        (token.name ?? '').toUpperCase().contains(_filter) ||
+        (token.id ?? '').toUpperCase().contains(_filter));
 
     if (_hide0) {
       list.removeWhere((token) => Fmt.balanceInt(token.amount) == BigInt.zero);
@@ -213,6 +219,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                       padding: EdgeInsets.all(16),
                       itemCount: list.length,
                       itemBuilder: (_, i) {
+                        final id = isStateMint ? '#${list[i].id} ' : '';
                         return Container(
                           margin: EdgeInsets.only(bottom: 24),
                           child: Row(
@@ -237,7 +244,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                     ),
                                     list[i].name != null
                                         ? Text(
-                                            list[i].name,
+                                            '$id${list[i].name}',
                                             style: TextStyle(
                                                 fontSize: 12, color: colorGrey),
                                           )

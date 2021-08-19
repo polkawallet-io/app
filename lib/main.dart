@@ -9,7 +9,7 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
-// import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ void main() async {
     PluginKusama(name: 'polkadot'),
     PluginKusama(),
     PluginAcala(name: 'karura'),
-    // PluginStatemine(),
+    PluginStatemine(),
     PluginAcala(),
     PluginLaminar(),
     // PluginChainX(),
