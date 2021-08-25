@@ -494,7 +494,7 @@ class _AssetsState extends State<AssetsPage> {
                           final Map announce = snapshot.data[0][lang];
                           return GestureDetector(
                             child: Container(
-                              margin: EdgeInsets.all(16),
+                              margin: EdgeInsets.only(bottom: 16),
                               child: Row(
                                 children: <Widget>[
                                   Expanded(

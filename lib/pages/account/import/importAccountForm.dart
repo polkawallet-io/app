@@ -6,7 +6,6 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
@@ -262,7 +261,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                 _keySelection == 2
                     ? _buildNameAndPassInput()
                     : AccountAdvanceOption(
-                        api: widget.service.plugin.sdk.api.keyring,
+                        api: widget.service.plugin.sdk.api?.keyring,
                         seed: _keyCtrlText,
                         onChange: (AccountAdvanceOptionParams data) {
                           setState(() {

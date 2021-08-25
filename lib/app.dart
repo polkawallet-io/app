@@ -5,6 +5,7 @@ import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/importAccountPage.dart';
+import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
@@ -451,6 +452,7 @@ class _WalletAppState extends State<WalletApp> {
       TransferPage.route: (_) => TransferPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
+      AnnouncementPage.route: (_) => AnnouncementPage(),
 
       /// profile
       SignMessagePage.route: (_) => SignMessagePage(_service),

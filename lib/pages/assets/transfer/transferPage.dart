@@ -104,6 +104,33 @@ class _TransferPageState extends State<TransferPage> {
             _chainTo.basic.name == plugin_name_acala;
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
+        // paramsX: [dest, beneficiary, assets, dest_weight]
+        final paramsX = [
+          {
+            'X1': isToParent
+                ? {'parent': 'Null'}
+                : {'Parachain': _chainTo.basic.parachainId}
+          },
+          {
+            'X1': {
+              'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+            }
+          },
+          [
+            {
+              'ConcreteFungible': {
+                'amount':
+                    Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
+                'id': isToParent
+                    ? {
+                        'X1': {'parent': 'Null'}
+                      }
+                    : 'Null'
+              }
+            }
+          ],
+          xcm_dest_weight_ksm
+        ];
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
           module: isToParent ? 'polkadotXcm' : 'xcmPallet',
@@ -114,39 +141,16 @@ class _TransferPageState extends State<TransferPage> {
             "currency": symbol,
             "amount": _amountCtrl.text.trim(),
           },
-          params: [
-            // params.dest
-            {
-              'X1': isToParent
-                  ? {'parent': 'Null'}
-                  : {'Parachain': _chainTo.basic.parachainId}
-            },
-            // params.beneficiary
-            {
-              'X1': {
-                'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-              }
-            },
-            // params.assets
-            [
-              {
-                'ConcreteFungible': {
-                  'amount': Fmt.tokenInt(_amountCtrl.text.trim(), decimals)
-                      .toString(),
-                  'id': isToParent
-                      ? {
-                          'X1': {'parent': 'Null'}
-                        }
-                      : 'Null'
-                }
-              }
-            ],
-            xcm_dest_weight_ksm
-          ],
+          params: paramsX,
         );
       }
 
       /// else send normal transfer
+      // params: [to, amount]
+      final params = [
+        _accountTo.address,
+        Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
+      ];
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
@@ -156,12 +160,7 @@ class _TransferPageState extends State<TransferPage> {
           "currency": symbol,
           "amount": _amountCtrl.text.trim(),
         },
-        params: [
-          // params.to
-          _accountTo.address,
-          // params.amount
-          Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
-        ],
+        params: params,
       );
     }
     return null;

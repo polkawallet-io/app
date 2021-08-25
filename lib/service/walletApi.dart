@@ -111,7 +111,8 @@ class WalletApi {
   }
 
   static Future<Map> getTokenPriceFromSubScan(String network) async {
-    final url = 'https://${network.toLowerCase()}.subscan.io/api/scan/token';
+    final url =
+        'https://${network.toLowerCase()}.api.subscan.io/api/scan/token';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {
