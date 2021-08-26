@@ -1,3 +1,18 @@
+# [2.2.6-beta] - 20210826
+- update Karura plugin.
+- update crowdloan page.
+- add Bifrost plugin.
+
+# [2.2.5-beta] - 20210824
+- update Karura plugin.
+
+# [2.2.4-beta]
+- update Karura plugin.
+
+# [2.2.3-beta]
+- update Karura plugin.
+- add Statemine plugin.
+
 # [2.2.2-beta] - 20210817
 - add assets management.
 - update Karura plugin.

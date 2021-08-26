@@ -252,7 +252,8 @@ class WalletApi {
 
   static Future<Map> getPluginsConfig() async {
     try {
-      Response res = await get(Uri.parse('$_endpoint/config/plugins.json'));
+      Response res =
+          await get(Uri.parse('$_configEndpoint/wallet/plugins.json'));
       if (res == null) {
         return null;
       } else {
