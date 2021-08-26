@@ -428,7 +428,7 @@ class _TransferPageState extends State<TransferPage> {
                       children: <Widget>[
                         AddressInputField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.allAccounts,
+                          widget.service.keyring.allWithContacts,
                           label: dic['cross.to'],
                           initialValue: _accountTo,
                           onChanged: (KeyPairData acc) async {

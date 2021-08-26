@@ -134,12 +134,31 @@ class _AssetsState extends State<AssetsPage> {
         return;
       }
 
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            content: Column(
+              children: [
+                Text(dic['uos.parse']),
+                Container(
+                  margin: EdgeInsets.only(top: 16),
+                  child: CupertinoActivityIndicator(),
+                )
+              ],
+            ),
+          );
+        },
+      );
+
       String errorMsg;
       KeyPairData sender;
       try {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
             .parseQrCode(
                 widget.service.keyring, data.rawData.toString().trim());
+        Navigator.of(context).pop();
+
         if (senderPubKey == widget.service.keyring.current.pubKey) {
           final password = await widget.service.account
               .getPassword(context, widget.service.keyring.current);
@@ -202,6 +221,7 @@ class _AssetsState extends State<AssetsPage> {
         }
       } catch (err) {
         errorMsg = err.toString();
+        Navigator.of(context).pop();
       }
       showCupertinoDialog(
         context: context,
