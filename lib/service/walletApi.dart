@@ -250,6 +250,20 @@ class WalletApi {
     }
   }
 
+  static Future<Map> getPluginsConfig() async {
+    try {
+      Response res = await get(Uri.parse('$_endpoint/config/plugins.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(res.body) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> getKarModulesConfig() async {
     try {
       Response res =

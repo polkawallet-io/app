@@ -13,7 +13,7 @@ import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 void main() async {
   await GetStorage.init(get_storage_container);
 
-  final _plugins = [
+  final plugins = [
     PluginKusama(name: 'polkadot'),
     PluginKusama(),
     PluginAcala(),
@@ -24,7 +24,7 @@ void main() async {
   ];
 
   runApp(WalletApp(
-      _plugins,
+      plugins,
       [
         PluginDisabled(
             'chainx', Image.asset('assets/images/public/chainx_gray.png'))

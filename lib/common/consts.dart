@@ -32,8 +32,10 @@ const plugin_github_links = {
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
   'chainx': 'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
+  'bifrost':
+      'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
 };
-const plugin_from_community = ['chainx', 'edgeware'];
+const plugin_from_community = ['chainx', 'edgeware', 'bifrost'];
 
 const relay_chain_name_ksm = 'kusama';
 const relay_chain_name_dot = 'polkadot';

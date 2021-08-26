@@ -46,11 +46,17 @@ dependencies:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
       ref: d1e2c7541aa5ed478440badbdc57d6cadde15bef
   polkawallet_plugin_statemine:
-    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
+      ref: 34c97699cff08f44e8460714be9464ca474071dd
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
       ref: 810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f
+  polkawallet_plugin_bifrost:
+    git:
+      url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
+      ref: 42999c5da37dc5f545651666400c627e5fa0c2f1
 #  polkawallet_plugin_chainx:
 #    git:
 #      url: https://github.com/chainx-org/polkawallet_plugin_chainx
@@ -71,6 +77,8 @@ dependency_overrides:
     path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_laminar:
     path: ../../coding/polkawallet/polkawallet_plugin_laminar
+  polkawallet_plugin_statemine:
+    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:

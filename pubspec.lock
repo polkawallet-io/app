@@ -814,6 +814,15 @@ packages:
       relative: true
     source: path
     version: "0.2.9"
+  polkawallet_plugin_bifrost:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "42999c5da37dc5f545651666400c627e5fa0c2f1"
+      resolved-ref: "42999c5da37dc5f545651666400c627e5fa0c2f1"
+      url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
+    source: git
+    version: "0.2.9"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:
