@@ -716,6 +716,8 @@ class TokenItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final balanceTotal =
+        Fmt.balanceInt(item.amount) + Fmt.balanceInt(item.reserved);
     return RoundedCard(
       margin: EdgeInsets.only(top: 16),
       child: ListTile(
@@ -734,8 +736,7 @@ class TokenItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
-                  lengthFixed: 4),
+              Fmt.priceFloorBigInt(balanceTotal, decimals, lengthFixed: 4),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -744,7 +745,7 @@ class TokenItem extends StatelessWidget {
             ),
             marketPrice != null
                 ? Text(
-                    '≈ \$${Fmt.priceFloor(Fmt.balanceDouble(item.amount, decimals) * marketPrice)}',
+                    '≈ \$${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
                     style: TextStyle(
                       color: Theme.of(context).disabledColor,
                       fontSize: 12,
