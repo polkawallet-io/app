@@ -108,7 +108,7 @@ class _TransferPageState extends State<TransferPage> {
         final paramsX = [
           {
             'X1': isToParent
-                ? {'parent': 'Null'}
+                ? 'Parent'
                 : {'Parachain': _chainTo.basic.parachainId}
           },
           {
@@ -121,11 +121,7 @@ class _TransferPageState extends State<TransferPage> {
               'ConcreteFungible': {
                 'amount':
                     Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
-                'id': isToParent
-                    ? {
-                        'X1': {'parent': 'Null'}
-                      }
-                    : 'Null'
+                'id': isToParent ? {'X1': 'Parent'} : 'Here'
               }
             }
           ],
@@ -190,7 +186,7 @@ class _TransferPageState extends State<TransferPage> {
         isXCM
             ? [
                 {
-                  'X1': isStatemint ? {'parent': 'Null'} : {'Parachain': '2000'}
+                  'X1': isStatemint ? 'Parent' : {'Parachain': '2000'}
                 },
                 {
                   'X1': {
@@ -204,7 +200,7 @@ class _TransferPageState extends State<TransferPage> {
                   {
                     'ConcreteFungible': {
                       'amount': xcm_dest_weight_ksm,
-                      'id': 'Null'
+                      'id': 'Here'
                     }
                   }
                 ],

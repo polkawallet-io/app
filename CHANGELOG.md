@@ -1,3 +1,9 @@
+# [2.2.9-beta] - 20210829
+- update xcm tx params.
+
+# [2.2.8-beta] - 20210828
+- fix acala-tc6 NFT page.
+
 # [2.2.6-beta] - 20210826
 - update Karura plugin.
 - update crowdloan page.
