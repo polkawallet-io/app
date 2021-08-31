@@ -100,7 +100,7 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        final isToAca = _chainTo.basic.name == plugin_name_karura ||
+        final isToAca = _chainTo.basic.name == 'karura' ||
             _chainTo.basic.name == plugin_name_acala;
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
@@ -383,7 +383,7 @@ class _TransferPageState extends State<TransferPage> {
                 widget.service.plugin.basic.name == network_name_statemine ||
                 widget.service.plugin.basic.name == network_name_statemint;
 
-        final destChainName = _chainTo?.basic?.name ?? plugin_name_karura;
+        final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
         final existDeposit = Fmt.balanceInt(widget

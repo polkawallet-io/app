@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
 // import 'package:polkawallet_plugin_chainx/polkawallet_plugin_chainx.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
@@ -21,7 +22,7 @@ void main() async {
   final plugins = [
     PluginKusama(name: 'polkadot'),
     PluginKusama(),
-    PluginAcala(name: 'karura'),
+    PluginKarura(),
     PluginStatemine(),
     PluginAcala(),
     PluginBifrost(),

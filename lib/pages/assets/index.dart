@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -394,7 +393,7 @@ class _AssetsState extends State<AssetsPage> {
           }
         }
         bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == plugin_name_karura) {
+        if (widget.service.plugin.basic.name == 'karura') {
           if (widget.service.buildTarget != BuildTargets.dev) {
             if (widget.service.store.settings.liveModules['claim'] != null) {
               claimKarEnabled =
