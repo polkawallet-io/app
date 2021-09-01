@@ -818,8 +818,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "42999c5da37dc5f545651666400c627e5fa0c2f1"
-      resolved-ref: "42999c5da37dc5f545651666400c627e5fa0c2f1"
+      ref: b0d5fde50208f438a015a96b0dee2d3f4ca91dd9
+      resolved-ref: b0d5fde50208f438a015a96b0dee2d3f4ca91dd9
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
     version: "0.2.9"
@@ -838,7 +838,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.3.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
@@ -877,7 +877,7 @@ packages:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.1"
   pool:
     dependency: transitive
     description:

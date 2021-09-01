@@ -47,6 +47,7 @@ class _TransferPageState extends State<TransferPage> {
 
   PolkawalletPlugin _chainTo;
   KeyPairData _accountTo;
+  List<KeyPairData> _accountOptions = [];
   bool _keepAlive = true;
 
   String _accountToError;
@@ -298,6 +299,7 @@ class _TransferPageState extends State<TransferPage> {
                 Container(
                   margin: EdgeInsets.only(right: 8),
                   width: 32,
+                  height: 32,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(32),
                     child: e.basic.icon,
@@ -308,11 +310,27 @@ class _TransferPageState extends State<TransferPage> {
                 )
               ],
             ),
-            onPressed: () {
+            onPressed: () async {
               if (e.basic.name != _chainTo.basic.name) {
+                // set ss58 of _chainTo so we can get according address
+                // from AddressInputField
+                widget.service.keyring.setSS58(e.basic.ss58);
+                final options = widget.service.keyring.allWithContacts.toList();
+                widget.service.keyring
+                    .setSS58(widget.service.plugin.basic.ss58);
                 setState(() {
                   _chainTo = e;
+                  _accountOptions = options;
+
+                  final isInAccountList = options
+                          .indexWhere((e) => e.pubKey == _accountTo.pubKey) >=
+                      0;
+                  if (isInAccountList) {
+                    _accountTo = options
+                        .firstWhere((e) => e.pubKey == _accountTo.pubKey);
+                  }
                 });
+
                 _validateAccountTo(_accountTo);
 
                 // update estimated tx fee if switch ToChain
@@ -354,6 +372,7 @@ class _TransferPageState extends State<TransferPage> {
 
       setState(() {
         _chainTo = widget.service.plugin;
+        _accountOptions = widget.service.keyring.allWithContacts.toList();
       });
     });
   }
@@ -424,7 +443,7 @@ class _TransferPageState extends State<TransferPage> {
                       children: <Widget>[
                         AddressInputField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.allWithContacts,
+                          _accountOptions,
                           label: dic['cross.to'],
                           initialValue: _accountTo,
                           onChanged: (KeyPairData acc) async {
@@ -471,6 +490,7 @@ class _TransferPageState extends State<TransferPage> {
                                                 margin:
                                                     EdgeInsets.only(right: 8),
                                                 width: 32,
+                                                height: 32,
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(32),
@@ -552,22 +572,27 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.exist']),
-                                    ),
-                                    TapTooltip(
-                                      message: dic['amount.exist.msg'],
-                                      child: Icon(
-                                        Icons.info,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['cross.exist']),
                                       ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol'),
+                                    Expanded(
+                                      child: TapTooltip(
+                                        message: dic['amount.exist.msg'],
+                                        child: Icon(
+                                          Icons.info,
+                                          size: 16,
+                                          color: Theme.of(context)
+                                              .unselectedWidgetColor,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 0,
+                                        child: Text(
+                                            '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
                                   ],
                                 ),
                               )
@@ -578,11 +603,12 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.fee']),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['cross.fee']),
+                                      ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
                                     Text(
                                         '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
                                   ],
@@ -594,9 +620,12 @@ class _TransferPageState extends State<TransferPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dic['amount.exist']),
+                              Expanded(
+                                flex: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text(dic['amount.exist']),
+                                ),
                               ),
                               TapTooltip(
                                 message: dic['amount.exist.msg'],
@@ -619,11 +648,12 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['amount.fee']),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['amount.fee']),
+                                      ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
                                     Text(
                                         '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee?.partialFee?.toString()), decimals, lengthMax: 6)} $symbol'),
                                   ],
@@ -635,9 +665,12 @@ class _TransferPageState extends State<TransferPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dic['transfer.alive']),
+                              Expanded(
+                                flex: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text(dic['transfer.alive']),
+                                ),
                               ),
                               TapTooltip(
                                 message: dic['transfer.alive.msg'],

@@ -1,3 +1,6 @@
+# [2.3.0-beta] - 20210901
+- update NFT pages.
+
 # [2.2.9-beta] - 20210829
 - update xcm tx params.
 

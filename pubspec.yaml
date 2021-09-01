@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.0+2301
+version: 2.3.1+2311
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -58,7 +58,7 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: 42999c5da37dc5f545651666400c627e5fa0c2f1
+      ref: b0d5fde50208f438a015a96b0dee2d3f4ca91dd9
 #  polkawallet_plugin_chainx:
 #    git:
 #      url: https://github.com/chainx-org/polkawallet_plugin_chainx
