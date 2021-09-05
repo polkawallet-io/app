@@ -18,8 +18,8 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.3.1-beta.1';
-const int app_beta_version_code = 2311;
+const String app_beta_version = 'v2.3.2-beta.1';
+const int app_beta_version_code = 2321;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',
@@ -59,3 +59,5 @@ const xcm_send_fees = {
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';
+
+const JPUSH_APP_KEY = 'dfa60080aa05c5c7b7dc7aa0';

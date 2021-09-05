@@ -1,3 +1,6 @@
+# [2.3.2-beta] - 20210903
+- add notification push service.
+
 # [2.3.0-beta] - 20210901
 - update NFT pages.
 

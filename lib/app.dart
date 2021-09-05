@@ -54,6 +54,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_storage/get_storage.dart';
+// import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
@@ -252,11 +253,10 @@ class _WalletAppState extends State<WalletApp> {
     _startPlugin(service);
   }
 
-  Future<void> _changeToKusamaForKar() async {
-    final name = 'kusama';
+  Future<void> _switchNetwork(String networkName) async {
     await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == name));
-    _service.store.assets.loadCache(_keyring.current, name);
+        widget.plugins.firstWhere((e) => e.basic.name == networkName));
+    _service.store.assets.loadCache(_keyring.current, networkName);
   }
 
   Future<void> _changeNode(NetworkParams node) async {
@@ -406,7 +406,7 @@ class _WalletAppState extends State<WalletApp> {
                     if (snapshot.hasData && _service != null) {
                       return snapshot.data > 0
                           ? HomePage(_service, _connectedNode,
-                              _checkJSCodeUpdate, _changeToKusamaForKar)
+                              _checkJSCodeUpdate, _switchNetwork)
                           : CreateAccountEntryPage();
                     } else {
                       return Container(color: Theme.of(context).canvasColor);

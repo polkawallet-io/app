@@ -202,7 +202,7 @@ isTxsLoading: ${isTxsLoading},
 submitting: ${submitting},
 txsCount: ${txsCount},
 txs: ${txs},
-marketPrices: ${marketPrices}
+marketPrices: ${marketPrices},
 customAssets: ${customAssets}
     ''';
   }

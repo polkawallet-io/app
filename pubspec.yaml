@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.1+2311
+version: 2.3.2+2311
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -37,6 +37,7 @@ dependencies:
   firebase_core: 1.5.0
   firebase_analytics: 8.3.0
 #  firebase_messaging: 10.0.5
+  jpush_flutter: ^2.1.5
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
@@ -46,7 +47,9 @@ dependencies:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
       ref: 4e9f4f714666a5e6214fff9e5a89df03d62b756b
   polkawallet_plugin_karura:
-    path: ../../coding/polkawallet/polkawallet_plugin_karura
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
+      ref: 5c116fb20a6698871cbad2a8910fbba8597a5aed
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -58,7 +61,7 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: b0d5fde50208f438a015a96b0dee2d3f4ca91dd9
+      ref: c6574f561f7e2bf56af5c8ab3c719a68d51f02ee
 #  polkawallet_plugin_chainx:
 #    git:
 #      url: https://github.com/chainx-org/polkawallet_plugin_chainx
@@ -77,6 +80,8 @@ dependency_overrides:
     path: ../../coding/polkawallet/polkawallet_plugin_kusama
   polkawallet_plugin_acala:
     path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_laminar:
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:

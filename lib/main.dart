@@ -3,11 +3,9 @@ import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
 // import 'package:polkawallet_plugin_chainx/polkawallet_plugin_chainx.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
@@ -15,15 +13,10 @@ import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print("Handling a background message: ${message.data}");
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(get_storage_container);
   await Firebase.initializeApp();
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   final plugins = [
     PluginKusama(name: 'polkadot'),
@@ -31,7 +24,6 @@ void main() async {
     PluginKarura(),
     PluginStatemine(),
     PluginAcala(),
-    PluginBifrost(),
     // PluginChainX(),
     PluginEdgeware(),
     PluginLaminar(),
