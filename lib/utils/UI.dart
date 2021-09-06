@@ -90,10 +90,7 @@ class AppUI {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: versionInfo
-                          .map((e) => Text(
-                                '- $e',
-                                textAlign: TextAlign.left,
-                              ))
+                          .map((e) => Text('- $e', textAlign: TextAlign.left))
                           .toList(),
                     )
                   : Container()

@@ -216,7 +216,15 @@ class _TransferPageState extends State<TransferPage> {
     return fee.partialFee.toString();
   }
 
-  Future<void> _setMaxAmount(BigInt available, BigInt amountExist) async {
+  BigInt _getExistAmount(BigInt notTransferable, BigInt existentialDeposit) {
+    return notTransferable > BigInt.zero
+        ? notTransferable >= existentialDeposit
+            ? BigInt.zero
+            : existentialDeposit - notTransferable
+        : existentialDeposit;
+  }
+
+  Future<void> _setMaxAmount(BigInt available, BigInt existAmount) async {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     final fee = await _getTxFee();
@@ -224,7 +232,7 @@ class _TransferPageState extends State<TransferPage> {
     final max = available -
         Fmt.balanceInt(fee) -
         (Fmt.balanceInt(fee) ~/ BigInt.from(5)) -
-        (_keepAlive ? amountExist : BigInt.zero);
+        (_keepAlive ? existAmount : BigInt.zero);
     if (mounted) {
       setState(() {
         _amountCtrl.text = max > BigInt.zero
@@ -396,6 +404,13 @@ class _TransferPageState extends State<TransferPage> {
         final available = Fmt.balanceInt(
             (widget.service.plugin.balances.native?.availableBalance ?? 0)
                 .toString());
+        final reserved = Fmt.balanceInt(
+            (widget.service.plugin.balances.native?.reservedBalance ?? 0)
+                .toString());
+        final locked = Fmt.balanceInt(
+            (widget.service.plugin.balances.native?.lockedBalance ?? 0)
+                .toString());
+        final notTransferable = reserved + locked;
 
         final canCrossChain =
             widget.service.plugin.basic.name == relay_chain_name_ksm ||
@@ -408,6 +423,8 @@ class _TransferPageState extends State<TransferPage> {
         final existDeposit = Fmt.balanceInt(widget
             .service.plugin.networkConst['balances']['existentialDeposit']
             .toString());
+        final existAmount = _getExistAmount(notTransferable, existDeposit);
+
         final destExistDeposit = isCrossChain
             ? Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit'])
             : BigInt.zero;
@@ -540,7 +557,7 @@ class _TransferPageState extends State<TransferPage> {
                                   style: TextStyle(
                                       color: Theme.of(context).primaryColor)),
                               onTap: () =>
-                                  _setMaxAmount(available, existDeposit),
+                                  _setMaxAmount(available, existAmount),
                             ),
                           ),
                           inputFormatters: [UI.decimalInputFormatter(decimals)],
@@ -554,7 +571,7 @@ class _TransferPageState extends State<TransferPage> {
                             final input = Fmt.tokenInt(v, decimals);
                             final feeLeft = available -
                                 input -
-                                (_keepAlive ? existDeposit : BigInt.zero);
+                                (_keepAlive ? existAmount : BigInt.zero);
                             BigInt fee = BigInt.zero;
                             if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
                                 _fee?.partialFee != null) {
@@ -684,11 +701,15 @@ class _TransferPageState extends State<TransferPage> {
                               Expanded(child: Container(width: 2)),
                               CupertinoSwitch(
                                 value: _keepAlive,
-                                onChanged: (res) {
-                                  setState(() {
-                                    _keepAlive = res;
-                                  });
-                                },
+                                // account is not allow_death if it has
+                                // locked/reserved balances
+                                onChanged: notTransferable > BigInt.zero
+                                    ? null
+                                    : (res) {
+                                        setState(() {
+                                          _keepAlive = res;
+                                        });
+                                      },
                               )
                             ],
                           ),
