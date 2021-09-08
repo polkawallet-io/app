@@ -82,6 +82,8 @@ dependency_overrides:
     path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:
     path: ../../coding/polkawallet/polkawallet_plugin_karura
+  polkawallet_plugin_bifrost:
+    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
 #  polkawallet_plugin_laminar:
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:

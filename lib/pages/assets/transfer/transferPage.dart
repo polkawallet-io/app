@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
-import 'package:polkawallet_plugin_statemine/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -101,37 +99,71 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        final isToAca = _chainTo.basic.name == 'karura' ||
-            _chainTo.basic.name == plugin_name_acala;
+        final isFromXTokensParaChain =
+            widget.service.plugin.basic.name == para_chain_name_karura ||
+                widget.service.plugin.basic.name == para_chain_name_bifrost;
+        final isToParaChain = _chainTo.basic.name != relay_chain_name_ksm &&
+            _chainTo.basic.name != relay_chain_name_dot &&
+            _chainTo.basic.name != para_chain_name_statemine &&
+            _chainTo.basic.name != para_chain_name_statemint;
+
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
+
+        final amount =
+            Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
         // paramsX: [dest, beneficiary, assets, dest_weight]
-        final paramsX = [
-          {
-            'X1': isToParent
-                ? 'Parent'
-                : {'Parachain': _chainTo.basic.parachainId}
-          },
-          {
-            'X1': {
-              'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-            }
-          },
-          [
-            {
-              'ConcreteFungible': {
-                'amount':
-                    Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
-                'id': isToParent ? {'X1': 'Parent'} : 'Here'
-              }
-            }
-          ],
-          xcm_dest_weight_ksm
-        ];
+        final paramsX = isFromXTokensParaChain && isToParaChain
+            ? [
+                {'Token': symbol},
+                amount,
+                {
+                  'X3': [
+                    'Parent',
+                    {'Parachain': _chainTo.basic.parachainId},
+                    {
+                      'AccountId32': {
+                        'id': _accountTo.address,
+                        'network': 'Any'
+                      }
+                    }
+                  ]
+                },
+                xcm_dest_weight_bifrost
+              ]
+            : [
+                {
+                  'X1': isToParent
+                      ? 'Parent'
+                      : {'Parachain': _chainTo.basic.parachainId}
+                },
+                {
+                  'X1': {
+                    'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+                  }
+                },
+                [
+                  {
+                    'ConcreteFungible': {
+                      'amount': amount,
+                      'id': isToParent ? {'X1': 'Parent'} : 'Here'
+                    }
+                  }
+                ],
+                xcm_dest_weight_ksm
+              ];
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
-          module: isToParent ? 'polkadotXcm' : 'xcmPallet',
-          call: isToAca ? 'reserveTransferAssets' : 'teleportAssets',
+          module: isToParent
+              ? 'polkadotXcm'
+              : isFromXTokensParaChain
+                  ? 'xTokens'
+                  : 'xcmPallet',
+          call: isToParaChain
+              ? isFromXTokensParaChain
+                  ? 'transfer'
+                  : 'reserveTransferAssets'
+              : 'teleportAssets',
           txDisplay: {
             "chain": _chainTo.basic.name,
             "destination": _accountTo.address,
@@ -169,8 +201,8 @@ class _TransferPageState extends State<TransferPage> {
     }
 
     final isStatemint =
-        widget.service.plugin.basic.name == network_name_statemine ||
-            widget.service.plugin.basic.name == network_name_statemint;
+        widget.service.plugin.basic.name == para_chain_name_statemine ||
+            widget.service.plugin.basic.name == para_chain_name_statemint;
 
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
@@ -280,20 +312,12 @@ class _TransferPageState extends State<TransferPage> {
   void _onSelectChain() {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
-    final isStateMint =
-        widget.service.plugin.basic.name == network_name_statemine ||
-            widget.service.plugin.basic.name == network_name_statemine;
-
     final allPlugins = widget.service.allPlugins.toList();
-
-    if (isStateMint) {
-      allPlugins.retainWhere((e) =>
-          e.basic.name == relay_chain_name_ksm ||
-          e.basic.name == network_name_statemine ||
-          e.basic.name == network_name_statemint);
-    } else {
-      allPlugins.retainWhere((e) => e.basic.isXCMSupport);
-    }
+    allPlugins.retainWhere((e) {
+      return xcm_support_dest_chains[widget.service.plugin.basic.name]
+              .indexOf(e.basic.name) >
+          -1;
+    });
 
     showCupertinoModalPopup(
       context: context,
@@ -413,9 +437,7 @@ class _TransferPageState extends State<TransferPage> {
         final notTransferable = reserved + locked;
 
         final canCrossChain =
-            widget.service.plugin.basic.name == relay_chain_name_ksm ||
-                widget.service.plugin.basic.name == network_name_statemine ||
-                widget.service.plugin.basic.name == network_name_statemint;
+            xcm_support_dest_chains[widget.service.plugin.basic.name] != null;
 
         final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
@@ -523,9 +545,7 @@ class _TransferPageState extends State<TransferPage> {
                                                   ? TextTag(dic['cross.chain'],
                                                       margin: EdgeInsets.only(
                                                           right: 8),
-                                                      color: _chainTo?.basic
-                                                              ?.primaryColor ??
-                                                          colorGrey)
+                                                      color: Colors.red)
                                                   : Container(),
                                               Icon(
                                                 Icons.arrow_forward_ios,
@@ -590,19 +610,22 @@ class _TransferPageState extends State<TransferPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(right: 4),
-                                        child: Text(dic['cross.exist']),
-                                      ),
-                                    ),
-                                    Expanded(
                                       child: TapTooltip(
                                         message: dic['amount.exist.msg'],
-                                        child: Icon(
-                                          Icons.info,
-                                          size: 16,
-                                          color: Theme.of(context)
-                                              .unselectedWidgetColor,
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Text(dic['cross.exist']),
+                                            ),
+                                            Icon(
+                                              Icons.info,
+                                              size: 16,
+                                              color: Theme.of(context)
+                                                  .unselectedWidgetColor,
+                                            )
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -638,22 +661,24 @@ class _TransferPageState extends State<TransferPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Expanded(
-                                flex: 0,
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 4),
-                                  child: Text(dic['amount.exist']),
+                                child: TapTooltip(
+                                  message: dic['amount.exist.msg'],
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['amount.exist']),
+                                      ),
+                                      Icon(
+                                        Icons.info,
+                                        size: 16,
+                                        color: Theme.of(context)
+                                            .unselectedWidgetColor,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                              TapTooltip(
-                                message: dic['amount.exist.msg'],
-                                child: Icon(
-                                  Icons.info,
-                                  size: 16,
-                                  color:
-                                      Theme.of(context).unselectedWidgetColor,
-                                ),
-                              ),
-                              Expanded(child: Container(width: 2)),
                               Text(
                                   '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
                             ],

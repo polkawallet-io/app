@@ -20,41 +20,69 @@ const local_tx_store_key = 'local_tx_store';
 enum BuildTargets { apk, playStore, dev }
 const String app_beta_version = 'v2.3.2-beta.1';
 const int app_beta_version_code = 2321;
+
+/// para-chains
+const relay_chain_name_ksm = 'kusama';
+const relay_chain_name_dot = 'polkadot';
+const para_chain_name_statemine = 'statemine';
+const para_chain_name_statemint = 'statemint';
+const para_chain_name_karura = 'karura';
+const para_chain_name_bifrost = 'bifrost';
 const plugin_github_links = {
-  'kusama': 'https://github.com/polkawallet-io/app/issues',
-  'polkadot': 'https://github.com/polkawallet-io/app/issues',
+  relay_chain_name_ksm: 'https://github.com/polkawallet-io/app/issues',
+  relay_chain_name_dot: 'https://github.com/polkawallet-io/app/issues',
   'acala-tc6':
       'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
-  'karura': 'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
-  'statemine':
+  para_chain_name_karura:
+      'https://github.com/AcalaNetwork/polkawallet_plugin_karura/issues',
+  para_chain_name_statemine:
       'https://github.com/AcalaNetwork/polkawallet_plugin_statemine/issues',
   'laminar-tc3':
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
   'chainx': 'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
-  'bifrost':
+  para_chain_name_bifrost:
       'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
 };
-const plugin_from_community = ['chainx', 'edgeware', 'bifrost'];
+const plugin_from_community = ['chainx', 'edgeware', para_chain_name_bifrost];
 
-const relay_chain_name_ksm = 'kusama';
-const relay_chain_name_dot = 'polkadot';
 const xcm_base_weight = 1000000000;
 const xcm_dest_weight_ksm = 3 * xcm_base_weight;
+const xcm_dest_weight_bifrost = 600000000;
 
 const xcm_send_fees = {
-  'kusama': {
+  relay_chain_name_ksm: {
     'fee': '30000000000',
     'existentialDeposit': '333333333',
   },
-  'statemine': {
+  para_chain_name_statemine: {
     'fee': '3000000000',
     'existentialDeposit': '33333333',
   },
-  'karura': {
+  para_chain_name_karura: {
     'fee': '240000000',
     'existentialDeposit': '100000000',
   },
+  para_chain_name_bifrost: {
+    'fee': '4800000000',
+    'existentialDeposit': '100000000',
+  },
+};
+
+const xcm_support_dest_chains = {
+  relay_chain_name_ksm: [
+    relay_chain_name_ksm,
+    para_chain_name_statemine,
+    para_chain_name_karura,
+  ],
+  para_chain_name_statemine: [
+    para_chain_name_statemine,
+    relay_chain_name_ksm,
+  ],
+  para_chain_name_karura: [
+    para_chain_name_karura,
+    para_chain_name_bifrost,
+  ],
 };
 
 const show_guide_status_key = 'show_guide_status';
