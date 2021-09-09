@@ -1,3 +1,34 @@
+# [2.3.2-beta] - 20210903
+- add notification push service.
+
+# [2.3.0-beta] - 20210901
+- update NFT pages.
+
+# [2.2.9-beta] - 20210829
+- update xcm tx params.
+
+# [2.2.8-beta] - 20210828
+- fix acala-tc6 NFT page.
+
+# [2.2.6-beta] - 20210826
+- update Karura plugin.
+- update crowdloan page.
+- add Bifrost plugin.
+
+# [2.2.5-beta] - 20210824
+- update Karura plugin.
+
+# [2.2.4-beta]
+- update Karura plugin.
+
+# [2.2.3-beta]
+- update Karura plugin.
+- add Statemine plugin.
+
+# [2.2.2-beta] - 20210817
+- add assets management.
+- update Karura plugin.
+
 # 2.2.1-beta
 - update uos flow.
 - add apk download notes.

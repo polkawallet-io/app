@@ -4,6 +4,7 @@ import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
+import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -66,7 +66,7 @@ class _AssetsState extends State<AssetsPage> {
     setState(() {
       _refreshing = true;
     });
-    await widget.service.assets.updateBalances();
+    await widget.service.plugin.updateBalances(widget.service.keyring.current);
     setState(() {
       _refreshing = false;
     });
@@ -133,12 +133,31 @@ class _AssetsState extends State<AssetsPage> {
         return;
       }
 
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            content: Column(
+              children: [
+                Text(dic['uos.parse']),
+                Container(
+                  margin: EdgeInsets.only(top: 16),
+                  child: CupertinoActivityIndicator(),
+                )
+              ],
+            ),
+          );
+        },
+      );
+
       String errorMsg;
       KeyPairData sender;
       try {
         final senderPubKey = await widget.service.plugin.sdk.api.uos
             .parseQrCode(
                 widget.service.keyring, data.rawData.toString().trim());
+        Navigator.of(context).pop();
+
         if (senderPubKey == widget.service.keyring.current.pubKey) {
           final password = await widget.service.account
               .getPassword(context, widget.service.keyring.current);
@@ -201,6 +220,7 @@ class _AssetsState extends State<AssetsPage> {
         }
       } catch (err) {
         errorMsg = err.toString();
+        Navigator.of(context).pop();
       }
       showCupertinoDialog(
         context: context,
@@ -351,6 +371,13 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
+  void dispose() {
+    _priceUpdateTimer?.cancel();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -366,7 +393,7 @@ class _AssetsState extends State<AssetsPage> {
           }
         }
         bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == plugin_name_karura) {
+        if (widget.service.plugin.basic.name == 'karura') {
           if (widget.service.buildTarget != BuildTargets.dev) {
             if (widget.service.store.settings.liveModules['claim'] != null) {
               claimKarEnabled =
@@ -382,7 +409,22 @@ class _AssetsState extends State<AssetsPage> {
             (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
         final balancesInfo = widget.service.plugin.balances.native;
-        final tokens = widget.service.plugin.balances.tokens;
+        final tokens = widget.service.plugin.balances.tokens.toList();
+        final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
+
+        // add custom assets from user's config & tokensAll
+        final customTokensConfig = widget.service.store.assets.customAssets;
+        if (customTokensConfig.keys.length > 0) {
+          tokens.retainWhere((e) => customTokensConfig[e.id]);
+
+          tokensAll.retainWhere((e) => customTokensConfig[e.id]);
+          tokensAll.forEach((e) {
+            if (tokens.indexWhere((token) => token.id == e.id) < 0) {
+              tokens.add(e);
+            }
+          });
+        }
+
         final extraTokens = widget.service.plugin.balances.extraTokens;
         final isTokensFromCache =
             widget.service.plugin.balances.isTokensFromCache;
@@ -471,7 +513,7 @@ class _AssetsState extends State<AssetsPage> {
                           final Map announce = snapshot.data[0][lang];
                           return GestureDetector(
                             child: Container(
-                              margin: EdgeInsets.all(16),
+                              margin: EdgeInsets.only(bottom: 16),
                               child: Row(
                                 children: <Widget>[
                                   Expanded(
@@ -516,6 +558,26 @@ class _AssetsState extends State<AssetsPage> {
                                         'https://distribution.acala.network/claim',
                                   ),
                                 )
+                              : Container(),
+                          (widget.service.plugin.noneNativeTokensAll ?? [])
+                                      .length >
+                                  0
+                              ? Expanded(
+                                  child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).pushNamed(
+                                              ManageAssetsPage.route);
+                                        },
+                                        child: Icon(
+                                          Icons.add_circle,
+                                          color:
+                                              Theme.of(context).disabledColor,
+                                        ))
+                                  ],
+                                ))
                               : Container()
                         ],
                       ),
@@ -544,6 +606,7 @@ class _AssetsState extends State<AssetsPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
+                                    letterSpacing: -0.6,
                                     color: balancesInfo?.isFromCache == false
                                         ? Colors.black54
                                         : Colors.black26),
@@ -575,8 +638,11 @@ class _AssetsState extends State<AssetsPage> {
                                       detailPageRoute: i.detailPageRoute,
                                       marketPrice: widget.service.store.assets
                                           .marketPrices[i.symbol],
-                                      icon: TokenIcon(i.symbol,
-                                          widget.service.plugin.tokenIcons),
+                                      icon: TokenIcon(
+                                        i.id ?? i.symbol,
+                                        widget.service.plugin.tokenIcons,
+                                        symbol: i.symbol,
+                                      ),
                                     ))
                                 .toList(),
                       ),
@@ -649,6 +715,8 @@ class TokenItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final balanceTotal =
+        Fmt.balanceInt(item.amount) + Fmt.balanceInt(item.reserved);
     return RoundedCard(
       margin: EdgeInsets.only(top: 16),
       child: ListTile(
@@ -661,22 +729,22 @@ class TokenItem extends StatelessWidget {
                 child: Text(item.symbol.substring(0, 2)),
               ),
         ),
-        title: Text(item.name),
+        title: Text(item.symbol),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
-                  lengthFixed: 4),
+              Fmt.priceFloorBigInt(balanceTotal, decimals, lengthFixed: 4),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
+                  letterSpacing: -0.6,
                   color: isFromCache ? Colors.black26 : Colors.black54),
             ),
             marketPrice != null
                 ? Text(
-                    '≈ \$${Fmt.priceFloor(Fmt.balanceDouble(item.amount, decimals) * marketPrice)}',
+                    '≈ \$${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
                     style: TextStyle(
                       color: Theme.of(context).disabledColor,
                       fontSize: 12,

@@ -57,19 +57,14 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                     ),
                     Container(
                       padding: EdgeInsets.all(16),
-                      child: Text(
-                        dic['create.warn4'],
-                      ),
+                      child: Text(dic['create.warn4']),
                     ),
                     Container(
                       margin: EdgeInsets.all(16),
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(
-                            color: Colors.black12,
-                            width: 1,
-                          ),
+                          border: Border.all(color: Colors.black12, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                       child: Text(
                         widget.service.store.account.newAccount.key ?? '',

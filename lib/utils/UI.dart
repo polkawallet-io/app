@@ -19,6 +19,7 @@ class AppUI {
     BuildContext context,
     Function onCancel, {
     bool isImport = false,
+    String errorMsg,
   }) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     String msg = dic['backup.error'];
@@ -30,7 +31,7 @@ class AppUI {
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Container(),
-          content: Text(msg),
+          content: Text(errorMsg ?? msg),
           actions: <Widget>[
             CupertinoButton(
               child: Text(
@@ -89,10 +90,7 @@ class AppUI {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: versionInfo
-                          .map((e) => Text(
-                                '- $e',
-                                textAlign: TextAlign.left,
-                              ))
+                          .map((e) => Text('- $e', textAlign: TextAlign.left))
                           .toList(),
                     )
                   : Container()

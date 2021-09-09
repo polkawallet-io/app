@@ -99,6 +99,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$customAssetsAtom = Atom(name: '_AssetsStore.customAssets');
+
+  @override
+  Map<String, bool> get customAssets {
+    _$customAssetsAtom.reportRead();
+    return super.customAssets;
+  }
+
+  @override
+  set customAssets(Map<String, bool> value) {
+    _$customAssetsAtom.reportWrite(value, super.customAssets, () {
+      super.customAssets = value;
+    });
+  }
+
   final _$clearTxsAsyncAction = AsyncAction('_AssetsStore.clearTxs');
 
   @override
@@ -168,6 +183,18 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   @override
+  void setCustomAssets(
+      KeyPairData acc, String pluginName, Map<String, bool> data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setCustomAssets');
+    try {
+      return super.setCustomAssets(acc, pluginName, data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 cacheTxsTimestamp: ${cacheTxsTimestamp},
@@ -175,7 +202,8 @@ isTxsLoading: ${isTxsLoading},
 submitting: ${submitting},
 txsCount: ${txsCount},
 txs: ${txs},
-marketPrices: ${marketPrices}
+marketPrices: ${marketPrices},
+customAssets: ${customAssets}
     ''';
   }
 }

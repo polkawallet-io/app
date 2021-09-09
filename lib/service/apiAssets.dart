@@ -60,10 +60,4 @@ class ApiAssets {
     });
     apiRoot.store.assets.setMarketPrices(prices);
   }
-
-  Future<void> updateBalances() async {
-    final balances = await apiRoot.plugin.sdk.api.account
-        .queryBalance(apiRoot.keyring.current.address);
-    apiRoot.plugin.updateBalances(apiRoot.keyring.current, balances);
-  }
 }
