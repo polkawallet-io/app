@@ -18,8 +18,8 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.3.2-beta.1';
-const int app_beta_version_code = 2321;
+const String app_beta_version = 'v2.3.2-beta.6';
+const int app_beta_version_code = 2326;
 
 /// para-chains
 const relay_chain_name_ksm = 'kusama';
@@ -79,10 +79,11 @@ const xcm_support_dest_chains = {
     para_chain_name_statemine,
     relay_chain_name_ksm,
   ],
-  para_chain_name_karura: [
-    para_chain_name_karura,
-    para_chain_name_bifrost,
-  ],
+  // todo: transfer KAR to bifrost is not open yet
+  // para_chain_name_karura: [
+  //   para_chain_name_karura,
+  //   para_chain_name_bifrost,
+  // ],
 };
 
 const show_guide_status_key = 'show_guide_status';
