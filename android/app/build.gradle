@@ -89,9 +89,9 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:1.2.0"
 
-    implementation 'cn.jiguang.sdk:jcore:2.8.2'
-    implementation 'cn.jiguang.sdk:jpush:4.0.8'
-    implementation 'cn.jiguang.sdk.plugin:fcm:4.0.8'
+//    implementation 'cn.jiguang.sdk:jcore:2.8.2'
+//    implementation 'cn.jiguang.sdk:jpush:4.0.8'
+//    implementation 'cn.jiguang.sdk.plugin:fcm:4.0.8'
 //    implementation 'cn.jiguang.sdk.plugin:xiaomi:4.0.8'
 //    implementation 'com.huawei.hms:push:4.0.2.300'
 //    implementation 'cn.jiguang.sdk.plugin:huawei:4.0.8'

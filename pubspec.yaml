@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.2+2311
+version: 2.3.2+2326
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -37,7 +37,7 @@ dependencies:
   firebase_core: 1.5.0
   firebase_analytics: 8.3.0
 #  firebase_messaging: 10.0.5
-  jpush_flutter: ^2.1.5
+#  jpush_flutter: ^2.1.5
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
@@ -61,11 +61,11 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: c6574f561f7e2bf56af5c8ab3c719a68d51f02ee
+      ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
 #  polkawallet_plugin_chainx:
 #    git:
-#      url: https://github.com/chainx-org/polkawallet_plugin_chainx
-#      ref: d7cb7e275d8d2678df448c8a65e590f6f4b6d790
+#      url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
+#      ref: d4d671ab109191f968b5b224719476ddf2796b40
   polkawallet_plugin_edgeware:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
@@ -82,8 +82,8 @@ dependency_overrides:
     path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:
     path: ../../coding/polkawallet/polkawallet_plugin_karura
-  polkawallet_plugin_bifrost:
-    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
+#  polkawallet_plugin_bifrost:
+#    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
 #  polkawallet_plugin_laminar:
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:
