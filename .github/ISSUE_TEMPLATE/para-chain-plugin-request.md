@@ -15,6 +15,7 @@ Overview of your para-chain.
  - Website: [e.g. https://acala.network]
  - Application: [e.g. https://apps.acala.network/]
  - Plugin repo: [e.g. https://github.com/polkawallet-io/polkawallet_plugin_acala]
+ - Plugin repo ref: [Specific commit of the repo]
 
 **Plugin functions**
 Overview of your Plugin.
