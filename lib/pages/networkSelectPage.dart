@@ -77,8 +77,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         widget.service.plugin.changeAccount(i);
       }
 
-      widget.service.store.assets
-          .loadCache(i, widget.service.plugin.basic.name);
+      widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
     }
     Navigator.of(context).pop(_selectedNetwork);
   }

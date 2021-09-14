@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_statemine/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -46,6 +47,7 @@ class _TransferPageState extends State<TransferPage> {
 
   PolkawalletPlugin _chainTo;
   KeyPairData _accountTo;
+  List<KeyPairData> _accountOptions = [];
   bool _keepAlive = true;
 
   String _accountToError;
@@ -53,6 +55,12 @@ class _TransferPageState extends State<TransferPage> {
   TxFeeEstimateResult _fee;
 
   Future<String> _checkAccountTo(KeyPairData acc) async {
+    if (widget.service.keyring.allAccounts
+            .indexWhere((e) => e.pubKey == acc.pubKey) >=
+        0) {
+      return null;
+    }
+
     final addressCheckValid = await widget.service.plugin.sdk.webView
         .evalJavascript('(account.checkAddressFormat != undefined ? {}:null)',
             wrapPromise: false);
@@ -93,43 +101,53 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
+        final isToAca = _chainTo.basic.name == 'karura' ||
+            _chainTo.basic.name == plugin_name_acala;
+        final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
+            _chainTo.basic.name == relay_chain_name_dot;
+        // paramsX: [dest, beneficiary, assets, dest_weight]
+        final paramsX = [
+          {
+            'X1': isToParent
+                ? 'Parent'
+                : {'Parachain': _chainTo.basic.parachainId}
+          },
+          {
+            'X1': {
+              'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+            }
+          },
+          [
+            {
+              'ConcreteFungible': {
+                'amount':
+                    Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
+                'id': isToParent ? {'X1': 'Parent'} : 'Here'
+              }
+            }
+          ],
+          xcm_dest_weight_ksm
+        ];
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
-          module: 'xcmPallet',
-          call: 'reserveTransferAssets',
+          module: isToParent ? 'polkadotXcm' : 'xcmPallet',
+          call: isToAca ? 'reserveTransferAssets' : 'teleportAssets',
           txDisplay: {
             "chain": _chainTo.basic.name,
             "destination": _accountTo.address,
             "currency": symbol,
             "amount": _amountCtrl.text.trim(),
           },
-          params: [
-            // params.dest
-            {
-              'X1': {'Parachain': _chainTo.basic.parachainId}
-            },
-            // params.beneficiary
-            {
-              'X1': {
-                'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-              }
-            },
-            // params.assets
-            [
-              {
-                'ConcreteFungible': {
-                  'amount': Fmt.tokenInt(_amountCtrl.text.trim(), decimals)
-                      .toString(),
-                  'id': 'Null'
-                }
-              }
-            ],
-            xcm_dest_weight_ksm
-          ],
+          params: paramsX,
         );
       }
 
       /// else send normal transfer
+      // params: [to, amount]
+      final params = [
+        _accountTo.address,
+        Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
+      ];
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
@@ -139,12 +157,7 @@ class _TransferPageState extends State<TransferPage> {
           "currency": symbol,
           "amount": _amountCtrl.text.trim(),
         },
-        params: [
-          // params.to
-          _accountTo.address,
-          // params.amount
-          Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
-        ],
+        params: params,
       );
     }
     return null;
@@ -155,16 +168,26 @@ class _TransferPageState extends State<TransferPage> {
       return _fee.partialFee.toString();
     }
 
+    final isStatemint =
+        widget.service.plugin.basic.name == network_name_statemine ||
+            widget.service.plugin.basic.name == network_name_statemint;
+
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
-    final txInfo = TxInfoData(isXCM ? 'xcmPallet' : 'balances',
-        isXCM ? 'reserveTransferAssets' : 'transfer', sender);
+    final txInfo = TxInfoData(
+        isXCM ? 'xcmPallet' : 'balances',
+        isXCM
+            ? isStatemint
+                ? 'teleportAssets'
+                : 'reserveTransferAssets'
+            : 'transfer',
+        sender);
     final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
         txInfo,
         isXCM
             ? [
                 {
-                  'X1': {'Parachain': '2000'}
+                  'X1': isStatemint ? 'Parent' : {'Parachain': '2000'}
                 },
                 {
                   'X1': {
@@ -178,7 +201,7 @@ class _TransferPageState extends State<TransferPage> {
                   {
                     'ConcreteFungible': {
                       'amount': xcm_dest_weight_ksm,
-                      'id': 'Null'
+                      'id': 'Here'
                     }
                   }
                 ],
@@ -193,7 +216,15 @@ class _TransferPageState extends State<TransferPage> {
     return fee.partialFee.toString();
   }
 
-  Future<void> _setMaxAmount(BigInt available, BigInt amountExist) async {
+  BigInt _getExistAmount(BigInt notTransferable, BigInt existentialDeposit) {
+    return notTransferable > BigInt.zero
+        ? notTransferable >= existentialDeposit
+            ? BigInt.zero
+            : existentialDeposit - notTransferable
+        : existentialDeposit;
+  }
+
+  Future<void> _setMaxAmount(BigInt available, BigInt existAmount) async {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     final fee = await _getTxFee();
@@ -201,7 +232,7 @@ class _TransferPageState extends State<TransferPage> {
     final max = available -
         Fmt.balanceInt(fee) -
         (Fmt.balanceInt(fee) ~/ BigInt.from(5)) -
-        (_keepAlive ? amountExist : BigInt.zero);
+        (_keepAlive ? existAmount : BigInt.zero);
     if (mounted) {
       setState(() {
         _amountCtrl.text = max > BigInt.zero
@@ -242,12 +273,27 @@ class _TransferPageState extends State<TransferPage> {
     }
   }
 
-  /// only support Kusama -> Karura now.
+  /// only support：
+  /// Kusama -> Karura
+  /// Kusama -> Statemine
+  /// Statemine -> Kusama
   void _onSelectChain() {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
+    final isStateMint =
+        widget.service.plugin.basic.name == network_name_statemine ||
+            widget.service.plugin.basic.name == network_name_statemine;
+
     final allPlugins = widget.service.allPlugins.toList();
-    allPlugins.retainWhere((e) => e.basic.isXCMSupport);
+
+    if (isStateMint) {
+      allPlugins.retainWhere((e) =>
+          e.basic.name == relay_chain_name_ksm ||
+          e.basic.name == network_name_statemine ||
+          e.basic.name == network_name_statemint);
+    } else {
+      allPlugins.retainWhere((e) => e.basic.isXCMSupport);
+    }
 
     showCupertinoModalPopup(
       context: context,
@@ -261,6 +307,7 @@ class _TransferPageState extends State<TransferPage> {
                 Container(
                   margin: EdgeInsets.only(right: 8),
                   width: 32,
+                  height: 32,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(32),
                     child: e.basic.icon,
@@ -271,11 +318,27 @@ class _TransferPageState extends State<TransferPage> {
                 )
               ],
             ),
-            onPressed: () {
+            onPressed: () async {
               if (e.basic.name != _chainTo.basic.name) {
+                // set ss58 of _chainTo so we can get according address
+                // from AddressInputField
+                widget.service.keyring.setSS58(e.basic.ss58);
+                final options = widget.service.keyring.allWithContacts.toList();
+                widget.service.keyring
+                    .setSS58(widget.service.plugin.basic.ss58);
                 setState(() {
                   _chainTo = e;
+                  _accountOptions = options;
+
+                  final isInAccountList = options
+                          .indexWhere((e) => e.pubKey == _accountTo.pubKey) >=
+                      0;
+                  if (isInAccountList) {
+                    _accountTo = options
+                        .firstWhere((e) => e.pubKey == _accountTo.pubKey);
+                  }
                 });
+
                 _validateAccountTo(_accountTo);
 
                 // update estimated tx fee if switch ToChain
@@ -317,6 +380,7 @@ class _TransferPageState extends State<TransferPage> {
 
       setState(() {
         _chainTo = widget.service.plugin;
+        _accountOptions = widget.service.keyring.allWithContacts.toList();
       });
     });
   }
@@ -340,15 +404,27 @@ class _TransferPageState extends State<TransferPage> {
         final available = Fmt.balanceInt(
             (widget.service.plugin.balances.native?.availableBalance ?? 0)
                 .toString());
+        final reserved = Fmt.balanceInt(
+            (widget.service.plugin.balances.native?.reservedBalance ?? 0)
+                .toString());
+        final locked = Fmt.balanceInt(
+            (widget.service.plugin.balances.native?.lockedBalance ?? 0)
+                .toString());
+        final notTransferable = reserved + locked;
 
         final canCrossChain =
-            widget.service.plugin.basic.name == relay_chain_name_ksm;
-        final destChainName = _chainTo?.basic?.name ?? plugin_name_karura;
+            widget.service.plugin.basic.name == relay_chain_name_ksm ||
+                widget.service.plugin.basic.name == network_name_statemine ||
+                widget.service.plugin.basic.name == network_name_statemint;
+
+        final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
         final existDeposit = Fmt.balanceInt(widget
             .service.plugin.networkConst['balances']['existentialDeposit']
             .toString());
+        final existAmount = _getExistAmount(notTransferable, existDeposit);
+
         final destExistDeposit = isCrossChain
             ? Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit'])
             : BigInt.zero;
@@ -384,7 +460,7 @@ class _TransferPageState extends State<TransferPage> {
                       children: <Widget>[
                         AddressInputField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.allAccounts,
+                          _accountOptions,
                           label: dic['cross.to'],
                           initialValue: _accountTo,
                           onChanged: (KeyPairData acc) async {
@@ -431,6 +507,7 @@ class _TransferPageState extends State<TransferPage> {
                                                 margin:
                                                     EdgeInsets.only(right: 8),
                                                 width: 32,
+                                                height: 32,
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(32),
@@ -480,7 +557,7 @@ class _TransferPageState extends State<TransferPage> {
                                   style: TextStyle(
                                       color: Theme.of(context).primaryColor)),
                               onTap: () =>
-                                  _setMaxAmount(available, existDeposit),
+                                  _setMaxAmount(available, existAmount),
                             ),
                           ),
                           inputFormatters: [UI.decimalInputFormatter(decimals)],
@@ -494,7 +571,7 @@ class _TransferPageState extends State<TransferPage> {
                             final input = Fmt.tokenInt(v, decimals);
                             final feeLeft = available -
                                 input -
-                                (_keepAlive ? existDeposit : BigInt.zero);
+                                (_keepAlive ? existAmount : BigInt.zero);
                             BigInt fee = BigInt.zero;
                             if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
                                 _fee?.partialFee != null) {
@@ -512,22 +589,27 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.exist']),
-                                    ),
-                                    TapTooltip(
-                                      message: dic['amount.exist.msg'],
-                                      child: Icon(
-                                        Icons.info,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['cross.exist']),
                                       ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol'),
+                                    Expanded(
+                                      child: TapTooltip(
+                                        message: dic['amount.exist.msg'],
+                                        child: Icon(
+                                          Icons.info,
+                                          size: 16,
+                                          color: Theme.of(context)
+                                              .unselectedWidgetColor,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 0,
+                                        child: Text(
+                                            '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
                                   ],
                                 ),
                               )
@@ -538,11 +620,12 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.fee']),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['cross.fee']),
+                                      ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
                                     Text(
                                         '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
                                   ],
@@ -554,9 +637,12 @@ class _TransferPageState extends State<TransferPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dic['amount.exist']),
+                              Expanded(
+                                flex: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text(dic['amount.exist']),
+                                ),
                               ),
                               TapTooltip(
                                 message: dic['amount.exist.msg'],
@@ -579,11 +665,12 @@ class _TransferPageState extends State<TransferPage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['amount.fee']),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(dic['amount.fee']),
+                                      ),
                                     ),
-                                    Expanded(child: Container(width: 2)),
                                     Text(
                                         '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee?.partialFee?.toString()), decimals, lengthMax: 6)} $symbol'),
                                   ],
@@ -595,9 +682,12 @@ class _TransferPageState extends State<TransferPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dic['transfer.alive']),
+                              Expanded(
+                                flex: 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text(dic['transfer.alive']),
+                                ),
                               ),
                               TapTooltip(
                                 message: dic['transfer.alive.msg'],
@@ -611,11 +701,15 @@ class _TransferPageState extends State<TransferPage> {
                               Expanded(child: Container(width: 2)),
                               CupertinoSwitch(
                                 value: _keepAlive,
-                                onChanged: (res) {
-                                  setState(() {
-                                    _keepAlive = res;
-                                  });
-                                },
+                                // account is not allow_death if it has
+                                // locked/reserved balances
+                                onChanged: notTransferable > BigInt.zero
+                                    ? null
+                                    : (res) {
+                                        setState(() {
+                                          _keepAlive = res;
+                                        });
+                                      },
                               )
                             ],
                           ),
