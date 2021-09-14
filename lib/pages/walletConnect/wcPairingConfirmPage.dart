@@ -72,8 +72,10 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
                     color: _submitting
                         ? Theme.of(context).disabledColor
                         : Colors.orange,
-                    child: FlatButton(
-                      padding: EdgeInsets.all(16),
+                    child: TextButton(
+                      style: ButtonStyle(
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.all(16))),
                       child: Text(dic['wc.reject'],
                           style: TextStyle(color: Colors.white)),
                       onPressed: () => Navigator.of(context).pop(false),
@@ -87,8 +89,10 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
                         : Theme.of(context).primaryColor,
                     child: Builder(
                       builder: (BuildContext context) {
-                        return FlatButton(
-                          padding: EdgeInsets.all(16),
+                        return TextButton(
+                          style: ButtonStyle(
+                              padding: MaterialStateProperty.all(
+                                  EdgeInsets.all(16))),
                           child: Text(
                             dic['wc.approve'],
                             style: TextStyle(color: Colors.white),

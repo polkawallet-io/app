@@ -397,8 +397,8 @@ class _WalletAppState extends State<WalletApp> {
       HomePage.route: (_) => WillPopScopWrapper(
             Observer(
               builder: (BuildContext context) {
-                final balance = _service?.plugin?.balances?.native;
-                final networkName = _service?.plugin?.networkState?.name;
+                // final balance = _service?.plugin?.balances?.native;
+                // final networkName = _service?.plugin?.networkState?.name;
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
@@ -507,7 +507,7 @@ class _WalletAppState extends State<WalletApp> {
       } on PlatformException {
         // Platform messages may fail but we ignore the exception
         print('falied to get initial uri');
-      } on FormatException catch (err) {
+      } on FormatException {
         if (!mounted) return;
         print('malformed initial uri');
       }
