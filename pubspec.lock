@@ -618,13 +618,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
-  jpush_flutter:
-    dependency: "direct main"
-    description:
-      name: jpush_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.5"
   js:
     dependency: transitive
     description:
@@ -825,8 +818,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c6574f561f7e2bf56af5c8ab3c719a68d51f02ee
-      resolved-ref: c6574f561f7e2bf56af5c8ab3c719a68d51f02ee
+      ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
+      resolved-ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
     version: "0.3.0"
