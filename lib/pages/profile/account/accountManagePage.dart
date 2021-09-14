@@ -204,11 +204,15 @@ class _AccountManagePageState extends State<AccountManagePage> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: FlatButton(
-                    padding: EdgeInsets.all(16),
-                    color: Colors.white,
-                    textColor: Colors.red,
-                    child: Text(dic['delete']),
+                  child: TextButton(
+                    style: ButtonStyle(
+                        padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white)),
+                    child: Text(
+                      dic['delete'],
+                      style: TextStyle(color: Colors.red),
+                    ),
                     onPressed: () => _onDeleteAccount(context),
                   ),
                 ),

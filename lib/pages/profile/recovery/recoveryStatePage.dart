@@ -132,7 +132,7 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
-    List<List> activeList = List<List>();
+    List<List> activeList = <List>[];
     _txs.asMap().forEach((i, v) {
       bool isRecovered =
           _proxyStatus.indexOf(_recoverableInfoList[i].address) >= 0;

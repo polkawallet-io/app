@@ -142,10 +142,12 @@ class _Contact extends State<ContactPage> {
         ),
         onPressed: () async {
           final to = await Navigator.of(context).pushNamed(ScanPage.route);
-          setState(() {
-            _addressCtrl.text = (to as QRCodeResult).address.address;
-            _nameCtrl.text = (to as QRCodeResult).address.name;
-          });
+          if (to != null) {
+            setState(() {
+              _addressCtrl.text = (to as QRCodeResult).address.address;
+              _nameCtrl.text = (to as QRCodeResult).address.name;
+            });
+          }
         },
       )
     ];

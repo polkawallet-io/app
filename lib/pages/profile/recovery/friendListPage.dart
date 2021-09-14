@@ -103,7 +103,7 @@ class _FriendListPage extends State<FriendListPage> {
                 final contacts = widget.service.keyring.allWithContacts;
                 contacts.retainWhere((i) =>
                     _selected.indexWhere((e) => e.address == i.address) < 0);
-                final list = List<KeyPairData>();
+                final list = <KeyPairData>[];
                 list.addAll(_selected);
                 list.addAll(contacts);
                 return Expanded(
