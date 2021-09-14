@@ -57,14 +57,19 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                     ),
                     Container(
                       padding: EdgeInsets.all(16),
-                      child: Text(dic['create.warn4']),
+                      child: Text(
+                        dic['create.warn4'],
+                      ),
                     ),
                     Container(
                       margin: EdgeInsets.all(16),
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.black12, width: 1),
+                          border: Border.all(
+                            color: Colors.black12,
+                            width: 1,
+                          ),
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                       child: Text(
                         widget.service.store.account.newAccount.key ?? '',
@@ -201,57 +206,40 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
       _wordsLeft.sort();
     }
 
-    // List<Widget> rows = <Widget>[];
-    // for (var r = 0; r * 3 < _wordsLeft.length; r++) {
-    //   if (_wordsLeft.length > r * 3) {
-    //     rows.add(Row(
-    //       children: _wordsLeft
-    //           .getRange(
-    //               r * 3,
-    //               _wordsLeft.length > (r + 1) * 3
-    //                   ? (r + 1) * 3
-    //                   : _wordsLeft.length)
-    //           .map(
-    //             (i) => Container(
-    //               padding: EdgeInsets.only(left: 4, right: 4),
-    //               child: RaisedButton(
-    //                 child: Text(
-    //                   i,
-    //                 ),
-    //                 onPressed: () {
-    //                   setState(() {
-    //                     _wordsLeft.remove(i);
-    //                     _wordsSelected.add(i);
-    //                   });
-    //                 },
-    //               ),
-    //             ),
-    //           )
-    //           .toList(),
-    //     ));
-    //   }
-    // }
-    return Container(
-      padding: EdgeInsets.only(top: 16),
-      child: Wrap(
-        spacing: 2,
-        runSpacing: 3,
-        children: _wordsLeft
-            .map((e) => Container(
+    List<Widget> rows = <Widget>[];
+    for (var r = 0; r * 3 < _wordsLeft.length; r++) {
+      if (_wordsLeft.length > r * 3) {
+        rows.add(Row(
+          children: _wordsLeft
+              .getRange(
+                  r * 3,
+                  _wordsLeft.length > (r + 1) * 3
+                      ? (r + 1) * 3
+                      : _wordsLeft.length)
+              .map(
+                (i) => Container(
                   padding: EdgeInsets.only(left: 4, right: 4),
-                  child: ElevatedButton(
+                  child: RaisedButton(
                     child: Text(
-                      e,
+                      i,
                     ),
                     onPressed: () {
                       setState(() {
-                        _wordsLeft.remove(e);
-                        _wordsSelected.add(e);
+                        _wordsLeft.remove(i);
+                        _wordsSelected.add(i);
                       });
                     },
                   ),
-                ))
-            .toList(),
+                ),
+              )
+              .toList(),
+        ));
+      }
+    }
+    return Container(
+      padding: EdgeInsets.only(top: 16),
+      child: Column(
+        children: rows,
       ),
     );
   }

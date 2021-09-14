@@ -1,33 +1,27 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jpush_flutter/jpush_flutter.dart';
-import 'package:polkawallet_plugin_kusama/common/constants.dart';
-import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
-import 'package:polkawallet_sdk/plugin/index.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/ui.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate,
-      this.switchNetwork);
+      this.changeToKusama);
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
-  final Future<void> Function(String) switchNetwork;
+  final Future<void> Function() changeToKusama;
 
   static final String route = '/';
 
@@ -37,7 +31,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
-  final _jPush = JPush();
 
   int _tabIndex = 0;
 
@@ -45,59 +38,6 @@ class _HomePageState extends State<HomePage> {
     print('wallet connect uri:');
     print(uri);
     // await widget.service.plugin.sdk.api.walletConnect.connect(uri);
-  }
-
-  Future<void> _setupJPush() async {
-    _jPush.addEventHandler(
-      onOpenNotification: (Map<String, dynamic> message) async {
-        print('flutter onOpenNotification:');
-        print(message);
-        Map params;
-        if (Platform.isIOS) {
-          params = message['extras'];
-        } else {
-          params = message['extras']['cn.jpush.android.EXTRA'] != null
-              ? jsonDecode(message['extras']['cn.jpush.android.EXTRA'])
-              : null;
-        }
-        print(params);
-        if (params != null) {
-          _onOpenNotification(params);
-        }
-      },
-    );
-
-    _jPush.setup(
-      appKey: JPUSH_APP_KEY,
-      production: false,
-      debug: true,
-    );
-    _jPush.applyPushAuthority(
-        new NotificationSettingsIOS(sound: true, alert: true, badge: false));
-
-    _jPush.getRegistrationID().then((rid) {
-      print("flutter get registration id : $rid");
-    });
-  }
-
-  Future<void> _onOpenNotification(Map params) async {
-    final network = params['network'];
-    final tab = params['tab'];
-    if (network != null && network != widget.service.plugin.basic.name) {
-      await widget.switchNetwork(network);
-    }
-    if (tab != null) {
-      final initialTab = int.parse(tab);
-      _pageController.jumpToPage(initialTab);
-      setState(() {
-        _tabIndex = initialTab;
-      });
-    }
-    // final route = params['route'];
-    // print(route);
-    // if (route != null) {
-    //   Navigator.of(context).pushNamed(route);
-    // }
   }
 
   List<BottomNavigationBarItem> _buildNavItems(List<HomeNavItem> items) {
@@ -121,8 +61,6 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.service.account
           .checkBannerStatus(widget.service.keyring.current.pubKey);
-
-      _setupJPush();
     });
   }
 
@@ -145,7 +83,7 @@ class _HomePageState extends State<HomePage> {
             widget.connectedNode,
             (PolkawalletPlugin plugin) =>
                 widget.checkJSCodeUpdate(context, plugin),
-            () async => widget.switchNetwork(network_name_kusama),
+            widget.changeToKusama,
             _handleWalletConnect),
         // content: Container(),
       )
@@ -163,10 +101,7 @@ class _HomePageState extends State<HomePage> {
         color: Theme.of(context).primaryColor,
       ),
       content: ProfilePage(
-        widget.service,
-        widget.connectedNode,
-        () async => widget.switchNetwork(network_name_kusama),
-      ),
+          widget.service, widget.connectedNode, widget.changeToKusama),
     ));
     return Scaffold(
       body: Stack(

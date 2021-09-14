@@ -111,8 +111,7 @@ class WalletApi {
   }
 
   static Future<Map> getTokenPriceFromSubScan(String network) async {
-    final url =
-        'https://${network.toLowerCase()}.api.subscan.io/api/scan/token';
+    final url = 'https://${network.toLowerCase()}.subscan.io/api/scan/token';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {
@@ -243,21 +242,6 @@ class WalletApi {
         return null;
       } else {
         return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> getPluginsConfig() async {
-    try {
-      Response res =
-          await get(Uri.parse('$_configEndpoint/wallet/plugins.json'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(res.body) as Map;
       }
     } catch (err) {
       print(err);

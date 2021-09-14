@@ -48,7 +48,6 @@ const Map<String, String> zhAccount = {
   'uos.acc.mismatch': '账户不匹配',
   'uos.acc.mismatch.switch': '账户不匹配，是否切换到账户',
   'uos.acc.invalid': '账户不可用',
-  'uos.parse': '正在解析数据。。。',
   'uos.signing': '正在签名。。。',
   'uos.signer': '签名账户',
   'uos.push': '扫码发送交易',

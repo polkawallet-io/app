@@ -32,7 +32,6 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
 
   bool _loaded = false;
   int _tab = 0;
-  int _expandedIndex = 0;
 
   Timer _dataQueryTimer;
 
@@ -53,21 +52,21 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
         });
       }
 
-      if (widget.service.store.parachain.auctionData.funds.length > 0) {
+      if (widget.service.store.parachain.auctionData.auction.leasePeriod !=
+          null) {
         _getUserContributions((res[0] as AuctionData).funds);
       }
     }
 
     if (mounted) {
-      _dataQueryTimer?.cancel();
       _dataQueryTimer = Timer(Duration(seconds: 12), _getCrowdLoans);
     }
   }
 
   Future<void> _getUserContributions(List<FundData> funds) async {
-    final data = await widget.service.plugin.sdk.api.parachain
-        .queryUserContributions(funds.map((e) => e.paraId).toList(),
-            widget.service.keyring.current.pubKey);
+    final data = await Future.wait(funds.map((e) =>
+        widget.service.plugin.sdk.api.parachain.queryUserContributions(
+            e.paraId, widget.service.keyring.current.pubKey)));
 
     if (mounted && data != null) {
       final res = {};
@@ -97,8 +96,9 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
 
   @override
   void dispose() {
-    _dataQueryTimer?.cancel();
-
+    if (_dataQueryTimer != null) {
+      _dataQueryTimer.cancel();
+    }
     super.dispose();
   }
 
@@ -163,23 +163,9 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                                 (e) => visibleFundIds.indexOf(e.paraId) > -1);
                             funds.sort((a, b) =>
                                 int.parse(a.paraId) - int.parse(b.paraId));
-
-                            final List<FundData> actives = [];
-                            final List<FundData> winners = [];
-                            final List<FundData> ended = [];
-                            funds.forEach((e) {
-                              if (e.isWinner) {
-                                winners.add(e);
-                              } else if (e.isEnded) {
-                                ended.add(e);
-                              } else {
-                                actives.add(e);
-                              }
-                            });
-                            return ListView(
-                              padding: EdgeInsets.only(bottom: 40),
-                              children: _tab == 0
-                                  ? [
+                            return _tab == 0
+                                ? ListView(
+                                    children: [
                                       auction.auction.leasePeriod != null
                                           ? AuctionPanel(
                                               auction,
@@ -196,67 +182,10 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                                                   isEmpty: true,
                                                   isLoading: false),
                                             )
-                                    ]
-                                  : [
-                                      CrowdLoanList(
-                                        title: 'Active',
-                                        funds: actives,
-                                        expanded: _expandedIndex == 0,
-                                        config: config,
-                                        contributions: contributions,
-                                        decimals: decimals,
-                                        tokenSymbol: symbols,
-                                        onContribute: _goToContribute,
-                                        onToggle: (v) {
-                                          setState(() {
-                                            if (v) {
-                                              _expandedIndex = 0;
-                                            } else {
-                                              _expandedIndex = 3;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      CrowdLoanList(
-                                        title: 'Winners',
-                                        funds: winners,
-                                        expanded: _expandedIndex == 1,
-                                        config: config,
-                                        contributions: contributions,
-                                        decimals: decimals,
-                                        tokenSymbol: symbols,
-                                        onContribute: _goToContribute,
-                                        onToggle: (v) {
-                                          setState(() {
-                                            if (v) {
-                                              _expandedIndex = 1;
-                                            } else {
-                                              _expandedIndex = 3;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      CrowdLoanList(
-                                        title: 'Ended',
-                                        funds: ended,
-                                        expanded: _expandedIndex == 2,
-                                        config: config,
-                                        contributions: contributions,
-                                        decimals: decimals,
-                                        tokenSymbol: symbols,
-                                        onContribute: _goToContribute,
-                                        onToggle: (v) {
-                                          setState(() {
-                                            if (v) {
-                                              _expandedIndex = 2;
-                                            } else {
-                                              _expandedIndex = 3;
-                                            }
-                                          });
-                                        },
-                                      )
                                     ],
-                            );
+                                  )
+                                : CrowdLoanList(funds, config, contributions,
+                                    decimals, symbols, _goToContribute);
                           },
                         ),
                       )

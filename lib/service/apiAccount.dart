@@ -31,16 +31,8 @@ class ApiAccount {
     KeyType keyType = KeyType.mnemonic,
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
-    bool isFromCreatePage = false,
   }) async {
     final acc = apiRoot.store.account.newAccount;
-    if (isFromCreatePage &&
-        (acc.name == null ||
-            acc.name.isEmpty ||
-            acc.password == null ||
-            acc.password.isEmpty)) {
-      throw Exception('create account failed');
-    }
     final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
       apiRoot.keyring,
       keyType: keyType,
@@ -58,16 +50,8 @@ class ApiAccount {
     KeyType keyType = KeyType.mnemonic,
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
-    bool isFromCreatePage = false,
   }) async {
     final acc = apiRoot.store.account.newAccount;
-    if (isFromCreatePage &&
-        (acc.name == null ||
-            acc.name.isEmpty ||
-            acc.password == null ||
-            acc.password.isEmpty)) {
-      throw Exception('save account failed');
-    }
     final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
       apiRoot.keyring,
       keyType: keyType,

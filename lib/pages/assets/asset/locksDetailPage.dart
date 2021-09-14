@@ -3,7 +3,7 @@ import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
@@ -31,45 +31,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
 
   bool _submitting = false;
 
-  List _unlocks = [];
-
-  Future<void> _queryDemocracyUnlocks() async {
-    final List unlocks = await widget.service.plugin.sdk.api.gov
-        .getDemocracyUnlocks(widget.service.keyring.current.address);
-    if (mounted && unlocks != null) {
-      setState(() {
-        _unlocks = unlocks;
-      });
-    }
-  }
-
-  void _onUnlock() async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final txs = _unlocks
-        .map(
-            (e) => 'api.tx.democracy.removeVote(${BigInt.parse(e.toString())})')
-        .toList();
-    txs.add(
-        'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
-    final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
-        arguments: TxConfirmParams(
-          txTitle: dic['lock.unlock'],
-          module: 'utility',
-          call: 'batch',
-          txDisplay: {
-            "actions": ['democracy.removeVote', 'democracy.unlock'],
-          },
-          params: [],
-          rawParams: '[[${txs.join(',')}]]',
-        ));
-    if (res != null) {
-      _refreshKey.currentState.show();
-    }
-  }
-
   Future<void> _updateVestingInfo() async {
-    _queryDemocracyUnlocks();
-
     final res = await Future.wait([
       WalletApi.fetchBlocksFromSn(
           widget.service.plugin.basic.name == plugin_name_karura
@@ -191,26 +153,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                 ),
                               ],
                             )
-                          : e.use.contains('democrac')
-                              ? Column(
-                                  children: [
-                                    InfoItemRow(dic['lock.${e.use.trim()}'],
-                                        Fmt.priceFloorBigInt(amt, decimals)),
-                                    Divider(height: 24),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        OutlinedButtonSmall(
-                                            margin: EdgeInsets.only(left: 8),
-                                            content: dic['lock.unlock'],
-                                            active: true,
-                                            onPressed: _onUnlock)
-                                      ],
-                                    )
-                                  ],
-                                )
-                              : InfoItemRow(dic['lock.${e.use.trim()}'],
-                                  Fmt.priceFloorBigInt(amt, decimals)),
+                          : InfoItemRow(dic['lock.${e.use.trim()}'],
+                              Fmt.priceFloorBigInt(amt, decimals)),
                     );
                   }).toList(),
                 ),

@@ -18,24 +18,20 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.3.2-beta.1';
-const int app_beta_version_code = 2321;
+const String app_beta_version = 'v2.2.1-beta.1';
+const int app_beta_version_code = 2211;
 const plugin_github_links = {
   'kusama': 'https://github.com/polkawallet-io/app/issues',
   'polkadot': 'https://github.com/polkawallet-io/app/issues',
   'acala-tc6':
       'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
   'karura': 'https://github.com/AcalaNetwork/polkawallet_plugin_acala/issues',
-  'statemine':
-      'https://github.com/AcalaNetwork/polkawallet_plugin_statemine/issues',
   'laminar-tc3':
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
   'chainx': 'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
-  'bifrost':
-      'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
 };
-const plugin_from_community = ['chainx', 'edgeware', 'bifrost'];
+const plugin_from_community = ['chainx', 'edgeware'];
 
 const relay_chain_name_ksm = 'kusama';
 const relay_chain_name_dot = 'polkadot';
@@ -43,10 +39,6 @@ const xcm_base_weight = 1000000000;
 const xcm_dest_weight_ksm = 3 * xcm_base_weight;
 
 const xcm_send_fees = {
-  'kusama': {
-    'fee': '30000000000',
-    'existentialDeposit': '333333333',
-  },
   'statemine': {
     'fee': '3000000000',
     'existentialDeposit': '33333333',
@@ -59,5 +51,3 @@ const xcm_send_fees = {
 
 const show_guide_status_key = 'show_guide_status';
 const show_banner_status_key = 'show_banner_status';
-
-const JPUSH_APP_KEY = 'dfa60080aa05c5c7b7dc7aa0';

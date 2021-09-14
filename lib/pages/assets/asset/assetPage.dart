@@ -90,8 +90,7 @@ class _AssetPageState extends State<AssetPage> {
       _loading = true;
     });
 
-    widget.service.plugin.updateBalances(widget.service.keyring.current);
-
+    _updateBalances();
     final res = await widget.service.assets.updateTxs(_txsPage);
 
     if (!mounted) return;
@@ -124,6 +123,13 @@ class _AssetPageState extends State<AssetPage> {
     widget.service.assets.fetchMarketPriceFromSubScan();
 
     await _updateData();
+  }
+
+  Future<void> _updateBalances() async {
+    final balances = await widget.service.plugin.sdk.api.account
+        .queryBalance(widget.service.keyring.current.address);
+    widget.service.plugin
+        .updateBalances(widget.service.keyring.current, balances);
   }
 
   void _showAction() async {

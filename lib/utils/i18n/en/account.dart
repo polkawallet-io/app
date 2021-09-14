@@ -54,7 +54,6 @@ const Map<String, String> enAccount = {
   'uos.acc.mismatch': 'Account mismatch',
   'uos.acc.mismatch.switch': 'Account mismatch, switch to account',
   'uos.acc.invalid': 'Account invalid',
-  'uos.parse': 'Parsing data...',
   'uos.signing': 'Signing...',
   'uos.signer': 'Signer',
   'uos.push': 'Scan to publish',
