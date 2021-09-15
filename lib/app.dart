@@ -53,6 +53,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
@@ -397,8 +398,8 @@ class _WalletAppState extends State<WalletApp> {
       HomePage.route: (_) => WillPopScopWrapper(
             Observer(
               builder: (BuildContext context) {
-                // final balance = _service?.plugin?.balances?.native;
-                // final networkName = _service?.plugin?.networkState?.name;
+                final balance = _service?.plugin?.balances?.native;
+                final networkName = _service?.plugin?.networkState?.name;
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
@@ -528,7 +529,7 @@ class _WalletAppState extends State<WalletApp> {
       onTapUp: (_) {
         FocusScope.of(context).focusedChild?.unfocus();
       },
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'Polkawallet',
         theme: _theme ??
             _getAppTheme(
