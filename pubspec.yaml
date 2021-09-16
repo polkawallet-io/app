@@ -42,34 +42,34 @@ dependencies:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
       ref: e9e7c2546a1a6241c55a064d2fa57987a9265051
-#   polkawallet_plugin_acala:
-#     git:
-#       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-#       ref: 4e9f4f714666a5e6214fff9e5a89df03d62b756b
-#   polkawallet_plugin_karura:
-#     git:
-#       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
-#       ref: 5c116fb20a6698871cbad2a8910fbba8597a5aed
-#   polkawallet_plugin_statemine:
-#     git:
-#       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
-#       ref: 7d8cf727c5eb78d97205e53fe2ade55c513754a9
-#   polkawallet_plugin_laminar:
-#     git:
-#       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-#       ref: 810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f
-#   polkawallet_plugin_bifrost:
-#     git:
-#       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-#       ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
-# #  polkawallet_plugin_chainx:
-# #    git:
-# #      url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
-# #      ref: d4d671ab109191f968b5b224719476ddf2796b40
-#   polkawallet_plugin_edgeware:
-#     git:
-#       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
-#       ref: 126938955c6042da3eee9493880f2344581005f0
+  polkawallet_plugin_acala:
+    git:
+      url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
+      ref: 4e9f4f714666a5e6214fff9e5a89df03d62b756b
+  polkawallet_plugin_karura:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
+      ref: 5c116fb20a6698871cbad2a8910fbba8597a5aed
+  polkawallet_plugin_statemine:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
+      ref: 7d8cf727c5eb78d97205e53fe2ade55c513754a9
+  polkawallet_plugin_laminar:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
+      ref: 810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f
+  polkawallet_plugin_bifrost:
+    git:
+      url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
+      ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
+#  polkawallet_plugin_chainx:
+#    git:
+#      url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
+#      ref: d4d671ab109191f968b5b224719476ddf2796b40
+  polkawallet_plugin_edgeware:
+    git:
+      url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
+      ref: 126938955c6042da3eee9493880f2344581005f0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -92,14 +92,14 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  polkawallet_ui:
+  polkawallet_ui: ^0.3.2
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
-    path: ../../coding/polkawallet/ui
-#  polkawallet_sdk: ^0.3.0
-  polkawallet_sdk:
-    path: ../../coding/polkawallet/sdk
+#    path: ../../coding/polkawallet/ui
+  polkawallet_sdk: ^0.3.2
+  # polkawallet_sdk:
+  #   path: ../../coding/polkawallet/sdk
 
 
 dev_dependencies:
@@ -130,35 +130,35 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/logo.png
-    - assets/images/logo_about.png
-    - assets/images/nav_assets.svg
-    - assets/images/nav_profile.svg
-    - assets/images/screenshot.png
-    - assets/images/scan.svg
-    - assets/images/assets_up.svg
-    - assets/images/assets_down.svg
-    - assets/images/tx_failed.svg
-    - assets/images/assets_send.png
-    - assets/images/wallet_connect_logo.png
-    - assets/images/wallet_connect_banner.png
-    - assets/images/network_icon_bg.svg
-    - assets/images/network_icon_border.svg
-    - assets/images/menu.svg
-    - assets/images/qr.svg
-    - assets/images/scan.svg
-    - assets/images/public/guide_0.png
-    - assets/images/public/guide_1.png
-    - assets/images/public/guide_2.png
-    - assets/images/public/guide_3.png
-    - assets/images/public/guide_4.png
-    - assets/images/public/banner_kar_plo.png
-    - assets/images/public/kar_bg.png
-    - assets/images/public/kar_logo.png
-    - assets/images/public/kar_crowd_loan.jpg
-    - assets/images/public/kusama_logo.svg
-    - assets/images/public/github_logo.svg
-    - assets/images/public/chainx_gray.png
+    - assets/images/
+    # - assets/images/logo_about.png
+    # - assets/images/nav_assets.svg
+    # - assets/images/nav_profile.svg
+    # - assets/images/screenshot.png
+    # - assets/images/scan.svg
+    # - assets/images/assets_up.svg
+    # - assets/images/assets_down.svg
+    # - assets/images/tx_failed.svg
+    # - assets/images/assets_send.png
+    # - assets/images/wallet_connect_logo.png
+    # - assets/images/wallet_connect_banner.png
+    # - assets/images/network_icon_bg.svg
+    # - assets/images/network_icon_border.svg
+    # - assets/images/menu.svg
+    # - assets/images/qr.svg
+    # - assets/images/scan.svg
+    # - assets/images/public/guide_0.png
+    # - assets/images/public/guide_1.png
+    # - assets/images/public/guide_2.png
+    # - assets/images/public/guide_3.png
+    # - assets/images/public/guide_4.png
+    # - assets/images/public/banner_kar_plo.png
+    # - assets/images/public/kar_bg.png
+    # - assets/images/public/kar_logo.png
+    # - assets/images/public/kar_crowd_loan.jpg
+    # - assets/images/public/kusama_logo.svg
+    # - assets/images/public/github_logo.svg
+    - assets/images/public/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
