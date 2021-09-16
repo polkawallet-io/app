@@ -1,8 +1,8 @@
+import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:polkawallet_plugin_statemine/common/constants.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
@@ -104,8 +104,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
     final isStateMint =
-        widget.service.plugin.basic.name == network_name_statemine ||
-            widget.service.plugin.basic.name == network_name_statemint;
+        widget.service.plugin.basic.name == para_chain_name_statemine ||
+            widget.service.plugin.basic.name == para_chain_name_statemint;
 
     final List<TokenBalanceData> list = [
       TokenBalanceData(
