@@ -88,7 +88,7 @@ class _AssetsState extends State<AssetsPage> {
           widget.service.plugin.balances.tokens.map((e) => e.symbol).toList());
     }
 
-    _priceUpdateTimer = Timer(Duration(seconds: 30), _updateMarketPrices);
+    _priceUpdateTimer = Timer(Duration(seconds: 60), _updateMarketPrices);
   }
 
   Future<void> _handleScan(bool transferEnabled) async {
@@ -630,21 +630,24 @@ class _AssetsState extends State<AssetsPage> {
                       Column(
                         children: tokens == null || tokens.length == 0
                             ? [Container()]
-                            : tokens
-                                .map((i) => TokenItem(
-                                      i,
-                                      i.decimals,
-                                      isFromCache: isTokensFromCache,
-                                      detailPageRoute: i.detailPageRoute,
-                                      marketPrice: widget.service.store.assets
-                                          .marketPrices[i.symbol],
-                                      icon: TokenIcon(
-                                        i.id ?? i.symbol,
-                                        widget.service.plugin.tokenIcons,
-                                        symbol: i.symbol,
-                                      ),
-                                    ))
-                                .toList(),
+                            : tokens.map((TokenBalanceData i) {
+                                // we can use token price form plugin or from market
+                                final price = i.price ??
+                                    widget.service.store.assets
+                                        .marketPrices[i.symbol];
+                                return TokenItem(
+                                  i,
+                                  i.decimals,
+                                  isFromCache: isTokensFromCache,
+                                  detailPageRoute: i.detailPageRoute,
+                                  marketPrice: price,
+                                  icon: TokenIcon(
+                                    i.id ?? i.symbol,
+                                    widget.service.plugin.tokenIcons,
+                                    symbol: i.symbol,
+                                  ),
+                                );
+                              }).toList(),
                       ),
                       Column(
                         children: extraTokens == null || extraTokens.length == 0
