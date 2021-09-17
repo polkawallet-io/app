@@ -21,12 +21,13 @@
 # is commented out by default.
 #.vscode/
 
+### Flutter ###
 # Flutter/Dart/Pub related
 **/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.fvm/
 .packages
 .pub-cache/
 .pub/
