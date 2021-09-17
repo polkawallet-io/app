@@ -837,6 +837,15 @@ packages:
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
     version: "0.3.0"
+  polkawallet_plugin_chainx:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: b2ea47128a44cf6a76036f213b10fefab657aec0
+      resolved-ref: b2ea47128a44cf6a76036f213b10fefab657aec0
+      url: "https://github.com/chainx-org/polkawallet_plugin_chainx.git"
+    source: git
+    version: "0.0.2"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:

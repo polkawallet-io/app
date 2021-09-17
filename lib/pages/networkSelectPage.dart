@@ -264,7 +264,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                   ],
                 ),
               ),
-              Column(
+              SingleChildScrollView(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ...widget.plugins.map((e) {
@@ -312,7 +313,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                   }).toList()
                 ],
                 // children: sideBar,
-              )
+              ))
             ],
           ),
           Expanded(
