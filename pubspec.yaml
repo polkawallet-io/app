@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.2+2326
+version: 2.3.4+2341
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -38,6 +38,10 @@ dependencies:
   firebase_analytics: 8.3.0
 #  firebase_messaging: 10.0.5
 #  jpush_flutter: ^2.1.5
+  jpush_flutter:
+    git:
+      url: https://github.com/polkawallet-io/jpush-flutter-plugin.git
+      ref: a2ee9893ec9115a15bb25d4a59c7cbaa447e14b6
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
@@ -61,31 +65,31 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: ffaab3d6b1574c1759bc42e25bd0a57ba885a592
-  # polkawallet_plugin_chainx:
-  #   git:
-  #     url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
-  #     ref: b2ea47128a44cf6a76036f213b10fefab657aec0
+      ref: 2f6cd149a369229a51bc61a020d453f4414347f1
+  polkawallet_plugin_chainx:
+    git:
+      url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
+      ref: b2ea47128a44cf6a76036f213b10fefab657aec0
   polkawallet_plugin_edgeware:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
-      ref: 126938955c6042da3eee9493880f2344581005f0
+      ref: 11be316dc77b721d41ed6774fbf8d444a5a8eaa9
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  # polkawallet_plugin_kusama:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  # polkawallet_plugin_acala:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_acala
-  # polkawallet_plugin_karura:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_karura
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:
 #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
-#  polkawallet_plugin_laminar:
-#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+  polkawallet_plugin_laminar:
+    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
@@ -100,6 +104,7 @@ dependency_overrides:
   polkawallet_sdk: ^0.3.2
   # polkawallet_sdk:
   #   path: ../../coding/polkawallet/sdk
+  charts_flutter: ^0.11.0
 
 
 dev_dependencies:
