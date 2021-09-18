@@ -198,47 +198,6 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final doc = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    // final sideBar = widget.plugins.map((i) {
-    //   final isCurrent = i.basic.name == _selectedNetwork?.basic?.name;
-    //   return isCurrent
-    //       ? _NetworkItemActive(icon: i.basic.icon)
-    //       : Container(
-    //           margin: EdgeInsets.all(8),
-    //           child: IconButton(
-    //             padding: EdgeInsets.all(8),
-    //             icon: isCurrent ? i.basic.icon : i.basic.iconDisabled,
-    //             onPressed: () {
-    //               if (!isCurrent) {
-    //                 setState(() {
-    //                   _selectedNetwork = i;
-    //                   _pluginDisabledSelected = null;
-    //                 });
-    //               }
-    //             },
-    //           ),
-    //         );
-    // }).toList();
-    // sideBar.addAll(widget.disabledPlugins.map((e) {
-    //   final isCurrent = e.name == _pluginDisabledSelected?.name;
-    //   return isCurrent
-    //       ? _NetworkItemActive(icon: e.icon)
-    //       : Container(
-    //           margin: EdgeInsets.all(8),
-    //           child: IconButton(
-    //             padding: EdgeInsets.all(8),
-    //             icon: e.icon,
-    //             onPressed: () {
-    //               if (_pluginDisabledSelected?.name != e.name) {
-    //                 setState(() {
-    //                   _pluginDisabledSelected = e;
-    //                   _selectedNetwork = null;
-    //                 });
-    //               }
-    //             },
-    //           ),
-    //         );
-    // }).toList());
     return Scaffold(
       appBar: AppBar(
         title: Text(I18n.of(context)
@@ -264,54 +223,56 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                   ],
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...widget.plugins.map((e) {
-                    final isCurrent =
-                        e.basic.name == _selectedNetwork?.basic?.name;
-                    return isCurrent
-                        ? _NetworkItemActive(icon: e.basic.icon)
-                        : Container(
-                            margin: EdgeInsets.all(8),
-                            child: IconButton(
-                              padding: EdgeInsets.all(8),
-                              icon: isCurrent
-                                  ? e.basic.icon
-                                  : e.basic.iconDisabled,
-                              onPressed: () {
-                                if (!isCurrent) {
-                                  setState(() {
-                                    _selectedNetwork = e;
-                                    _pluginDisabledSelected = null;
-                                  });
-                                }
-                              },
-                            ),
-                          );
-                  }).toList(),
-                  ...widget.disabledPlugins.map((e) {
-                    final isCurrent = e.name == _pluginDisabledSelected?.name;
-                    return isCurrent
-                        ? _NetworkItemActive(icon: e.icon)
-                        : Container(
-                            margin: EdgeInsets.all(8),
-                            child: IconButton(
-                              padding: EdgeInsets.all(8),
-                              icon: e.icon,
-                              onPressed: () {
-                                if (_pluginDisabledSelected?.name != e.name) {
-                                  setState(() {
-                                    _pluginDisabledSelected = e;
-                                    _selectedNetwork = null;
-                                  });
-                                }
-                              },
-                            ),
-                          );
-                  }).toList()
-                ],
-                // children: sideBar,
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...widget.plugins.map((e) {
+                      final isCurrent =
+                          e.basic.name == _selectedNetwork?.basic?.name;
+                      return isCurrent
+                          ? _NetworkItemActive(icon: e.basic.icon)
+                          : Container(
+                              margin: EdgeInsets.all(8),
+                              child: IconButton(
+                                padding: EdgeInsets.all(8),
+                                icon: isCurrent
+                                    ? e.basic.icon
+                                    : e.basic.iconDisabled,
+                                onPressed: () {
+                                  if (!isCurrent) {
+                                    setState(() {
+                                      _selectedNetwork = e;
+                                      _pluginDisabledSelected = null;
+                                    });
+                                  }
+                                },
+                              ),
+                            );
+                    }).toList(),
+                    ...widget.disabledPlugins.map((e) {
+                      final isCurrent = e.name == _pluginDisabledSelected?.name;
+                      return isCurrent
+                          ? _NetworkItemActive(icon: e.icon)
+                          : Container(
+                              margin: EdgeInsets.all(8),
+                              child: IconButton(
+                                padding: EdgeInsets.all(8),
+                                icon: e.icon,
+                                onPressed: () {
+                                  if (_pluginDisabledSelected?.name != e.name) {
+                                    setState(() {
+                                      _pluginDisabledSelected = e;
+                                      _selectedNetwork = null;
+                                    });
+                                  }
+                                },
+                              ),
+                            );
+                    }).toList()
+                  ],
+                  // children: sideBar,
+                ),
               )
             ],
           ),
