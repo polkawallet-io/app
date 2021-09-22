@@ -397,8 +397,8 @@ class _WalletAppState extends State<WalletApp> {
       HomePage.route: (_) => WillPopScopWrapper(
             Observer(
               builder: (BuildContext context) {
-                // final balance = _service?.plugin?.balances?.native;
-                // final networkName = _service?.plugin?.networkState?.name;
+                final balance = _service?.plugin?.balances?.native;
+                final networkName = _service?.plugin?.networkState?.name;
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
