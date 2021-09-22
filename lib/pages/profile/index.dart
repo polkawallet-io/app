@@ -1,5 +1,6 @@
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
+import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
@@ -109,7 +110,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   text: dic['account'],
                   onPressed: () async {
                     if (acc.observation ?? false) {
-                      await Navigator.pushNamed(context, ContactsPage.route);
+                      await Navigator.pushNamed(context, ContactPage.route,
+                          arguments: widget.service.keyring.current);
                     } else {
                       await Navigator.pushNamed(
                           context, AccountManagePage.route);
