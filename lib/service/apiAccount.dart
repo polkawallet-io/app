@@ -22,9 +22,10 @@ class ApiAccount {
   final _biometricEnabledKey = 'biometric_enabled_';
   final _biometricPasswordKey = 'biometric_password_';
 
-  Future<void> generateAccount() async {
-    final mnemonic = await apiRoot.plugin.sdk.api.keyring.generateMnemonic();
-    apiRoot.store.account.setNewAccountKey(mnemonic);
+  Future<void> generateAccount({CryptoType type=CryptoType.sr25519,
+  String path=""}) async {
+    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring.generateMnemonic(apiRoot.plugin.basic.ss58,cryptoType: type,derivePath: path,key: apiRoot.store.account.newAccount.key);
+    apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,generateMnemonicData.address,generateMnemonicData.svg);
   }
 
   Future<Map> importAccount({

@@ -44,8 +44,10 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setNewAccountKey(String key) {
+  void setNewAccountKey(String key,String address,String icon) {
     newAccount.key = key;
+    newAccount.address = address;
+    newAccount.icon = icon;
   }
 
   @action
@@ -117,4 +119,10 @@ abstract class _AccountCreate with Store {
 
   @observable
   String key = '';
+
+  @observable
+  String address = '';
+
+  @observable
+  String icon = '';
 }
