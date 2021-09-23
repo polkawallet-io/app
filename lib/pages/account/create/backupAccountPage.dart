@@ -7,6 +7,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/components/addressIcon.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -59,6 +61,24 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       padding: EdgeInsets.all(16),
                       child: Text(dic['create.warn4']),
                     ),
+                    widget.service.store.account.newAccount.icon.length > 0
+                        ? Padding(
+                            padding: EdgeInsets.only(left: 16, right: 16),
+                            child: Row(
+                              children: [
+                                AddressIcon(
+                                    widget.service.store.account.newAccount
+                                        .address,
+                                    svg: widget
+                                        .service.store.account.newAccount.icon),
+                                Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                        '${Fmt.address(widget.service.store.account.newAccount.address)}',
+                                        maxLines: 2))
+                              ],
+                            ))
+                        : Container(),
                     Container(
                       margin: EdgeInsets.all(16),
                       padding: EdgeInsets.all(16),
@@ -77,6 +97,9 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       onChange: (data) {
                         setState(() {
                           _advanceOptions = data;
+                          widget.service.account.generateAccount(
+                              type: _advanceOptions.type,
+                              path: _advanceOptions.path);
                         });
                       },
                     ),
@@ -108,7 +131,6 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
 
   Widget _buildStep1(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['create']),

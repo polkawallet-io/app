@@ -285,7 +285,7 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
                       _nameCtrl.text.trim(), _passCtrl.text.trim());
                 }
                 widget.service.store.account
-                    .setNewAccountKey(_keyCtrl.text.trim());
+                    .setNewAccountKey(_keyCtrl.text.trim(),"","");
                 final saved = await widget.onSubmit({
                   'keyType': _keyOptions[_keySelection],
                   'cryptoType': _advanceOptions.type ?? CryptoType.sr25519,
