@@ -76,8 +76,8 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#  polkawallet_plugin_kusama:
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   # polkawallet_plugin_acala:
   #   path: ../../coding/polkawallet/polkawallet_plugin_acala
   # polkawallet_plugin_karura:
@@ -102,7 +102,14 @@ dependency_overrides:
   # polkawallet_sdk: ^0.3.2
   polkawallet_sdk:
      path: ../../coding/polkawallet/sdk
-  charts_flutter: ^0.11.0
+  charts_flutter:
+     git:
+       url: https://github.com/google/charts
+       path: charts_flutter
+  flutter_qr_scan:
+    path: ../../coding/polkawallet/flutter_qr_reader
+  aes_ecb_pkcs5_flutter:
+    path: ../../coding/polkawallet/aes_ecb_pkcs5_flutter
 
 
 dev_dependencies:
