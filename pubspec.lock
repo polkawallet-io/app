@@ -625,6 +625,15 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.0"
+  jpush_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: a2ee9893ec9115a15bb25d4a59c7cbaa447e14b6
+      resolved-ref: a2ee9893ec9115a15bb25d4a59c7cbaa447e14b6
+      url: "https://github.com/polkawallet-io/jpush-flutter-plugin.git"
+    source: git
+    version: "2.1.4"
   js:
     dependency: transitive
     description:
