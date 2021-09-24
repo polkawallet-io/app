@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.4+2342
+version: 2.3.5+2353
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -37,7 +37,10 @@ dependencies:
   firebase_core: 1.5.0
   firebase_analytics: 8.3.0
 #  firebase_messaging: 10.0.5
-#  jpush_flutter: ^2.1.5
+  jpush_flutter:
+    git:
+      url: https://github.com/polkawallet-io/jpush-flutter-plugin.git
+      ref: a2ee9893ec9115a15bb25d4a59c7cbaa447e14b6
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
@@ -76,16 +79,16 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-#  polkawallet_plugin_kusama:
-#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  # polkawallet_plugin_acala:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_acala
-  # polkawallet_plugin_karura:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_karura
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:
 #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
-  # polkawallet_plugin_laminar:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_laminar
+  polkawallet_plugin_laminar:
+    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
