@@ -6,10 +6,13 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/addressFormItem.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ImportAccountForm extends StatefulWidget {
   ImportAccountForm(this.service, this.onSubmit);
@@ -174,16 +177,41 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
   void _onKeyChange(String v) {
     if (_keySelection == 2) {
       // auto set account name
-      var json = jsonDecode(v.trim());
-      if (json['meta']['name'] != null) {
-        setState(() {
-          _nameCtrl.value = TextEditingValue(text: json['meta']['name']);
-        });
+      try {
+        var json = jsonDecode(v.trim());
+        _refreshAcccountAddress(keyStore: json);
+        if (json['meta']['name'] != null) {
+          setState(() {
+            _nameCtrl.value = TextEditingValue(text: json['meta']['name']);
+          });
+        }
+      } catch (e) {
+        print(e);
       }
+    } else {
+      _refreshAcccountAddress();
     }
     setState(() {
       _keyCtrlText = v.trim();
     });
+  }
+
+  void _refreshAcccountAddress({dynamic keyStore}) {
+    if (_keySelection == 1) {
+      widget.service.account.addressFromRawSeed(
+          rawSeed: _keyCtrl.text,
+          type: _advanceOptions.type,
+          path: _advanceOptions.path);
+    } else if (_keySelection == 0) {
+      if (_keyCtrl.text.split(" ").length >= 12) {
+        widget.service.account.addressFromMnemonic(
+            mnemonic: _keyCtrl.text,
+            type: _advanceOptions.type,
+            path: _advanceOptions.path);
+      }
+    } else {
+      widget.service.account.addressFromKeyStore(keyStore: keyStore);
+    }
   }
 
   @override
@@ -204,112 +232,138 @@ class _ImportAccountFormState extends State<ImportAccountForm> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     String selected = dic[_keyOptions[_keySelection]];
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Form(
-            key: _formKey,
-//            autovalidate: true,
-            child: ListView(
+    return Observer(
+        builder: (_) => Column(
               children: <Widget>[
-                ListTile(
-                  title: Text(dic['import.type']),
-                  subtitle: Text(selected),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () {
-                    showCupertinoModalPopup(
-                      context: context,
-                      builder: (_) => Container(
-                        height:
-                            MediaQuery.of(context).copyWith().size.height / 3,
-                        child: CupertinoPicker(
-                          backgroundColor: Colors.white,
-                          itemExtent: 56,
-                          scrollController: FixedExtentScrollController(
-                              initialItem: _keySelection),
-                          children: _keyOptions
-                              .map((i) => Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: Text(dic[i])))
-                              .toList(),
-                          onSelectedItemChanged: (v) {
-                            setState(() {
-                              _keyCtrl.value = TextEditingValue(text: '');
-                              _keySelection = v;
-                            });
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: <Widget>[
+                        Visibility(
+                            visible: (widget.service.store.account.newAccount
+                                        .icon?.length ??
+                                    0) >
+                                0,
+                            child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 16, right: 16, top: 16),
+                                child: AddressFormItem(
+                                    KeyPairData()
+                                      ..pubKey = widget
+                                          .service.store.account.newAccount.key
+                                      ..icon = widget
+                                          .service.store.account.newAccount.icon
+                                      ..address = widget.service.store.account
+                                          .newAccount.address,
+                                    isShowSubtitle: false))),
+                        ListTile(
+                          title: Text(dic['import.type']),
+                          subtitle: Text(selected),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                          onTap: () {
+                            showCupertinoModalPopup(
+                              context: context,
+                              builder: (_) => Container(
+                                height: MediaQuery.of(context)
+                                        .copyWith()
+                                        .size
+                                        .height /
+                                    3,
+                                child: CupertinoPicker(
+                                  backgroundColor: Colors.white,
+                                  itemExtent: 56,
+                                  scrollController: FixedExtentScrollController(
+                                      initialItem: _keySelection),
+                                  children: _keyOptions
+                                      .map((i) => Padding(
+                                          padding: EdgeInsets.all(12),
+                                          child: Text(dic[i])))
+                                      .toList(),
+                                  onSelectedItemChanged: (v) {
+                                    setState(() {
+                                      _keyCtrl.value =
+                                          TextEditingValue(text: '');
+                                      _keySelection = v;
+                                      print("$_keySelection");
+                                      widget.service.store.account
+                                          .setNewAccountKey("", "", "");
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
                           },
                         ),
-                      ),
-                    );
-                  },
-                ),
-                _keySelection != 3
-                    ? Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: selected,
-                            labelText: selected,
+                        Padding(
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              hintText: selected,
+                              labelText: selected,
+                            ),
+                            controller: _keyCtrl,
+                            maxLines: 2,
+                            validator: _validateInput,
+                            onChanged: _onKeyChange,
                           ),
-                          controller: _keyCtrl,
-                          maxLines: 2,
-                          validator: _validateInput,
-                          onChanged: _onKeyChange,
                         ),
-                      )
-                    : Container(),
-                _keySelection == 2
-                    ? _buildNameAndPassInput()
-                    : AccountAdvanceOption(
-                        api: widget.service.plugin.sdk.api?.keyring,
-                        seed: _keyCtrlText,
-                        onChange: (AccountAdvanceOptionParams data) {
-                          setState(() {
-                            _advanceOptions = data;
-                          });
-                        },
-                      ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(16),
-          child: RoundedButton(
-            text: I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
-            onPressed: () async {
-              if (_formKey.currentState.validate() &&
-                  !(_advanceOptions.error ?? false)) {
-                if (_keySelection == 2) {
-                  widget.service.store.account.setNewAccount(
-                      _nameCtrl.text.trim(), _passCtrl.text.trim());
-                }
-                widget.service.store.account
-                    .setNewAccountKey(_keyCtrl.text.trim(),"","");
-                final saved = await widget.onSubmit({
-                  'keyType': _keyOptions[_keySelection],
-                  'cryptoType': _advanceOptions.type ?? CryptoType.sr25519,
-                  'derivePath': _advanceOptions.path ?? '',
-                  'finish': _keySelection == 2 ? true : null,
-                });
-                if (saved) {
-                  if (_supportBiometric && _enableBiometric) {
-                    await _authBiometric();
-                  }
+                        _keySelection == 2
+                            ? _buildNameAndPassInput()
+                            : AccountAdvanceOption(
+                                api: widget.service.plugin.sdk.api?.keyring,
+                                seed: _keyCtrlText,
+                                onChange: (AccountAdvanceOptionParams data) {
+                                  setState(() {
+                                    _advanceOptions = data;
+                                  });
 
-                  widget.service.plugin
-                      .changeAccount(widget.service.keyring.current);
-                  widget.service.store.assets.loadCache(
-                      widget.service.keyring.current,
-                      widget.service.plugin.basic.name);
-                  widget.service.store.account.resetNewAccount();
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
-                }
-              }
-            },
-          ),
-        ),
-      ],
-    );
+                                  _refreshAcccountAddress();
+                                },
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: RoundedButton(
+                    text: I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['next'],
+                    onPressed: () async {
+                      if (_formKey.currentState.validate() &&
+                          !(_advanceOptions.error ?? false)) {
+                        if (_keySelection == 2) {
+                          widget.service.store.account.setNewAccount(
+                              _nameCtrl.text.trim(), _passCtrl.text.trim());
+                        }
+                        widget.service.store.account
+                            .setNewAccountKey(_keyCtrl.text.trim(), "", "");
+                        final saved = await widget.onSubmit({
+                          'keyType': _keyOptions[_keySelection],
+                          'cryptoType':
+                              _advanceOptions.type ?? CryptoType.sr25519,
+                          'derivePath': _advanceOptions.path ?? '',
+                          'finish': _keySelection == 2 ? true : null,
+                        });
+                        if (saved) {
+                          if (_supportBiometric && _enableBiometric) {
+                            await _authBiometric();
+                          }
+
+                          widget.service.plugin
+                              .changeAccount(widget.service.keyring.current);
+                          widget.service.store.assets.loadCache(
+                              widget.service.keyring.current,
+                              widget.service.plugin.basic.name);
+                          widget.service.store.account.resetNewAccount();
+                          Navigator.popUntil(context, ModalRoute.withName('/'));
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ));
   }
 }

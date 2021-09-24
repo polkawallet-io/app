@@ -7,8 +7,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/addressFormItem.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -50,6 +50,23 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                 child: ListView(
                   padding: EdgeInsets.only(top: 16),
                   children: <Widget>[
+                    Visibility(
+                        visible: (widget.service.store.account.newAccount.icon
+                                    ?.length ??
+                                0) >
+                            0,
+                        child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 16, right: 16, bottom: 16),
+                            child: AddressFormItem(
+                                KeyPairData()
+                                  ..pubKey = widget
+                                      .service.store.account.newAccount.key
+                                  ..icon = widget
+                                      .service.store.account.newAccount.icon
+                                  ..address = widget
+                                      .service.store.account.newAccount.address,
+                                isShowSubtitle: false))),
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 16),
                       child: Text(
@@ -61,24 +78,6 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       padding: EdgeInsets.all(16),
                       child: Text(dic['create.warn4']),
                     ),
-                    widget.service.store.account.newAccount.icon.length > 0
-                        ? Padding(
-                            padding: EdgeInsets.only(left: 16, right: 16),
-                            child: Row(
-                              children: [
-                                AddressIcon(
-                                    widget.service.store.account.newAccount
-                                        .address,
-                                    svg: widget
-                                        .service.store.account.newAccount.icon),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: Text(
-                                        '${Fmt.address(widget.service.store.account.newAccount.address)}',
-                                        maxLines: 2))
-                              ],
-                            ))
-                        : Container(),
                     Container(
                       margin: EdgeInsets.all(16),
                       padding: EdgeInsets.all(16),

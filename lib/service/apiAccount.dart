@@ -22,10 +22,44 @@ class ApiAccount {
   final _biometricEnabledKey = 'biometric_enabled_';
   final _biometricPasswordKey = 'biometric_password_';
 
-  Future<void> generateAccount({CryptoType type=CryptoType.sr25519,
-  String path=""}) async {
-    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring.generateMnemonic(apiRoot.plugin.basic.ss58,cryptoType: type,derivePath: path,key: apiRoot.store.account.newAccount.key);
-    apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,generateMnemonicData.address,generateMnemonicData.svg);
+  Future<void> generateAccount(
+      {CryptoType type = CryptoType.sr25519, String path = ""}) async {
+    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
+        .generateMnemonic(apiRoot.plugin.basic.ss58,
+            cryptoType: type,
+            derivePath: path,
+            key: apiRoot.store.account.newAccount.key);
+    apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,
+        generateMnemonicData.address, generateMnemonicData.svg);
+  }
+
+  Future<void> addressFromMnemonic(
+      {CryptoType type = CryptoType.sr25519,
+      String path = "",
+      @required String mnemonic}) async {
+    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
+        .addressFromMnemonic(apiRoot.plugin.basic.ss58,
+            cryptoType: type, derivePath: path, mnemonic: mnemonic);
+    apiRoot.store.account.setNewAccountKey(
+        mnemonic, generateMnemonicData.address, generateMnemonicData.svg);
+  }
+
+  Future<void> addressFromRawSeed(
+      {CryptoType type = CryptoType.sr25519,
+      String path = "",
+      @required String rawSeed}) async {
+    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
+        .addressFromRawSeed(apiRoot.plugin.basic.ss58,
+            cryptoType: type, derivePath: path, rawSeed: rawSeed);
+    apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,
+        generateMnemonicData.address, generateMnemonicData.svg);
+  }
+
+  Future<void> addressFromKeyStore({@required Map keyStore}) async {
+    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
+        .addressFromKeyStore(apiRoot.plugin.basic.ss58, keyStore: keyStore);
+    apiRoot.store.account.setNewAccountKey(
+        "", generateMnemonicData[0][0], generateMnemonicData[0][1]);
   }
 
   Future<Map> importAccount({
