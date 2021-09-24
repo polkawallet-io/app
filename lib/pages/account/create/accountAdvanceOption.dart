@@ -158,7 +158,8 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
 }
 
 class AccountAdvanceOptionParams {
-  AccountAdvanceOptionParams({this.type, this.path, this.error});
+  AccountAdvanceOptionParams(
+      {this.type = CryptoType.sr25519, this.path = '', this.error = false});
   CryptoType type = CryptoType.sr25519;
   String path = '';
   bool error = false;
