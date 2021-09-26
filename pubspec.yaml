@@ -61,7 +61,7 @@ dependencies:
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: 64c7000c4c663d2cbf899e3cea9409682f57bb72
+      ref: 7950c74abe74494aed49662b37dcebdacf1013c1
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
