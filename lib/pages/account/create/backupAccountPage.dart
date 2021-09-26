@@ -51,10 +51,9 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                   padding: EdgeInsets.only(top: 16),
                   children: <Widget>[
                     Visibility(
-                        visible: (widget.service.store.account.newAccount.icon
-                                    ?.length ??
-                                0) >
-                            0,
+                        visible: widget.service.store.account.newAccount.icon
+                                ?.isNotEmpty ??
+                            false,
                         child: Padding(
                             padding: EdgeInsets.only(
                                 left: 16, right: 16, bottom: 16),
