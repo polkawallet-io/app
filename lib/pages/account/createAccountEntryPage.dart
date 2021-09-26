@@ -1,11 +1,12 @@
 import 'package:app/pages/account/create/createAccountPage.dart';
-import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
+
+import 'import/selectImportTypePage.dart';
 
 class CreateAccountEntryPage extends StatelessWidget {
   static final String route = '/account/entry';
@@ -39,7 +40,7 @@ class CreateAccountEntryPage extends StatelessWidget {
               child: RoundedButton(
                 text: dic['import'],
                 onPressed: () {
-                  Navigator.pushNamed(context, ImportAccountPage.route);
+                  Navigator.pushNamed(context, SelectImportTypePage.route);
                 },
               ),
             ),

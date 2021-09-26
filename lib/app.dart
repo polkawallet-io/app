@@ -4,7 +4,6 @@ import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
-import 'package:app/pages/account/import/importAccountPage.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
@@ -69,6 +68,12 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:uni_links/uni_links.dart';
+
+import 'pages/account/import/importAccountCreatePage.dart';
+import 'pages/account/import/importAccountFormKeyStore.dart';
+import 'pages/account/import/importAccountFormMnemonic.dart';
+import 'pages/account/import/importAccountFromRawSeed.dart';
+import 'pages/account/import/selectImportTypePage.dart';
 
 const get_storage_container = 'configuration';
 
@@ -442,8 +447,15 @@ class _WalletAppState extends State<WalletApp> {
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
-      ImportAccountPage.route: (_) => ImportAccountPage(_service),
       DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring),
+      SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
+      ImportAccountFormMnemonic.route: (_) =>
+          ImportAccountFormMnemonic(_service),
+      ImportAccountFromRawSeed.route: (_) => ImportAccountFromRawSeed(_service),
+      ImportAccountFromRawSeed.route: (_) => ImportAccountFromRawSeed(_service),
+      ImportAccountFormKeyStore.route: (_) =>
+          ImportAccountFormKeyStore(_service),
+      ImportAccountCreatePage.route: (_) => ImportAccountCreatePage(_service),
 
       /// assets
       AssetPage.route: (_) => AssetPage(_service),
