@@ -1,39 +1,45 @@
-import 'package:app/pages/account/create/createAccountForm.dart';
-import 'package:app/pages/account/import/importAccountForm.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/UI.dart';
-import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 
+import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 
-class ImportAccountPage extends StatefulWidget {
-  const ImportAccountPage(this.service);
-  final AppService service;
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:app/utils/i18n/index.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
-  static final String route = '/account/import';
+class ImportAccountAction {
+  static Future<void> authBiometric(
+      BuildContext context, AppService service) async {
+    final storeFile = await service.account.getBiometricPassStoreFile(
+      context,
+      service.keyring.current.pubKey,
+    );
 
-  @override
-  _ImportAccountPageState createState() => _ImportAccountPageState();
-}
+    try {
+      await storeFile.write(service.store.account.newAccount.password);
+      service.account.setBiometricEnabled(service.keyring.current.pubKey);
+    } catch (err) {
+      // ignore
+    }
+  }
 
-class _ImportAccountPageState extends State<ImportAccountPage> {
-  int _step = 0;
-  KeyType _keyType = KeyType.mnemonic;
-  CryptoType _cryptoType = CryptoType.sr25519;
-  String _derivePath = '';
-  bool _submitting = false;
-
-  Future<bool> _importAccount() async {
+  static Future<bool> onSubmit(
+      BuildContext context,
+      AppService service,
+      Map<String, dynamic> data,
+      Function(bool submitting) obSubmittingChang) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    setState(() {
-      _submitting = true;
-    });
+
+    final _keyType = KeyType.values
+        .firstWhere((e) => e.toString().contains(data['keyType']));
+    final _cryptoType = data['cryptoType'] ?? CryptoType.sr25519;
+    final _derivePath = data['derivePath'] ?? "";
+
+    obSubmittingChang(true);
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
@@ -46,15 +52,13 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
 
     try {
       /// import account
-      var acc = await widget.service.account.importAccount(
+      var acc = await service.account.importAccount(
         keyType: _keyType,
         cryptoType: _cryptoType,
         derivePath: _derivePath,
       );
       if (acc == null) {
-        setState(() {
-          _submitting = false;
-        });
+        obSubmittingChang(false);
         Navigator.of(context).pop();
 
         showCupertinoDialog(
@@ -78,28 +82,25 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       }
 
       /// check if account duplicate
-      final duplicated = await _checkAccountDuplicate(acc['pubKey']);
+      final duplicated =
+          await _checkAccountDuplicate(context, service, acc['pubKey']);
       // _checkAccountDuplicate always return false because account
       // was imported and duplicated account was updated.
       if (!duplicated) {
-        await widget.service.account.addAccount(
+        await service.account.addAccount(
           json: acc,
           keyType: _keyType,
           cryptoType: _cryptoType,
           derivePath: _derivePath,
         );
-        widget.service.account.setBiometricDisabled(acc['pubKey']);
+        service.account.setBiometricDisabled(acc['pubKey']);
       }
-      setState(() {
-        _submitting = false;
-      });
+      obSubmittingChang(false);
       Navigator.of(context).pop();
       return !duplicated;
     } on Exception catch (err) {
       Navigator.of(context).pop();
-      setState(() {
-        _submitting = false;
-      });
+      obSubmittingChang(false);
       if (err.toString().contains('Invalid')) {
         await showCupertinoDialog(
           context: context,
@@ -112,9 +113,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
                 CupertinoButton(
                   child: Text(dicCommon['ok']),
                   onPressed: () {
-                    setState(() {
-                      _step = 0;
-                    });
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -126,9 +125,7 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
         await AppUI.alertWASM(
           context,
           () {
-            setState(() {
-              _step = 0;
-            });
+            Navigator.of(context).pop();
           },
           isImport: true,
         );
@@ -137,18 +134,18 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
     }
   }
 
-  Future<bool> _checkAccountDuplicate(String pubKey) async {
+  static Future<bool> _checkAccountDuplicate(
+      BuildContext context, AppService service, String pubKey) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final index =
-        widget.service.keyring.keyPairs.indexWhere((i) => i.pubKey == pubKey);
+        service.keyring.keyPairs.indexWhere((i) => i.pubKey == pubKey);
     if (index > -1) {
       final duplicate = await showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Text(
-                Fmt.address(widget.service.keyring.keyPairs[index].address)),
+            title: Text(Fmt.address(service.keyring.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),
             actions: <Widget>[
               // CupertinoButton(
@@ -166,61 +163,5 @@ class _ImportAccountPageState extends State<ImportAccountPage> {
       return duplicate ?? false;
     }
     return false;
-  }
-
-  Future<bool> _onNext(Map<String, dynamic> data) async {
-    final keyType = KeyType.values
-        .firstWhere((e) => e.toString().contains(data['keyType']));
-    if (data['finish'] == null) {
-      setState(() {
-        _keyType = keyType;
-        _cryptoType = data['cryptoType'];
-        _derivePath = data['derivePath'];
-        _step = 1;
-      });
-      return false;
-    } else {
-      setState(() {
-        _keyType = keyType;
-        _cryptoType = data['cryptoType'];
-        _derivePath = data['derivePath'];
-      });
-      final saved = await _importAccount();
-      return saved;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    if (_step == 1) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(dic['import']),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              setState(() {
-                _step = 0;
-              });
-            },
-          ),
-        ),
-        body: SafeArea(
-          child: CreateAccountForm(
-            widget.service,
-            submitting: _submitting,
-            onSubmit: _importAccount,
-          ),
-        ),
-      );
-    }
-    return Scaffold(
-      appBar: AppBar(title: Text(dic['import']), centerTitle: true),
-      body: SafeArea(
-        child: ImportAccountForm(widget.service, _onNext),
-      ),
-    );
   }
 }
