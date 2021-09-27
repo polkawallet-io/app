@@ -36,15 +36,16 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
     selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
-        appBar: AppBar(title: Text(dic['import']), centerTitle: true),
-        body: SafeArea(
+      appBar: AppBar(title: Text(dic['import']), centerTitle: true),
+      body: SafeArea(
           child: Observer(
               builder: (_) => Column(
                     children: [
                       Expanded(
                           child: Form(
                               key: _formKey,
-                              child: Column(
+                              child: SingleChildScrollView(
+                                  child: Column(
                                 children: [
                                   Visibility(
                                       visible: widget.service.store.account
@@ -94,7 +95,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                     },
                                   ),
                                 ],
-                              ))),
+                              )))),
                       Container(
                         padding: EdgeInsets.all(16),
                         child: RoundedButton(
@@ -116,8 +117,8 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                         ),
                       ),
                     ],
-                  )),
-        ));
+                  ))),
+    );
   }
 
   String _validateInput(String v) {
