@@ -66,7 +66,8 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                       Expanded(
                           child: Form(
                               key: _formKey,
-                              child: Column(
+                              child: SingleChildScrollView(
+                                  child: Column(
                                 children: [
                                   Visibility(
                                       visible: widget.service.store.account
@@ -105,7 +106,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                   ),
                                   _buildNameAndPassInput(),
                                 ],
-                              ))),
+                              )))),
                       Container(
                         padding: EdgeInsets.all(16),
                         child: RoundedButton(
