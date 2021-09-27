@@ -4,11 +4,11 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -26,6 +26,12 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
 
   List<String> _wordsSelected;
   List<String> _wordsLeft;
+
+  @override
+  void dispose() {
+    widget.service.store.account.resetNewAccount();
+    super.dispose();
+  }
 
   @override
   void initState() {

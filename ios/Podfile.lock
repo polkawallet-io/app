@@ -251,16 +251,16 @@ SPEC CHECKSUMS:
   jpush_flutter: e75658a5342e3bfe22d9f3de5dfacd3ef44230c5
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
-  path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   update_app: 03c24a56ba197e2a036d5230b02e85825b76e045
-  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
-  webview_flutter: 5fb4def2bbd4339889ee14d045b605cefc5bc232
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
+  webview_flutter: 3603125dfd3bcbc9d8d418c3f80aeecf331c068b
 
 PODFILE CHECKSUM: 54d14ef5a14a0b3c64cc6d6bfeff28f02dcce905
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.10.1
