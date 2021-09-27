@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
             widget.connectedNode,
             (PolkawalletPlugin plugin) =>
                 widget.checkJSCodeUpdate(context, plugin),
-            () async => widget.switchNetwork(network_name_kusama),
+            (String name) async => widget.switchNetwork(name),
             _handleWalletConnect),
         // content: Container(),
       )

@@ -52,6 +52,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
@@ -74,6 +75,7 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
+import 'pages/profile/acalaCrowdLoan/acalaCrowdLoanPage.dart';
 
 const get_storage_container = 'configuration';
 
@@ -487,6 +489,7 @@ class _WalletAppState extends State<WalletApp> {
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
       TxDetailPage.route: (_) => TxDetailPage(_service),
+      AcalaCrowdLoanPage.route: (_) => AcalaCrowdLoanPage(_service),
 
       /// crowd loan
       CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
@@ -540,29 +543,33 @@ class _WalletAppState extends State<WalletApp> {
       onTapUp: (_) {
         FocusScope.of(context).focusedChild?.unfocus();
       },
-      child: MaterialApp(
-        title: 'Polkawallet',
-        theme: _theme ??
-            _getAppTheme(
-              widget.plugins[0].basic.primaryColor,
-              secondaryColor: widget.plugins[0].basic.gradientColor,
-            ),
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: [
-          AppLocalizationsDelegate(_locale ?? Locale('en', '')),
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: [
-          const Locale('en', ''),
-          const Locale('zh', ''),
-        ],
-        initialRoute: HomePage.route,
-        onGenerateRoute: (settings) => CupertinoPageRoute(
-            builder: routes[settings.name], settings: settings),
-        navigatorObservers: [FirebaseAnalyticsObserver(analytics: _analytics)],
-      ),
+      child: ScreenUtilInit(
+          designSize: Size(1170, 2532),
+          builder: () => MaterialApp(
+                title: 'Polkawallet',
+                theme: _theme ??
+                    _getAppTheme(
+                      widget.plugins[0].basic.primaryColor,
+                      secondaryColor: widget.plugins[0].basic.gradientColor,
+                    ),
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: [
+                  AppLocalizationsDelegate(_locale ?? Locale('en', '')),
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                supportedLocales: [
+                  const Locale('en', ''),
+                  const Locale('zh', ''),
+                ],
+                initialRoute: HomePage.route,
+                onGenerateRoute: (settings) => CupertinoPageRoute(
+                    builder: routes[settings.name], settings: settings),
+                navigatorObservers: [
+                  FirebaseAnalyticsObserver(analytics: _analytics)
+                ],
+              )),
     );
   }
 }
