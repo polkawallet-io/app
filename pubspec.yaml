@@ -61,7 +61,7 @@ dependencies:
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: 810fed242afdbe35ca89ecdb2c15d6e1c1c7f85f
+      ref: 7950c74abe74494aed49662b37dcebdacf1013c1
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
@@ -80,16 +80,16 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-#   polkawallet_plugin_kusama:
-#     path: ../../coding/polkawallet/polkawallet_plugin_kusama
-#   polkawallet_plugin_acala:
-#     path: ../../coding/polkawallet/polkawallet_plugin_acala
-#   polkawallet_plugin_karura:
-#     path: ../../coding/polkawallet/polkawallet_plugin_karura
-# #  polkawallet_plugin_bifrost:
-# #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
-#   polkawallet_plugin_laminar:
-#     path: ../../coding/polkawallet/polkawallet_plugin_laminar
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
+#  polkawallet_plugin_bifrost:
+#    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
+#  polkawallet_plugin_laminar:
+#    path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
