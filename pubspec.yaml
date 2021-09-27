@@ -36,6 +36,7 @@ dependencies:
   uni_links: ^0.5.1
   firebase_core: 1.5.0
   firebase_analytics: 8.3.0
+  flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
   jpush_flutter:
     git:
@@ -79,16 +80,16 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
-  polkawallet_plugin_karura:
-    path: ../../coding/polkawallet/polkawallet_plugin_karura
-#  polkawallet_plugin_bifrost:
-#    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
-  polkawallet_plugin_laminar:
-    path: ../../coding/polkawallet/polkawallet_plugin_laminar
+#   polkawallet_plugin_kusama:
+#     path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#   polkawallet_plugin_acala:
+#     path: ../../coding/polkawallet/polkawallet_plugin_acala
+#   polkawallet_plugin_karura:
+#     path: ../../coding/polkawallet/polkawallet_plugin_karura
+# #  polkawallet_plugin_bifrost:
+# #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
+#   polkawallet_plugin_laminar:
+#     path: ../../coding/polkawallet/polkawallet_plugin_laminar
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
