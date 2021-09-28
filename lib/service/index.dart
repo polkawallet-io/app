@@ -5,14 +5,16 @@ import 'package:app/store/index.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringETH.dart';
 
 class AppService {
-  AppService(
-      this.allPlugins, this.plugin, this.keyring, this.store, this.buildTarget);
+  AppService(this.allPlugins, this.plugin, this.keyring, this.keyringETH,
+      this.store, this.buildTarget);
 
   final List<PolkawalletPlugin> allPlugins;
   final PolkawalletPlugin plugin;
   final Keyring keyring;
+  final KeyringETH keyringETH;
   final AppStore store;
   final BuildTargets buildTarget;
 
