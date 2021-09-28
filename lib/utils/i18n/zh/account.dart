@@ -32,6 +32,7 @@ const Map<String, String> zhAccount = {
   'import.duplicate': '账户已存在，将覆盖原有账户。',
   'advanced': '高级选项',
   'path': '加密派生路径',
+  'derivationPath': '派生路径',
   'observe': '观察账户',
   'observe.brief':
       '\n将该地址标记为观察账户后，\n您可以在账户切换页面选择该地址，\n在钱包中观察该地址的资产、\n操作记录等信息。\n',

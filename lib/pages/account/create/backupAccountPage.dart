@@ -4,11 +4,11 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -29,7 +29,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
 
   @override
   void initState() {
-    widget.service.account.generateAccount();
+    widget.service.account.generateAccount(widget.service.plugin.pluginType);
     super.initState();
   }
 
@@ -65,6 +65,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                                       .service.store.account.newAccount.icon
                                   ..address = widget
                                       .service.store.account.newAccount.address,
+                                svg: widget
+                                    .service.store.account.newAccount.icon,
                                 isShowSubtitle: false))),
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 16),
@@ -90,14 +92,20 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       ),
                     ),
                     AccountAdvanceOption(
+                      widget.service.plugin.pluginType,
                       api: widget.service.plugin.sdk.api.keyring,
                       seed: widget.service.store.account.newAccount.key ?? '',
                       onChange: (data) {
                         setState(() {
                           _advanceOptions = data;
                           widget.service.account.generateAccount(
+                              widget.service.plugin.pluginType,
                               type: _advanceOptions.type,
-                              path: _advanceOptions.path);
+                              path: _advanceOptions.path,
+                              index:
+                                  double.tryParse(_advanceOptions.path) != null
+                                      ? int.parse(_advanceOptions.path)
+                                      : 0);
                         });
                       },
                     ),

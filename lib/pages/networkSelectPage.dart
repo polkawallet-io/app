@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class NetworkSelectPage extends StatefulWidget {
@@ -31,33 +31,42 @@ class NetworkSelectPage extends StatefulWidget {
   _NetworkSelectPageState createState() => _NetworkSelectPageState();
 }
 
-class _NetworkSelectPageState extends State<NetworkSelectPage> {
+class _NetworkSelectPageState extends State<NetworkSelectPage>
+    with SingleTickerProviderStateMixin {
   PluginDisabled _pluginDisabledSelected;
   PolkawalletPlugin _selectedNetwork;
   bool _networkChanging = false;
 
-  Future<void> _reloadNetwork() async {
-    setState(() {
-      _networkChanging = true;
-    });
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(
-              I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
-        );
-      },
-    );
-    await widget.changeNetwork(_selectedNetwork);
+  List<PolkawalletPlugin> substratePlugins;
+  List<PolkawalletPlugin> etheremPlugins;
 
-    if (mounted) {
-      Navigator.of(context).pop();
-      setState(() {
-        _networkChanging = false;
-      });
-    }
+  List<PluginDisabled> substrateDisabledPlugins;
+  List<PluginDisabled> etheremDisabledPlugins;
+
+  TabController tabController;
+
+  Future<void> _reloadNetwork() async {
+    // setState(() {
+    //   _networkChanging = true;
+    // });
+    // showCupertinoDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return CupertinoAlertDialog(
+    //       title: Text(
+    //           I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
+    //       content: Container(height: 64, child: CupertinoActivityIndicator()),
+    //     );
+    //   },
+    // );
+    // await widget.changeNetwork(_selectedNetwork);
+    //
+    // if (mounted) {
+    //   Navigator.of(context).pop();
+    //   setState(() {
+    //     _networkChanging = false;
+    //   });
+    // }
   }
 
   Future<void> _onSelect(KeyPairData i) async {
@@ -91,10 +100,16 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     Navigator.of(context).pushNamed(CreateAccountEntryPage.route);
   }
 
-  List<Widget> _buildAccountList() {
+  List<Widget> _buildAccountList(PluginType pluginType) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final name =
-        _selectedNetwork?.basic?.name ?? _pluginDisabledSelected?.name ?? '';
+    String name = '';
+    name = _selectedNetwork != null && pluginType == _selectedNetwork.pluginType
+        ? _selectedNetwork.basic.name
+        : _pluginDisabledSelected != null &&
+                pluginType == _pluginDisabledSelected.pluginType
+            ? _pluginDisabledSelected.name
+            : "";
+
     final List<Widget> res = [
       Text(
         name.toUpperCase(),
@@ -128,49 +143,96 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       ),
     ];
 
-    /// first item is current account
-    List<KeyPairData> accounts = [widget.service.keyring.current];
+    if (pluginType == PluginType.Etherem) {
+      /// first item is current account
+      List<KeyPairETHData> accounts = [];
+      if (widget.service.keyringETH.current != null) {
+        accounts = [widget.service.keyringETH.current];
+      }
 
-    /// add optional accounts
-    accounts.addAll(widget.service.keyring.optionals);
+      /// add optional accounts
+      accounts.addAll(widget.service.keyringETH.optionals);
 
-    if (_selectedNetwork != null) {
       res.addAll(accounts.map((i) {
-        final bool isCurrentNetwork =
-            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-        final addressMap = widget.service.keyring.store
-            .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
-        final address = addressMap != null
-            ? addressMap[i.pubKey]
-            : widget.service.keyring.current.address;
-        final String accIndex = isCurrentNetwork &&
-                i.indexInfo != null &&
-                i.indexInfo['accountIndex'] != null
-            ? '${i.indexInfo['accountIndex']}\n'
-            : '';
-        final double padding = accIndex.isEmpty ? 0 : 7;
-        final isCurrent = isCurrentNetwork &&
-            i.address == widget.service.keyring.current.address;
+        // // print(i.toJson());
+        // final bool isCurrentNetwork =
+        //     _selectedNetwork?.basic?.name == widget.service.plugin.basic.name;
+        // final addressMap = widget.service.keyring.store
+        //     .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
+        // final address = addressMap != null
+        //     ? addressMap[i.pubKey]
+        //     : widget.service.keyring.current.address;
+        // // final String accIndex = isCurrentNetwork &&
+        // //         i.indexInfo != null &&
+        // //         i.indexInfo['accountIndex'] != null
+        // //     ? '${i.indexInfo['accountIndex']}\n'
+        // //     : '';
+        // final double padding = 0;
+        // final isCurrent = isCurrentNetwork &&
+        //     i.address == widget.service.keyring.current.address;
         return RoundedCard(
-          border: isCurrent
-              ? Border.all(color: Theme.of(context).primaryColorLight)
-              : Border.all(color: Theme.of(context).cardColor),
+          border: Border.all(color: Theme.of(context).cardColor),
           margin: EdgeInsets.only(bottom: 16),
-          padding: EdgeInsets.only(top: padding, bottom: padding),
+          padding: EdgeInsets.only(top: 0, bottom: 0),
           child: ListTile(
-            leading: AddressIcon(address, svg: i.icon),
-            title: Text(UI.accountName(context, i)),
-            subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
-            trailing: isCurrent
-                ? Icon(
-                    Icons.check_circle,
-                    color: Theme.of(context).primaryColor,
-                  )
-                : Container(width: 8),
-            onTap: _networkChanging ? null : () => _onSelect(i),
+            // leading: AddressIcon(address, svg: i.icon),
+            title: Text(i.name ?? ""),
+            subtitle: Text('${Fmt.address(i.address)}', maxLines: 2),
+            trailing: Container(width: 8),
+            onTap: null,
           ),
         );
       }).toList());
+    } else {
+      /// first item is current account
+      List<KeyPairData> accounts = [];
+      if (widget.service.keyring.current != null) {
+        accounts = [widget.service.keyring.current];
+      }
+
+      /// add optional accounts
+      accounts.addAll(widget.service.keyring.optionals);
+
+      if (_selectedNetwork != null) {
+        res.addAll(accounts.map((i) {
+          print(i.icon);
+          final bool isCurrentNetwork =
+              _selectedNetwork?.basic?.name == widget.service.plugin.basic.name;
+          final addressMap = widget.service.keyring.store
+              .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
+          final address = addressMap != null
+              ? addressMap[i.pubKey]
+              : widget.service.keyring.current.address;
+          final String accIndex = isCurrentNetwork &&
+                  i.indexInfo != null &&
+                  i.indexInfo['accountIndex'] != null
+              ? '${i.indexInfo['accountIndex']}\n'
+              : '';
+          final double padding = accIndex.isEmpty ? 0 : 7;
+          final isCurrent = isCurrentNetwork &&
+              i.address == widget.service.keyring.current.address;
+          print(i.icon);
+          return RoundedCard(
+            border: isCurrent
+                ? Border.all(color: Theme.of(context).primaryColorLight)
+                : Border.all(color: Theme.of(context).cardColor),
+            margin: EdgeInsets.only(bottom: 16),
+            padding: EdgeInsets.only(top: padding, bottom: padding),
+            child: ListTile(
+              leading: AddressIcon(address, svg: i.icon),
+              title: Text(UI.accountName(context, i)),
+              subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
+              trailing: isCurrent
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).primaryColor,
+                    )
+                  : Container(width: 8),
+              onTap: _networkChanging ? null : () => _onSelect(i),
+            ),
+          );
+        }).toList());
+      }
     }
     return res;
   }
@@ -188,6 +250,21 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   @override
   void initState() {
     super.initState();
+    tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+
+    this.substratePlugins = widget.plugins
+        .where((element) => element.pluginType == PluginType.Substrate)
+        .toList();
+    this.etheremPlugins = widget.plugins
+        .where((element) => element.pluginType == PluginType.Etherem)
+        .toList();
+
+    this.substrateDisabledPlugins = widget.disabledPlugins
+        .where((element) => element.pluginType == PluginType.Substrate)
+        .toList();
+    this.etheremDisabledPlugins = widget.disabledPlugins
+        .where((element) => element.pluginType == PluginType.Etherem)
+        .toList();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -196,97 +273,133 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     });
   }
 
+  Widget _buildSubstrate(BuildContext context, List<PolkawalletPlugin> plugins,
+      List<PluginDisabled> disabledPlugins) {
+    if (plugins.length == 0 && disabledPlugins.length == 0) {
+      return Container();
+    }
+    return Row(
+      children: <Widget>[
+        // left side bar
+        Stack(
+          children: [
+            Container(
+              width: 56,
+              // color: Theme.of(context).cardColor,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey[100],
+                    blurRadius: 24.0,
+                    spreadRadius: 0,
+                  )
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...plugins.map((e) {
+                    final isCurrent =
+                        e.basic.name == _selectedNetwork?.basic?.name &&
+                            e.pluginType == _selectedNetwork.pluginType;
+                    return isCurrent
+                        ? _NetworkItemActive(icon: e.basic.icon)
+                        : Container(
+                            margin: EdgeInsets.all(8),
+                            child: IconButton(
+                              padding: EdgeInsets.all(8),
+                              icon: isCurrent
+                                  ? e.basic.icon
+                                  : e.basic.iconDisabled,
+                              onPressed: () {
+                                if (!isCurrent) {
+                                  setState(() {
+                                    _selectedNetwork = e;
+                                    _pluginDisabledSelected = null;
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                  }).toList(),
+                  ...disabledPlugins.map((e) {
+                    final isCurrent = e.name == _pluginDisabledSelected?.name &&
+                        e.pluginType == _pluginDisabledSelected.pluginType;
+                    return isCurrent
+                        ? _NetworkItemActive(icon: e.icon)
+                        : Container(
+                            margin: EdgeInsets.all(8),
+                            child: IconButton(
+                              padding: EdgeInsets.all(8),
+                              icon: e.icon,
+                              onPressed: () {
+                                if (_pluginDisabledSelected?.name != e.name) {
+                                  setState(() {
+                                    _pluginDisabledSelected = e;
+                                    _selectedNetwork = null;
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                  }).toList()
+                ],
+                // children: sideBar,
+              ),
+            )
+          ],
+        ),
+        Expanded(
+          child: Visibility(
+              visible: (plugins.length > 0 &&
+                      plugins[0].pluginType == _selectedNetwork?.pluginType) ||
+                  (disabledPlugins.length > 0 &&
+                      disabledPlugins[0].pluginType ==
+                          _pluginDisabledSelected.pluginType),
+              child: ListView(
+                padding: EdgeInsets.all(16),
+                children: _pluginDisabledSelected == null
+                    ? _buildAccountList(plugins.length > 0
+                        ? plugins[0].pluginType
+                        : PluginType.Etherem)
+                    : _buildPluginDisabled(),
+              )),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(I18n.of(context)
-            .getDic(i18n_full_dic_app, 'profile')['setting.network']),
-        centerTitle: true,
-      ),
-      body: Row(
-        children: <Widget>[
-          // left side bar
-          Stack(
-            children: [
-              Container(
-                width: 56,
-                // color: Theme.of(context).cardColor,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey[100],
-                      blurRadius: 24.0,
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...widget.plugins.map((e) {
-                      final isCurrent =
-                          e.basic.name == _selectedNetwork?.basic?.name;
-                      return isCurrent
-                          ? _NetworkItemActive(icon: e.basic.icon)
-                          : Container(
-                              margin: EdgeInsets.all(8),
-                              child: IconButton(
-                                padding: EdgeInsets.all(8),
-                                icon: isCurrent
-                                    ? e.basic.icon
-                                    : e.basic.iconDisabled,
-                                onPressed: () {
-                                  if (!isCurrent) {
-                                    setState(() {
-                                      _selectedNetwork = e;
-                                      _pluginDisabledSelected = null;
-                                    });
-                                  }
-                                },
-                              ),
-                            );
-                    }).toList(),
-                    ...widget.disabledPlugins.map((e) {
-                      final isCurrent = e.name == _pluginDisabledSelected?.name;
-                      return isCurrent
-                          ? _NetworkItemActive(icon: e.icon)
-                          : Container(
-                              margin: EdgeInsets.all(8),
-                              child: IconButton(
-                                padding: EdgeInsets.all(8),
-                                icon: e.icon,
-                                onPressed: () {
-                                  if (_pluginDisabledSelected?.name != e.name) {
-                                    setState(() {
-                                      _pluginDisabledSelected = e;
-                                      _selectedNetwork = null;
-                                    });
-                                  }
-                                },
-                              ),
-                            );
-                    }).toList()
-                  ],
-                  // children: sideBar,
-                ),
-              )
-            ],
-          ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(16),
-              children: _pluginDisabledSelected == null
-                  ? _buildAccountList()
-                  : _buildPluginDisabled(),
-            ),
-          )
-        ],
-      ),
-    );
+        appBar: AppBar(
+            title: Text(I18n.of(context)
+                .getDic(i18n_full_dic_app, 'profile')['setting.network']),
+            centerTitle: true,
+            bottom: PreferredSize(
+                preferredSize: Size.fromHeight(48),
+                child: Material(
+                  color: Colors.white,
+                  child: TabBar(
+                      labelColor: Color.fromARGB(255, 0, 0, 0),
+                      indicatorColor: Color.fromARGB(255, 0, 0, 0),
+                      unselectedLabelColor:
+                          Color.fromARGB((0.6 * 255).toInt(), 0, 0, 0),
+                      controller: this.tabController,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      indicatorPadding: EdgeInsets.only(bottom: 17),
+                      indicatorWeight: 1,
+                      tabs: [Tab(text: "Substrate"), Tab(text: "Etherem")]),
+                ))),
+        body: TabBarView(controller: this.tabController, children: [
+          _buildSubstrate(
+              context, this.substratePlugins, this.substrateDisabledPlugins),
+          _buildSubstrate(
+              context, this.etheremPlugins, this.etheremDisabledPlugins)
+        ]));
   }
 }
 

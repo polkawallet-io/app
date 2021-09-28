@@ -37,6 +37,7 @@ const Map<String, String> enAccount = {
   'import.duplicate': 'account exist, it will override the existing account.',
   'advanced': 'Advanced Options',
   'path': 'Secret derivation path',
+  'derivationPath': 'Derivation path',
   'observe': 'Observation',
   'observe.brief':
       '\nMark this address as observation,\nthen you can select this address\nin account select page, to watch\nit\'s assets and actions\n',
