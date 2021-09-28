@@ -1,6 +1,5 @@
 import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/service/walletApi.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,6 +11,8 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+
+import 'plugin_test_eth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,12 +29,13 @@ void main() async {
     PluginChainX(),
     PluginEdgeware(),
     PluginLaminar(),
+    PluginTestETH()
   ];
 
-  final pluginsConfig = await WalletApi.getPluginsConfig();
-  if (pluginsConfig != null) {
-    plugins.removeWhere((i) => !pluginsConfig[i.basic.name]['visible']);
-  }
+  // final pluginsConfig = await WalletApi.getPluginsConfig();
+  // if (pluginsConfig != null) {
+  //   plugins.removeWhere((i) => !pluginsConfig[i.basic.name]['visible']);
+  // }
 
   runApp(WalletApp(
       plugins,

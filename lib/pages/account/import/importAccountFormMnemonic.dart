@@ -3,14 +3,13 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_sdk/api/apiKeyring.dart';
 
-import 'importAccountAction.dart';
 import 'importAccountCreatePage.dart';
 
 class ImportAccountFormMnemonic extends StatefulWidget {
@@ -83,6 +82,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                     ),
                                   ),
                                   AccountAdvanceOption(
+                                    widget.service.plugin.pluginType,
                                     api: widget.service.plugin.sdk.api?.keyring,
                                     seed: _keyCtrl.text,
                                     onChange:

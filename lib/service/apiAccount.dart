@@ -7,8 +7,10 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
@@ -22,13 +24,21 @@ class ApiAccount {
   final _biometricEnabledKey = 'biometric_enabled_';
   final _biometricPasswordKey = 'biometric_password_';
 
-  Future<void> generateAccount(
-      {CryptoType type = CryptoType.sr25519, String path = ""}) async {
-    final generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
-        .generateMnemonic(apiRoot.plugin.basic.ss58,
+  Future<void> generateAccount(PluginType pluginType,
+      {CryptoType type = CryptoType.sr25519,
+      String path = "",
+      String mnemonic,
+      int index}) async {
+    print(pluginType);
+    final generateMnemonicData = pluginType == PluginType.Substrate
+        ? await apiRoot.plugin.sdk.api.keyring.generateMnemonic(
+            apiRoot.plugin.basic.ss58,
             cryptoType: type,
             derivePath: path,
-            key: apiRoot.store.account.newAccount.key);
+            key: apiRoot.store.account.newAccount.key)
+        : await apiRoot.plugin.sdk.api.ethKeyring
+            .generateMnemonic(index: index, mnemonic: mnemonic);
+    print(generateMnemonicData.toJson());
     apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,
         generateMnemonicData.address, generateMnemonicData.svg);
   }
@@ -62,12 +72,12 @@ class ApiAccount {
         "", generateMnemonicData[0][0], generateMnemonicData[0][1]);
   }
 
-  Future<Map> importAccount({
-    KeyType keyType = KeyType.mnemonic,
-    CryptoType cryptoType = CryptoType.sr25519,
-    String derivePath = '',
-    bool isFromCreatePage = false,
-  }) async {
+  Future<Map> importAccount(
+      {KeyType keyType = KeyType.mnemonic,
+      CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      bool isFromCreatePage = false,
+      ETH_KeyType ethKeyType = ETH_KeyType.mnemonic}) async {
     final acc = apiRoot.store.account.newAccount;
     if (isFromCreatePage &&
         (acc.name == null ||
@@ -76,21 +86,33 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('create account failed');
     }
-    final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
-      apiRoot.keyring,
-      keyType: keyType,
-      cryptoType: cryptoType,
-      derivePath: derivePath,
-      key: acc.key,
-      name: acc.name,
-      password: acc.password,
-    );
-    return res;
+    if (apiRoot.plugin.pluginType == PluginType.Substrate) {
+      final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
+        apiRoot.keyring,
+        keyType: keyType,
+        cryptoType: cryptoType,
+        derivePath: derivePath,
+        key: acc.key,
+        name: acc.name,
+        password: acc.password,
+      );
+      return res;
+    } else {
+      final res = await apiRoot.plugin.sdk.api.ethKeyring.importAccount(
+        keyType: ethKeyType,
+        derivePath: derivePath,
+        key: acc.key,
+        name: acc.name,
+        password: acc.password,
+      );
+      return res;
+    }
   }
 
-  Future<KeyPairData> addAccount({
+  Future<void> addAccount({
     Map json,
     KeyType keyType = KeyType.mnemonic,
+    ETH_KeyType ethKeyType = ETH_KeyType.mnemonic,
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
     bool isFromCreatePage = false,
@@ -103,13 +125,23 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('save account failed');
     }
-    final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
-      apiRoot.keyring,
-      keyType: keyType,
-      acc: json,
-      password: acc.password,
-    );
-    return res;
+    if (apiRoot.plugin.pluginType == PluginType.Substrate) {
+      final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
+        apiRoot.keyring,
+        keyType: keyType,
+        acc: json,
+        password: acc.password,
+      );
+      return res;
+    } else {
+      final res = await apiRoot.plugin.sdk.api.ethKeyring.addAccount(
+        apiRoot.keyringETH,
+        keyType: ethKeyType,
+        acc: json,
+        password: acc.password,
+      );
+      return res;
+    }
   }
 
   void setBiometricEnabled(String pubKey) {

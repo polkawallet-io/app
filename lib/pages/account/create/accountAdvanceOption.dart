@@ -1,16 +1,17 @@
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class AccountAdvanceOption extends StatefulWidget {
-  AccountAdvanceOption({this.api, this.seed, this.onChange});
+  AccountAdvanceOption(this.pluginType, {this.api, this.seed, this.onChange});
 
   final ApiKeyring api;
   final Function(AccountAdvanceOptionParams) onChange;
   final String seed;
+  final PluginType pluginType;
 
   @override
   _AccountAdvanceOption createState() => _AccountAdvanceOption();
@@ -18,6 +19,7 @@ class AccountAdvanceOption extends StatefulWidget {
 
 class _AccountAdvanceOption extends State<AccountAdvanceOption> {
   final TextEditingController _pathCtrl = new TextEditingController();
+  AccountAdvanceOptionParams _params = AccountAdvanceOptionParams(path: "0");
 
   final List<CryptoType> _typeOptions = [
     CryptoType.sr25519,
@@ -98,62 +100,116 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
             },
           ),
         ),
-        _expanded
-            ? ListTile(
-                title: Text(dic['import.encrypt']),
-                subtitle:
-                    Text(_typeOptions[_typeSelection].toString().split('.')[1]),
-                trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                onTap: () {
-                  showCupertinoModalPopup(
-                    context: context,
-                    builder: (_) => Container(
-                      height: MediaQuery.of(context).copyWith().size.height / 3,
-                      child: CupertinoPicker(
-                        backgroundColor: Colors.white,
-                        itemExtent: 56,
-                        scrollController: FixedExtentScrollController(
-                            initialItem: _typeSelection),
-                        children: _typeOptions
-                            .map((i) => Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text(i.toString().split('.')[1])))
-                            .toList(),
-                        onSelectedItemChanged: (v) {
-                          setState(() {
-                            _typeSelection = v;
-                          });
-                          if (_pathCtrl.text.isNotEmpty) {
-                            _checkDerivePath(_pathCtrl.text, forceCheck: true);
-                          }
-                          widget.onChange(AccountAdvanceOptionParams(
-                            type: _typeOptions[v],
-                            // path: _derivePath,
-                            path: _pathCtrl.text,
-                          ));
+        widget.pluginType == PluginType.Substrate
+            ? Column(
+                children: [
+                  Visibility(
+                      visible: _expanded,
+                      child: ListTile(
+                        title: Text(dic['import.encrypt']),
+                        subtitle: Text(_typeOptions[_typeSelection]
+                            .toString()
+                            .split('.')[1]),
+                        trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                        onTap: () {
+                          showCupertinoModalPopup(
+                            context: context,
+                            builder: (_) => Container(
+                              height: MediaQuery.of(context)
+                                      .copyWith()
+                                      .size
+                                      .height /
+                                  3,
+                              child: CupertinoPicker(
+                                backgroundColor: Colors.white,
+                                itemExtent: 56,
+                                scrollController: FixedExtentScrollController(
+                                    initialItem: _typeSelection),
+                                children: _typeOptions
+                                    .map((i) => Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child:
+                                            Text(i.toString().split('.')[1])))
+                                    .toList(),
+                                onSelectedItemChanged: (v) {
+                                  setState(() {
+                                    _typeSelection = v;
+                                  });
+                                  if (_pathCtrl.text.isNotEmpty) {
+                                    _checkDerivePath(_pathCtrl.text,
+                                        forceCheck: true);
+                                  }
+                                  widget.onChange(AccountAdvanceOptionParams(
+                                    type: _typeOptions[v],
+                                    // path: _derivePath,
+                                    path: _pathCtrl.text,
+                                  ));
+                                },
+                              ),
+                            ),
+                          );
                         },
+                      )),
+                  Visibility(
+                      visible: _expanded,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            hintText: '//hard/soft///password',
+                            labelText: dic['path'],
+                          ),
+                          controller: _pathCtrl,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _checkDerivePath,
+                        ),
+                      )),
+                ],
+              )
+            : Visibility(
+                visible: _expanded,
+                child: ListTile(
+                  title: Text(dic['derivationPath']),
+                  subtitle: Text(_params.path.isNotEmpty
+                      ? "m/44'/60'/0'/0/${_params.path}"
+                      : ""),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: () {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (_) => Container(
+                        height:
+                            MediaQuery.of(context).copyWith().size.height / 3,
+                        child: CupertinoPicker(
+                          backgroundColor: Colors.white,
+                          itemExtent: 56,
+                          scrollController: FixedExtentScrollController(
+                              initialItem: int.parse(_params.path)),
+                          children: ethIndex(),
+                          onSelectedItemChanged: (v) {
+                            setState(() {
+                              _params = AccountAdvanceOptionParams(
+                                path: "$v",
+                              );
+                              widget.onChange(_params);
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )
-            : Container(),
-        _expanded
-            ? Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: '//hard/soft///password',
-                    labelText: dic['path'],
-                  ),
-                  controller: _pathCtrl,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: _checkDerivePath,
-                ),
-              )
-            : Container(),
+                    );
+                  },
+                )),
       ],
     );
+  }
+
+  List<Widget> ethIndex() {
+    List<Widget> widgets = [];
+    for (int i = 0; i <= 99; i++) {
+      widgets.add(Padding(
+          padding: EdgeInsets.all(12), child: Text("m/44'/60'/0'/0/$i")));
+    }
+    return widgets;
   }
 }
 

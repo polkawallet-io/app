@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,9 @@ void main() async {
       plugins,
       [
         PluginDisabled(
-            'chainx', Image.asset('assets/images/public/chainx_gray.png'))
+            'chainx',
+            Image.asset('assets/images/public/chainx_gray.png'),
+            PluginType.Substrate)
       ],
       BuildTargets.dev));
 }
