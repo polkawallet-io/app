@@ -1,16 +1,12 @@
 import 'dart:async';
 
-import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acalaCrowdLoanPage.dart';
 import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
-import 'package:app/pages/public/karCrowdLoanPage.dart';
-import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_kusama/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
