@@ -29,7 +29,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
 
   @override
   void initState() {
-    widget.service.account.generateAccount(widget.service.plugin.pluginType);
+    widget.service.account.generateAccount();
     super.initState();
   }
 
@@ -99,7 +99,6 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                         setState(() {
                           _advanceOptions = data;
                           widget.service.account.generateAccount(
-                              widget.service.plugin.pluginType,
                               type: _advanceOptions.type,
                               path: _advanceOptions.path,
                               index:

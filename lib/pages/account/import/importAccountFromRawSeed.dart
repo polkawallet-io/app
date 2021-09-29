@@ -3,6 +3,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -80,19 +81,24 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                       onChanged: _onKeyChange,
                                     ),
                                   ),
-                                  AccountAdvanceOption(
-                                    widget.service.plugin.pluginType,
-                                    api: widget.service.plugin.sdk.api?.keyring,
-                                    seed: _keyCtrl.text,
-                                    onChange:
-                                        (AccountAdvanceOptionParams data) {
-                                      setState(() {
-                                        _advanceOptions = data;
-                                      });
+                                  Visibility(
+                                      visible:
+                                          widget.service.plugin.pluginType !=
+                                              PluginType.Etherem,
+                                      child: AccountAdvanceOption(
+                                        widget.service.plugin.pluginType,
+                                        api: widget
+                                            .service.plugin.sdk.api?.keyring,
+                                        seed: _keyCtrl.text,
+                                        onChange:
+                                            (AccountAdvanceOptionParams data) {
+                                          setState(() {
+                                            _advanceOptions = data;
+                                          });
 
-                                      _refreshAcccountAddress();
-                                    },
-                                  ),
+                                          _refreshAcccountAddress();
+                                        },
+                                      )),
                                 ],
                               )))),
                       Container(
@@ -132,6 +138,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
 
   void _onKeyChange(String v) {
     _refreshAcccountAddress();
+    widget.service.store.account.setNewAccountKey(_keyCtrl.text, "", "");
   }
 
   void _refreshAcccountAddress() {

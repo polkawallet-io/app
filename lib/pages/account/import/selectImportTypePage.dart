@@ -31,7 +31,7 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
     if (widget.service.plugin.pluginType == PluginType.Etherem) {
       _keyOptions = [
         'mnemonic',
-        'rawSeed',
+        'privateKey',
         'keystore',
       ];
     }

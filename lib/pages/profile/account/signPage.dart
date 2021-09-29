@@ -87,8 +87,7 @@ class _SignMessagePageState extends State<SignMessagePage>
             );
       setState(() {
         if (widget.service.plugin.pluginType == PluginType.Etherem) {
-          _verifyResult.isValid =
-              res["signer"] == widget.service.keyringETH.current.address;
+          _verifyResult.isValid = res["signer"] == _verifySigner.address;
         } else {
           _verifyResult = res;
         }
