@@ -2,10 +2,10 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
@@ -46,8 +46,12 @@ class _SignMessagePageState extends State<SignMessagePage>
       setState(() {
         _submitting = true;
       });
-      final password = await widget.service.account
-          .getPassword(context, widget.service.keyring.current);
+      final password = await widget.service.account.getPassword(
+          context,
+          widget.service.plugin.pluginType == PluginType.Etherem
+              ? widget.service.keyringETH.current
+              : widget.service.keyring.current,
+          pluginType: widget.service.plugin.pluginType);
 
       final params = SignAsExtensionParam();
       params.msgType = "pub(bytes.sign)";
@@ -56,8 +60,11 @@ class _SignMessagePageState extends State<SignMessagePage>
         "data": _messageCtrl.text,
       };
 
-      final res = await widget.service.plugin.sdk.api.keyring
-          .signAsExtension(password, params);
+      final res = widget.service.plugin.pluginType == PluginType.Etherem
+          ? await widget.service.plugin.sdk.api.ethKeyring.signMessage(password,
+              _messageCtrl.text, widget.service.keyringETH.current.keystore)
+          : await widget.service.plugin.sdk.api.keyring
+              .signAsExtension(password, params);
       setState(() {
         _signResCtrl.text = res.signature;
         _submitting = false;
@@ -70,13 +77,21 @@ class _SignMessagePageState extends State<SignMessagePage>
       setState(() {
         _submitting = true;
       });
-      final res = await widget.service.plugin.sdk.api.keyring.signatureVerify(
-        _messageVerifyCtrl.text,
-        _signatureCtrl.text,
-        _verifySigner.address,
-      );
+      var res = widget.service.plugin.pluginType == PluginType.Etherem
+          ? await widget.service.plugin.sdk.api.ethKeyring
+              .signatureVerify(_messageVerifyCtrl.text, _signatureCtrl.text)
+          : await widget.service.plugin.sdk.api.keyring.signatureVerify(
+              _messageVerifyCtrl.text,
+              _signatureCtrl.text,
+              _verifySigner.address,
+            );
       setState(() {
-        _verifyResult = res;
+        if (widget.service.plugin.pluginType == PluginType.Etherem) {
+          _verifyResult.isValid =
+              res["signer"] == widget.service.keyringETH.current.address;
+        } else {
+          _verifyResult = res;
+        }
         _submitting = false;
       });
     }
@@ -89,7 +104,9 @@ class _SignMessagePageState extends State<SignMessagePage>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _verifySigner = widget.service.keyring.current;
+        _verifySigner = widget.service.plugin.pluginType == PluginType.Etherem
+            ? widget.service.keyringETH.current
+            : widget.service.keyring.current;
       });
     });
   }
@@ -134,9 +151,14 @@ class _SignMessagePageState extends State<SignMessagePage>
                       Padding(
                         padding: EdgeInsets.only(top: 16),
                         child: AddressFormItem(
-                          widget.service.keyring.current,
+                          widget.service.plugin.pluginType == PluginType.Etherem
+                              ? widget.service.keyringETH.current
+                              : widget.service.keyring.current,
                           label: dicCommon['account'],
-                          svg: widget.service.keyring.current.icon,
+                          svg: widget.service.plugin.pluginType ==
+                                  PluginType.Etherem
+                              ? widget.service.keyringETH.current.icon
+                              : widget.service.keyring.current.icon,
                         ),
                       ),
                       TextFormField(
@@ -190,10 +212,15 @@ class _SignMessagePageState extends State<SignMessagePage>
                         padding: EdgeInsets.only(top: 16),
                         child: AddressInputField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.allWithContacts,
+                          widget.service.plugin.pluginType == PluginType.Etherem
+                              ? widget.service.keyringETH.allWithContacts
+                              : widget.service.keyring.allWithContacts,
                           label: dicCommon['account'],
-                          initialValue:
-                              _verifySigner ?? widget.service.keyring.current,
+                          initialValue: _verifySigner ??
+                              (widget.service.plugin.pluginType ==
+                                      PluginType.Etherem
+                                  ? widget.service.keyringETH.current
+                                  : widget.service.keyring.current),
                           onChanged: (KeyPairData acc) {
                             setState(() {
                               _verifySigner = acc;
@@ -236,7 +263,12 @@ class _SignMessagePageState extends State<SignMessagePage>
                       ),
                       Container(height: 16),
                       InfoItemRow('isValid', '${_verifyResult.isValid ?? '-'}'),
-                      InfoItemRow('crypto', '${_verifyResult.crypto ?? '-'}'),
+                      Visibility(
+                        visible: widget.service.plugin.pluginType ==
+                            PluginType.Substrate,
+                        child: InfoItemRow(
+                            'crypto', '${_verifyResult.crypto ?? '-'}'),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(top: 16),
                         child: RoundedButton(

@@ -5,10 +5,11 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class ExportAccountPage extends StatelessWidget {
   ExportAccountPage(this.service);
@@ -19,11 +20,17 @@ class ExportAccountPage extends StatelessWidget {
   Future<void> _onExport(BuildContext context) async {
     final password = await service.account.getPassword(
       context,
-      service.keyring.current,
+      service.plugin.pluginType == PluginType.Etherem
+          ? service.keyringETH.current
+          : service.keyring.current,
+      pluginType: service.plugin.pluginType,
     );
     if (password != null) {
-      final seed = await service.plugin.sdk.api.keyring
-          .getDecryptedSeed(service.keyring, password);
+      final seed = service.plugin.pluginType == PluginType.Etherem
+          ? await service.plugin.sdk.api.ethKeyring
+              .getDecryptedSeed(service.keyringETH, password)
+          : await service.plugin.sdk.api.keyring
+              .getDecryptedSeed(service.keyring, password);
       Navigator.of(context).pushNamed(ExportResultPage.route, arguments: seed);
     }
   }
@@ -40,10 +47,15 @@ class ExportAccountPage extends StatelessWidget {
             title: Text(dicAcc['keystore']),
             trailing: Icon(Icons.arrow_forward_ios, size: 18),
             onTap: () {
-              Map json = service.keyring.current.toJson();
-              json.remove('name');
-              json['meta']['name'] = service.keyring.current.name;
-              json.remove('icon');
+              Map json;
+              if (service.plugin.pluginType == PluginType.Etherem) {
+                json = jsonDecode(service.keyringETH.current.keystore);
+              } else {
+                json = service.keyring.current.toJson();
+                json.remove('name');
+                json['meta']['name'] = service.keyring.current.name;
+                json.remove('icon');
+              }
               final data = SeedBackupData();
               data.seed = jsonEncode(json);
               data.type = 'keystore';
@@ -52,8 +64,11 @@ class ExportAccountPage extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future: service.keyring.store.checkSeedExist(
-                KeyType.mnemonic, service.keyring.current.pubKey),
+            future: service.plugin.pluginType == PluginType.Etherem
+                ? service.keyringETH.store.checkSeedExist(
+                    ETH_KeyType.mnemonic, service.keyringETH.current.address)
+                : service.keyring.store.checkSeedExist(
+                    KeyType.mnemonic, service.keyring.current.pubKey),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData && snapshot.data == true) {
                 return ListTile(
@@ -67,12 +82,17 @@ class ExportAccountPage extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future: service.keyring.store.checkSeedExist(
-                KeyType.rawSeed, service.keyring.current.pubKey),
+            future: service.plugin.pluginType == PluginType.Etherem
+                ? service.keyringETH.store.checkSeedExist(
+                    ETH_KeyType.privateKey, service.keyringETH.current.address)
+                : service.keyring.store.checkSeedExist(
+                    KeyType.rawSeed, service.keyring.current.pubKey),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData && snapshot.data == true) {
                 return ListTile(
-                  title: Text(dicAcc['rawSeed']),
+                  title: Text(service.plugin.pluginType == PluginType.Etherem
+                      ? dicAcc['privateKey']
+                      : dicAcc['rawSeed']),
                   trailing: Icon(Icons.arrow_forward_ios, size: 18),
                   onTap: () => _onExport(context),
                 );

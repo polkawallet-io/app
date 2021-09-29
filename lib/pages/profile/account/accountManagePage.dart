@@ -1,13 +1,13 @@
-import 'package:app/pages/profile/account/signPage.dart';
-import 'package:biometric_storage/biometric_storage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
+import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
@@ -29,18 +29,38 @@ class _AccountManagePageState extends State<AccountManagePage> {
   BiometricStorageFile _authStorage;
 
   Future<void> _onDeleteAccount(BuildContext context) async {
-    final password = await widget.service.account
-        .getPassword(context, widget.service.keyring.current);
+    final password = await widget.service.account.getPassword(
+        context,
+        widget.service.plugin.pluginType == PluginType.Etherem
+            ? widget.service.keyringETH.current
+            : widget.service.keyring.current,
+        pluginType: widget.service.plugin.pluginType);
     if (password != null) {
-      widget.service.plugin.sdk.api.keyring
-          .deleteAccount(widget.service.keyring, widget.service.keyring.current)
-          .then((_) {
-        // refresh balance
-        widget.service.plugin.changeAccount(widget.service.keyring.current);
+      if (widget.service.plugin.pluginType == PluginType.Etherem) {
+        widget.service.plugin.sdk.api.ethKeyring
+            .deleteAccount(
+                widget.service.keyringETH, widget.service.keyringETH.current)
+            .then((value) {
+          // refresh balance
+          widget.service.plugin
+              .changeAccount(widget.service.keyringETH.current);
 
-        widget.service.store.assets.loadCache(
-            widget.service.keyring.current, widget.service.plugin.basic.name);
-      });
+          widget.service.store.assets.loadCache(
+              widget.service.keyringETH.current,
+              widget.service.plugin.basic.name);
+        });
+      } else {
+        widget.service.plugin.sdk.api.keyring
+            .deleteAccount(
+                widget.service.keyring, widget.service.keyring.current)
+            .then((_) {
+          // refresh balance
+          widget.service.plugin.changeAccount(widget.service.keyring.current);
+
+          widget.service.store.assets.loadCache(
+              widget.service.keyring.current, widget.service.plugin.basic.name);
+        });
+      }
       Navigator.of(context).pop();
     }
   }
@@ -126,7 +146,9 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
-    final acc = widget.service.keyring.current;
+    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current
+        : widget.service.keyring.current;
 
     final primaryColor = Theme.of(context).primaryColor;
     return Scaffold(

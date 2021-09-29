@@ -1,13 +1,12 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/UI.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:app/utils/i18n/index.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ImportAccountAction {
@@ -15,12 +14,17 @@ class ImportAccountAction {
       BuildContext context, AppService service) async {
     final storeFile = await service.account.getBiometricPassStoreFile(
       context,
-      service.keyring.current.pubKey,
+      service.plugin.pluginType == PluginType.Etherem
+          ? service.keyringETH.current.address
+          : service.keyring.current.pubKey,
     );
 
     try {
       await storeFile.write(service.store.account.newAccount.password);
-      service.account.setBiometricEnabled(service.keyring.current.pubKey);
+      service.account.setBiometricEnabled(
+          service.plugin.pluginType == PluginType.Etherem
+              ? service.keyringETH.current.address
+              : service.keyring.current.pubKey);
     } catch (err) {
       // ignore
     }

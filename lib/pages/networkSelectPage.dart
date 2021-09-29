@@ -14,6 +14,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class NetworkSelectPage extends StatefulWidget {
@@ -46,32 +47,33 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
   TabController tabController;
 
   Future<void> _reloadNetwork() async {
-    // setState(() {
-    //   _networkChanging = true;
-    // });
-    // showCupertinoDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return CupertinoAlertDialog(
-    //       title: Text(
-    //           I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-    //       content: Container(height: 64, child: CupertinoActivityIndicator()),
-    //     );
-    //   },
-    // );
-    // await widget.changeNetwork(_selectedNetwork);
-    //
-    // if (mounted) {
-    //   Navigator.of(context).pop();
-    //   setState(() {
-    //     _networkChanging = false;
-    //   });
-    // }
+    setState(() {
+      _networkChanging = true;
+    });
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(
+              I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
+          content: Container(height: 64, child: CupertinoActivityIndicator()),
+        );
+      },
+    );
+    await widget.changeNetwork(_selectedNetwork);
+
+    if (mounted) {
+      Navigator.of(context).pop();
+      setState(() {
+        _networkChanging = false;
+      });
+    }
   }
 
   Future<void> _onSelect(KeyPairData i) async {
     bool isCurrentNetwork =
-        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
+        _selectedNetwork.basic.name == widget.service.plugin.basic.name &&
+            _selectedNetwork.pluginType == widget.service.plugin.pluginType;
     if (i.address != widget.service.keyring.current.address ||
         !isCurrentNetwork) {
       /// set current account
@@ -143,10 +145,14 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
       ),
     ];
 
+    final bool isCurrentNetwork =
+        _selectedNetwork?.basic?.name == widget.service.plugin.basic.name &&
+            _selectedNetwork?.pluginType == widget.service.plugin.pluginType;
     if (pluginType == PluginType.Etherem) {
       /// first item is current account
       List<KeyPairETHData> accounts = [];
-      if (widget.service.keyringETH.current != null) {
+      if (widget.service.keyringETH.current != null &&
+          widget.service.keyringETH.current.address != null) {
         accounts = [widget.service.keyringETH.current];
       }
 
@@ -154,39 +160,21 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
       accounts.addAll(widget.service.keyringETH.optionals);
 
       res.addAll(accounts.map((i) {
-        // // print(i.toJson());
-        // final bool isCurrentNetwork =
-        //     _selectedNetwork?.basic?.name == widget.service.plugin.basic.name;
-        // final addressMap = widget.service.keyring.store
-        //     .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
-        // final address = addressMap != null
-        //     ? addressMap[i.pubKey]
-        //     : widget.service.keyring.current.address;
-        // // final String accIndex = isCurrentNetwork &&
-        // //         i.indexInfo != null &&
-        // //         i.indexInfo['accountIndex'] != null
-        // //     ? '${i.indexInfo['accountIndex']}\n'
-        // //     : '';
-        // final double padding = 0;
-        // final isCurrent = isCurrentNetwork &&
-        //     i.address == widget.service.keyring.current.address;
-        return RoundedCard(
-          border: Border.all(color: Theme.of(context).cardColor),
-          margin: EdgeInsets.only(bottom: 16),
-          padding: EdgeInsets.only(top: 0, bottom: 0),
-          child: ListTile(
-            // leading: AddressIcon(address, svg: i.icon),
-            title: Text(i.name ?? ""),
-            subtitle: Text('${Fmt.address(i.address)}', maxLines: 2),
-            trailing: Container(width: 8),
-            onTap: null,
-          ),
-        );
+        // final String accIndex = isCurrentNetwork &&
+        //         i.indexInfo != null &&
+        //         i.indexInfo['accountIndex'] != null
+        //     ? '${i.indexInfo['accountIndex']}\n'
+        //     : '';
+        final double padding = 0;
+        final isCurrent = isCurrentNetwork &&
+            i.address == widget.service.keyringETH.current.address;
+        return _buildRoundedCard(isCurrent, padding, i.address, i.icon, "", i);
       }).toList());
     } else {
       /// first item is current account
       List<KeyPairData> accounts = [];
-      if (widget.service.keyring.current != null) {
+      if (widget.service.keyring.current != null &&
+          widget.service.keyring.current.pubKey != null) {
         accounts = [widget.service.keyring.current];
       }
 
@@ -195,9 +183,6 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
 
       if (_selectedNetwork != null) {
         res.addAll(accounts.map((i) {
-          print(i.icon);
-          final bool isCurrentNetwork =
-              _selectedNetwork?.basic?.name == widget.service.plugin.basic.name;
           final addressMap = widget.service.keyring.store
               .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
           final address = addressMap != null
@@ -211,30 +196,34 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
           final double padding = accIndex.isEmpty ? 0 : 7;
           final isCurrent = isCurrentNetwork &&
               i.address == widget.service.keyring.current.address;
-          print(i.icon);
-          return RoundedCard(
-            border: isCurrent
-                ? Border.all(color: Theme.of(context).primaryColorLight)
-                : Border.all(color: Theme.of(context).cardColor),
-            margin: EdgeInsets.only(bottom: 16),
-            padding: EdgeInsets.only(top: padding, bottom: padding),
-            child: ListTile(
-              leading: AddressIcon(address, svg: i.icon),
-              title: Text(UI.accountName(context, i)),
-              subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
-              trailing: isCurrent
-                  ? Icon(
-                      Icons.check_circle,
-                      color: Theme.of(context).primaryColor,
-                    )
-                  : Container(width: 8),
-              onTap: _networkChanging ? null : () => _onSelect(i),
-            ),
-          );
+          return _buildRoundedCard(isCurrent, padding, address, i.icon, "", i);
         }).toList());
       }
     }
     return res;
+  }
+
+  Widget _buildRoundedCard(bool isCurrent, double padding, String address,
+      String svg, String accIndex, KeyPairData data) {
+    return RoundedCard(
+      border: isCurrent
+          ? Border.all(color: Theme.of(context).primaryColorLight)
+          : Border.all(color: Theme.of(context).cardColor),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(top: padding, bottom: padding),
+      child: ListTile(
+        leading: AddressIcon(address, svg: data.icon),
+        title: Text(UI.accountName(context, data)),
+        subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
+        trailing: isCurrent
+            ? Icon(
+                Icons.check_circle,
+                color: Theme.of(context).primaryColor,
+              )
+            : Container(width: 8),
+        onTap: _networkChanging ? null : () => _onSelect(data),
+      ),
+    );
   }
 
   List<Widget> _buildPluginDisabled() {
