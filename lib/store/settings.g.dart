@@ -54,6 +54,21 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$adBannerStateAtom = Atom(name: '_SettingsStore.adBannerState');
+
+  @override
+  Map<dynamic, dynamic> get adBannerState {
+    _$adBannerStateAtom.reportRead();
+    return super.adBannerState;
+  }
+
+  @override
+  set adBannerState(Map<dynamic, dynamic> value) {
+    _$adBannerStateAtom.reportWrite(value, super.adBannerState, () {
+      super.adBannerState = value;
+    });
+  }
+
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
 
   @override
@@ -109,11 +124,23 @@ mixin _$SettingsStore on _SettingsStore, Store {
   }
 
   @override
+  void setAdBannerState(Map<dynamic, dynamic> value) {
+    final _$actionInfo = _$_SettingsStoreActionController.startAction(
+        name: '_SettingsStore.setAdBannerState');
+    try {
+      return super.setAdBannerState(value);
+    } finally {
+      _$_SettingsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 localeCode: ${localeCode},
 network: ${network},
-liveModules: ${liveModules}
+liveModules: ${liveModules},
+adBannerState: ${adBannerState}
     ''';
   }
 }

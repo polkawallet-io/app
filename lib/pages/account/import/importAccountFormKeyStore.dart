@@ -234,11 +234,13 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   String _validateInput(String v) {
     bool passed = false;
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    String input = v.trim();
-    if (input.length <= 32 || input.length == 66) {
+    try {
+      jsonDecode(v);
       passed = true;
+    } catch (_) {
+      // ignore
     }
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
   }
 

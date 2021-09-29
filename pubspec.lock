@@ -9,11 +9,11 @@ packages:
     source: hosted
     version: "22.0.0"
   aes_ecb_pkcs5_flutter:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../coding/polkawallet/aes_ecb_pkcs5_flutter"
-      relative: true
-    source: path
+      name: aes_ecb_pkcs5_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.2"
   analyzer:
     dependency: transitive
@@ -406,12 +406,12 @@ packages:
     source: hosted
     version: "2.0.3"
   flutter_qr_scan:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../coding/polkawallet/flutter_qr_reader"
-      relative: true
-    source: path
-    version: "1.0.6"
+      name: flutter_qr_scan
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -876,12 +876,10 @@ packages:
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "5c116fb20a6698871cbad2a8910fbba8597a5aed"
-      resolved-ref: "5c116fb20a6698871cbad2a8910fbba8597a5aed"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
-    source: git
-    version: "0.0.1"
+      path: "../../coding/polkawallet/polkawallet_plugin_karura"
+      relative: true
+    source: path
+    version: "0.3.2"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
@@ -912,17 +910,17 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.3.3"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.3.2"
+      name: polkawallet_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3"
   pool:
     dependency: transitive
     description:

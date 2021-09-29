@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.5+2353
+version: 2.3.7+2371
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -84,8 +84,8 @@ dependency_overrides:
   #   path: ../../coding/polkawallet/polkawallet_plugin_kusama
   # polkawallet_plugin_acala:
   #   path: ../../coding/polkawallet/polkawallet_plugin_acala
-  # polkawallet_plugin_karura:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_karura
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:
 #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
 #  polkawallet_plugin_laminar:
@@ -96,24 +96,20 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  # polkawallet_ui: ^0.3.2
-  polkawallet_ui:
-     path: ../../coding/polkawallet/ui
+  polkawallet_ui: ^0.3.3
+#  polkawallet_ui:
+#     path: ../../coding/polkawallet/ui
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
 #    path: ../../coding/polkawallet/ui
-  # polkawallet_sdk: ^0.3.2
-  polkawallet_sdk:
-     path: ../../coding/polkawallet/sdk
+  polkawallet_sdk: ^0.3.3
+#  polkawallet_sdk:
+#     path: ../../coding/polkawallet/sdk
   charts_flutter:
      git:
        url: https://github.com/google/charts
        path: charts_flutter
-  flutter_qr_scan:
-    path: ../../coding/polkawallet/flutter_qr_reader
-  aes_ecb_pkcs5_flutter:
-    path: ../../coding/polkawallet/aes_ecb_pkcs5_flutter
   flutter_mobx: ^2.0.0
 
 
@@ -146,33 +142,6 @@ flutter:
 
   assets:
     - assets/images/
-    # - assets/images/logo_about.png
-    # - assets/images/nav_assets.svg
-    # - assets/images/nav_profile.svg
-    # - assets/images/screenshot.png
-    # - assets/images/scan.svg
-    # - assets/images/assets_up.svg
-    # - assets/images/assets_down.svg
-    # - assets/images/tx_failed.svg
-    # - assets/images/assets_send.png
-    # - assets/images/wallet_connect_logo.png
-    # - assets/images/wallet_connect_banner.png
-    # - assets/images/network_icon_bg.svg
-    # - assets/images/network_icon_border.svg
-    # - assets/images/menu.svg
-    # - assets/images/qr.svg
-    # - assets/images/scan.svg
-    # - assets/images/public/guide_0.png
-    # - assets/images/public/guide_1.png
-    # - assets/images/public/guide_2.png
-    # - assets/images/public/guide_3.png
-    # - assets/images/public/guide_4.png
-    # - assets/images/public/banner_kar_plo.png
-    # - assets/images/public/kar_bg.png
-    # - assets/images/public/kar_logo.png
-    # - assets/images/public/kar_crowd_loan.jpg
-    # - assets/images/public/kusama_logo.svg
-    # - assets/images/public/github_logo.svg
     - assets/images/public/
 
   # An image asset can refer to one or more resolution-specific "variants", see

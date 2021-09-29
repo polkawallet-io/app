@@ -1,9 +1,16 @@
+import 'dart:async';
+
+import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/inputItem.dart';
+import 'package:polkawallet_ui/pages/accountListPage.dart';
+
+const aca_statement_store_key = 'aca_statement_store_key';
 
 class AcalaCrowdLoanPage extends StatefulWidget {
   final AppService service;
@@ -17,6 +24,123 @@ class AcalaCrowdLoanPage extends StatefulWidget {
 }
 
 class _AcalaCrowdLoanPageState extends State<AcalaCrowdLoanPage> {
+  KeyPairData _account = KeyPairData();
+
+  bool _accepted0 = false;
+  bool _accepted2 = false;
+
+  Map _statement;
+  Map _promotion;
+  bool _signed = false;
+
+  List _contributions = [];
+  Timer _txQueryTimer;
+  bool _txQuerying = true;
+
+  Future<void> _getCrowdLoanHistory() async {
+    setState(() {
+      _txQuerying = true;
+    });
+    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
+    final res =
+        await WalletApi.getKarCrowdLoanHistory(_account.address, endpoint);
+    print(res);
+    if (res != null && mounted) {
+      final txs = _mergeLocalTxData(res.reversed.toList());
+      print(res);
+      setState(() {
+        _contributions = txs;
+        _txQuerying = false;
+      });
+    }
+
+    // we can get users' statement signature if we got the history
+    if (!_signed && res.length > 0) {
+      final signed = res[0]['statement']['signature'];
+      widget.service.store.storage
+          .write('$aca_statement_store_key${_account.pubKey}', signed);
+      if (mounted) {
+        setState(() {
+          _signed = true;
+        });
+      }
+    }
+  }
+
+  List _mergeLocalTxData(List txs) {
+    final pubKey = widget.service.keyring.current.pubKey;
+    final Map cache =
+        widget.service.store.storage.read('$local_tx_store_key:$pubKey') ?? {};
+    final local = cache[pubKey] ?? [];
+    if (local.length == 0) return txs;
+
+    bool isInBlock = false;
+    int inBlockTxCount = 0;
+    int inBlockTxIndex = 0;
+    local.forEach((e) {
+      if (e['module'] == 'crowdloan' && e['call'] == 'contribute') {
+        txs.forEach((tx) {
+          if (tx['blockHash'] == e['blockHash']) {
+            isInBlock = true;
+            inBlockTxIndex = inBlockTxCount;
+          }
+        });
+      }
+      inBlockTxCount++;
+    });
+    if (isInBlock) {
+      local.removeAt(inBlockTxIndex);
+      cache[pubKey] = local;
+      widget.service.store.storage.write('$local_tx_store_key:$pubKey', cache);
+      if (_txQueryTimer != null) {
+        _txQueryTimer.cancel();
+      }
+      return txs;
+    } else {
+      final tx = local[inBlockTxIndex];
+      final List res = [
+        {
+          'ksmAmount': tx['args'][1],
+          'timestamp': tx['timestamp'],
+          'eventId': tx['hash'],
+        }
+      ];
+      res.addAll(txs);
+      setState(() {
+        _txQueryTimer = Timer(Duration(seconds: 6), _getCrowdLoanHistory);
+      });
+      return res;
+    }
+  }
+
+  Future<void> _selectAccount() async {
+    final res = await Navigator.of(context).pushNamed(AccountListPage.route,
+        arguments: AccountListPageParams(
+            list: widget.service.keyring.keyPairs, title: 'Accounts'));
+    if (res != null) {
+      final acc = res as KeyPairData;
+      if (acc.pubKey == _account.pubKey) return;
+
+      // change account in app so we can get the balance
+      widget.service.keyring.setCurrent(acc);
+      widget.service.plugin.changeAccount(acc);
+      widget.service.store.assets
+          .loadCache(acc, widget.service.plugin.basic.name);
+
+      final signed = widget.service.store.storage
+          .read('$aca_statement_store_key${acc.pubKey}');
+
+      setState(() {
+        _account = acc;
+        _accepted0 = false;
+        _accepted2 = false;
+        _signed = signed != null;
+      });
+
+      _getCrowdLoanHistory();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +150,6 @@ class _AcalaCrowdLoanPageState extends State<AcalaCrowdLoanPage> {
           children: [
             Container(
               width: double.infinity,
-              color: Colors.white,
               child: Image.asset(
                 "assets/images/public/polka-parachain-08.png",
               ),
@@ -57,9 +180,7 @@ class _AcalaCrowdLoanPageState extends State<AcalaCrowdLoanPage> {
             child: AddressFormItem(
               widget.service.keyring.current,
               svg: widget.service.keyring.current.icon,
-              onTap: () async {
-                print("");
-              },
+              onTap: _selectAccount,
               color: widget.themeColor,
               borderWidth: 4.w,
               imageRight: 54.5.w,

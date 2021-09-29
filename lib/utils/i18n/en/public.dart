@@ -4,6 +4,15 @@ const Map<String, String> enPublic = {
   'auction.kar': 'Parachain Auction',
   'auction.live': 'Event now live',
   'auction.finish': 'Event has ended',
+  'auction.proxy': 'Proxy',
+  'auction.direct': 'Direct',
+  'auction.proxy.title': 'Contribute via Acala proxy',
+  'auction.proxy.1':
+      '1. Besides the ACA tokens, receive Liquid Crowdloan DOT (lcDOT), a liquid token representing your locked DOT.',
+  'auction.proxy.2':
+      '2. lcDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
+  'auction.proxy.3':
+      '3. In 2 years, you can use lcDOT to redeem the underlying DOT locked in the Acala crowdloan.',
   'auction.address': 'Address',
   'auction.read': 'I have read and accept the',
   'auction.meet': 'I have check and was meet the',

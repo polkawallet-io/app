@@ -141,7 +141,7 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getKarCrowdLoanStarted() async {
+  static Future<Map> getAdBannerStatus() async {
     try {
       final res = await get(Uri.parse('$_endpoint/crowdloan/health'));
       if (res == null) {

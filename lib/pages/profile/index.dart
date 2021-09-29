@@ -1,4 +1,6 @@
+import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanBanner.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
@@ -100,7 +102,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          CrowdLoanBanner(widget.service, widget.connectedNode),
+          widget.connectedNode != null
+              ? widget.service.plugin.basic.name == relay_chain_name_ksm
+                  ? KarCrowdLoanBanner()
+                  : widget.service.plugin.basic.name == relay_chain_name_dot
+                      ? ACACrowdLoanBanner(widget.service, (network) => null)
+                      : Container()
+              : Container(),
           Container(
             padding: EdgeInsets.all(24),
             child: Row(

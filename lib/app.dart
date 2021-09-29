@@ -13,6 +13,7 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
@@ -75,7 +76,6 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
-import 'pages/profile/acalaCrowdLoan/acalaCrowdLoanPage.dart';
 
 const get_storage_container = 'configuration';
 
@@ -489,11 +489,11 @@ class _WalletAppState extends State<WalletApp> {
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
       TxDetailPage.route: (_) => TxDetailPage(_service),
-      AcalaCrowdLoanPage.route: (_) => AcalaCrowdLoanPage(_service),
 
       /// crowd loan
       CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
       ContributePage.route: (_) => ContributePage(_service),
+      AcaCrowdLoanPage.route: (_) => AcaCrowdLoanPage(_service, _connectedNode),
     };
   }
 
