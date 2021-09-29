@@ -144,19 +144,18 @@ class ApiAccount {
     }
   }
 
-  void setBiometricEnabled(String pubKey) {
+  void setBiometricEnabled(String Key) {
     apiRoot.store.storage.write(
-        '$_biometricEnabledKey$pubKey', DateTime.now().millisecondsSinceEpoch);
+        '$_biometricEnabledKey$Key', DateTime.now().millisecondsSinceEpoch);
   }
 
-  void setBiometricDisabled(String pubKey) {
-    apiRoot.store.storage.write('$_biometricEnabledKey$pubKey',
+  void setBiometricDisabled(String key) {
+    apiRoot.store.storage.write('$_biometricEnabledKey$key',
         DateTime.now().millisecondsSinceEpoch - SECONDS_OF_DAY * 7000);
   }
 
-  bool getBiometricEnabled(String pubKey) {
-    final timestamp =
-        apiRoot.store.storage.read('$_biometricEnabledKey$pubKey');
+  bool getBiometricEnabled(String Key) {
+    final timestamp = apiRoot.store.storage.read('$_biometricEnabledKey$Key');
     // we cache user's password with biometric for 7 days.
     if (timestamp != null &&
         timestamp + SECONDS_OF_DAY * 7000 >
@@ -209,8 +208,10 @@ class ApiAccount {
     return null;
   }
 
-  Future<String> getPassword(BuildContext context, KeyPairData acc) async {
-    final bioPass = await getPasswordWithBiometricAuth(context, acc.pubKey);
+  Future<String> getPassword(BuildContext context, KeyPairData acc,
+      {PluginType pluginType = PluginType.Substrate}) async {
+    final bioPass = await getPasswordWithBiometricAuth(
+        context, pluginType == PluginType.Etherem ? acc.address : acc.pubKey);
     final password = await showCupertinoDialog(
       context: context,
       builder: (_) {
@@ -220,6 +221,7 @@ class ApiAccount {
               I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
           account: acc,
           userPass: bioPass,
+          pluginType: pluginType,
         );
       },
     );

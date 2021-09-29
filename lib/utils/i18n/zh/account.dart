@@ -4,6 +4,7 @@ const Map<String, String> zhAccount = {
   'import': '导入账户',
   'mnemonic': '助记词',
   'rawSeed': '私钥种子',
+  'privateKey': '私钥',
   'keystore': '加密 Keystore (json)',
   'create.name': '账户名',
   'create.name.error': '账户名不能为空',

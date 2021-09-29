@@ -2,7 +2,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 
@@ -23,7 +23,9 @@ class _ChangeName extends State<ChangeNamePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _nameCtrl.text = widget.service.keyring.current.name;
+    _nameCtrl.text = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current.name
+        : widget.service.keyring.current.name;
   }
 
   @override
@@ -80,8 +82,14 @@ class _ChangeName extends State<ChangeNamePage> {
                 text: dic['contact.save'],
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    widget.service.plugin.sdk.api.keyring.changeName(
-                        widget.service.keyring, _nameCtrl.text.trim());
+                    if (widget.service.plugin.pluginType ==
+                        PluginType.Etherem) {
+                      widget.service.plugin.sdk.api.ethKeyring.changeName(
+                          widget.service.keyringETH, _nameCtrl.text.trim());
+                    } else {
+                      widget.service.plugin.sdk.api.keyring.changeName(
+                          widget.service.keyring, _nameCtrl.text.trim());
+                    }
                     Navigator.of(context).pop();
                   }
                 },

@@ -1,6 +1,7 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 import 'importAccountFormKeyStore.dart';
@@ -18,11 +19,23 @@ class SelectImportTypePage extends StatefulWidget {
 }
 
 class _SelectImportTypePageState extends State<SelectImportTypePage> {
-  final _keyOptions = [
+  var _keyOptions = [
     'mnemonic',
     'rawSeed',
     'keystore',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.service.plugin.pluginType == PluginType.Etherem) {
+      _keyOptions = [
+        'mnemonic',
+        'rawSeed',
+        'keystore',
+      ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

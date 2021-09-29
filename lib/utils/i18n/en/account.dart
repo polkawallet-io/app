@@ -4,6 +4,7 @@ const Map<String, String> enAccount = {
   'import': 'Import Account',
   'mnemonic': 'Mnemonic',
   'rawSeed': 'Raw Seed',
+  'privateKey': 'Private Key',
   'keystore': 'Keystore (json)',
   'create.name': 'Name',
   'create.name.error': 'Name can not be empty',

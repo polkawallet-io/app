@@ -288,7 +288,9 @@ class _AssetsState extends State<AssetsPage> {
         ? dic['node.connecting']
         : widget.service.plugin.networkState.name ?? dic['node.failed'];
 
-    final acc = widget.service.keyring.current;
+    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current
+        : widget.service.keyring.current;
     final accIndex =
         acc.indexInfo != null && acc.indexInfo['accountIndex'] != null
             ? '${acc.indexInfo['accountIndex']}\n'
@@ -302,7 +304,9 @@ class _AssetsState extends State<AssetsPage> {
             padding: EdgeInsets.only(bottom: 8),
             child: ListTile(
               leading: AddressIcon(acc.address, svg: acc.icon),
-              title: Text(UI.accountName(context, acc)),
+              title: Text(widget.service.plugin.pluginType == PluginType.Etherem
+                  ? acc.name ?? ""
+                  : UI.accountName(context, acc)),
               subtitle: Text(network),
             ),
           ),
@@ -482,24 +486,24 @@ class _AssetsState extends State<AssetsPage> {
                   child: ListView(
                     padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
                     children: [
-                      widget.service.plugin.basic.isTestNet
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: 16, top: 8),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      child: TextTag(
-                                    I18n.of(context).getDic(i18n_full_dic_app,
-                                        'assets')['assets.warn'],
-                                    color: Colors.deepOrange,
-                                    fontSize: 12,
-                                    margin: EdgeInsets.all(0),
-                                    padding: EdgeInsets.all(8),
-                                  ))
-                                ],
-                              ),
-                            )
-                          : Container(height: 24),
+                      Visibility(
+                          visible: widget.service.plugin.basic.isTestNet,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 16, top: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: TextTag(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'assets')['assets.warn'],
+                                  color: Colors.deepOrange,
+                                  fontSize: 12,
+                                  margin: EdgeInsets.all(0),
+                                  padding: EdgeInsets.all(8),
+                                ))
+                              ],
+                            ),
+                          )),
                       FutureBuilder(
                         future: _fetchAnnouncements(),
                         builder: (_, AsyncSnapshot<List> snapshot) {

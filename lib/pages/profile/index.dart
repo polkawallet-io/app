@@ -14,6 +14,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
@@ -78,7 +79,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
-    final acc = widget.service.keyring.current;
+    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current
+        : widget.service.keyring.current;
     final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(

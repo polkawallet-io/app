@@ -1,9 +1,11 @@
+import 'package:app/pages/account/import/importAccountAction.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -40,21 +42,6 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     });
   }
 
-  Future<void> _authBiometric() async {
-    final pubKey = widget.service.keyring.current.pubKey;
-    final storeFile = await widget.service.account.getBiometricPassStoreFile(
-      context,
-      pubKey,
-    );
-
-    try {
-      await storeFile.write(widget.service.store.account.newAccount.password);
-      widget.service.account.setBiometricEnabled(pubKey);
-    } catch (err) {
-      // ignore
-    }
-  }
-
   Future<void> _onSubmit() async {
     if (_formKey.currentState.validate()) {
       widget.service.store.account
@@ -64,10 +51,13 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       if (success) {
         /// save password with biometrics after import success
         if (_supportBiometric && _enableBiometric) {
-          await _authBiometric();
+          await ImportAccountAction.authBiometric(context, widget.service);
         }
 
-        widget.service.plugin.changeAccount(widget.service.keyring.current);
+        widget.service.plugin.changeAccount(
+            widget.service.plugin.pluginType == PluginType.Etherem
+                ? widget.service.keyringETH.current
+                : widget.service.keyring.current);
         widget.service.store.account.resetNewAccount();
         Navigator.popUntil(context, ModalRoute.withName('/'));
       }
