@@ -1,10 +1,10 @@
-import 'package:biometric_storage/biometric_storage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -37,49 +37,64 @@ class _ChangePassword extends State<ChangePasswordPage> {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final String passNew = _passCtrl.text.trim();
 
-    await widget.service.plugin.sdk.api.keyring
-        .changePassword(widget.service.keyring, passOld, passNew);
+    var data = widget.service.plugin.pluginType == PluginType.Etherem
+        ? await widget.service.plugin.sdk.api.ethKeyring.changePassword(
+            keyring: widget.service.keyringETH,
+            passOld: passOld,
+            passNew: passNew)
+        : await widget.service.plugin.sdk.api.keyring
+            .changePassword(widget.service.keyring, passOld, passNew);
+    if (data != null) {
+      final key = widget.service.plugin.pluginType == PluginType.Etherem
+          ? widget.service.keyringETH.current.address
+          : widget.service.keyring.current.pubKey;
+      if (_enableBiometric && _supportBiometric) {
+        final storeFile = await widget.service.account
+            .getBiometricPassStoreFile(context, key);
+        storeFile.write(passNew);
 
-    final pubKey = widget.service.keyring.current.pubKey;
-    if (_enableBiometric) {
-      final storeFile = await widget.service.account
-          .getBiometricPassStoreFile(context, pubKey);
-      storeFile.write(passNew);
+        widget.service.account.setBiometricEnabled(key);
+      } else {
+        widget.service.account.setBiometricDisabled(key);
+      }
 
-      widget.service.account.setBiometricEnabled(pubKey);
+      setState(() {
+        _submitting = false;
+      });
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: Text(dic['pass.success']),
+            content: Text(dic['pass.success.txt']),
+            actions: <Widget>[
+              CupertinoButton(
+                child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
     } else {
-      widget.service.account.setBiometricDisabled(pubKey);
+      setState(() {
+        _submitting = false;
+      });
     }
-
-    setState(() {
-      _submitting = false;
-    });
-    showCupertinoDialog(
-      context: context,
-      builder: (_) {
-        return CupertinoAlertDialog(
-          title: Text(dic['pass.success']),
-          content: Text(dic['pass.success.txt']),
-          actions: <Widget>[
-            CupertinoButton(
-              child: Text(
-                  I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _onSave() async {
     if (_formKey.currentState.validate()) {
       final password = await widget.service.account.getPassword(
         context,
-        widget.service.keyring.current,
+        widget.service.plugin.pluginType == PluginType.Etherem
+            ? widget.service.keyringETH.current
+            : widget.service.keyring.current,
+        pluginType: widget.service.plugin.pluginType,
       );
       if (password != null) {
         _doChangePass(password);
