@@ -42,7 +42,8 @@ class _AboutPage extends State<AboutPage> {
     final currentJSVersion = WalletApi.getPolkadotJSVersion(
         widget.service.store.storage,
         widget.service.plugin.basic.name,
-        widget.service.plugin.basic.jsCodeVersion);
+        widget.service.plugin.basic.jsCodeVersion,
+        widget.service.plugin.basic.pluginType);
     final githubLink = plugin_github_links[widget.service.plugin.basic.name];
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,

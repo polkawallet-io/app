@@ -1,5 +1,6 @@
-import 'package:mobx/mobx.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mobx/mobx.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 
 part 'settings.g.dart';
 
@@ -14,6 +15,7 @@ abstract class _SettingsStore with Store {
 
   final String localStorageLocaleKey = 'locale';
   final String localStorageNetworkKey = 'network';
+  final String localStoragePluginType = 'pluginType';
 
   @observable
   String localeCode = '';
@@ -22,12 +24,16 @@ abstract class _SettingsStore with Store {
   String network = 'polkadot';
 
   @observable
+  PluginType pluginType = PluginType.Substrate;
+
+  @observable
   Map liveModules = Map();
 
   @action
   Future<void> init() async {
     await loadLocalCode();
     await loadNetwork();
+    await loadPluginType();
   }
 
   @action
@@ -55,6 +61,20 @@ abstract class _SettingsStore with Store {
     final value = await storage.read(localStorageNetworkKey);
     if (value != null) {
       network = value;
+    }
+  }
+
+  @action
+  void setPluginType(PluginType value) {
+    pluginType = value;
+    storage.write(localStoragePluginType, value);
+  }
+
+  @action
+  Future<void> loadPluginType() async {
+    final value = await storage.read(localStoragePluginType);
+    if (value != null) {
+      pluginType = value;
     }
   }
 

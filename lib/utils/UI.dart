@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -201,6 +202,7 @@ class AppUI {
     GetStorage jsStorage,
     String network,
     int version,
+    PluginType pluginType,
   ) async {
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
@@ -230,7 +232,7 @@ class AppUI {
               onPressed: () {
                 if (code != null) {
                   WalletApi.setPolkadotJSCode(
-                      jsStorage, network, code, version);
+                      jsStorage, network, code, version, pluginType);
                 }
                 Navigator.of(context).pop();
               },
