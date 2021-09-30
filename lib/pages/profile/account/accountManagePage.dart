@@ -31,12 +31,12 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Future<void> _onDeleteAccount(BuildContext context) async {
     final password = await widget.service.account.getPassword(
         context,
-        widget.service.plugin.pluginType == PluginType.Etherem
+        widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? widget.service.keyringETH.current
             : widget.service.keyring.current,
-        pluginType: widget.service.plugin.pluginType);
+        pluginType: widget.service.plugin.basic.pluginType);
     if (password != null) {
-      if (widget.service.plugin.pluginType == PluginType.Etherem) {
+      if (widget.service.plugin.basic.pluginType == PluginType.Etherem) {
         widget.service.plugin.sdk.api.ethKeyring
             .deleteAccount(
                 widget.service.keyringETH, widget.service.keyringETH.current)
@@ -67,7 +67,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
 
   Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
-    final key = widget.service.plugin.pluginType == PluginType.Etherem
+    final key = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? widget.service.keyringETH.current.address
         : widget.service.keyring.current.pubKey;
     final password = await showCupertinoDialog(
@@ -77,10 +77,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
           widget.service.plugin.sdk.api,
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
-          account: widget.service.plugin.pluginType == PluginType.Etherem
+          account: widget.service.plugin.basic.pluginType == PluginType.Etherem
               ? widget.service.keyringETH.current
               : widget.service.keyring.current,
-          pluginType: widget.service.plugin.pluginType,
+          pluginType: widget.service.plugin.basic.pluginType,
         );
       },
     );
@@ -121,7 +121,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
     setState(() {
       _supportBiometric = supportBiometric;
     });
-    final key = widget.service.plugin.pluginType == PluginType.Etherem
+    final key = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? widget.service.keyringETH.current.address
         : widget.service.keyring.current.pubKey;
     final storeFile =
@@ -153,7 +153,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
-    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+    final acc = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? widget.service.keyringETH.current
         : widget.service.keyring.current;
 

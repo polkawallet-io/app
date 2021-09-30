@@ -73,7 +73,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
   Future<void> _onSelect(KeyPairData i) async {
     bool isCurrentNetwork =
         _selectedNetwork.basic.name == widget.service.plugin.basic.name &&
-            _selectedNetwork.pluginType == widget.service.plugin.pluginType;
+            _selectedNetwork.basic.pluginType ==
+                widget.service.plugin.basic.pluginType;
     if (i.address != widget.service.keyring.current.address ||
         !isCurrentNetwork) {
       /// set current account
@@ -105,7 +106,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
   List<Widget> _buildAccountList(PluginType pluginType) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     String name = '';
-    name = _selectedNetwork != null && pluginType == _selectedNetwork.pluginType
+    name = _selectedNetwork != null &&
+            pluginType == _selectedNetwork.basic.pluginType
         ? _selectedNetwork.basic.name
         : _pluginDisabledSelected != null &&
                 pluginType == _pluginDisabledSelected.pluginType
@@ -147,7 +149,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
 
     final bool isCurrentNetwork =
         _selectedNetwork?.basic?.name == widget.service.plugin.basic.name &&
-            _selectedNetwork?.pluginType == widget.service.plugin.pluginType;
+            _selectedNetwork?.basic?.pluginType ==
+                widget.service.plugin.basic.pluginType;
     if (pluginType == PluginType.Etherem) {
       /// first item is current account
       List<KeyPairETHData> accounts = [];
@@ -242,10 +245,10 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
     tabController = TabController(initialIndex: 0, length: 2, vsync: this);
 
     this.substratePlugins = widget.plugins
-        .where((element) => element.pluginType == PluginType.Substrate)
+        .where((element) => element.basic.pluginType == PluginType.Substrate)
         .toList();
     this.etheremPlugins = widget.plugins
-        .where((element) => element.pluginType == PluginType.Etherem)
+        .where((element) => element.basic.pluginType == PluginType.Etherem)
         .toList();
 
     this.substrateDisabledPlugins = widget.disabledPlugins
@@ -291,9 +294,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ...plugins.map((e) {
-                    final isCurrent =
-                        e.basic.name == _selectedNetwork?.basic?.name &&
-                            e.pluginType == _selectedNetwork.pluginType;
+                    final isCurrent = e.basic.name ==
+                            _selectedNetwork?.basic?.name &&
+                        e.basic.pluginType == _selectedNetwork.basic.pluginType;
                     return isCurrent
                         ? _NetworkItemActive(icon: e.basic.icon)
                         : Container(
@@ -344,7 +347,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
         Expanded(
           child: Visibility(
               visible: (plugins.length > 0 &&
-                      plugins[0].pluginType == _selectedNetwork?.pluginType) ||
+                      plugins[0].basic.pluginType ==
+                          _selectedNetwork?.basic?.pluginType) ||
                   (disabledPlugins.length > 0 &&
                       disabledPlugins[0].pluginType ==
                           _pluginDisabledSelected.pluginType),
@@ -352,7 +356,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
                 padding: EdgeInsets.all(16),
                 children: _pluginDisabledSelected == null
                     ? _buildAccountList(plugins.length > 0
-                        ? plugins[0].pluginType
+                        ? plugins[0].basic.pluginType
                         : PluginType.Etherem)
                     : _buildPluginDisabled(),
               )),

@@ -64,10 +64,11 @@ class _Contact extends State<ContactPage> {
       };
       if (_args == null) {
         // create new contact
-        int exist = (widget.service.plugin.pluginType == PluginType.Etherem
-                ? widget.service.keyringETH.contacts
-                : widget.service.keyring.contacts)
-            .indexWhere((i) => i.address == address);
+        int exist =
+            (widget.service.plugin.basic.pluginType == PluginType.Etherem
+                    ? widget.service.keyringETH.contacts
+                    : widget.service.keyring.contacts)
+                .indexWhere((i) => i.address == address);
         if (exist > -1) {
           showCupertinoDialog(
             context: context,
@@ -90,11 +91,12 @@ class _Contact extends State<ContactPage> {
           });
           return;
         } else {
-          final res = widget.service.plugin.pluginType == PluginType.Etherem
-              ? await widget.service.plugin.sdk.api.ethKeyring
-                  .addContact(widget.service.keyringETH, con)
-              : await widget.service.plugin.sdk.api.keyring
-                  .addContact(widget.service.keyring, con);
+          final res =
+              widget.service.plugin.basic.pluginType == PluginType.Etherem
+                  ? await widget.service.plugin.sdk.api.ethKeyring
+                      .addContact(widget.service.keyringETH, con)
+                  : await widget.service.plugin.sdk.api.keyring
+                      .addContact(widget.service.keyring, con);
 
           if (_isObservation) {
             widget.service.plugin.changeAccount(res);
@@ -105,29 +107,31 @@ class _Contact extends State<ContactPage> {
       } else {
         // edit contact
         con['pubKey'] = _args.pubKey;
-        widget.service.plugin.pluginType == PluginType.Etherem
+        widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? widget.service.keyringETH.store.updateContact(con)
             : await widget.service.keyring.store.updateContact(con);
         // if the contact being edited was current account
         // and was set not observable, we should reset current account.
         if (((_args.pubKey == widget.service.keyring.store.currentPubKey &&
-                    widget.service.plugin.pluginType == PluginType.Substrate) ||
+                    widget.service.plugin.basic.pluginType ==
+                        PluginType.Substrate) ||
                 (_args.address ==
                         widget.service.keyringETH.store.currentAddress &&
-                    widget.service.plugin.pluginType == PluginType.Etherem)) &&
+                    widget.service.plugin.basic.pluginType ==
+                        PluginType.Etherem)) &&
             _args.observation &&
             !_isObservation) {
           final allAccounts =
-              widget.service.plugin.pluginType == PluginType.Etherem
+              widget.service.plugin.basic.pluginType == PluginType.Etherem
                   ? widget.service.keyringETH.allAccounts
                   : widget.service.keyring.allAccounts;
           if (allAccounts.length > 0) {
-            widget.service.plugin.pluginType == PluginType.Etherem
+            widget.service.plugin.basic.pluginType == PluginType.Etherem
                 ? widget.service.keyringETH.setCurrent(allAccounts[0])
                 : widget.service.keyring.setCurrent(allAccounts[0]);
             widget.service.plugin.changeAccount(allAccounts[0]);
           } else {
-            widget.service.plugin.pluginType == PluginType.Etherem
+            widget.service.plugin.basic.pluginType == PluginType.Etherem
                 ? widget.service.keyringETH.setCurrent(KeyPairETHData())
                 : widget.service.keyring.setCurrent(KeyPairData());
           }
@@ -195,7 +199,8 @@ class _Contact extends State<ContactPage> {
                         controller: _addressCtrl,
                         validator: (v) {
                           if (!Fmt.isAddress(v.trim(),
-                              pluginType: widget.service.plugin.pluginType)) {
+                              pluginType:
+                                  widget.service.plugin.basic.pluginType)) {
                             return dic['contact.address.error'];
                           }
                           return null;

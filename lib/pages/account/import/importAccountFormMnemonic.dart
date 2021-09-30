@@ -83,7 +83,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                     ),
                                   ),
                                   AccountAdvanceOption(
-                                    widget.service.plugin.pluginType,
+                                    widget.service.plugin.basic.pluginType,
                                     api: widget.service.plugin.sdk.api?.keyring,
                                     seed: _keyCtrl.text,
                                     onChange:
@@ -148,7 +148,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
       widget.service.account.addressFromMnemonic(
           mnemonic: _keyCtrl.text,
           type: _advanceOptions.type,
-          path: widget.service.plugin.pluginType == PluginType.Etherem
+          path: widget.service.plugin.basic.pluginType == PluginType.Etherem
               ? _advanceOptions.path.length > 0
                   ? "m/44'/60'/0'/0/${_advanceOptions.path}"
                   : "m/44'/60'/0'/0/0"

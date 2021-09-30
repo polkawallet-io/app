@@ -28,7 +28,7 @@ class _ContactsPageState extends State<ContactsPage> {
 
   void _refreshData() {
     setState(() {
-      _list = widget.service.plugin.pluginType == PluginType.Etherem
+      _list = widget.service.plugin.basic.pluginType == PluginType.Etherem
           ? widget.service.keyringETH.contacts
           : widget.service.keyring.contacts;
     });
@@ -89,30 +89,30 @@ class _ContactsPageState extends State<ContactsPage> {
               child: Text(dic['ok']),
               onPressed: () async {
                 Navigator.of(context).pop();
-                widget.service.plugin.pluginType == PluginType.Etherem
+                widget.service.plugin.basic.pluginType == PluginType.Etherem
                     ? widget.service.keyringETH.store.deleteContact(i.address)
                     : await widget.service.keyring.store
                         .deleteContact(i.pubKey);
                 if (i.observation &&
                     ((i.pubKey == widget.service.keyring.store.currentPubKey &&
-                            widget.service.plugin.pluginType ==
+                            widget.service.plugin.basic.pluginType ==
                                 PluginType.Substrate) ||
                         (i.address ==
                                 widget
                                     .service.keyringETH.store.currentAddress &&
-                            widget.service.plugin.pluginType ==
+                            widget.service.plugin.basic.pluginType ==
                                 PluginType.Etherem))) {
-                  final allAccounts =
-                      widget.service.plugin.pluginType == PluginType.Etherem
-                          ? widget.service.keyringETH.allAccounts
-                          : widget.service.keyring.allAccounts;
+                  final allAccounts = widget.service.plugin.basic.pluginType ==
+                          PluginType.Etherem
+                      ? widget.service.keyringETH.allAccounts
+                      : widget.service.keyring.allAccounts;
                   if (allAccounts.length > 0) {
-                    widget.service.plugin.pluginType == PluginType.Etherem
+                    widget.service.plugin.basic.pluginType == PluginType.Etherem
                         ? widget.service.keyringETH.setCurrent(allAccounts[0])
                         : widget.service.keyring.setCurrent(allAccounts[0]);
                     widget.service.plugin.changeAccount(allAccounts[0]);
                   } else {
-                    widget.service.plugin.pluginType == PluginType.Etherem
+                    widget.service.plugin.basic.pluginType == PluginType.Etherem
                         ? widget.service.keyringETH.setCurrent(KeyPairETHData())
                         : widget.service.keyring.setCurrent(KeyPairData());
                   }
@@ -131,7 +131,7 @@ class _ContactsPageState extends State<ContactsPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _list = widget.service.plugin.pluginType == PluginType.Etherem
+        _list = widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? widget.service.keyringETH.contacts
             : widget.service.keyring.contacts;
       });

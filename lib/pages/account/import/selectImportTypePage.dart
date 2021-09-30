@@ -28,7 +28,7 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.service.plugin.pluginType == PluginType.Etherem) {
+    if (widget.service.plugin.basic.pluginType == PluginType.Etherem) {
       _keyOptions = [
         'mnemonic',
         'privateKey',

@@ -288,7 +288,7 @@ class _AssetsState extends State<AssetsPage> {
         ? dic['node.connecting']
         : widget.service.plugin.networkState.name ?? dic['node.failed'];
 
-    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+    final acc = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? widget.service.keyringETH.current
         : widget.service.keyring.current;
     final accIndex =
@@ -304,9 +304,10 @@ class _AssetsState extends State<AssetsPage> {
             padding: EdgeInsets.only(bottom: 8),
             child: ListTile(
               leading: AddressIcon(acc.address, svg: acc.icon),
-              title: Text(widget.service.plugin.pluginType == PluginType.Etherem
-                  ? acc.name ?? ""
-                  : UI.accountName(context, acc)),
+              title: Text(
+                  widget.service.plugin.basic.pluginType == PluginType.Etherem
+                      ? acc.name ?? ""
+                      : UI.accountName(context, acc)),
               subtitle: Text(network),
             ),
           ),
