@@ -70,15 +70,20 @@ abstract class _SettingsStore with Store {
   @action
   void setPluginType(PluginType value) {
     pluginType = value;
-    storage.write(localStoragePluginType, value);
+    storage.write(localStoragePluginType, value.toString().split('.').last);
   }
 
   @action
   Future<void> loadPluginType() async {
     final value = await storage.read(localStoragePluginType);
     if (value != null) {
-      pluginType = value;
+      pluginType = enumFromString(PluginType.values, value);
     }
+  }
+
+  T enumFromString<T>(Iterable<T> values, String value) {
+    return values.firstWhere((type) => type.toString().split('.').last == value,
+        orElse: () => null);
   }
 
   @action
