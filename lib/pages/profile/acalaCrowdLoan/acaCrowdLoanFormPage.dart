@@ -108,7 +108,6 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
     }
     final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     final res = await WalletApi.verifyKarReferralCode(v, endpoint);
-    print(res);
     final valid2 = res != null && res['result'];
     setState(() {
       _referral = v;
@@ -232,8 +231,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       batchTxs.add('api.tx.system.remark("referrer:$_referral")');
     }
     final txArgs = TxConfirmParams(
-        module: 'crowdloan',
-        call: 'contribute',
+        module: 'utility',
+        call: 'batchAll',
         txTitle: dic['auction.contribute'],
         txDisplay: {
           "type": 'via Acala proxy',
@@ -249,8 +248,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         params.statement['paraId'].toString(),
         amountInt.toString(),
       ];
-      _saveLocalTxData(
-          TxConfirmParams(module: 'utility', call: 'batchAll'), txParams, res);
+      _saveLocalTxData(TxConfirmParams(module: 'crowdloan', call: 'contribute'),
+          txParams, res);
 
       await showCupertinoDialog(
         context: context,

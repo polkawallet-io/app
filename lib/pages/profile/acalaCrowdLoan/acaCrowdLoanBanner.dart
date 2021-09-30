@@ -30,7 +30,7 @@ class ACACrowdLoanBanner extends StatelessWidget {
     }
 
     Navigator.of(context)
-        .pushNamed(!active ? AcaCrowdLoanPage.route : CrowdLoanPage.route);
+        .pushNamed(active ? AcaCrowdLoanPage.route : CrowdLoanPage.route);
   }
 
   @override

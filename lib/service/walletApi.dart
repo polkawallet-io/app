@@ -193,7 +193,6 @@ class WalletApi {
       if (res == null) {
         return null;
       } else {
-        print(jsonDecode(utf8.decode(res.bodyBytes)));
         return jsonDecode(utf8.decode(res.bodyBytes));
       }
     } catch (err) {
