@@ -67,7 +67,9 @@ class _AccountManagePageState extends State<AccountManagePage> {
 
   Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
-    final pubKey = widget.service.keyring.current.pubKey;
+    final key = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current.address
+        : widget.service.keyring.current.pubKey;
     final password = await showCupertinoDialog(
       context: context,
       builder: (_) {
@@ -75,7 +77,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
           widget.service.plugin.sdk.api,
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
-          account: widget.service.keyring.current,
+          account: widget.service.plugin.pluginType == PluginType.Etherem
+              ? widget.service.keyringETH.current
+              : widget.service.keyring.current,
+          pluginType: widget.service.plugin.pluginType,
         );
       },
     );
@@ -87,15 +92,15 @@ class _AccountManagePageState extends State<AccountManagePage> {
         print('write: $password');
         await _authStorage.write(password);
         print('setBiometricEnabled');
-        widget.service.account.setBiometricEnabled(pubKey);
+        widget.service.account.setBiometricEnabled(key);
         result = enable;
       } catch (err) {
         print(err);
         // user may cancel the biometric auth. then we set biometric disabled
-        widget.service.account.setBiometricDisabled(pubKey);
+        widget.service.account.setBiometricDisabled(key);
       }
     } else {
-      widget.service.account.setBiometricDisabled(pubKey);
+      widget.service.account.setBiometricDisabled(key);
       result = enable;
     }
 
@@ -116,10 +121,12 @@ class _AccountManagePageState extends State<AccountManagePage> {
     setState(() {
       _supportBiometric = supportBiometric;
     });
-    final pubKey = widget.service.keyring.current.pubKey;
+    final key = widget.service.plugin.pluginType == PluginType.Etherem
+        ? widget.service.keyringETH.current.address
+        : widget.service.keyring.current.pubKey;
     final storeFile =
-        await widget.service.account.getBiometricPassStoreFile(context, pubKey);
-    final isAuthorized = widget.service.account.getBiometricEnabled(pubKey);
+        await widget.service.account.getBiometricPassStoreFile(context, key);
+    final isAuthorized = widget.service.account.getBiometricEnabled(key);
     setState(() {
       _isBiometricAuthorized = isAuthorized;
       _authStorage = storeFile;

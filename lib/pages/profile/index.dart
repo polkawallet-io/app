@@ -114,13 +114,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () async {
                     if (acc.observation ?? false) {
                       await Navigator.pushNamed(context, ContactPage.route,
-                          arguments: widget.service.keyring.current);
+                          arguments: acc);
                     } else {
                       await Navigator.pushNamed(
                           context, AccountManagePage.route);
                     }
                     setState(() {
-                      _currentAccount = widget.service.keyring.current;
+                      _currentAccount = acc;
                     });
                   },
                 )
@@ -137,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
             onTap: () async {
               await Navigator.of(context).pushNamed(ContactsPage.route);
               setState(() {
-                _currentAccount = widget.service.keyring.current;
+                _currentAccount = acc;
               });
             },
           ),
