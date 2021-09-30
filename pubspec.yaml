@@ -80,8 +80,8 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  # polkawallet_plugin_kusama:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   # polkawallet_plugin_acala:
   #   path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:

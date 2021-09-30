@@ -883,11 +883,9 @@ packages:
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "."
-      ref: e9e7c2546a1a6241c55a064d2fa57987a9265051
-      resolved-ref: e9e7c2546a1a6241c55a064d2fa57987a9265051
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
     version: "0.3.0"
   polkawallet_plugin_laminar:
     dependency: "direct main"

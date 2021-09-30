@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/pages/public/karCrowdLoanFormPage.dart';
+import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanFormPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -19,28 +19,28 @@ import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
+const acaThemeColor = MaterialColor(
+  0xFF7E74FA,
+  const <int, Color>{
+    50: const Color(0xFFEBEAFC),
+    100: const Color(0xFFEBEAFC),
+    200: const Color(0xFFEBEAFC),
+    300: const Color(0xFFEBEAFC),
+    400: const Color(0xFF7E74FA),
+    500: const Color(0xFF7E74FA),
+    600: const Color(0xFF7E74FA),
+    700: const Color(0xFF7E74FA),
+    800: const Color(0xFF7E74FA),
+    900: const Color(0xFF7E74FA),
+  },
+);
+
 const aca_statement_store_key = 'aca_statement_store_key';
 
 class AcaCrowdLoanPage extends StatefulWidget {
   AcaCrowdLoanPage(this.service, this.connectedNode);
   final AppService service;
   final NetworkParams connectedNode;
-  final themeColor = const MaterialColor(
-    0xFF7E74FA,
-    const <int, Color>{
-      50: const Color(0xFFEBEAFC),
-      100: const Color(0xFFEBEAFC),
-      200: const Color(0xFFEBEAFC),
-      300: const Color(0xFFEBEAFC),
-      400: const Color(0xFF7E74FA),
-      500: const Color(0xFF7E74FA),
-      600: const Color(0xFF7E74FA),
-      700: const Color(0xFF7E74FA),
-      800: const Color(0xFF7E74FA),
-      900: const Color(0xFF7E74FA),
-    },
-  );
-  final Color themeColorBg = Color(0xFFEBEAFC);
 
   static final String route = '/public/aca/auction';
 
@@ -155,12 +155,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
       _txQuerying = true;
     });
     final endpoint = widget.service.store.settings.adBannerState['endpoint'];
-    // final res =
-    //     await WalletApi.getKarCrowdLoanHistory(_account.address, endpoint);
-    final res = [];
+    final res =
+        await WalletApi.getKarCrowdLoanHistory(_account.address, endpoint);
     if (res != null && mounted) {
       final txs = _mergeLocalTxData(res.reversed.toList());
-      print(res);
       setState(() {
         _contributions = txs;
         _txQuerying = false;
@@ -270,11 +268,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   }
 
   Future<void> _goToContribute() async {
-    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     final res = await Navigator.of(context).pushNamed(
-        KarCrowdLoanFormPage.route,
-        arguments: KarCrowdLoanPageParams(_account,
-            _statement['paraId'].toString(), _email, endpoint, _promotion));
+        AcaCrowdLoanFormPage.route,
+        arguments: AcaCrowdLoanPageParams(_account, _statement, _email,
+            _tab == 0 ? AcaPloType.proxy : AcaPloType.direct, _promotion));
     if (res != null) {
       _getCrowdLoanInfo();
     }
@@ -336,365 +333,331 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     // }
 
     final titleColor = Colors.black87;
-    final grayColor = Colors.white70;
+    final grayColor = Colors.black38;
     final titleStyle = TextStyle(color: grayColor, fontSize: 18);
+    final labelStyle = TextStyle(
+        color: Color(0xff2b2b2b),
+        fontSize: 46.sp,
+        fontWeight: FontWeight.w500,
+        decoration: TextDecoration.none);
 
     final allAccepted = _accepted && _emailValid;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AcaPloPageHead('', 'aca_plo_bg.png'),
-            _PLOTabs(
-              widget.themeColor,
-              _tab,
-              onChange: (v) {
-                if (v != _tab) {
-                  setState(() {
-                    _tab = v;
-                  });
-                }
-              },
-            ),
-            _fundInfo == null || finished
-                ? _bestNumber == 0
-                    ? CupertinoActivityIndicator()
-                    : Container()
-                : Container(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          dic['auction.address'],
-                          style: TextStyle(
-                              color: Color(0xff2b2b2b),
-                              fontSize: 46.sp,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.none),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.h, bottom: 48.h),
-                          child: AddressFormItem(
-                            widget.service.keyring.current,
-                            svg: widget.service.keyring.current.icon,
-                            onTap: _selectAccount,
-                            color: widget.themeColor,
-                            borderWidth: 4.w,
-                            imageRight: 48.w,
-                            margin: EdgeInsets.zero,
+      body: AcaPloPageLayout(
+          '',
+          Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: Image.asset("assets/images/public/aca_plo_bg.png"),
+              ),
+              _PLOTabs(
+                _tab,
+                onChange: (v) {
+                  if (v != _tab) {
+                    setState(() {
+                      _tab = v;
+                      _email = '';
+                    });
+                  }
+                },
+              ),
+              _fundInfo == null || finished
+                  ? _bestNumber == 0
+                      ? CupertinoActivityIndicator()
+                      : Container()
+                  : Container(
+                      padding: EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            dic['auction.address'],
+                            style: labelStyle,
                           ),
-                        ),
-                        _signed
-                            ? Container()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    dic['auction.email'],
-                                    style: TextStyle(
-                                        color: Color(0xff2b2b2b),
-                                        fontSize: 46.sp,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: TextDecoration.none),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20.h),
-                                    child: CupertinoTextField(
-                                      padding:
-                                          EdgeInsets.fromLTRB(12, 14, 12, 14),
-                                      placeholder: 'Email (optional)',
-                                      placeholderStyle: TextStyle(
-                                          fontSize: 18,
-                                          color: widget.themeColor),
-                                      style: TextStyle(fontSize: 18),
-                                      decoration: BoxDecoration(
-                                        color: _emailFocusNode.hasFocus
-                                            ? widget.themeColorBg
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(8)),
-                                        border: Border.all(
-                                            width: 4.w,
-                                            color: widget.themeColor),
-                                      ),
-                                      cursorColor: widget.themeColor,
-                                      clearButtonMode:
-                                          OverlayVisibilityMode.editing,
-                                      focusNode: _emailFocusNode,
-                                      onChanged: _onEmailChange,
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 8.h, bottom: 24.h),
-                                    child: _email.isEmpty || _emailValid
-                                        ? Container()
-                                        : Text(
-                                            '${dic['auction.invalid']} ${dic['auction.email']}',
-                                            style: TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 10),
-                                          ),
-                                  ),
-                                ],
+                          Padding(
+                            padding: EdgeInsets.only(top: 20.h, bottom: 48.h),
+                            child: AddressFormItem(
+                              widget.service.keyring.current,
+                              svg: widget.service.keyring.current.icon,
+                              onTap: _selectAccount,
+                              color: acaThemeColor,
+                              borderWidth: 4.w,
+                              imageRight: 48.w,
+                              margin: EdgeInsets.zero,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                dic['auction.email'],
+                                style: labelStyle,
                               ),
-                        _tab == 1 && !_signed
-                            ? Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Theme(
-                                        child: SizedBox(
-                                          height: 48,
-                                          width: 32,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 8),
-                                            child: Checkbox(
-                                              value: _accepted,
-                                              onChanged: (v) {
-                                                setState(() {
-                                                  _accepted = v;
-                                                });
-                                              },
+                              Container(
+                                margin: EdgeInsets.only(top: 20.h),
+                                child: CupertinoTextField(
+                                  padding: EdgeInsets.fromLTRB(12, 14, 12, 14),
+                                  placeholder: 'Email (optional)',
+                                  placeholderStyle: TextStyle(
+                                      fontSize: 16, color: acaThemeColor),
+                                  style: TextStyle(fontSize: 18),
+                                  decoration: BoxDecoration(
+                                    color: _emailFocusNode.hasFocus
+                                        ? acaThemeColor.shade100
+                                        : Colors.transparent,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8)),
+                                    border: Border.all(
+                                        width: 4.w, color: acaThemeColor),
+                                  ),
+                                  cursorColor: acaThemeColor,
+                                  clearButtonMode:
+                                      OverlayVisibilityMode.editing,
+                                  focusNode: _emailFocusNode,
+                                  onChanged: _onEmailChange,
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 8.h, bottom: 24.h),
+                                child: _email.isEmpty || _emailValid
+                                    ? Container()
+                                    : Text(
+                                        '${dic['auction.invalid']} ${dic['auction.email']}',
+                                        style: TextStyle(
+                                            color: Colors.red, fontSize: 10),
+                                      ),
+                              ),
+                            ],
+                          ),
+                          _tab == 1 && !_signed
+                              ? Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Theme(
+                                          child: SizedBox(
+                                            height: 48,
+                                            width: 32,
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 8),
+                                              child: Checkbox(
+                                                value: _accepted,
+                                                onChanged: (v) {
+                                                  setState(() {
+                                                    _accepted = v;
+                                                  });
+                                                },
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        data: ThemeData(
-                                          primarySwatch: widget.themeColor,
-                                          unselectedWidgetColor:
-                                              widget.themeColor, // Your color
-                                        ),
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            dic['auction.read'],
-                                            style: TextStyle(color: titleColor),
+                                          data: ThemeData(
+                                            primarySwatch: acaThemeColor,
+                                            unselectedWidgetColor:
+                                                acaThemeColor, // Your color
                                           ),
-                                          Row(
-                                            children: [
-                                              JumpToLink(
-                                                'https://acala.network/karura/terms',
-                                                text:
-                                                    '${dic['auction.term.0']}',
-                                                color: widget.themeColor,
-                                              ),
-                                              Text(
-                                                ' & ',
-                                                style: TextStyle(
-                                                    color: titleColor),
-                                              ),
-                                              JumpToLink(
-                                                'https://acala.network/privacy',
-                                                text:
-                                                    ' ${dic['auction.term.2']}',
-                                                color: widget.themeColor,
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              )
-                            : _txQuerying
-                                ? CupertinoActivityIndicator()
-                                : _contributions.length > 0
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(bottom: 8),
-                                            child: Text(dic['auction.txs'],
-                                                style: titleStyle),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                16, 8, 16, 8),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: grayColor,
-                                                    width: 0.5),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(16))),
-                                            child: Column(
-                                              children: _contributions.map((e) {
-                                                final karAmountStyle =
-                                                    TextStyle(
-                                                        color: Colors.white70,
-                                                        fontSize: 12);
-                                                List<Widget> karAmount = [
-                                                  Text(
-                                                    dic['auction.tx.confirming'],
-                                                    style: karAmountStyle,
-                                                  )
-                                                ];
-                                                if (e['blockHash'] != null) {
-                                                  final karAmountInt =
-                                                      Fmt.balanceInt(
-                                                          e['karAmount']);
-                                                  final karRefereeBonus =
-                                                      Fmt.balanceInt(
-                                                          e['karRefereeBonus']);
-                                                  final karExtraBonus =
-                                                      e['promotion'] != null
-                                                          ? Fmt.balanceInt(e[
-                                                                  'promotion']
-                                                              ['karExtraBonus'])
-                                                          : BigInt.zero;
-                                                  karAmount = [
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              dic['auction.read'],
+                                              style:
+                                                  TextStyle(color: titleColor),
+                                            ),
+                                            Row(
+                                              children: [
+                                                JumpToLink(
+                                                  'https://acala.network/karura/terms',
+                                                  text:
+                                                      '${dic['auction.term.0']}',
+                                                  color: acaThemeColor,
+                                                ),
+                                                Text(
+                                                  ' & ',
+                                                  style: TextStyle(
+                                                      color: titleColor),
+                                                ),
+                                                JumpToLink(
+                                                  'https://acala.network/privacy',
+                                                  text:
+                                                      ' ${dic['auction.term.2']}',
+                                                  color: acaThemeColor,
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : _txQuerying
+                                  ? CupertinoActivityIndicator()
+                                  : _contributions.length > 0
+                                      ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              margin:
+                                                  EdgeInsets.only(bottom: 8),
+                                              child: Text(dic['auction.txs'],
+                                                  style: labelStyle),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  16, 8, 16, 8),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: grayColor,
+                                                      width: 0.5),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(16))),
+                                              child: Column(
+                                                children:
+                                                    _contributions.map((e) {
+                                                  final karAmountStyle =
+                                                      TextStyle(
+                                                          color: Colors.white70,
+                                                          fontSize: 12);
+                                                  List<Widget> karAmount = [
                                                     Text(
-                                                      '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} KAR',
+                                                      dic['auction.tx.confirming'],
                                                       style: karAmountStyle,
                                                     )
                                                   ];
-                                                  if (e['promotion'] != null &&
-                                                      Fmt.balanceInt(e[
-                                                                  'promotion'][
-                                                              'acaExtraBonus']) >
-                                                          BigInt.zero) {
-                                                    karAmount.add(Text(
-                                                      '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
-                                                      style: karAmountStyle,
-                                                    ));
+                                                  if (e['blockHash'] != null) {
+                                                    final karAmountInt =
+                                                        Fmt.balanceInt(
+                                                            e['karAmount']);
+                                                    final karRefereeBonus =
+                                                        Fmt.balanceInt(e[
+                                                            'karRefereeBonus']);
+                                                    final karExtraBonus = e[
+                                                                'promotion'] !=
+                                                            null
+                                                        ? Fmt.balanceInt(e[
+                                                                'promotion']
+                                                            ['karExtraBonus'])
+                                                        : BigInt.zero;
+                                                    karAmount = [
+                                                      Text(
+                                                        '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} KAR',
+                                                        style: karAmountStyle,
+                                                      )
+                                                    ];
+                                                    if (e['promotion'] !=
+                                                            null &&
+                                                        Fmt.balanceInt(e[
+                                                                    'promotion']
+                                                                [
+                                                                'acaExtraBonus']) >
+                                                            BigInt.zero) {
+                                                      karAmount.add(Text(
+                                                        '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
+                                                        style: karAmountStyle,
+                                                      ));
+                                                    }
                                                   }
-                                                }
-                                                return Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 8, bottom: 8),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            '${Fmt.balance(e['ksmAmount'], decimals)} KSM',
-                                                            style: TextStyle(
-                                                                color:
-                                                                    titleColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                          Text(
-                                                              Fmt.dateTime(DateTime
-                                                                  .fromMillisecondsSinceEpoch(e[
-                                                                      'timestamp'])),
+                                                  return Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 8, bottom: 8),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              '${Fmt.balance(e['ksmAmount'], decimals)} KSM',
                                                               style: TextStyle(
                                                                   color:
-                                                                      grayColor,
-                                                                  fontSize: 13))
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          ...karAmount,
-                                                          JumpToLink(
-                                                            e['blockHash'] ==
-                                                                    null
-                                                                ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
-                                                                : 'https://kusama.subscan.io/account/${_account.address}',
-                                                            text: 'Subscan',
-                                                            color: widget
-                                                                .themeColor,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : Container(),
-                        Container(
-                          margin: EdgeInsets.only(top: 16, bottom: 32),
-                          child: _signed || _tab == 0
-                              ? RoundedButton(
-                                  text: dic['auction.contribute'],
-                                  color: widget.themeColor,
-                                  borderRadius: 8,
-                                  onPressed: _emailValid
-                                      ? _goToContribute
-                                      : () => null,
-                                )
-                              : RoundedButton(
-                                  icon: _submitting
-                                      ? CupertinoActivityIndicator()
-                                      : null,
-                                  text: dic['auction.accept'],
-                                  color: widget.themeColor,
-                                  borderRadius: 8,
-                                  onPressed: allAccepted && !_submitting
-                                      ? _acceptAndSign
-                                      : () => null,
-                                ),
-                        )
-                      ],
-                    ),
-                  )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AcaPloPageHead extends StatelessWidget {
-  AcaPloPageHead(this.title, this.bgImageUrl);
-  final String title;
-  final String bgImageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final titleColor = Colors.black87;
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          child: Image.asset("assets/images/public/$bgImageUrl"),
-        ),
-        Container(
-          height: 56,
-          margin: EdgeInsets.only(top: 32, left: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: titleColor),
-                  onPressed: () => Navigator.of(context).pop()),
-              Text(
-                title,
-                style: TextStyle(color: titleColor, fontSize: 24),
-              ),
-              Container(width: 48)
+                                                                      titleColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            Text(
+                                                                Fmt.dateTime(DateTime
+                                                                    .fromMillisecondsSinceEpoch(e[
+                                                                        'timestamp'])),
+                                                                style: TextStyle(
+                                                                    color:
+                                                                        grayColor,
+                                                                    fontSize:
+                                                                        13))
+                                                          ],
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            ...karAmount,
+                                                            JumpToLink(
+                                                              e['blockHash'] ==
+                                                                      null
+                                                                  ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
+                                                                  : 'https://kusama.subscan.io/account/${_account.address}',
+                                                              text: 'Subscan',
+                                                              color:
+                                                                  acaThemeColor,
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : Container(),
+                          Container(
+                            margin: EdgeInsets.only(top: 16, bottom: 32),
+                            child: _signed || _tab == 0
+                                ? RoundedButton(
+                                    text: dic['auction.contribute'],
+                                    color: acaThemeColor,
+                                    borderRadius: 8,
+                                    onPressed: _emailValid
+                                        ? _goToContribute
+                                        : () => null,
+                                  )
+                                : RoundedButton(
+                                    icon: _submitting
+                                        ? CupertinoActivityIndicator()
+                                        : null,
+                                    text: dic['auction.accept'],
+                                    color: acaThemeColor,
+                                    borderRadius: 8,
+                                    onPressed: allAccepted && !_submitting
+                                        ? _acceptAndSign
+                                        : () => null,
+                                  ),
+                          )
+                        ],
+                      ),
+                    )
             ],
-          ),
-        )
-      ],
+          )),
     );
   }
 }
 
 class _PLOTabs extends StatelessWidget {
-  _PLOTabs(this.color, this.activeTab, {this.onChange});
-  final Color color;
+  _PLOTabs(this.activeTab, {this.onChange});
   final int activeTab;
   final Function(int) onChange;
 
@@ -705,7 +668,6 @@ class _PLOTabs extends StatelessWidget {
       builder: (_) => CupertinoAlertDialog(
         title: Text(dic['auction.proxy.title']),
         content: _InfoPanelsInDialog(
-          color: color,
           closeDialog: () {
             Navigator.of(context).pop();
           },
@@ -725,17 +687,20 @@ class _PLOTabs extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
               decoration: BoxDecoration(
-                border: Border.all(color: color),
+                border: Border.all(color: acaThemeColor),
                 borderRadius: const BorderRadius.only(
                     topLeft: const Radius.circular(8),
                     bottomLeft: const Radius.circular(8)),
-                color: activeTab == 0 ? color : Theme.of(context).cardColor,
+                color: activeTab == 0
+                    ? acaThemeColor
+                    : Theme.of(context).cardColor,
               ),
               child: Text(
                 dic['auction.proxy'],
                 style: TextStyle(
-                    color:
-                        activeTab == 0 ? Theme.of(context).cardColor : color),
+                    color: activeTab == 0
+                        ? Theme.of(context).cardColor
+                        : acaThemeColor),
               ),
             ),
             onTap: () => onChange(0),
@@ -744,17 +709,20 @@ class _PLOTabs extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
               decoration: BoxDecoration(
-                border: Border.all(color: color),
+                border: Border.all(color: acaThemeColor),
                 borderRadius: const BorderRadius.only(
                     topRight: const Radius.circular(8),
                     bottomRight: const Radius.circular(8)),
-                color: activeTab == 1 ? color : Theme.of(context).cardColor,
+                color: activeTab == 1
+                    ? acaThemeColor
+                    : Theme.of(context).cardColor,
               ),
               child: Text(
                 dic['auction.direct'],
                 style: TextStyle(
-                    color:
-                        activeTab == 1 ? Theme.of(context).cardColor : color),
+                    color: activeTab == 1
+                        ? Theme.of(context).cardColor
+                        : acaThemeColor),
               ),
             ),
             onTap: () => onChange(1),
@@ -763,12 +731,12 @@ class _PLOTabs extends StatelessWidget {
             margin: EdgeInsets.only(left: 8),
             child: GestureDetector(
               child: Container(
-                child: Text('?', style: TextStyle(color: color)),
+                child: Text('?', style: TextStyle(color: acaThemeColor)),
                 padding: EdgeInsets.fromLTRB(5, 6, 4, 4),
                 margin: EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(width: 1, color: color),
+                  border: Border.all(width: 1, color: acaThemeColor),
                 ),
               ),
               onTap: () => _showProxyInfo(context),
@@ -781,8 +749,7 @@ class _PLOTabs extends StatelessWidget {
 }
 
 class _InfoPanelsInDialog extends StatefulWidget {
-  _InfoPanelsInDialog({this.color, this.closeDialog});
-  final Color color;
+  _InfoPanelsInDialog({this.closeDialog});
   final Function closeDialog;
   @override
   _InfoPanelsInDialogState createState() => _InfoPanelsInDialogState();
@@ -816,7 +783,7 @@ class _InfoPanelsInDialogState extends State<_InfoPanelsInDialog> {
               child: Text(
                 dic2['cancel'],
                 style: TextStyle(
-                  color: widget.color,
+                  color: acaThemeColor,
                 ),
               ),
               onTap: widget.closeDialog,
@@ -824,7 +791,7 @@ class _InfoPanelsInDialogState extends State<_InfoPanelsInDialog> {
             GestureDetector(
               child: Text(
                 dic2['next'],
-                style: TextStyle(color: widget.color),
+                style: TextStyle(color: acaThemeColor),
               ),
               onTap: () {
                 setState(() {
@@ -839,6 +806,43 @@ class _InfoPanelsInDialogState extends State<_InfoPanelsInDialog> {
           ],
         )
       ],
+    );
+  }
+}
+
+class AcaPloPageLayout extends StatelessWidget {
+  AcaPloPageLayout(this.title, this.child);
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = Colors.black87;
+    return Scaffold(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: child,
+          ),
+          Container(
+            height: 56,
+            margin: EdgeInsets.only(top: 32, left: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    icon: Icon(Icons.arrow_back_ios, color: titleColor),
+                    onPressed: () => Navigator.of(context).pop()),
+                Text(
+                  title,
+                  style: TextStyle(color: titleColor, fontSize: 24),
+                ),
+                Container(width: 48)
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

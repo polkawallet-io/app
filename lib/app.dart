@@ -13,6 +13,7 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
+import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanFormPage.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
@@ -494,6 +495,8 @@ class _WalletAppState extends State<WalletApp> {
       CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
       ContributePage.route: (_) => ContributePage(_service),
       AcaCrowdLoanPage.route: (_) => AcaCrowdLoanPage(_service, _connectedNode),
+      AcaCrowdLoanFormPage.route: (_) =>
+          AcaCrowdLoanFormPage(_service, _connectedNode),
     };
   }
 
