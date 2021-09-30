@@ -78,7 +78,22 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
     if (i.address != widget.service.keyring.current.address ||
         !isCurrentNetwork) {
       /// set current account
-      widget.service.keyring.setCurrent(i);
+      if (_selectedNetwork.basic.pluginType == PluginType.Etherem) {
+        widget.service.keyringETH.setCurrent(i);
+      } else {
+        widget.service.keyring.setCurrent(i);
+      }
+
+      /// If it's a different pluginType
+      if (_selectedNetwork.basic.pluginType !=
+          widget.service.plugin.basic.pluginType) {
+        /// clear other current account
+        if (_selectedNetwork.basic.pluginType == PluginType.Etherem) {
+          widget.service.keyring.setCurrent(KeyPairData());
+        } else {
+          widget.service.keyringETH.setCurrent(KeyPairETHData());
+        }
+      }
 
       if (!isCurrentNetwork) {
         /// set new network and reload web view
@@ -290,57 +305,62 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
               ),
             ),
             SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...plugins.map((e) {
-                    final isCurrent = e.basic.name ==
-                            _selectedNetwork?.basic?.name &&
-                        e.basic.pluginType == _selectedNetwork.basic.pluginType;
-                    return isCurrent
-                        ? _NetworkItemActive(icon: e.basic.icon)
-                        : Container(
-                            margin: EdgeInsets.all(8),
-                            child: IconButton(
-                              padding: EdgeInsets.all(8),
-                              icon: isCurrent
-                                  ? e.basic.icon
-                                  : e.basic.iconDisabled,
-                              onPressed: () {
-                                if (!isCurrent) {
-                                  setState(() {
-                                    _selectedNetwork = e;
-                                    _pluginDisabledSelected = null;
-                                  });
-                                }
-                              },
-                            ),
-                          );
-                  }).toList(),
-                  ...disabledPlugins.map((e) {
-                    final isCurrent = e.name == _pluginDisabledSelected?.name &&
-                        e.pluginType == _pluginDisabledSelected.pluginType;
-                    return isCurrent
-                        ? _NetworkItemActive(icon: e.icon)
-                        : Container(
-                            margin: EdgeInsets.all(8),
-                            child: IconButton(
-                              padding: EdgeInsets.all(8),
-                              icon: e.icon,
-                              onPressed: () {
-                                if (_pluginDisabledSelected?.name != e.name) {
-                                  setState(() {
-                                    _pluginDisabledSelected = e;
-                                    _selectedNetwork = null;
-                                  });
-                                }
-                              },
-                            ),
-                          );
-                  }).toList()
-                ],
-                // children: sideBar,
-              ),
+              child: Padding(
+                  padding: EdgeInsets.only(right: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...plugins.map((e) {
+                        final isCurrent =
+                            e.basic.name == _selectedNetwork?.basic?.name &&
+                                e.basic.pluginType ==
+                                    _selectedNetwork.basic.pluginType;
+                        return isCurrent
+                            ? _NetworkItemActive(icon: e.basic.icon)
+                            : Container(
+                                margin: EdgeInsets.all(8),
+                                child: IconButton(
+                                  padding: EdgeInsets.all(8),
+                                  icon: isCurrent
+                                      ? e.basic.icon
+                                      : e.basic.iconDisabled,
+                                  onPressed: () {
+                                    if (!isCurrent) {
+                                      setState(() {
+                                        _selectedNetwork = e;
+                                        _pluginDisabledSelected = null;
+                                      });
+                                    }
+                                  },
+                                ),
+                              );
+                      }).toList(),
+                      ...disabledPlugins.map((e) {
+                        final isCurrent = e.name ==
+                                _pluginDisabledSelected?.name &&
+                            e.pluginType == _pluginDisabledSelected.pluginType;
+                        return isCurrent
+                            ? _NetworkItemActive(icon: e.icon)
+                            : Container(
+                                margin: EdgeInsets.all(8),
+                                child: IconButton(
+                                  padding: EdgeInsets.all(8),
+                                  icon: e.icon,
+                                  onPressed: () {
+                                    if (_pluginDisabledSelected?.name !=
+                                        e.name) {
+                                      setState(() {
+                                        _pluginDisabledSelected = e;
+                                        _selectedNetwork = null;
+                                      });
+                                    }
+                                  },
+                                ),
+                              );
+                      }).toList()
+                    ],
+                    // children: sideBar,
+                  )),
             )
           ],
         ),
@@ -353,7 +373,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
                       disabledPlugins[0].pluginType ==
                           _pluginDisabledSelected.pluginType),
               child: ListView(
-                padding: EdgeInsets.all(16),
+                padding:
+                    EdgeInsets.only(left: 5, top: 16, right: 16, bottom: 16),
                 children: _pluginDisabledSelected == null
                     ? _buildAccountList(plugins.length > 0
                         ? plugins[0].basic.pluginType
