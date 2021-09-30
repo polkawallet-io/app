@@ -1,3 +1,4 @@
+import 'package:app/utils/Utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -67,20 +68,15 @@ abstract class _SettingsStore with Store {
   @action
   void setPluginType(PluginType value) {
     pluginType = value;
-    storage.write(localStoragePluginType, value.toString().split('.').last);
+    storage.write(localStoragePluginType, Utils.enumToString(value));
   }
 
   @action
   Future<void> loadPluginType() async {
     final value = await storage.read(localStoragePluginType);
     if (value != null) {
-      pluginType = enumFromString(PluginType.values, value);
+      pluginType = Utils.enumFromString(PluginType.values, value);
     }
-  }
-
-  T enumFromString<T>(Iterable<T> values, String value) {
-    return values.firstWhere((type) => type.toString().split('.').last == value,
-        orElse: () => null);
   }
 
   @action
