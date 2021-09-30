@@ -234,17 +234,17 @@ class _WalletAppState extends State<WalletApp> {
       );
     });
     _store.settings.setNetwork(network.basic.name);
+    _store.settings.setPluginType(network.basic.pluginType);
 
     final useLocalJS = WalletApi.getPolkadotJSVersion(
-          _store.storage,
-          network.basic.name,
-          network.basic.jsCodeVersion,
-        ) >
+            _store.storage,
+            network.basic.name,
+            network.basic.jsCodeVersion,
+            network.basic.pluginType) >
         network.basic.jsCodeVersion;
 
-    final service = AppService(widget.plugins, network, _keyring, _keyringEth,
-        _store, widget.buildTarget);
-    service.init();
+    final service = AppService.init(widget.plugins, network, _keyring,
+        _keyringEth, _store, widget.buildTarget);
 
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
@@ -252,7 +252,8 @@ class _WalletAppState extends State<WalletApp> {
       _keyringEth,
       webView: _service?.plugin?.sdk?.webView,
       jsCode: useLocalJS
-          ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
+          ? WalletApi.getPolkadotJSCode(
+              _store.storage, network.basic.name, network.basic.pluginType)
           : null,
     );
 
@@ -301,13 +302,14 @@ class _WalletAppState extends State<WalletApp> {
       _store.storage,
       network,
       plugin.basic.jsCodeVersion,
+      plugin.basic.pluginType,
     );
     print('js update: $network $currentVersion $version $versionMin');
     final bool needUpdate = await AppUI.checkJSCodeUpdate(
         context, _store.storage, currentVersion, version, versionMin, network);
     if (needUpdate) {
-      final res =
-          await AppUI.updateJSCode(context, _store.storage, network, version);
+      final res = await AppUI.updateJSCode(
+          context, _store.storage, network, version, plugin.basic.pluginType);
       if (needReload && res) {
         _changeNetwork(plugin);
       }
@@ -346,16 +348,16 @@ class _WalletAppState extends State<WalletApp> {
 
       _showGuide(context, storage);
 
-      final pluginIndex = widget.plugins
-          .indexWhere((e) => e.basic.name == store.settings.network);
-      final service = AppService(
+      final pluginIndex = widget.plugins.indexWhere((e) =>
+          e.basic.name == store.settings.network &&
+          e.basic.pluginType == store.settings.pluginType);
+      final service = AppService.init(
           widget.plugins,
           widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           _keyringEth,
           store,
           widget.buildTarget);
-      service.init();
       setState(() {
         _store = store;
         _service = service;
@@ -375,18 +377,18 @@ class _WalletAppState extends State<WalletApp> {
       await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
       final useLocalJS = WalletApi.getPolkadotJSVersion(
-            _store.storage,
-            service.plugin.basic.name,
-            service.plugin.basic.jsCodeVersion,
-          ) >
+              _store.storage,
+              service.plugin.basic.name,
+              service.plugin.basic.jsCodeVersion,
+              service.plugin.basic.pluginType) >
           service.plugin.basic.jsCodeVersion;
 
       await service.plugin.beforeStart(
         _keyring,
         _keyringEth,
         jsCode: useLocalJS
-            ? WalletApi.getPolkadotJSCode(
-                _store.storage, service.plugin.basic.name)
+            ? WalletApi.getPolkadotJSCode(_store.storage,
+                service.plugin.basic.name, service.plugin.basic.pluginType)
             : null,
       );
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 
 const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
@@ -66,9 +67,14 @@ class WalletApi {
     GetStorage jsStorage,
     String networkName,
     int appJSVersion,
+    PluginType pluginType,
   ) {
-    final String version =
-        jsStorage.read('$_jsCodeStorageVersionKey$networkName');
+    String version = jsStorage
+        .read('$_jsCodeStorageVersionKey${pluginType.toString()}_$networkName');
+    //Compatibility with previous versions
+    if (version == null) {
+      version = jsStorage.read('$_jsCodeStorageVersionKey$networkName');
+    }
     if (version != null) {
       final updatedVersion = int.parse(version);
       return updatedVersion > appJSVersion ? updatedVersion : appJSVersion;
@@ -80,8 +86,14 @@ class WalletApi {
   static String getPolkadotJSCode(
     GetStorage jsStorage,
     String networkName,
+    PluginType pluginType,
   ) {
-    final String jsCode = jsStorage.read('$_jsCodeStorageKey$networkName');
+    String jsCode = jsStorage
+        .read('$_jsCodeStorageKey${pluginType.toString()}_$networkName');
+    //Compatibility with previous versions
+    if (jsCode == null) {
+      jsCode = jsStorage.read('$_jsCodeStorageVersionKey$networkName');
+    }
     return jsCode;
   }
 
@@ -90,10 +102,13 @@ class WalletApi {
     String networkName,
     String code,
     int version,
+    PluginType pluginType,
   ) {
-    jsStorage.write('$_jsCodeStorageKey$networkName', code);
     jsStorage.write(
-        '$_jsCodeStorageVersionKey$networkName', version.toString());
+        '$_jsCodeStorageKey${pluginType.toString()}_$networkName', code);
+    jsStorage.write(
+        '$_jsCodeStorageVersionKey${pluginType.toString()}_$networkName',
+        version.toString());
   }
 
   static Future<List> getAnnouncements() async {
