@@ -160,11 +160,11 @@ class ImportAccountAction {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final index = -1;
-    if (service.plugin.pluginType == PluginType.Etherem) {
-      service.keyringETH.keyPairs.indexWhere((i) => i.address == key);
-    } else {
-      service.keyring.keyPairs.indexWhere((i) => i.pubKey == key);
-    }
+    (service.plugin.pluginType == PluginType.Etherem
+            ? service.keyringETH.keyPairs
+            : service.keyring.keyPairs)
+        .indexWhere((i) => i.pubKey == key);
+
     if (index > -1) {
       final duplicate = await showCupertinoDialog(
         context: context,
