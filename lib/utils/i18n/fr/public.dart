@@ -1,5 +1,5 @@
 const Map<String, String> enPublic = {
-  'auction.switch': 'Switching to Kusama...',
+  'auction.switch': 'Switching to',
   'auction.support': 'Support the',
   'auction.kar': 'Parachain Auction',
   'auction.live': 'Event now live',
@@ -8,11 +8,11 @@ const Map<String, String> enPublic = {
   'auction.direct': 'Direct',
   'auction.proxy.title': 'Contribute via Acala proxy',
   'auction.proxy.1':
-      '1. Besides the ACA tokens, receive Liquid Crowdloan DOT (lcDOT), a liquid token representing your locked DOT.',
+      '1. Besides the ACA tokens, receive Liquid DOT (pDOT), a liquid token representing your locked DOT.',
   'auction.proxy.2':
-      '2. lcDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
+      '2. pDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
   'auction.proxy.3':
-      '3. In 2 years, you can use lcDOT to redeem the underlying DOT locked in the Acala crowdloan.',
+      '3. In 2 years, you can use pDOT to redeem the underlying DOT locked in the Acala crowdloan.',
   'auction.address': 'Address',
   'auction.read': 'I have read and accept the',
   'auction.meet': 'I have check and was meet the',
@@ -22,20 +22,21 @@ const Map<String, String> enPublic = {
   'auction.contribute': 'Contribute',
   'auction.email': 'Email(optional)',
   'auction.amount': 'Amount',
-  'auction.amount1': 'Amount to Contribute (KSM)',
-  'auction.amount.error': 'amount, 0.1 KSM minimum',
+  'auction.amount1': 'Amount to Contribute (DOT)',
+  'auction.amount.error': 'amount, 2 DOT minimum',
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code(optional)',
-  'auction.estimate': 'Estimated KAR Paradrop',
+  'auction.estimate': 'Estimated ACA Paradrop',
+  'auction.receive.dot': 'Total pDOT receipt',
   'auction.invite': 'Referral',
   'auction.extra': 'Extra',
   'auction.note':
-      'If Karura wins the auction, KAR rewards will be distributed upon genesis. Otherwise, the KSM locked will automatically bid for the next available auction. Check the Terms & Conditions for details.',
+      'If Acala wins the auction, ACA rewards will be distributed upon genesis. Otherwise, the DOT locked will automatically bid for the next available auction. Check the Terms & Conditions for details.',
   'auction.init': 'Initial transferable',
   'auction.vest': 'Vested over the lease period',
   'auction.lease': 'Lease period',
   'auction.notify':
-      'I agree to receive email communications about Karura and Acala including exclusive launch updates and liquidity provider program.',
+      'I agree to receive email communications about Acala including exclusive launch updates and liquidity provider program.',
   'auction.submit': 'Submit',
   'auction.invalid': 'Invalid',
   'auction.connecting': 'Connecting WSS',
