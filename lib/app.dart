@@ -440,8 +440,13 @@ class _WalletAppState extends State<WalletApp> {
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
-      AccountQrCodePage.route: (_) =>
-          AccountQrCodePage(_service.plugin, _keyring),
+      AccountQrCodePage.route: (_) => AccountQrCodePage(
+            _service.plugin,
+            _keyring,
+            current: _service.plugin.basic.pluginType == PluginType.Etherem
+                ? _keyringEth.current
+                : _keyring.current,
+          ),
       NetworkSelectPage.route: (_) => NetworkSelectPage(
           _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
