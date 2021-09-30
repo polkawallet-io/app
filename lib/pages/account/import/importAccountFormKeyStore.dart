@@ -137,12 +137,12 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                 }
 
                                 widget.service.plugin.changeAccount(
-                                    widget.service.plugin.pluginType ==
+                                    widget.service.plugin.basic.pluginType ==
                                             PluginType.Etherem
                                         ? widget.service.keyringETH.current
                                         : widget.service.keyring.current);
                                 widget.service.store.assets.loadCache(
-                                    widget.service.plugin.pluginType ==
+                                    widget.service.plugin.basic.pluginType ==
                                             PluginType.Etherem
                                         ? widget.service.keyringETH.current
                                         : widget.service.keyring.current,
@@ -250,7 +250,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
     try {
       var json = jsonDecode(v.trim());
       _refreshAcccountAddress(keyStore: json);
-      if (widget.service.plugin.pluginType == PluginType.Substrate) {
+      if (widget.service.plugin.basic.pluginType == PluginType.Substrate) {
         if (json['meta']['name'] != null) {
           setState(() {
             _nameCtrl.value = TextEditingValue(text: json['meta']['name']);

@@ -7,20 +7,17 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 class PluginTestETH extends PolkawalletPlugin {
   PluginTestETH({name = 'testETH'})
       : basic = PluginBasicData(
-          name: name,
-          genesisHash: "",
-          primaryColor: Colors.pink,
-          gradientColor: Colors.red,
-          backgroundImage: AssetImage('assets/images/logo_about.png'),
-          icon: Image.asset('assets/images/logo_about.png'),
-          iconDisabled: Image.asset('assets/images/logo_about.png'),
-          jsCodeVersion: 22201,
-          isTestNet: false,
-          isXCMSupport: false,
-        ),
-        pluginType = PluginType.Etherem;
-  @override
-  PluginType pluginType;
+            name: name,
+            genesisHash: "",
+            primaryColor: Colors.pink,
+            gradientColor: Colors.red,
+            backgroundImage: AssetImage('assets/images/logo_about.png'),
+            icon: Image.asset('assets/images/logo_about.png'),
+            iconDisabled: Image.asset('assets/images/logo_about.png'),
+            jsCodeVersion: 22201,
+            isTestNet: false,
+            isXCMSupport: false,
+            pluginType: PluginType.Etherem);
 
   @override
   final PluginBasicData basic;

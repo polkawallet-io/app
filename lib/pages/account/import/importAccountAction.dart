@@ -15,7 +15,7 @@ class ImportAccountAction {
       BuildContext context, AppService service) async {
     final storeFile = await service.account.getBiometricPassStoreFile(
       context,
-      service.plugin.pluginType == PluginType.Etherem
+      service.plugin.basic.pluginType == PluginType.Etherem
           ? service.keyringETH.current.address
           : service.keyring.current.pubKey,
     );
@@ -23,7 +23,7 @@ class ImportAccountAction {
     try {
       await storeFile.write(service.store.account.newAccount.password);
       service.account.setBiometricEnabled(
-          service.plugin.pluginType == PluginType.Etherem
+          service.plugin.basic.pluginType == PluginType.Etherem
               ? service.keyringETH.current.address
               : service.keyring.current.pubKey);
     } catch (err) {
@@ -39,7 +39,7 @@ class ImportAccountAction {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
 
-    final _keyType = service.plugin.pluginType == PluginType.Etherem
+    final _keyType = service.plugin.basic.pluginType == PluginType.Etherem
         ? ETH_KeyType.values
             .firstWhere((e) => e.toString().contains(data['keyType']))
         : KeyType.values
@@ -61,12 +61,14 @@ class ImportAccountAction {
     try {
       /// import account
       var acc = await service.account.importAccount(
-        keyType:
-            service.plugin.pluginType == PluginType.Etherem ? null : _keyType,
+        keyType: service.plugin.basic.pluginType == PluginType.Etherem
+            ? null
+            : _keyType,
         cryptoType: _cryptoType,
         derivePath: _derivePath,
-        ethKeyType:
-            service.plugin.pluginType == PluginType.Etherem ? _keyType : null,
+        ethKeyType: service.plugin.basic.pluginType == PluginType.Etherem
+            ? _keyType
+            : null,
       );
       if (acc == null) {
         obSubmittingChang(false);
@@ -96,7 +98,7 @@ class ImportAccountAction {
       final duplicated = await _checkAccountDuplicate(
           context,
           service,
-          service.plugin.pluginType == PluginType.Etherem
+          service.plugin.basic.pluginType == PluginType.Etherem
               ? acc['address']
               : acc['pubKey']);
       // _checkAccountDuplicate always return false because account
@@ -104,15 +106,17 @@ class ImportAccountAction {
       if (!duplicated) {
         await service.account.addAccount(
           json: acc,
-          keyType:
-              service.plugin.pluginType == PluginType.Etherem ? null : _keyType,
+          keyType: service.plugin.basic.pluginType == PluginType.Etherem
+              ? null
+              : _keyType,
           cryptoType: _cryptoType,
           derivePath: _derivePath,
-          ethKeyType:
-              service.plugin.pluginType == PluginType.Etherem ? _keyType : null,
+          ethKeyType: service.plugin.basic.pluginType == PluginType.Etherem
+              ? _keyType
+              : null,
         );
         service.account.setBiometricDisabled(
-            service.plugin.pluginType == PluginType.Etherem
+            service.plugin.basic.pluginType == PluginType.Etherem
                 ? acc['address']
                 : acc['pubKey']);
       }
@@ -160,7 +164,7 @@ class ImportAccountAction {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final index = -1;
-    (service.plugin.pluginType == PluginType.Etherem
+    (service.plugin.basic.pluginType == PluginType.Etherem
             ? service.keyringETH.keyPairs
             : service.keyring.keyPairs)
         .indexWhere((i) => i.pubKey == key);
@@ -171,7 +175,7 @@ class ImportAccountAction {
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: Text(Fmt.address(
-                service.plugin.pluginType == PluginType.Etherem
+                service.plugin.basic.pluginType == PluginType.Etherem
                     ? service.keyringETH.keyPairs[index].address
                     : service.keyring.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),

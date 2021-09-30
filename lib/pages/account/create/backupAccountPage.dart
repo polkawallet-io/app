@@ -92,7 +92,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       ),
                     ),
                     AccountAdvanceOption(
-                      widget.service.plugin.pluginType,
+                      widget.service.plugin.basic.pluginType,
                       api: widget.service.plugin.sdk.api.keyring,
                       seed: widget.service.store.account.newAccount.key ?? '',
                       onChange: (data) {

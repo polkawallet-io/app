@@ -82,11 +82,11 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                     ),
                                   ),
                                   Visibility(
-                                      visible:
-                                          widget.service.plugin.pluginType !=
-                                              PluginType.Etherem,
+                                      visible: widget.service.plugin.basic
+                                              .pluginType !=
+                                          PluginType.Etherem,
                                       child: AccountAdvanceOption(
-                                        widget.service.plugin.pluginType,
+                                        widget.service.plugin.basic.pluginType,
                                         api: widget
                                             .service.plugin.sdk.api?.keyring,
                                         seed: _keyCtrl.text,

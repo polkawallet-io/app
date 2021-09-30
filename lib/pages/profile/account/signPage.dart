@@ -48,13 +48,13 @@ class _SignMessagePageState extends State<SignMessagePage>
       });
       final password = await widget.service.account.getPassword(
           context,
-          widget.service.plugin.pluginType == PluginType.Etherem
+          widget.service.plugin.basic.pluginType == PluginType.Etherem
               ? widget.service.keyringETH.current
               : widget.service.keyring.current,
-          pluginType: widget.service.plugin.pluginType);
+          pluginType: widget.service.plugin.basic.pluginType);
 
       ExtensionSignResult res;
-      if (widget.service.plugin.pluginType == PluginType.Etherem) {
+      if (widget.service.plugin.basic.pluginType == PluginType.Etherem) {
         res = await widget.service.plugin.sdk.api.ethKeyring.signMessage(
             password,
             _messageCtrl.text,
@@ -82,7 +82,7 @@ class _SignMessagePageState extends State<SignMessagePage>
       setState(() {
         _submitting = true;
       });
-      var res = widget.service.plugin.pluginType == PluginType.Etherem
+      var res = widget.service.plugin.basic.pluginType == PluginType.Etherem
           ? await widget.service.plugin.sdk.api.ethKeyring
               .signatureVerify(_messageVerifyCtrl.text, _signatureCtrl.text)
           : await widget.service.plugin.sdk.api.keyring.signatureVerify(
@@ -91,7 +91,7 @@ class _SignMessagePageState extends State<SignMessagePage>
               _verifySigner.address,
             );
       setState(() {
-        if (widget.service.plugin.pluginType == PluginType.Etherem) {
+        if (widget.service.plugin.basic.pluginType == PluginType.Etherem) {
           _verifyResult.isValid = res["signer"] == _verifySigner.address;
         } else {
           _verifyResult = res;
@@ -108,9 +108,10 @@ class _SignMessagePageState extends State<SignMessagePage>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _verifySigner = widget.service.plugin.pluginType == PluginType.Etherem
-            ? widget.service.keyringETH.current
-            : widget.service.keyring.current;
+        _verifySigner =
+            widget.service.plugin.basic.pluginType == PluginType.Etherem
+                ? widget.service.keyringETH.current
+                : widget.service.keyring.current;
       });
     });
   }
@@ -155,11 +156,12 @@ class _SignMessagePageState extends State<SignMessagePage>
                       Padding(
                         padding: EdgeInsets.only(top: 16),
                         child: AddressFormItem(
-                          widget.service.plugin.pluginType == PluginType.Etherem
+                          widget.service.plugin.basic.pluginType ==
+                                  PluginType.Etherem
                               ? widget.service.keyringETH.current
                               : widget.service.keyring.current,
                           label: dicCommon['account'],
-                          svg: widget.service.plugin.pluginType ==
+                          svg: widget.service.plugin.basic.pluginType ==
                                   PluginType.Etherem
                               ? widget.service.keyringETH.current.icon
                               : widget.service.keyring.current.icon,
@@ -216,12 +218,13 @@ class _SignMessagePageState extends State<SignMessagePage>
                         padding: EdgeInsets.only(top: 16),
                         child: AddressInputField(
                           widget.service.plugin.sdk.api,
-                          widget.service.plugin.pluginType == PluginType.Etherem
+                          widget.service.plugin.basic.pluginType ==
+                                  PluginType.Etherem
                               ? widget.service.keyringETH.allWithContacts
                               : widget.service.keyring.allWithContacts,
                           label: dicCommon['account'],
                           initialValue: _verifySigner ??
-                              (widget.service.plugin.pluginType ==
+                              (widget.service.plugin.basic.pluginType ==
                                       PluginType.Etherem
                                   ? widget.service.keyringETH.current
                                   : widget.service.keyring.current),
@@ -268,7 +271,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                       Container(height: 16),
                       InfoItemRow('isValid', '${_verifyResult.isValid ?? '-'}'),
                       Visibility(
-                        visible: widget.service.plugin.pluginType ==
+                        visible: widget.service.plugin.basic.pluginType ==
                             PluginType.Substrate,
                         child: InfoItemRow(
                             'crypto', '${_verifyResult.crypto ?? '-'}'),

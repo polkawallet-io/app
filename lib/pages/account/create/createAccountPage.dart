@@ -46,7 +46,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     try {
       final json = await widget.service.account.importAccount(
         cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: widget.service.plugin.pluginType == PluginType.Etherem
+        derivePath: widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? "m/44'/60'/0'/0/${_advanceOptions.path.length == 0 ? 0 : _advanceOptions.path}"
             : _advanceOptions.path ?? '',
         isFromCreatePage: true,
@@ -54,7 +54,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       await widget.service.account.addAccount(
         json: json,
         cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: widget.service.plugin.pluginType == PluginType.Etherem
+        derivePath: widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? "m/44'/60'/0'/0/${_advanceOptions.path.length == 0 ? 0 : _advanceOptions.path}"
             : _advanceOptions.path ?? '',
         isFromCreatePage: true,
