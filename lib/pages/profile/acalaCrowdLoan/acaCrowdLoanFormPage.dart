@@ -51,6 +51,9 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
   final _amountFocusNode = FocusNode();
   final _referralFocusNode = FocusNode();
 
+  final _rewardMultiplier = 280;
+  final _rewardDivider = 100;
+
   bool _submitting = false;
 
   double _amount = 0;
@@ -84,7 +87,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       _amountValid = valid;
       _amountEnough = enough;
       _amount = amt;
-      _amountKar = valid ? amt * 12 : 0;
+      _amountKar = valid ? amt * _rewardMultiplier / _rewardDivider : 0;
     });
   }
 
@@ -613,7 +616,7 @@ class RewardDetailPanel extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Expanded(child: Text('1DOT : 12ACA', style: karInfoStyle)),
+              Expanded(child: Text('1DOT : 2.8ACA', style: karInfoStyle)),
               Text('${Fmt.priceFloor(karAmount, lengthMax: 4)} ACA',
                   style: karAmountStyle),
             ],

@@ -29,15 +29,21 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
   String _derivePath = '';
   String _pathError;
 
+  Future<String> _doCheckPath(String path) async {
+    if (path.isEmpty) return null;
+
+    final invalidPath = 'Invalid derive path';
+    if (!path.startsWith('/')) {
+      return invalidPath;
+    }
+    return widget.api
+        .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection]);
+  }
+
   String _checkDerivePath(String path, {bool forceCheck = false}) {
     if (widget.seed != "" && path != _derivePath || forceCheck) {
       final invalidPath = 'Invalid derive path';
-      if (!path.startsWith('/')) {
-        return invalidPath;
-      }
-      widget.api
-          .checkDerivePath(widget.seed, path, _typeOptions[_typeSelection])
-          .then((res) {
+      _doCheckPath(path).then((res) {
         setState(() {
           _derivePath = path;
           _pathError = res != null ? invalidPath : null;
@@ -122,13 +128,16 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
                           setState(() {
                             _typeSelection = v;
                           });
+                          String error;
                           if (_pathCtrl.text.isNotEmpty) {
-                            _checkDerivePath(_pathCtrl.text, forceCheck: true);
+                            error = _checkDerivePath(_pathCtrl.text,
+                                forceCheck: true);
                           }
                           widget.onChange(AccountAdvanceOptionParams(
                             type: _typeOptions[v],
                             // path: _derivePath,
                             path: _pathCtrl.text,
+                            error: error != null,
                           ));
                         },
                       ),

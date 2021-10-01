@@ -36,6 +36,8 @@ const acaThemeColor = MaterialColor(
 );
 
 const aca_statement_store_key = 'aca_statement_store_key';
+const aca_token_decimal = 12;
+const dot_token_decimal = 10;
 
 class AcaCrowdLoanPage extends StatefulWidget {
   AcaCrowdLoanPage(this.service, this.connectedNode);
@@ -324,23 +326,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
-    DateTime endTime = DateTime.now();
-    bool finished = false;
-    // if (_fundInfo != null) {
-    //   final end = _fundInfo['end'];
-    //
-    //   final now = DateTime.now().millisecondsSinceEpoch;
-    //   final blockDuration = int.parse(
-    //       widget.service.plugin.networkConst['babe']['expectedBlockTime']);
-    //   endTime = DateTime.fromMillisecondsSinceEpoch(
-    //       now + (end - _bestNumber) * blockDuration);
-    //
-    //   finished = now > endTime.millisecondsSinceEpoch;
-    // }
-
     final titleColor = Colors.black87;
     final grayColor = Colors.black38;
-    final titleStyle = TextStyle(color: grayColor, fontSize: 18);
     final labelStyle = TextStyle(
         color: Color(0xff2b2b2b),
         fontSize: 46.sp,
@@ -540,6 +527,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                       TextStyle(
                                                           color: Colors.black87,
                                                           fontSize: 12);
+                                                  final contributeAmount =
+                                                      Fmt.balance(
+                                                          e['contributionAmount'],
+                                                          decimals);
                                                   List<Widget> karAmount = [
                                                     Text(
                                                       dic['auction.tx.confirming'],
@@ -553,30 +544,31 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                     final karRefereeBonus =
                                                         Fmt.balanceInt(
                                                             e['refereeBonus']);
-                                                    final karExtraBonus =
-                                                        e['promotion'] != null
-                                                            ? Fmt.balanceInt(e[
-                                                                    'promotion']
-                                                                ['extraBonus'])
-                                                            : BigInt.zero;
+                                                    final karExtraBonus = e[
+                                                                'promotion'] !=
+                                                            null
+                                                        ? Fmt.balanceInt(e[
+                                                                'promotion']
+                                                            ['acaExtraBonus'])
+                                                        : BigInt.zero;
                                                     karAmount = [
                                                       Text(
-                                                        '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} ACA',
+                                                        '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, aca_token_decimal)} ACA',
                                                         style: karAmountStyle,
                                                       )
                                                     ];
-                                                    if (e['promotion'] !=
-                                                            null &&
-                                                        Fmt.balanceInt(e[
-                                                                    'promotion']
-                                                                [
-                                                                'acaExtraBonus']) >
-                                                            BigInt.zero) {
-                                                      karAmount.add(Text(
-                                                        '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
-                                                        style: karAmountStyle,
-                                                      ));
-                                                    }
+                                                    // if (e['promotion'] !=
+                                                    //         null &&
+                                                    //     Fmt.balanceInt(e[
+                                                    //                 'promotion']
+                                                    //             [
+                                                    //             'acaExtraBonus']) >
+                                                    //         BigInt.zero) {
+                                                    //   karAmount.add(Text(
+                                                    //     '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
+                                                    //     style: karAmountStyle,
+                                                    //   ));
+                                                    // }
                                                   }
                                                   return Container(
                                                     margin: EdgeInsets.only(
@@ -591,14 +583,24 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            Text(
-                                                              '${Fmt.balance(e['contributionAmount'], decimals)} DOT',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                      titleColor,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  '$contributeAmount DOT',
+                                                                  style: TextStyle(
+                                                                      color:
+                                                                          titleColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                _tab == 0
+                                                                    ? Text(
+                                                                        '(= $contributeAmount pDOT)',
+                                                                        style:
+                                                                            karAmountStyle)
+                                                                    : Container()
+                                                              ],
                                                             ),
                                                             Text(
                                                                 Fmt.dateTime(DateTime
