@@ -8,11 +8,11 @@ const Map<String, String> enPublic = {
   'auction.direct': 'Direct',
   'auction.proxy.title': 'Contribute via Acala proxy',
   'auction.proxy.1':
-      '1. Besides the ACA tokens, receive Liquid DOT (pDOT), a liquid token representing your locked DOT.',
+      '1. Besides the ACA tokens, receive Liquid Crowdloan DOT (lcDOT), a liquid token representing your locked DOT.',
   'auction.proxy.2':
-      '2. pDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
+      '2. lcDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
   'auction.proxy.3':
-      '3. In 2 years, you can use pDOT to redeem the underlying DOT locked in the Acala crowdloan.',
+      '3. In 2 years, you can use lcDOT to redeem the underlying DOT locked in the Acala crowdloan.',
   'auction.address': 'Address',
   'auction.read': 'I have read and accept the',
   'auction.meet': 'I have check and was meet the',
@@ -27,7 +27,7 @@ const Map<String, String> enPublic = {
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code(optional)',
   'auction.estimate': 'Estimated ACA Paradrop',
-  'auction.receive.dot': 'Total pDOT receipt',
+  'auction.receive.dot': 'Total lcDOT receipt',
   'auction.invite': 'Referral',
   'auction.extra': 'Extra',
   'auction.note':
