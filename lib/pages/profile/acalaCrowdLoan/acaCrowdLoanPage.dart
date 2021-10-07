@@ -596,7 +596,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                                 ),
                                                                 _tab == 0
                                                                     ? Text(
-                                                                        '(= $contributeAmount pDOT)',
+                                                                        '(= $contributeAmount lcDOT)',
                                                                         style:
                                                                             karAmountStyle)
                                                                     : Container()

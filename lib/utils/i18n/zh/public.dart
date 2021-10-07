@@ -7,10 +7,11 @@ const Map<String, String> zhPublic = {
   'auction.proxy': '代理参与',
   'auction.direct': '直接参与',
   'auction.proxy.title': '通过 Acala 代理账户参与',
-  'auction.proxy.1': '1. 获得 ACA 奖励的同时，还能获得你贡献 DOT 对应数量的 Liquid DOT (pDOT)',
-  'auction.proxy.2': '2. Acala 网络启动后，可以使用 pDOT 参与各种 DeFi 活动.',
+  'auction.proxy.1':
+      '1. 获得 ACA 奖励的同时，还能获得你贡献 DOT 对应数量的 Liquid Crowdloan DOT (lcDOT)',
+  'auction.proxy.2': '2. Acala 网络启动后，可以使用 lcDOT 参与各种 DeFi 活动.',
   'auction.proxy.3':
-      '3. Acala 插槽到期（2年）后，可以使用 pDOT 换回 Acala crowdloan 中锁定的对应数量的 DOT',
+      '3. Acala 插槽到期（2年）后，可以使用 lcDOT 换回 Acala crowdloan 中锁定的对应数量的 DOT',
   'auction.address': '地址',
   'auction.read': '我已阅读并接受',
   'auction.meet': '我已检查并符合',
@@ -25,7 +26,7 @@ const Map<String, String> zhPublic = {
   'auction.balance': '可用余额',
   'auction.referral': '邀请码（选填）',
   'auction.estimate': '预估奖励（ACA）',
-  'auction.receive.dot': '获得 pDOT 数量',
+  'auction.receive.dot': '获得 lcDOT 数量',
   'auction.invite': '邀请奖励',
   'auction.extra': '额外奖励',
   'auction.note':
