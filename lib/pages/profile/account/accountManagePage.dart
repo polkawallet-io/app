@@ -153,7 +153,11 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
+<<<<<<< HEAD
     final acc = widget.service.plugin.basic.pluginType == PluginType.Etherem
+=======
+    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+>>>>>>> 6d7760e (add eth(networkSelect、createAccount、changeName、changePassword、exportKeyStore、exportMnemonic、sign and signVerify))
         ? widget.service.keyringETH.current
         : widget.service.keyring.current;
 
