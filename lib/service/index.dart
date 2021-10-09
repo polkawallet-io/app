@@ -8,8 +8,11 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
 
 class AppService {
-  AppService(this.allPlugins, this.plugin, this.keyring, this.keyringETH,
-      this.store, this.buildTarget);
+  AppService.init(this.allPlugins, this.plugin, this.keyring, this.keyringETH,
+      this.store, this.buildTarget) {
+    _account = ApiAccount(this);
+    _assets = ApiAssets(this);
+  }
 
   final List<PolkawalletPlugin> allPlugins;
   final PolkawalletPlugin plugin;
@@ -25,9 +28,4 @@ class AppService {
 
   ApiAccount get account => _account;
   ApiAssets get assets => _assets;
-
-  void init() {
-    _account = ApiAccount(this);
-    _assets = ApiAssets(this);
-  }
 }
