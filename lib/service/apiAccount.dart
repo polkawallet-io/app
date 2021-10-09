@@ -225,16 +225,12 @@ class ApiAccount {
     }
   }
 
-  Future<Map> postKarCrowdLoan(
-      String address,
-      BigInt amount,
-      String email,
-      bool receiveEmail,
-      String referral,
-      String signature,
-      String endpoint) async {
+  Future<Map> postKarCrowdLoan(String address, BigInt amount, String email,
+      bool receiveEmail, String referral, String signature, String endpoint,
+      {bool isProxy = false}) async {
     final submitted = await WalletApi.postKarCrowdLoan(
-        address, amount, email, receiveEmail, referral, signature, endpoint);
+        address, amount, email, receiveEmail, referral, signature, endpoint,
+        isProxy: isProxy);
     print(submitted);
     if (submitted != null && (submitted['result'] ?? false)) {
       apiRoot.store.account.setBannerVisible(false);

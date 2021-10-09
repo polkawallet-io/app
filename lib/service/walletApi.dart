@@ -222,7 +222,8 @@ class WalletApi {
       bool receiveEmail,
       String referral,
       String signature,
-      String endpoint) async {
+      String endpoint,
+      {bool isProxy = false}) async {
     final headers = {
       "Content-type": "application/json",
       "Accept": "*/*",
@@ -241,8 +242,10 @@ class WalletApi {
       body.addAll({"referral": referral});
     }
     try {
-      final res = await post(Uri.parse('https://$endpoint/contribute'),
-          headers: headers, body: jsonEncode(body));
+      final res = await post(
+          Uri.parse('https://$endpoint/${isProxy ? 'transfer' : 'contribute'}'),
+          headers: headers,
+          body: jsonEncode(body));
       if (res == null) {
         return null;
       } else {

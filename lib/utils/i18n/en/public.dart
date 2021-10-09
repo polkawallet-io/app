@@ -23,7 +23,7 @@ const Map<String, String> enPublic = {
   'auction.email': 'Email(optional)',
   'auction.amount': 'Amount',
   'auction.amount1': 'Amount to Contribute (DOT)',
-  'auction.amount.error': 'amount, 2 DOT minimum',
+  'auction.amount.error': 'amount, minimum',
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code(optional)',
   'auction.estimate': 'Estimated ACA Paradrop',

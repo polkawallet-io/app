@@ -46,15 +46,14 @@ class AcaCrowdLoanPage extends StatefulWidget {
 
   static final String route = '/public/aca/auction';
 
+  static BigInt contributeAmountMax = BigInt.from(100000000000000000);
+  static BigInt contributeAmountMaxDivider = BigInt.from(1500000000000000000);
+
   @override
   _AcaCrowdLoanPageState createState() => _AcaCrowdLoanPageState();
 }
 
 class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
-  final _emailRegEx = RegExp(
-      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-  final _emailFocusNode = FocusNode();
-
   int _tab = 0;
   int _bestNumber = 0;
   Map _fundInfo;
@@ -62,8 +61,6 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   KeyPairData _account = KeyPairData();
 
   bool _submitting = false;
-  String _email = '';
-  bool _emailValid = true;
 
   bool _accepted = false;
 
@@ -123,7 +120,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
       final tx = local[inBlockTxIndex];
       final List res = [
         {
-          'ksmAmount': tx['args'][1],
+          'contributionAmount': tx['args'][1],
           'timestamp': tx['timestamp'],
           'eventId': tx['hash'],
         }
@@ -223,23 +220,6 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     }
   }
 
-  void _onEmailChange(String value) {
-    final v = value.trim();
-    if (v.isEmpty) {
-      setState(() {
-        _email = v;
-        _emailValid = true;
-      });
-      return;
-    }
-
-    final valid = _emailRegEx.hasMatch(v);
-    setState(() {
-      _emailValid = valid;
-      _email = v;
-    });
-  }
-
   Future<void> _acceptAndSign() async {
     if (_submitting) return;
     setState(() {
@@ -278,8 +258,12 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   Future<void> _goToContribute() async {
     final res = await Navigator.of(context).pushNamed(
         AcaCrowdLoanFormPage.route,
-        arguments: AcaCrowdLoanPageParams(_account, _statement, _email,
-            _tab == 0 ? AcaPloType.proxy : AcaPloType.direct, _promotion));
+        arguments: AcaCrowdLoanPageParams(
+            _account,
+            _statement,
+            _tab == 0 ? AcaPloType.proxy : AcaPloType.direct,
+            _promotion,
+            _fundInfo));
     if (res != null) {
       _getCrowdLoanInfo();
     }
@@ -315,12 +299,6 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _emailFocusNode.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
     final decimals =
@@ -334,13 +312,18 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
         fontWeight: FontWeight.w500,
         decoration: TextDecoration.none);
 
-    final allAccepted = _accepted && _emailValid;
+    final raised = _fundInfo != null
+        ? BigInt.parse(_fundInfo['raised'].toString())
+        : BigInt.zero;
+    final double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
+        ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
+        : 14;
 
     final contributions = _contributions.toList();
     if (_tab == 0) {
-      contributions.retainWhere((e) => e['type'] == 'TRANSFER');
+      contributions.removeWhere((e) => e['type'] == 'CONTRIBUTION');
     } else {
-      contributions.retainWhere((e) => e['type'] == 'CONTRIBUTION');
+      contributions.removeWhere((e) => e['type'] == 'TRANSFER');
     }
     return Scaffold(
       body: AcaPloPageLayout(
@@ -357,7 +340,6 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                   if (v != _tab) {
                     setState(() {
                       _tab = v;
-                      _email = '';
                     });
                   }
                 },
@@ -384,49 +366,6 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                               imageRight: 48.w,
                               margin: EdgeInsets.zero,
                             ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dic['auction.email'],
-                                style: labelStyle,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 20.h),
-                                child: CupertinoTextField(
-                                  padding: EdgeInsets.fromLTRB(12, 14, 12, 14),
-                                  placeholder: 'Email (optional)',
-                                  placeholderStyle: TextStyle(
-                                      fontSize: 16, color: acaThemeColor),
-                                  style: TextStyle(fontSize: 18),
-                                  decoration: BoxDecoration(
-                                    color: _emailFocusNode.hasFocus
-                                        ? acaThemeColor.shade100
-                                        : Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8)),
-                                    border: Border.all(
-                                        width: 4.w, color: acaThemeColor),
-                                  ),
-                                  cursorColor: acaThemeColor,
-                                  clearButtonMode:
-                                      OverlayVisibilityMode.editing,
-                                  focusNode: _emailFocusNode,
-                                  onChanged: _onEmailChange,
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 8.h, bottom: 24.h),
-                                child: _email.isEmpty || _emailValid
-                                    ? Container()
-                                    : Text(
-                                        '${dic['auction.invalid']} ${dic['auction.email']}',
-                                        style: TextStyle(
-                                            color: Colors.red, fontSize: 10),
-                                      ),
-                              ),
-                            ],
                           ),
                           _tab == 1 && !_signed
                               ? Column(
@@ -470,7 +409,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                             Row(
                                               children: [
                                                 JumpToLink(
-                                                  'https://acala.network/karura/terms',
+                                                  'https://acala.network/terms',
                                                   text:
                                                       '${dic['auction.term.0']}',
                                                   color: acaThemeColor,
@@ -511,9 +450,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                               padding: EdgeInsets.fromLTRB(
                                                   16, 8, 16, 8),
                                               decoration: BoxDecoration(
-                                                color: _emailFocusNode.hasFocus
-                                                    ? acaThemeColor.shade100
-                                                    : Colors.transparent,
+                                                color: Colors.transparent,
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(8)),
                                                 border: Border.all(
@@ -551,9 +488,19 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                                 'promotion']
                                                             ['acaExtraBonus'])
                                                         : BigInt.zero;
+                                                    final karAmountMin =
+                                                        Fmt.bigIntToDouble(
+                                                            karAmountInt +
+                                                                karRefereeBonus +
+                                                                karExtraBonus,
+                                                            aca_token_decimal);
+                                                    final karAmountMax =
+                                                        karAmountMin /
+                                                            3 *
+                                                            ratioAcaMax;
                                                     karAmount = [
                                                       Text(
-                                                        '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, aca_token_decimal)} ACA',
+                                                        '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
                                                         style: karAmountStyle,
                                                       )
                                                     ];
@@ -646,9 +593,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                     text: dic['auction.contribute'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: _emailValid
-                                        ? _goToContribute
-                                        : () => null,
+                                    onPressed: _goToContribute,
                                   )
                                 : RoundedButton(
                                     icon: _submitting
@@ -657,7 +602,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                     text: dic['auction.accept'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: allAccepted && !_submitting
+                                    onPressed: _accepted && !_submitting
                                         ? _acceptAndSign
                                         : () => null,
                                   ),
