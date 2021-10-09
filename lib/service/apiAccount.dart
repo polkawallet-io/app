@@ -85,7 +85,7 @@ class ApiAccount {
     dynamic generateMnemonicData;
     if (apiRoot.plugin.basic.pluginType == PluginType.Etherem) {
       await apiRoot.plugin.sdk.api.ethKeyring
-          .updatePubKeyIconsMap(apiRoot.keyringETH, [keyStore["address"]]);
+          .updateAddressIconsMap(apiRoot.keyringETH, [keyStore["address"]]);
 
       apiRoot.store.account.setNewAccountKey("", keyStore["address"],
           apiRoot.keyringETH.icons[keyStore["address"]]);
