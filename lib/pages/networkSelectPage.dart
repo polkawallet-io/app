@@ -14,8 +14,8 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -62,12 +62,12 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
     );
     await widget.changeNetwork(_selectedNetwork);
 
-    if (mounted) {
-      Navigator.of(context).pop();
-      setState(() {
-        _networkChanging = false;
-      });
-    }
+    // if (mounted) {
+    //   Navigator.of(context).pop();
+    //   setState(() {
+    //     _networkChanging = false;
+    //   });
+    // }
   }
 
   Future<void> _onSelect(KeyPairData i) async {
