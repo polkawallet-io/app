@@ -97,16 +97,16 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  polkawallet_ui: ^0.3.3
-#  polkawallet_ui:
-#     path: ../../coding/polkawallet/ui
+  # polkawallet_ui: ^0.3.3
+  polkawallet_ui:
+     path: ../../coding/polkawallet/ui
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
 #    path: ../../coding/polkawallet/ui
-  polkawallet_sdk: ^0.3.3
-#  polkawallet_sdk:
-#     path: ../../coding/polkawallet/sdk
+  # polkawallet_sdk: ^0.3.3
+  polkawallet_sdk:
+     path: ../../coding/polkawallet/sdk
   charts_flutter:
      git:
        url: https://github.com/google/charts

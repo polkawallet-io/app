@@ -61,6 +61,7 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringETH.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
@@ -96,6 +97,8 @@ class _WalletAppState extends State<WalletApp> {
   final _analytics = FirebaseAnalytics();
 
   Keyring _keyring;
+
+  KeyringETH _keyringEth;
 
   AppStore _store;
   AppService _service;
@@ -241,13 +244,14 @@ class _WalletAppState extends State<WalletApp> {
         ) >
         network.basic.jsCodeVersion;
 
-    final service = AppService(
-        widget.plugins, network, _keyring, _store, widget.buildTarget);
+    final service = AppService(widget.plugins, network, _keyring, _keyringEth,
+        _store, widget.buildTarget);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
       _keyring,
+      _keyringEth,
       webView: _service?.plugin?.sdk?.webView,
       jsCode: useLocalJS
           ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
@@ -333,8 +337,10 @@ class _WalletAppState extends State<WalletApp> {
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
       _keyring = Keyring();
+      _keyringEth = KeyringETH();
       await _keyring
           .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
+      await _keyringEth.init();
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
@@ -348,6 +354,7 @@ class _WalletAppState extends State<WalletApp> {
           widget.plugins,
           widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
+          _keyringEth,
           store,
           widget.buildTarget);
       service.init();
@@ -378,6 +385,7 @@ class _WalletAppState extends State<WalletApp> {
 
       await service.plugin.beforeStart(
         _keyring,
+        _keyringEth,
         jsCode: useLocalJS
             ? WalletApi.getPolkadotJSCode(
                 _store.storage, service.plugin.basic.name)
