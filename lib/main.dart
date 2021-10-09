@@ -13,6 +13,8 @@ import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 
+import 'plugin_test_eth.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(get_storage_container);
@@ -28,18 +30,19 @@ void main() async {
     PluginChainX(),
     PluginEdgeware(),
     PluginLaminar(),
+    PluginTestETH()
   ];
 
-  final pluginsConfig = await WalletApi.getPluginsConfig();
-  if (pluginsConfig != null) {
-    plugins.removeWhere((i) {
-      final List disabled = pluginsConfig[i.basic.name]['disabled'];
-      if (disabled != null) {
-        return disabled.contains(app_beta_version_code);
-      }
-      return false;
-    });
-  }
+  // final pluginsConfig = await WalletApi.getPluginsConfig();
+  // if (pluginsConfig != null) {
+  //   plugins.removeWhere((i) {
+  //     final List disabled = pluginsConfig[i.basic.name]['disabled'];
+  //     if (disabled != null) {
+  //       return disabled.contains(app_beta_version_code);
+  //     }
+  //     return false;
+  //   });
+  // }
 
   runApp(WalletApp(
       plugins,

@@ -7,6 +7,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -45,13 +46,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     try {
       final json = await widget.service.account.importAccount(
         cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
+        derivePath: widget.service.plugin.basic.pluginType == PluginType.Etherem
+            ? "m/44'/60'/0'/0/${_advanceOptions.path.length == 0 ? 0 : _advanceOptions.path}"
+            : _advanceOptions.path ?? '',
         isFromCreatePage: true,
       );
       await widget.service.account.addAccount(
         json: json,
         cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
+        derivePath: widget.service.plugin.basic.pluginType == PluginType.Etherem
+            ? "m/44'/60'/0'/0/${_advanceOptions.path.length == 0 ? 0 : _advanceOptions.path}"
+            : _advanceOptions.path ?? '',
         isFromCreatePage: true,
       );
 

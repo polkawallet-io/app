@@ -88,6 +88,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                     ),
                                   ),
                                   AccountAdvanceOption(
+                                    widget.service.plugin.basic.pluginType,
                                     api: widget.service.plugin.sdk.api?.keyring,
                                     seed: _keyCtrl.text.trim(),
                                     onChange:
