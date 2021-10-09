@@ -16,7 +16,6 @@ import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -377,8 +376,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
                       plugins[0].basic.pluginType ==
                           _selectedNetwork?.basic?.pluginType) ||
                   (disabledPlugins.length > 0 &&
-                      disabledPlugins[0].pluginType ==
-                          _pluginDisabledSelected.pluginType),
+                          disabledPlugins[0].pluginType ==
+                              _pluginDisabledSelected?.pluginType ??
+                      false),
               child: ListView(
                 padding:
                     EdgeInsets.only(left: 5, top: 16, right: 16, bottom: 16),

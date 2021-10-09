@@ -47,7 +47,9 @@ void main() async {
       plugins,
       [
         // PluginDisabled(
-        //     'chainx', Image.asset('assets/images/public/chainx_gray.png'))
+        //     'chainx',
+        //     Image.asset('assets/images/public/chainx_gray.png'),
+        //     PluginType.Substrate)
       ],
       BuildTargets.apk));
 }
