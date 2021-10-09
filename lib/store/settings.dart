@@ -82,6 +82,11 @@ abstract class _SettingsStore with Store {
     }
   }
 
+  T enumFromString<T>(Iterable<T> values, String value) {
+    return values.firstWhere((type) => type.toString().split('.').last == value,
+        orElse: () => null);
+  }
+
   @action
   void setLiveModules(Map value) {
     liveModules = value;
