@@ -32,7 +32,13 @@ void main() async {
 
   final pluginsConfig = await WalletApi.getPluginsConfig();
   if (pluginsConfig != null) {
-    plugins.removeWhere((i) => !pluginsConfig[i.basic.name]['visible']);
+    plugins.removeWhere((i) {
+      final List disabled = pluginsConfig[i.basic.name]['disabled'];
+      if (disabled != null) {
+        return disabled.contains(app_beta_version_code);
+      }
+      return false;
+    });
   }
 
   runApp(WalletApp(

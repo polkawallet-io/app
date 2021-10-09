@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:app/service/index.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:app/utils/i18n/index.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
@@ -35,6 +35,12 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   bool _supportBiometric = false;
   bool _enableBiometric = true; // if the biometric usage checkbox checked
+
+  @override
+  void dispose() {
+    widget.service.store.account.resetNewAccount();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -228,11 +234,13 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   String _validateInput(String v) {
     bool passed = false;
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    String input = v.trim();
-    if (input.length <= 32 || input.length == 66) {
+    try {
+      jsonDecode(v);
       passed = true;
+    } catch (_) {
+      // ignore
     }
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
   }
 

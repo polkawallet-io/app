@@ -1,5 +1,5 @@
-import 'package:mobx/mobx.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mobx/mobx.dart';
 
 part 'settings.g.dart';
 
@@ -23,6 +23,9 @@ abstract class _SettingsStore with Store {
 
   @observable
   Map liveModules = Map();
+
+  @observable
+  Map adBannerState = Map();
 
   @action
   Future<void> init() async {
@@ -61,5 +64,10 @@ abstract class _SettingsStore with Store {
   @action
   void setLiveModules(Map value) {
     liveModules = value;
+  }
+
+  @action
+  void setAdBannerState(Map value) {
+    adBannerState = value;
   }
 }

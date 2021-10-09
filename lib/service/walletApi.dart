@@ -141,7 +141,7 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getKarCrowdLoanStarted() async {
+  static Future<Map> getAdBannerStatus() async {
     try {
       final res = await get(Uri.parse('$_endpoint/crowdloan/health'));
       if (res == null) {
@@ -193,7 +193,6 @@ class WalletApi {
       if (res == null) {
         return null;
       } else {
-        print(jsonDecode(utf8.decode(res.bodyBytes)));
         return jsonDecode(utf8.decode(res.bodyBytes));
       }
     } catch (err) {
@@ -224,7 +223,12 @@ class WalletApi {
       String referral,
       String signature,
       String endpoint) async {
-    final headers = {"Content-type": "application/json", "Accept": "*/*"};
+    final headers = {
+      "Content-type": "application/json",
+      "Accept": "*/*",
+      "Authorization":
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicG9sa2F3YWxsZXQiLCJpYXQiOjE2MzI5MDk1MTd9.iDMOCyRGAttGbgDeD14XLHlAo12VVTKRXdoET3urdZU"
+    };
     final Map body = {
       "address": address,
       "amount": amount.toString(),
@@ -237,7 +241,7 @@ class WalletApi {
       body.addAll({"referral": referral});
     }
     try {
-      final res = await post(Uri.parse('https://$endpoint/verify'),
+      final res = await post(Uri.parse('https://$endpoint/contribute'),
           headers: headers, body: jsonEncode(body));
       if (res == null) {
         return null;

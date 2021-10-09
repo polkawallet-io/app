@@ -14,7 +14,7 @@ packages:
       path: "../../coding/polkawallet/aes_ecb_pkcs5_flutter"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   analyzer:
     dependency: transitive
     description:
@@ -912,17 +912,17 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.3.2"
+      name: polkawallet_sdk
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.3"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.3.2"
+      name: polkawallet_ui
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.3"
   pool:
     dependency: transitive
     description:
