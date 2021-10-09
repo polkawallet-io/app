@@ -23,9 +23,10 @@ class _ChangeName extends State<ChangeNamePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _nameCtrl.text = widget.service.plugin.pluginType == PluginType.Etherem
-        ? widget.service.keyringETH.current.name
-        : widget.service.keyring.current.name;
+    _nameCtrl.text =
+        widget.service.plugin.basic.pluginType == PluginType.Etherem
+            ? widget.service.keyringETH.current.name
+            : widget.service.keyring.current.name;
   }
 
   @override
@@ -82,7 +83,7 @@ class _ChangeName extends State<ChangeNamePage> {
                 text: dic['contact.save'],
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    if (widget.service.plugin.pluginType ==
+                    if (widget.service.plugin.basic.pluginType ==
                         PluginType.Etherem) {
                       widget.service.plugin.sdk.api.ethKeyring.changeName(
                           widget.service.keyringETH, _nameCtrl.text.trim());

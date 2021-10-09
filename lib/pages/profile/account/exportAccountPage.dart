@@ -20,13 +20,13 @@ class ExportAccountPage extends StatelessWidget {
   Future<void> _onExport(BuildContext context) async {
     final password = await service.account.getPassword(
       context,
-      service.plugin.pluginType == PluginType.Etherem
+      service.plugin.basic.pluginType == PluginType.Etherem
           ? service.keyringETH.current
           : service.keyring.current,
-      pluginType: service.plugin.pluginType,
+      pluginType: service.plugin.basic.pluginType,
     );
     if (password != null) {
-      final seed = service.plugin.pluginType == PluginType.Etherem
+      final seed = service.plugin.basic.pluginType == PluginType.Etherem
           ? await service.plugin.sdk.api.ethKeyring
               .getDecryptedSeed(service.keyringETH, password)
           : await service.plugin.sdk.api.keyring
@@ -48,7 +48,7 @@ class ExportAccountPage extends StatelessWidget {
             trailing: Icon(Icons.arrow_forward_ios, size: 18),
             onTap: () {
               Map json;
-              if (service.plugin.pluginType == PluginType.Etherem) {
+              if (service.plugin.basic.pluginType == PluginType.Etherem) {
                 json = jsonDecode(service.keyringETH.current.keystore);
               } else {
                 json = service.keyring.current.toJson();
@@ -64,7 +64,7 @@ class ExportAccountPage extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future: service.plugin.pluginType == PluginType.Etherem
+            future: service.plugin.basic.pluginType == PluginType.Etherem
                 ? service.keyringETH.store.checkSeedExist(
                     ETH_KeyType.mnemonic, service.keyringETH.current.address)
                 : service.keyring.store.checkSeedExist(
@@ -82,7 +82,7 @@ class ExportAccountPage extends StatelessWidget {
             },
           ),
           FutureBuilder(
-            future: service.plugin.pluginType == PluginType.Etherem
+            future: service.plugin.basic.pluginType == PluginType.Etherem
                 ? service.keyringETH.store.checkSeedExist(
                     ETH_KeyType.privateKey, service.keyringETH.current.address)
                 : service.keyring.store.checkSeedExist(
@@ -90,9 +90,10 @@ class ExportAccountPage extends StatelessWidget {
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData && snapshot.data == true) {
                 return ListTile(
-                  title: Text(service.plugin.pluginType == PluginType.Etherem
-                      ? dicAcc['privateKey']
-                      : dicAcc['rawSeed']),
+                  title: Text(
+                      service.plugin.basic.pluginType == PluginType.Etherem
+                          ? dicAcc['privateKey']
+                          : dicAcc['rawSeed']),
                   trailing: Icon(Icons.arrow_forward_ios, size: 18),
                   onTap: () => _onExport(context),
                 );

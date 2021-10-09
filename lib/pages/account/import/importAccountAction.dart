@@ -3,6 +3,7 @@ import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -14,7 +15,7 @@ class ImportAccountAction {
       BuildContext context, AppService service) async {
     final storeFile = await service.account.getBiometricPassStoreFile(
       context,
-      service.plugin.pluginType == PluginType.Etherem
+      service.plugin.basic.pluginType == PluginType.Etherem
           ? service.keyringETH.current.address
           : service.keyring.current.pubKey,
     );
@@ -22,7 +23,7 @@ class ImportAccountAction {
     try {
       await storeFile.write(service.store.account.newAccount.password);
       service.account.setBiometricEnabled(
-          service.plugin.pluginType == PluginType.Etherem
+          service.plugin.basic.pluginType == PluginType.Etherem
               ? service.keyringETH.current.address
               : service.keyring.current.pubKey);
     } catch (err) {
@@ -38,8 +39,11 @@ class ImportAccountAction {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
 
-    final _keyType = KeyType.values
-        .firstWhere((e) => e.toString().contains(data['keyType']));
+    final _keyType = service.plugin.basic.pluginType == PluginType.Etherem
+        ? ETH_KeyType.values
+            .firstWhere((e) => e.toString().contains(data['keyType']))
+        : KeyType.values
+            .firstWhere((e) => e.toString().contains(data['keyType']));
     final _cryptoType = data['cryptoType'] ?? CryptoType.sr25519;
     final _derivePath = data['derivePath'] ?? "";
 
@@ -57,9 +61,14 @@ class ImportAccountAction {
     try {
       /// import account
       var acc = await service.account.importAccount(
-        keyType: _keyType,
+        keyType: service.plugin.basic.pluginType == PluginType.Etherem
+            ? null
+            : _keyType,
         cryptoType: _cryptoType,
         derivePath: _derivePath,
+        ethKeyType: service.plugin.basic.pluginType == PluginType.Etherem
+            ? _keyType
+            : null,
       );
       if (acc == null) {
         obSubmittingChang(false);
@@ -86,18 +95,30 @@ class ImportAccountAction {
       }
 
       /// check if account duplicate
-      final duplicated =
-          await _checkAccountDuplicate(context, service, acc['pubKey']);
+      final duplicated = await _checkAccountDuplicate(
+          context,
+          service,
+          service.plugin.basic.pluginType == PluginType.Etherem
+              ? acc['address']
+              : acc['pubKey']);
       // _checkAccountDuplicate always return false because account
       // was imported and duplicated account was updated.
       if (!duplicated) {
         await service.account.addAccount(
           json: acc,
-          keyType: _keyType,
+          keyType: service.plugin.basic.pluginType == PluginType.Etherem
+              ? null
+              : _keyType,
           cryptoType: _cryptoType,
           derivePath: _derivePath,
+          ethKeyType: service.plugin.basic.pluginType == PluginType.Etherem
+              ? _keyType
+              : null,
         );
-        service.account.setBiometricDisabled(acc['pubKey']);
+        service.account.setBiometricDisabled(
+            service.plugin.basic.pluginType == PluginType.Etherem
+                ? acc['address']
+                : acc['pubKey']);
       }
       obSubmittingChang(false);
       Navigator.of(context).pop();
@@ -139,17 +160,24 @@ class ImportAccountAction {
   }
 
   static Future<bool> _checkAccountDuplicate(
-      BuildContext context, AppService service, String pubKey) async {
+      BuildContext context, AppService service, String key) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final index =
-        service.keyring.keyPairs.indexWhere((i) => i.pubKey == pubKey);
+    final index = -1;
+    if (service.plugin.basic.pluginType == PluginType.Etherem) {
+      service.keyringETH.keyPairs.indexWhere((i) => i.address == key);
+    } else {
+      service.keyring.keyPairs.indexWhere((i) => i.pubKey == key);
+    }
     if (index > -1) {
       final duplicate = await showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Text(Fmt.address(service.keyring.keyPairs[index].address)),
+            title: Text(Fmt.address(
+                service.plugin.basic.pluginType == PluginType.Etherem
+                    ? service.keyringETH.keyPairs[index].address
+                    : service.keyring.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),
             actions: <Widget>[
               // CupertinoButton(

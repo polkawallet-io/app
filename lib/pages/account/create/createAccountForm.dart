@@ -55,7 +55,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         }
 
         widget.service.plugin.changeAccount(
-            widget.service.plugin.pluginType == PluginType.Etherem
+            widget.service.plugin.basic.pluginType == PluginType.Etherem
                 ? widget.service.keyringETH.current
                 : widget.service.keyring.current);
         widget.service.store.account.resetNewAccount();

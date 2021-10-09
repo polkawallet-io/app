@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
-    final acc = widget.service.plugin.pluginType == PluginType.Etherem
+    final acc = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? widget.service.keyringETH.current
         : widget.service.keyring.current;
     final primaryColor = Theme.of(context).primaryColor;

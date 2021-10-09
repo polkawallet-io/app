@@ -73,7 +73,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
   Future<void> _onSelect(KeyPairData i) async {
     bool isCurrentNetwork =
         _selectedNetwork.basic.name == widget.service.plugin.basic.name &&
-            _selectedNetwork.pluginType == widget.service.plugin.pluginType;
+            _selectedNetwork.basic.pluginType ==
+                widget.service.plugin.basic.pluginType;
     if (i.address != widget.service.keyring.current.address ||
         !isCurrentNetwork) {
       /// set current account
@@ -148,7 +149,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
 
     final bool isCurrentNetwork =
         _selectedNetwork?.basic?.name == widget.service.plugin.basic.name &&
-            _selectedNetwork?.pluginType == widget.service.plugin.pluginType;
+            _selectedNetwork?.basic.pluginType ==
+                widget.service.plugin.basic.pluginType;
     if (pluginType == PluginType.Etherem) {
       /// first item is current account
       List<KeyPairETHData> accounts = [];

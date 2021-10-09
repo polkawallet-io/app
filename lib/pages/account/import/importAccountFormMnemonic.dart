@@ -4,6 +4,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -153,7 +154,11 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
       widget.service.account.addressFromMnemonic(
           mnemonic: _keyCtrl.text.trim(),
           type: _advanceOptions.type,
-          path: _advanceOptions.path);
+          path: widget.service.plugin.basic.pluginType == PluginType.Etherem
+              ? _advanceOptions.path.length > 0
+                  ? "m/44'/60'/0'/0/${_advanceOptions.path}"
+                  : "m/44'/60'/0'/0/0"
+              : _advanceOptions.path);
     }
   }
 }

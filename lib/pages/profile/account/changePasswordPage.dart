@@ -37,7 +37,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final String passNew = _passCtrl.text.trim();
 
-    var data = widget.service.plugin.pluginType == PluginType.Etherem
+    var data = widget.service.plugin.basic.pluginType == PluginType.Etherem
         ? await widget.service.plugin.sdk.api.ethKeyring.changePassword(
             keyring: widget.service.keyringETH,
             passOld: passOld,
@@ -45,7 +45,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
         : await widget.service.plugin.sdk.api.keyring
             .changePassword(widget.service.keyring, passOld, passNew);
     if (data != null) {
-      final key = widget.service.plugin.pluginType == PluginType.Etherem
+      final key = widget.service.plugin.basic.pluginType == PluginType.Etherem
           ? widget.service.keyringETH.current.address
           : widget.service.keyring.current.pubKey;
       if (_enableBiometric && _supportBiometric) {
@@ -91,10 +91,10 @@ class _ChangePassword extends State<ChangePasswordPage> {
     if (_formKey.currentState.validate()) {
       final password = await widget.service.account.getPassword(
         context,
-        widget.service.plugin.pluginType == PluginType.Etherem
+        widget.service.plugin.basic.pluginType == PluginType.Etherem
             ? widget.service.keyringETH.current
             : widget.service.keyring.current,
-        pluginType: widget.service.plugin.pluginType,
+        pluginType: widget.service.plugin.basic.pluginType,
       );
       if (password != null) {
         _doChangePass(password);

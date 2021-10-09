@@ -6,6 +6,7 @@ import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -234,13 +235,14 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   String _validateInput(String v) {
     bool passed = false;
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+    String input = v.trim();
     try {
-      jsonDecode(v);
+      jsonDecode(input);
       passed = true;
     } catch (_) {
       // ignore
     }
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
   }
 
@@ -248,10 +250,12 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
     try {
       var json = jsonDecode(v.trim());
       _refreshAcccountAddress(keyStore: json);
-      if (json['meta']['name'] != null) {
-        setState(() {
-          _nameCtrl.value = TextEditingValue(text: json['meta']['name']);
-        });
+      if (widget.service.plugin.basic.pluginType == PluginType.Substrate) {
+        if (json['meta']['name'] != null) {
+          setState(() {
+            _nameCtrl.value = TextEditingValue(text: json['meta']['name']);
+          });
+        }
       }
     } catch (e) {
       print(e);
