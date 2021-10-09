@@ -143,9 +143,15 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                 }
 
                                 widget.service.plugin.changeAccount(
-                                    widget.service.keyring.current);
+                                    widget.service.plugin.basic.pluginType ==
+                                            PluginType.Etherem
+                                        ? widget.service.keyringETH.current
+                                        : widget.service.keyring.current);
                                 widget.service.store.assets.loadCache(
-                                    widget.service.keyring.current,
+                                    widget.service.plugin.basic.pluginType ==
+                                            PluginType.Etherem
+                                        ? widget.service.keyringETH.current
+                                        : widget.service.keyring.current,
                                     widget.service.plugin.basic.name);
                                 widget.service.store.account.resetNewAccount();
                                 Navigator.popUntil(

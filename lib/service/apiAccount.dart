@@ -180,8 +180,8 @@ class ApiAccount {
         DateTime.now().millisecondsSinceEpoch - SECONDS_OF_DAY * 7000);
   }
 
-  bool getBiometricEnabled(String Key) {
-    final timestamp = apiRoot.store.storage.read('$_biometricEnabledKey$Key');
+  bool getBiometricEnabled(String key) {
+    final timestamp = apiRoot.store.storage.read('$_biometricEnabledKey$key');
     // we cache user's password with biometric for 7 days.
     if (timestamp != null &&
         timestamp + SECONDS_OF_DAY * 7000 >
@@ -193,10 +193,10 @@ class ApiAccount {
 
   Future<BiometricStorageFile> getBiometricPassStoreFile(
     BuildContext context,
-    String pubKey,
+    String key,
   ) async {
     return BiometricStorage().getStorage(
-      '$_biometricPasswordKey$pubKey',
+      '$_biometricPasswordKey$key',
       options:
           StorageFileInitOptions(authenticationValidityDurationSeconds: 30),
       androidPromptInfo: AndroidPromptInfo(

@@ -53,18 +53,23 @@ class _SignMessagePageState extends State<SignMessagePage>
               : widget.service.keyring.current,
           pluginType: widget.service.plugin.basic.pluginType);
 
-      final params = SignAsExtensionParam();
-      params.msgType = "pub(bytes.sign)";
-      params.request = {
-        "address": widget.service.keyring.current.address,
-        "data": _messageCtrl.text,
-      };
+      ExtensionSignResult res;
+      if (widget.service.plugin.basic.pluginType == PluginType.Etherem) {
+        res = await widget.service.plugin.sdk.api.ethKeyring.signMessage(
+            password,
+            _messageCtrl.text,
+            widget.service.keyringETH.current.keystore);
+      } else {
+        final params = SignAsExtensionParam();
+        params.msgType = "pub(bytes.sign)";
+        params.request = {
+          "address": widget.service.keyring.current.address,
+          "data": _messageCtrl.text,
+        };
 
-      final res = widget.service.plugin.basic.pluginType == PluginType.Etherem
-          ? await widget.service.plugin.sdk.api.ethKeyring.signMessage(password,
-              _messageCtrl.text, widget.service.keyringETH.current.keystore)
-          : await widget.service.plugin.sdk.api.keyring
-              .signAsExtension(password, params);
+        res = await widget.service.plugin.sdk.api.keyring
+            .signAsExtension(password, params);
+      }
       setState(() {
         _signResCtrl.text = res.signature;
         _submitting = false;
