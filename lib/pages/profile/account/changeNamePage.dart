@@ -86,11 +86,7 @@ class _ChangeName extends State<ChangeNamePage> {
                 text: dic['contact.save'],
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-<<<<<<< HEAD
                     if (widget.service.plugin.basic.pluginType ==
-=======
-                    if (widget.service.plugin.pluginType ==
->>>>>>> 6d7760e (add eth(networkSelect、createAccount、changeName、changePassword、exportKeyStore、exportMnemonic、sign and signVerify))
                         PluginType.Etherem) {
                       widget.service.plugin.sdk.api.ethKeyring.changeName(
                           widget.service.keyringETH, _nameCtrl.text.trim());
