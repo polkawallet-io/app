@@ -149,7 +149,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
 
     final bool isCurrentNetwork =
         _selectedNetwork?.basic?.name == widget.service.plugin.basic.name &&
-            _selectedNetwork?.basic.pluginType ==
+            _selectedNetwork?.basic?.pluginType ==
                 widget.service.plugin.basic.pluginType;
     if (pluginType == PluginType.Etherem) {
       /// first item is current account
