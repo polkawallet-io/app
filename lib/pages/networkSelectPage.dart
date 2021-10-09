@@ -258,7 +258,13 @@ class _NetworkSelectPageState extends State<NetworkSelectPage>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+    tabController = TabController(
+        initialIndex:
+            widget.service.plugin.basic.pluginType == PluginType.Substrate
+                ? 0
+                : 1,
+        length: 2,
+        vsync: this);
 
     this.substratePlugins = widget.plugins
         .where((element) => element.basic.pluginType == PluginType.Substrate)
