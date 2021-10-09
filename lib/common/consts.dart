@@ -28,6 +28,7 @@ const para_chain_name_statemine = 'statemine';
 const para_chain_name_statemint = 'statemint';
 const para_chain_name_karura = 'karura';
 const para_chain_name_bifrost = 'bifrost';
+const para_chain_name_testETH = 'testETH';
 const plugin_github_links = {
   relay_chain_name_ksm: 'https://github.com/polkawallet-io/app/issues',
   relay_chain_name_dot: 'https://github.com/polkawallet-io/app/issues',
@@ -42,6 +43,8 @@ const plugin_github_links = {
   'chainx': 'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
   'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
   para_chain_name_bifrost:
+      'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
+  para_chain_name_testETH:
       'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
 };
 const plugin_from_community = ['chainx', 'edgeware', para_chain_name_bifrost];

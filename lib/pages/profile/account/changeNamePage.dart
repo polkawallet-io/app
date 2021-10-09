@@ -64,7 +64,10 @@ class _ChangeName extends State<ChangeNamePage> {
                           if (name.length == 0) {
                             return dic['contact.name.error'];
                           }
-                          int exist = widget.service.keyring.optionals
+                          int exist = (widget.service.plugin.basic.pluginType ==
+                                      PluginType.Etherem
+                                  ? widget.service.keyringETH.optionals
+                                  : widget.service.keyring.optionals)
                               .indexWhere((i) => i.name == name);
                           if (exist > -1) {
                             return dic['contact.name.exist'];

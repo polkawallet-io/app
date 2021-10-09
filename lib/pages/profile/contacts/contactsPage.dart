@@ -3,8 +3,10 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -26,7 +28,9 @@ class _ContactsPageState extends State<ContactsPage> {
 
   void _refreshData() {
     setState(() {
-      _list = widget.service.keyring.contacts;
+      _list = widget.service.plugin.basic.pluginType == PluginType.Etherem
+          ? widget.service.keyringETH.contacts
+          : widget.service.keyring.contacts;
     });
   }
 
@@ -85,17 +89,32 @@ class _ContactsPageState extends State<ContactsPage> {
               child: Text(dic['ok']),
               onPressed: () async {
                 Navigator.of(context).pop();
-                await widget.service.keyring.store.deleteContact(i.pubKey);
+                widget.service.plugin.basic.pluginType == PluginType.Etherem
+                    ? widget.service.keyringETH.store.deleteContact(i.address)
+                    : await widget.service.keyring.store
+                        .deleteContact(i.pubKey);
                 if (i.observation &&
-                    widget.service.keyring.store.currentPubKey == i.pubKey) {
-                  if (widget.service.keyring.allAccounts.length > 0) {
-                    widget.service.keyring
-                        .setCurrent(widget.service.keyring.allAccounts[0]);
-
-                    widget.service.plugin
-                        .changeAccount(widget.service.keyring.allAccounts[0]);
+                    ((i.pubKey == widget.service.keyring.store.currentPubKey &&
+                            widget.service.plugin.basic.pluginType ==
+                                PluginType.Substrate) ||
+                        (i.address ==
+                                widget
+                                    .service.keyringETH.store.currentAddress &&
+                            widget.service.plugin.basic.pluginType ==
+                                PluginType.Etherem))) {
+                  final allAccounts = widget.service.plugin.basic.pluginType ==
+                          PluginType.Etherem
+                      ? widget.service.keyringETH.allAccounts
+                      : widget.service.keyring.allAccounts;
+                  if (allAccounts.length > 0) {
+                    widget.service.plugin.basic.pluginType == PluginType.Etherem
+                        ? widget.service.keyringETH.setCurrent(allAccounts[0])
+                        : widget.service.keyring.setCurrent(allAccounts[0]);
+                    widget.service.plugin.changeAccount(allAccounts[0]);
                   } else {
-                    widget.service.keyring.setCurrent(KeyPairData());
+                    widget.service.plugin.basic.pluginType == PluginType.Etherem
+                        ? widget.service.keyringETH.setCurrent(KeyPairETHData())
+                        : widget.service.keyring.setCurrent(KeyPairData());
                   }
                 }
                 _refreshData();
@@ -112,7 +131,9 @@ class _ContactsPageState extends State<ContactsPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _list = widget.service.keyring.contacts;
+        _list = widget.service.plugin.basic.pluginType == PluginType.Etherem
+            ? widget.service.keyringETH.contacts
+            : widget.service.keyring.contacts;
       });
     });
   }
