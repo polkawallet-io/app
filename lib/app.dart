@@ -79,6 +79,8 @@ import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
 import 'pages/profile/acalaCrowdLoan/acalaCrowdLoanPage.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
 
 const get_storage_container = 'configuration';
 
@@ -267,8 +269,20 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Future<void> _switchNetwork(String networkName) async {
-    await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == networkName));
+    var plugin = widget.plugins.firstWhere((e) => e.basic.name == networkName);
+    if (plugin.basic.pluginType != _service.plugin.basic.pluginType) {
+      if (_service.plugin.basic.pluginType == PluginType.Etherem &&
+          _keyring.current.pubKey == null) {
+        _keyring.setCurrent(KeyPairData.fromJson(_keyring.store.list[0]));
+        _keyringEth.setCurrent(KeyPairETHData());
+      } else if (_service.plugin.basic.pluginType == PluginType.Substrate &&
+          _keyringEth.current.address == null) {
+        _keyringEth
+            .setCurrent(KeyPairETHData.fromJson(_keyringEth.store.keyPairs[0]));
+        _keyring.setCurrent(KeyPairData());
+      }
+    }
+    await _changeNetwork(plugin);
     _service.store.assets.loadCache(_keyring.current, networkName);
   }
 

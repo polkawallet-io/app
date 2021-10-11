@@ -17,10 +17,14 @@ class PluginTestETH extends PolkawalletPlugin {
             jsCodeVersion: 22201,
             isTestNet: false,
             isXCMSupport: false,
-            pluginType: PluginType.Etherem);
+            pluginType: PluginType.Etherem),
+        recoveryEnabled = false;
 
   @override
   final PluginBasicData basic;
+
+  @override
+  final bool recoveryEnabled;
 
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
@@ -66,5 +70,10 @@ class PluginTestETH extends PolkawalletPlugin {
 
   @override
   // TODO: implement tokenIcons
-  Map<String, Widget> tokenIcons = {};
+  Map<String, Widget> tokenIcons = {
+    'KSM': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/KSM.png'),
+    'DOT': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/DOT.png'),
+  };
 }
