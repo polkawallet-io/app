@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.7+2371
+version: 2.3.8+2381
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -65,7 +65,7 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: 2f6cd149a369229a51bc61a020d453f4414347f1
+      ref: 9f764318c1edd43743c8050ea09aff33ed45a34f
   polkawallet_plugin_chainx:
     git:
       url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
@@ -96,16 +96,16 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  polkawallet_ui: ^0.3.3
-#  polkawallet_ui:
-#     path: ../../coding/polkawallet/ui
+#  polkawallet_ui: ^0.3.3
+  polkawallet_ui:
+     path: ../../coding/polkawallet/ui
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
 #    path: ../../coding/polkawallet/ui
-  polkawallet_sdk: ^0.3.3
-#  polkawallet_sdk:
-#     path: ../../coding/polkawallet/sdk
+#  polkawallet_sdk: ^0.3.3
+  polkawallet_sdk:
+     path: ../../coding/polkawallet/sdk
   charts_flutter:
      git:
        url: https://github.com/google/charts

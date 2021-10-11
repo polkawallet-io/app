@@ -110,60 +110,76 @@ class _TransferPageState extends State<TransferPage> {
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
 
+        final txModule = isToParent
+            ? 'polkadotXcm'
+            : isFromXTokensParaChain
+                ? 'xTokens'
+                : 'xcmPallet';
+        final txCall = isToParaChain
+            ? isFromXTokensParaChain
+                ? 'transfer'
+                : 'reserveTransferAssets'
+            : 'teleportAssets';
+
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
-        // paramsX: [dest, beneficiary, assets, dest_weight]
-        final paramsX = isFromXTokensParaChain && isToParaChain
-            ? [
-                {'Token': symbol},
-                amount,
+        final isV1XCM = await widget.service.plugin.sdk.webView.evalJavascript(
+            'api.tx.$txModule.$txCall.meta.args.length === 5',
+            wrapPromise: false);
+        print('isXCM V1: $isV1XCM');
+        List paramsX;
+        if (isFromXTokensParaChain && isToParaChain) {
+          /// this is transfer KAR from Karura to Bifrost
+          /// paramsX: [token, amount, dest, dest_weight]
+          paramsX = [
+            {'Token': symbol},
+            amount,
+            {
+              'X3': [
+                'Parent',
+                {'Parachain': _chainTo.basic.parachainId},
                 {
-                  'X3': [
-                    'Parent',
-                    {'Parachain': _chainTo.basic.parachainId},
-                    {
-                      'AccountId32': {
-                        'id': _accountTo.address,
-                        'network': 'Any'
-                      }
-                    }
-                  ]
-                },
-                xcm_dest_weight_bifrost
+                  'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+                }
               ]
-            : [
-                {
-                  'X1': isToParent
-                      ? 'Parent'
-                      : {'Parachain': _chainTo.basic.parachainId}
-                },
-                {
-                  'X1': {
-                    'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-                  }
-                },
-                [
-                  {
-                    'ConcreteFungible': {
-                      'amount': amount,
-                      'id': isToParent ? {'X1': 'Parent'} : 'Here'
-                    }
-                  }
-                ],
-                xcm_dest_weight_ksm
-              ];
+            },
+            xcm_dest_weight_bifrost
+          ];
+        } else {
+          /// this is KSM/DOT transfer RelayChain <-> ParaChain
+          /// paramsX: [dest, beneficiary, assets, dest_weight]
+          final dest = {
+            'X1': isToParent
+                ? 'Parent'
+                : {'Parachain': _chainTo.basic.parachainId}
+          };
+          final beneficiary = {
+            'X1': {
+              'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+            }
+          };
+          final assets = [
+            {
+              'ConcreteFungible': {
+                'amount': amount,
+                'id': isToParent ? {'X1': 'Parent'} : 'Here'
+              }
+            }
+          ];
+          paramsX = isV1XCM
+              ? [
+                  {'V0': dest},
+                  {'V0': beneficiary},
+                  {'V0': assets},
+                  0,
+                  xcm_dest_weight_ksm
+                ]
+              : [dest, beneficiary, assets, xcm_dest_weight_ksm];
+        }
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
-          module: isToParent
-              ? 'polkadotXcm'
-              : isFromXTokensParaChain
-                  ? 'xTokens'
-                  : 'xcmPallet',
-          call: isToParaChain
-              ? isFromXTokensParaChain
-                  ? 'transfer'
-                  : 'reserveTransferAssets'
-              : 'teleportAssets',
+          module: txModule,
+          call: txCall,
           txDisplay: {
             "chain": _chainTo.basic.name,
             "destination": _accountTo.address,

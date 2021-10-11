@@ -850,11 +850,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "2f6cd149a369229a51bc61a020d453f4414347f1"
-      resolved-ref: "2f6cd149a369229a51bc61a020d453f4414347f1"
+      ref: "9f764318c1edd43743c8050ea09aff33ed45a34f"
+      resolved-ref: "9f764318c1edd43743c8050ea09aff33ed45a34f"
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
-    version: "0.3.0"
+    version: "0.3.2"
   polkawallet_plugin_chainx:
     dependency: "direct main"
     description:
@@ -908,16 +908,16 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
     version: "0.3.3"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      name: polkawallet_ui
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
     version: "0.3.3"
   pool:
     dependency: transitive

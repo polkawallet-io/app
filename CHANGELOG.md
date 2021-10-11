@@ -1,3 +1,9 @@
+# [2.3.7-beta] - 20210930
+- fix null address bug.
+
+# [2.3.3-beta - 2.3.6-beta] - 20210928
+- update Karura plugin.
+
 # [2.3.2-beta] - 20210903
 - add notification push service.
 
