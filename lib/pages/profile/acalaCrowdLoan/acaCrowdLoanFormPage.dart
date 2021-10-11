@@ -385,7 +385,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       final raised = BigInt.parse(params.fundInfo['raised'].toString());
       final double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
           ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
-          : 14;
+          : AcaCrowdLoanPage.rewardAmountMax;
 
       double acaAmountTotal = amountAca * (_referralValid ? 1.05 : 1);
       double karPromotion = 0;

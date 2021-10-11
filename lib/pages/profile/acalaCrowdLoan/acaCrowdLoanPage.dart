@@ -48,6 +48,7 @@ class AcaCrowdLoanPage extends StatefulWidget {
 
   static BigInt contributeAmountMax = BigInt.from(100000000000000000);
   static BigInt contributeAmountMaxDivider = BigInt.from(1500000000000000000);
+  static double rewardAmountMax = 150;
 
   @override
   _AcaCrowdLoanPageState createState() => _AcaCrowdLoanPageState();
@@ -317,7 +318,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
         : BigInt.zero;
     final double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
         ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
-        : 14;
+        : AcaCrowdLoanPage.rewardAmountMax;
 
     final contributions = _contributions.toList();
     if (_tab == 0) {
