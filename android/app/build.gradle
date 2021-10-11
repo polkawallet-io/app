@@ -74,7 +74,7 @@ android {
             //  a.Armeabi-v7a supports most mobile phones
             //  b.Break down the corresponding packages for different architectural platforms(flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi)
             ndk{
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", 'arm64-v8a'
             }
 
             // TODO: Add your own signing config for the release build.
