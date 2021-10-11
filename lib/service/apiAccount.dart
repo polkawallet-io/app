@@ -170,9 +170,9 @@ class ApiAccount {
     }
   }
 
-  void setBiometricEnabled(String Key) {
+  void setBiometricEnabled(String key) {
     apiRoot.store.storage.write(
-        '$_biometricEnabledKey$Key', DateTime.now().millisecondsSinceEpoch);
+        '$_biometricEnabledKey$key', DateTime.now().millisecondsSinceEpoch);
   }
 
   void setBiometricDisabled(String key) {
