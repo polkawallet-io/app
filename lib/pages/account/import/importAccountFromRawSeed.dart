@@ -3,6 +3,8 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -29,6 +31,8 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
   AccountAdvanceOptionParams _advanceOptions = AccountAdvanceOptionParams();
   final _formKey = GlobalKey<FormState>();
 
+  AddressIconData _addressIcon = AddressIconData();
+
   @override
   void dispose() {
     widget.service.store.account.resetNewAccount();
@@ -52,20 +56,15 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                   child: Column(
                                 children: [
                                   Visibility(
-                                      visible: widget.service.store.account
-                                              .newAccount.icon?.isNotEmpty ??
-                                          false,
+                                      visible: _addressIcon.svg != null,
                                       child: Padding(
                                           padding: EdgeInsets.only(
                                               left: 16, right: 16, top: 16),
                                           child: AddressFormItem(
                                               KeyPairData()
-                                                ..pubKey = widget.service.store
-                                                    .account.newAccount.key
-                                                ..icon = widget.service.store
-                                                    .account.newAccount.icon
-                                                ..address = widget.service.store
-                                                    .account.newAccount.address,
+                                                ..icon = _addressIcon.svg
+                                                ..address =
+                                                    _addressIcon.address,
                                               isShowSubtitle: false))),
                                   ListTile(
                                       title: Text(
@@ -95,7 +94,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                         _advanceOptions = data;
                                       });
 
-                                      _refreshAcccountAddress();
+                                      _refreshAccountAddress(_keyCtrl.text);
                                     },
                                   ),
                                 ],
@@ -108,13 +107,17 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                           onPressed: () async {
                             if (_formKey.currentState.validate() &&
                                 !(_advanceOptions.error ?? false)) {
+                              /// we should save user's key before next page
+                              widget.service.store.account
+                                  .setNewAccountKey(_keyCtrl.text.trim());
+
                               Navigator.pushNamed(
                                   context, ImportAccountCreatePage.route,
                                   arguments: {
                                     'keyType': selected,
-                                    // 'cryptoType': _advanceOptions.type ??
-                                    //     CryptoType.sr25519,
-                                    // 'derivePath': _advanceOptions.path ?? '',
+                                    'cryptoType': _advanceOptions.type ??
+                                        CryptoType.sr25519,
+                                    'derivePath': _advanceOptions.path ?? '',
                                   });
                             }
                           },
@@ -136,13 +139,21 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
   }
 
   void _onKeyChange(String v) {
-    _refreshAcccountAddress();
+    _refreshAccountAddress(v);
   }
 
-  void _refreshAcccountAddress() {
-    widget.service.account.addressFromRawSeed(
-        rawSeed: _keyCtrl.text.trim(),
-        type: _advanceOptions.type,
-        path: _advanceOptions.path);
+  Future<void> _refreshAccountAddress(String v) async {
+    final seed = v.trim();
+
+    if (seed.length <= 32 || seed.length == 66) {
+      final addressInfo = await widget.service.plugin.sdk.api.keyring
+          .addressFromRawSeed(widget.service.plugin.basic.ss58,
+              cryptoType: _advanceOptions.type,
+              derivePath: _advanceOptions.path,
+              rawSeed: seed);
+      setState(() {
+        _addressIcon = addressInfo;
+      });
+    }
   }
 }

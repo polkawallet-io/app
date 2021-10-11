@@ -6,6 +6,7 @@ import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -35,6 +36,8 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   bool _supportBiometric = false;
   bool _enableBiometric = true; // if the biometric usage checkbox checked
+
+  AddressIconData _addressIcon = AddressIconData();
 
   @override
   void dispose() {
@@ -76,20 +79,15 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                   child: Column(
                                 children: [
                                   Visibility(
-                                      visible: widget.service.store.account
-                                              .newAccount.icon?.isNotEmpty ??
-                                          false,
+                                      visible: _addressIcon.svg != null,
                                       child: Padding(
                                           padding: EdgeInsets.only(
                                               left: 16, right: 16, top: 16),
                                           child: AddressFormItem(
                                               KeyPairData()
-                                                ..pubKey = widget.service.store
-                                                    .account.newAccount.key
-                                                ..icon = widget.service.store
-                                                    .account.newAccount.icon
-                                                ..address = widget.service.store
-                                                    .account.newAccount.address,
+                                                ..icon = _addressIcon.svg
+                                                ..address =
+                                                    _addressIcon.address,
                                               isShowSubtitle: false))),
                                   ListTile(
                                       title: Text(
@@ -120,13 +118,11 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                               .getDic(i18n_full_dic_ui, 'common')['next'],
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
+                              /// save user account info (keystore & name & pass) from input
                               widget.service.store.account.setNewAccount(
                                   _nameCtrl.text.trim(), _passCtrl.text.trim());
-                              widget.service.store.account.setNewAccountKey(
-                                  _keyCtrl.text.trim(),
-                                  widget
-                                      .service.store.account.newAccount.address,
-                                  widget.service.store.account.newAccount.icon);
+                              widget.service.store.account
+                                  .setNewAccountKey(_keyCtrl.text.trim());
 
                               final saved = await ImportAccountAction.onSubmit(
                                   context,
@@ -246,8 +242,9 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   void _onKeyChange(String v) {
     try {
-      var json = jsonDecode(v.trim());
-      _refreshAcccountAddress(keyStore: json);
+      final keyStoreString = v.trim();
+      var json = jsonDecode(keyStoreString);
+      _refreshAccountAddress(json);
       if (json['meta']['name'] != null) {
         setState(() {
           _nameCtrl.value = TextEditingValue(text: json['meta']['name']);
@@ -258,7 +255,12 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
     }
   }
 
-  void _refreshAcccountAddress({dynamic keyStore}) {
-    widget.service.account.addressFromKeyStore(keyStore: keyStore);
+  Future<void> _refreshAccountAddress(Map keyStore) async {
+    final addressInfo = await widget.service.plugin.sdk.api.keyring
+        .addressFromKeyStore(widget.service.plugin.basic.ss58,
+            keyStore: keyStore);
+    setState(() {
+      _addressIcon = addressInfo;
+    });
   }
 }

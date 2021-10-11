@@ -1,5 +1,5 @@
-import 'package:mobx/mobx.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 
@@ -44,10 +44,8 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setNewAccountKey(String key,String address,String icon) {
+  void setNewAccountKey(String key) {
     newAccount.key = key;
-    newAccount.address = address;
-    newAccount.icon = icon;
   }
 
   @action

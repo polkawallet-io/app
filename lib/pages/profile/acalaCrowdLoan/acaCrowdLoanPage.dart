@@ -46,7 +46,7 @@ class AcaCrowdLoanPage extends StatefulWidget {
 
   static final String route = '/public/aca/auction';
 
-  static BigInt contributeAmountMax = BigInt.from(100000000000000000);
+  static BigInt contributeAmountMax = BigInt.from(10000000000000000);
   static BigInt contributeAmountMaxDivider = BigInt.from(1500000000000000000);
   static double rewardAmountMax = 150;
 
