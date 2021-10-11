@@ -494,74 +494,72 @@ class _TransferPageState extends State<TransferPage> {
                           },
                           key: ValueKey<KeyPairData>(_accountTo),
                         ),
-                        _accountToError != null
-                            ? Container(
-                                margin: EdgeInsets.only(top: 4),
-                                child: Text(_accountToError,
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.red)),
-                              )
-                            : Container(),
-                        canCrossChain
-                            ? GestureDetector(
-                                child: Container(
-                                  color: Theme.of(context).canvasColor,
-                                  margin: EdgeInsets.only(top: 16, bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 4),
-                                        child: Text(
-                                          dic['to.chain'],
-                                          style: TextStyle(
-                                              color: colorGrey, fontSize: 12),
-                                        ),
+                        Visibility(
+                            visible: _accountToError != null,
+                            child: Container(
+                              margin: EdgeInsets.only(top: 4),
+                              child: Text(_accountToError ?? "",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.red)),
+                            )),
+                        Visibility(
+                            visible: canCrossChain,
+                            child: GestureDetector(
+                              child: Container(
+                                color: Theme.of(context).canvasColor,
+                                margin: EdgeInsets.only(top: 16, bottom: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 4),
+                                      child: Text(
+                                        dic['to.chain'],
+                                        style: TextStyle(
+                                            color: colorGrey, fontSize: 12),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(right: 8),
-                                                width: 32,
-                                                height: 32,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(32),
-                                                  child: _chainTo?.basic?.icon,
-                                                ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Row(
+                                          children: <Widget>[
+                                            Container(
+                                              margin: EdgeInsets.only(right: 8),
+                                              width: 32,
+                                              height: 32,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(32),
+                                                child: _chainTo?.basic?.icon,
                                               ),
-                                              Text(destChainName.toUpperCase())
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              isCrossChain
-                                                  ? TextTag(dic['cross.chain'],
-                                                      margin: EdgeInsets.only(
-                                                          right: 8),
-                                                      color: Colors.red)
-                                                  : Container(),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 18,
-                                                color: colorGrey,
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                            ),
+                                            Text(destChainName.toUpperCase())
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            isCrossChain
+                                                ? TextTag(dic['cross.chain'],
+                                                    margin: EdgeInsets.only(
+                                                        right: 8),
+                                                    color: Colors.red)
+                                                : Container(),
+                                            Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 18,
+                                              color: colorGrey,
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                onTap: _onSelectChain,
-                              )
-                            : Container(),
+                              ),
+                              onTap: _onSelectChain,
+                            )),
                         TextFormField(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
@@ -603,58 +601,57 @@ class _TransferPageState extends State<TransferPage> {
                             return null;
                           },
                         ),
-                        isCrossChain
-                            ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: TapTooltip(
-                                        message: dic['amount.exist.msg'],
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 4),
-                                              child: Text(dic['cross.exist']),
-                                            ),
-                                            Icon(
-                                              Icons.info,
-                                              size: 16,
-                                              color: Theme.of(context)
-                                                  .unselectedWidgetColor,
-                                            )
-                                          ],
-                                        ),
+                        Visibility(
+                            visible: isCrossChain,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: TapTooltip(
+                                      message: dic['amount.exist.msg'],
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(right: 4),
+                                            child: Text(dic['cross.exist']),
+                                          ),
+                                          Icon(
+                                            Icons.info,
+                                            size: 16,
+                                            color: Theme.of(context)
+                                                .unselectedWidgetColor,
+                                          )
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                        flex: 0,
-                                        child: Text(
-                                            '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
-                                  ],
-                                ),
-                              )
-                            : Container(),
-                        isCrossChain
-                            ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(right: 4),
-                                        child: Text(dic['cross.fee']),
-                                      ),
+                                  ),
+                                  Expanded(
+                                      flex: 0,
+                                      child: Text(
+                                          '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
+                                ],
+                              ),
+                            )),
+                        Visibility(
+                            visible: isCrossChain,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Text(dic['cross.fee']),
                                     ),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
-                                  ],
-                                ),
-                              )
-                            : Container(),
+                                  ),
+                                  Text(
+                                      '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
+                                ],
+                              ),
+                            )),
                         Padding(
                           padding: EdgeInsets.only(top: 16),
                           child: Row(
@@ -684,24 +681,24 @@ class _TransferPageState extends State<TransferPage> {
                             ],
                           ),
                         ),
-                        _fee?.partialFee != null
-                            ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(right: 4),
-                                        child: Text(dic['amount.fee']),
-                                      ),
+                        Visibility(
+                            visible: _fee?.partialFee != null,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Text(dic['amount.fee']),
                                     ),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee?.partialFee?.toString()), decimals, lengthMax: 6)} $symbol'),
-                                  ],
-                                ),
-                              )
-                            : Container(),
+                                  ),
+                                  Text(
+                                      '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee?.partialFee?.toString()), decimals, lengthMax: 6)} $symbol'),
+                                ],
+                              ),
+                            )),
                         Container(
                           margin: EdgeInsets.only(top: 8),
                           child: Row(
