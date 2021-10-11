@@ -114,6 +114,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           _step = 1;
           _advanceOptions = (advancedOptions as AccountAdvanceOptionParams);
         });
+      } else {
+        widget.service.store.account.resetNewAccount();
       }
     }
   }

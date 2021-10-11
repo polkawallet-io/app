@@ -567,14 +567,14 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                           dic['auction.init'],
                           style: karKeyStyle,
                         ),
-                        Text('30%', style: karInfoStyle),
+                        Text('20%', style: karInfoStyle),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(dic['auction.vest'], style: karKeyStyle),
-                        Text('70%', style: karInfoStyle),
+                        Text('80%', style: karInfoStyle),
                       ],
                     ),
                     Row(

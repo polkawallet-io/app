@@ -28,12 +28,6 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
   List<String> _wordsLeft;
 
   @override
-  void dispose() {
-    widget.service.store.account.resetNewAccount();
-    super.dispose();
-  }
-
-  @override
   void initState() {
     widget.service.account.generateAccount();
     super.initState();
