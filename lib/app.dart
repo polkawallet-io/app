@@ -253,7 +253,7 @@ class _WalletAppState extends State<WalletApp> {
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
       _keyring,
-      _keyringEth,
+      keyringETH: _keyringEth,
       webView: _service?.plugin?.sdk?.webView,
       jsCode: useLocalJS
           ? WalletApi.getPolkadotJSCode(
@@ -401,7 +401,7 @@ class _WalletAppState extends State<WalletApp> {
 
       await service.plugin.beforeStart(
         _keyring,
-        _keyringEth,
+        keyringETH: _keyringEth,
         jsCode: useLocalJS
             ? WalletApi.getPolkadotJSCode(_store.storage,
                 service.plugin.basic.name, service.plugin.basic.pluginType)
