@@ -24,6 +24,21 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
+  final _$accountCreatedAtom = Atom(name: '_AccountStore.accountCreated');
+
+  @override
+  bool get accountCreated {
+    _$accountCreatedAtom.reportRead();
+    return super.accountCreated;
+  }
+
+  @override
+  set accountCreated(bool value) {
+    _$accountCreatedAtom.reportWrite(value, super.accountCreated, () {
+      super.accountCreated = value;
+    });
+  }
+
   final _$pubKeyAddressMapAtom = Atom(name: '_AccountStore.pubKeyAddressMap');
 
   @override
@@ -153,6 +168,17 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
+  void setAccountCreated() {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setAccountCreated');
+    try {
+      return super.setAccountCreated();
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setPubKeyAddressMap(Map<String, Map<dynamic, dynamic>> data) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setPubKeyAddressMap');
@@ -244,6 +270,7 @@ mixin _$AccountStore on _AccountStore, Store {
   String toString() {
     return '''
 newAccount: ${newAccount},
+accountCreated: ${accountCreated},
 pubKeyAddressMap: ${pubKeyAddressMap},
 addressIconsMap: ${addressIconsMap},
 recoveryInfo: ${recoveryInfo},

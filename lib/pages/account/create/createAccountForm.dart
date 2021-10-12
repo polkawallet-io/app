@@ -69,6 +69,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
 
         widget.service.plugin.changeAccount(widget.service.keyring.current);
         widget.service.store.account.resetNewAccount();
+        widget.service.store.account.setAccountCreated();
         Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     }
