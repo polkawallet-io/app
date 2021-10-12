@@ -4,11 +4,13 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -27,116 +29,133 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
   List<String> _wordsSelected;
   List<String> _wordsLeft;
 
-  @override
-  void dispose() {
-    widget.service.store.account.resetNewAccount();
-    super.dispose();
+  AddressIconDataWithMnemonic _addressIcon = AddressIconDataWithMnemonic();
+
+  Future<void> _generateAccount({String key = ''}) async {
+    final addressInfo = widget.service.plugin.basic.pluginType ==
+            PluginType.Etherem
+        ? await widget.service.plugin.sdk.api.ethKeyring.generateMnemonic(
+            index: double.tryParse(_advanceOptions.path) != null
+                ? int.parse(_advanceOptions.path)
+                : 0,
+            mnemonic: key)
+        : await widget.service.plugin.sdk.api.keyring.generateMnemonic(
+            widget.service.plugin.basic.ss58,
+            cryptoType: _advanceOptions.type,
+            derivePath: _advanceOptions.path,
+            key: key);
+    // final addressInfo = await widget.service.plugin.sdk.api.keyring
+    //     .generateMnemonic(widget.service.plugin.basic.ss58,
+    //         cryptoType: _advanceOptions.type,
+    //         derivePath: _advanceOptions.path,
+    //         key: key);
+    setState(() {
+      _addressIcon = addressInfo;
+    });
+
+    if (key.isEmpty) {
+      widget.service.store.account.setNewAccountKey(addressInfo.mnemonic);
+    }
   }
 
   @override
   void initState() {
-    widget.service.account.generateAccount();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _generateAccount();
+    });
   }
 
   Widget _buildStep0(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
     return Observer(
-      builder: (_) => Scaffold(
-        appBar: AppBar(
-          title: Text(dic['create']),
-          centerTitle: true,
-        ),
-        body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(top: 16),
-                  children: <Widget>[
-                    Visibility(
-                        visible: widget.service.store.account.newAccount.icon
-                                ?.isNotEmpty ??
-                            false,
-                        child: Padding(
-                            padding: EdgeInsets.only(
-                                left: 16, right: 16, bottom: 16),
-                            child: AddressFormItem(
-                                KeyPairData()
-                                  ..pubKey = widget
-                                      .service.store.account.newAccount.key
-                                  ..icon = widget
-                                      .service.store.account.newAccount.icon
-                                  ..address = widget
-                                      .service.store.account.newAccount.address,
-                                svg: widget
-                                    .service.store.account.newAccount.icon,
-                                isShowSubtitle: false))),
-                    Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      child: Text(
-                        dic['create.warn3'],
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      child: Text(dic['create.warn4']),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(16),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black12, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(4))),
-                      child: Text(
-                        widget.service.store.account.newAccount.key ?? '',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ),
-                    AccountAdvanceOption(
-                      widget.service.plugin.basic.pluginType,
-                      api: widget.service.plugin.sdk.api.keyring,
-                      seed: widget.service.store.account.newAccount.key ?? '',
-                      onChange: (data) {
-                        setState(() {
-                          _advanceOptions = data;
-                          widget.service.account.generateAccount(
-                              type: _advanceOptions.type,
-                              path: _advanceOptions.path,
-                              index:
-                                  double.tryParse(_advanceOptions.path) != null
-                                      ? int.parse(_advanceOptions.path)
-                                      : 0);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(16),
-                child: RoundedButton(
-                  text: I18n.of(context)
-                      .getDic(i18n_full_dic_ui, 'common')['next'],
-                  onPressed: () {
-                    if (_advanceOptions.error ?? false) return;
-                    setState(() {
-                      _step = 1;
-                      _wordsSelected = <String>[];
-                      _wordsLeft = widget.service.store.account.newAccount.key
-                          .split(' ');
-                    });
-                  },
-                ),
-              ),
-            ],
+      builder: (_) {
+        final mnemonics = widget.service.store.account.newAccount.key ?? '';
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(dic['create']),
+            centerTitle: true,
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.only(top: 16),
+                    children: <Widget>[
+                      Visibility(
+                          visible: _addressIcon.svg != null,
+                          child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: 16, right: 16, bottom: 16),
+                              child: AddressFormItem(
+                                  KeyPairData()
+                                    ..icon = _addressIcon.svg
+                                    ..address = _addressIcon.address,
+                                  isShowSubtitle: false))),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, right: 16),
+                        child: Text(
+                          dic['create.warn3'],
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        child: Text(dic['create.warn4']),
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black12, width: 1),
+                            borderRadius: BorderRadius.all(Radius.circular(4))),
+                        child: Text(
+                          mnemonics,
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                      ),
+                      AccountAdvanceOption(
+                        widget.service.plugin.basic.pluginType,
+                        api: widget.service.plugin.sdk.api.keyring,
+                        seed: mnemonics,
+                        onChange: (data) {
+                          setState(() {
+                            _advanceOptions = data;
+                          });
+
+                          _generateAccount(key: mnemonics);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: RoundedButton(
+                    text: I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['next'],
+                    onPressed: () {
+                      final isKeyValid = mnemonics.split(' ').length == 12;
+                      if ((_advanceOptions.error ?? false) || !isKeyValid)
+                        return;
+
+                      setState(() {
+                        _step = 1;
+                        _wordsSelected = <String>[];
+                        _wordsLeft = mnemonics.split(' ');
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

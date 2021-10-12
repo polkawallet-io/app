@@ -850,11 +850,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "2f6cd149a369229a51bc61a020d453f4414347f1"
-      resolved-ref: "2f6cd149a369229a51bc61a020d453f4414347f1"
+      ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
+      resolved-ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
-    version: "0.3.0"
+    version: "0.3.2"
   polkawallet_plugin_chainx:
     dependency: "direct main"
     description:

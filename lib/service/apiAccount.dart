@@ -24,80 +24,6 @@ class ApiAccount {
   final _biometricEnabledKey = 'biometric_enabled_';
   final _biometricPasswordKey = 'biometric_password_';
 
-  Future<void> generateAccount(
-      {CryptoType type = CryptoType.sr25519,
-      String path = "",
-      String mnemonic,
-      int index}) async {
-    final generateMnemonicData =
-        apiRoot.plugin.basic.pluginType == PluginType.Etherem
-            ? await apiRoot.plugin.sdk.api.ethKeyring
-                .generateMnemonic(index: index, mnemonic: mnemonic)
-            : await apiRoot.plugin.sdk.api.keyring.generateMnemonic(
-                apiRoot.plugin.basic.ss58,
-                cryptoType: type,
-                derivePath: path,
-                key: apiRoot.store.account.newAccount.key);
-    apiRoot.store.account.setNewAccountKey(generateMnemonicData.mnemonic,
-        generateMnemonicData.address, generateMnemonicData.svg);
-  }
-
-  Future<void> addressFromMnemonic(
-      {CryptoType type = CryptoType.sr25519,
-      String path = "",
-      @required String mnemonic}) async {
-    final generateMnemonicData =
-        apiRoot.plugin.basic.pluginType == PluginType.Etherem
-            ? await apiRoot.plugin.sdk.api.ethKeyring
-                .addressFromMnemonic(derivePath: path, mnemonic: mnemonic)
-            : await apiRoot.plugin.sdk.api.keyring.addressFromMnemonic(
-                apiRoot.plugin.basic.ss58,
-                cryptoType: type,
-                derivePath: path,
-                mnemonic: mnemonic);
-    apiRoot.store.account.setNewAccountKey(
-        mnemonic, generateMnemonicData.address, generateMnemonicData.svg);
-  }
-
-  Future<void> addressFromRawSeed(
-      {CryptoType type = CryptoType.sr25519,
-      String path = "",
-      @required String rawSeed}) async {
-    final generateMnemonicData =
-        apiRoot.plugin.basic.pluginType == PluginType.Etherem
-            ? await apiRoot.plugin.sdk.api.ethKeyring
-                .addressFromPrivateKey(privateKey: rawSeed)
-            : await apiRoot.plugin.sdk.api.keyring.addressFromRawSeed(
-                apiRoot.plugin.basic.ss58,
-                cryptoType: type,
-                derivePath: path,
-                rawSeed: rawSeed);
-    apiRoot.store.account.setNewAccountKey(
-      apiRoot.plugin.basic.pluginType == PluginType.Etherem
-          ? rawSeed
-          : generateMnemonicData.mnemonic,
-      generateMnemonicData.address,
-      generateMnemonicData.svg,
-    );
-  }
-
-  Future<void> addressFromKeyStore({@required Map keyStore}) async {
-    dynamic generateMnemonicData;
-    if (apiRoot.plugin.basic.pluginType == PluginType.Etherem) {
-      await apiRoot.plugin.sdk.api.ethKeyring
-          .updateAddressIconsMap(apiRoot.keyringETH, [keyStore["address"]]);
-
-      apiRoot.store.account.setNewAccountKey("", keyStore["address"],
-          apiRoot.keyringETH.icons[keyStore["address"]]);
-    } else {
-      generateMnemonicData = await apiRoot.plugin.sdk.api.keyring
-          .addressFromKeyStore(apiRoot.plugin.basic.ss58, keyStore: keyStore);
-
-      apiRoot.store.account.setNewAccountKey(
-          "", generateMnemonicData[0][0], generateMnemonicData[0][1]);
-    }
-  }
-
   Future<Map> importAccount(
       {KeyType keyType = KeyType.mnemonic,
       CryptoType cryptoType = CryptoType.sr25519,
@@ -112,11 +38,9 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('create account failed');
     }
-    if (apiRoot.plugin.basic.pluginType == PluginType.Substrate) {
-      final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
-        apiRoot.keyring,
-        keyType: keyType,
-        cryptoType: cryptoType,
+    if (apiRoot.plugin.basic.pluginType == PluginType.Etherem) {
+      final res = await apiRoot.plugin.sdk.api.ethKeyring.importAccount(
+        keyType: ethKeyType,
         derivePath: derivePath,
         key: acc.key,
         name: acc.name,
@@ -124,8 +48,10 @@ class ApiAccount {
       );
       return res;
     } else {
-      final res = await apiRoot.plugin.sdk.api.ethKeyring.importAccount(
-        keyType: ethKeyType,
+      final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
+        apiRoot.keyring,
+        keyType: keyType,
+        cryptoType: cryptoType,
         derivePath: derivePath,
         key: acc.key,
         name: acc.name,
@@ -151,18 +77,18 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('save account failed');
     }
-    if (apiRoot.plugin.basic.pluginType == PluginType.Substrate) {
-      final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
-        apiRoot.keyring,
-        keyType: keyType,
+    if (apiRoot.plugin.basic.pluginType == PluginType.Etherem) {
+      final res = await apiRoot.plugin.sdk.api.ethKeyring.addAccount(
+        apiRoot.keyringETH,
+        keyType: ethKeyType,
         acc: json,
         password: acc.password,
       );
       return res;
     } else {
-      final res = await apiRoot.plugin.sdk.api.ethKeyring.addAccount(
-        apiRoot.keyringETH,
-        keyType: ethKeyType,
+      final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
+        apiRoot.keyring,
+        keyType: keyType,
         acc: json,
         password: acc.password,
       );
@@ -285,16 +211,12 @@ class ApiAccount {
     }
   }
 
-  Future<Map> postKarCrowdLoan(
-      String address,
-      BigInt amount,
-      String email,
-      bool receiveEmail,
-      String referral,
-      String signature,
-      String endpoint) async {
+  Future<Map> postKarCrowdLoan(String address, BigInt amount, String email,
+      bool receiveEmail, String referral, String signature, String endpoint,
+      {bool isProxy = false}) async {
     final submitted = await WalletApi.postKarCrowdLoan(
-        address, amount, email, receiveEmail, referral, signature, endpoint);
+        address, amount, email, receiveEmail, referral, signature, endpoint,
+        isProxy: isProxy);
     print(submitted);
     if (submitted != null && (submitted['result'] ?? false)) {
       apiRoot.store.account.setBannerVisible(false);

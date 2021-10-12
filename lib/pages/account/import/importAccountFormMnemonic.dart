@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
@@ -31,6 +32,8 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
   AccountAdvanceOptionParams _advanceOptions = AccountAdvanceOptionParams();
   final _formKey = GlobalKey<FormState>();
 
+  AddressIconData _addressIcon = AddressIconData();
+
   @override
   void dispose() {
     widget.service.store.account.resetNewAccount();
@@ -54,20 +57,15 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                   child: Column(
                                 children: [
                                   Visibility(
-                                      visible: widget.service.store.account
-                                              .newAccount.icon?.isNotEmpty ??
-                                          false,
+                                      visible: _addressIcon.svg != null,
                                       child: Padding(
                                           padding: EdgeInsets.only(
                                               left: 16, right: 16, top: 16),
                                           child: AddressFormItem(
                                               KeyPairData()
-                                                ..pubKey = widget.service.store
-                                                    .account.newAccount.key
-                                                ..icon = widget.service.store
-                                                    .account.newAccount.icon
-                                                ..address = widget.service.store
-                                                    .account.newAccount.address,
+                                                ..icon = _addressIcon.svg
+                                                ..address =
+                                                    _addressIcon.address,
                                               isShowSubtitle: false))),
                                   ListTile(
                                       title: Text(
@@ -98,7 +96,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                         _advanceOptions = data;
                                       });
 
-                                      _refreshAcccountAddress();
+                                      _refreshAccountAddress(_keyCtrl.text);
                                     },
                                   ),
                                 ],
@@ -111,11 +109,9 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                           onPressed: () async {
                             if (_formKey.currentState.validate() &&
                                 !(_advanceOptions.error ?? false)) {
-                              widget.service.store.account.setNewAccountKey(
-                                  _keyCtrl.text.trim(),
-                                  widget
-                                      .service.store.account.newAccount.address,
-                                  widget.service.store.account.newAccount.icon);
+                              /// we should save user's key before next page
+                              widget.service.store.account
+                                  .setNewAccountKey(_keyCtrl.text.trim());
 
                               Navigator.pushNamed(
                                   context, ImportAccountCreatePage.route,
@@ -139,26 +135,35 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     String input = v.trim();
     int len = input.split(' ').length;
-    if (len == 12 || len == 24) {
+    if (len >= 12) {
       passed = true;
     }
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
   }
 
   void _onKeyChange(String v) {
-    _refreshAcccountAddress();
+    _refreshAccountAddress(v);
   }
 
-  void _refreshAcccountAddress() {
-    if (_keyCtrl.text.split(" ").length >= 12) {
-      widget.service.account.addressFromMnemonic(
-          mnemonic: _keyCtrl.text.trim(),
-          type: _advanceOptions.type,
-          path: widget.service.plugin.basic.pluginType == PluginType.Etherem
-              ? _advanceOptions.path.length > 0
+  Future<void> _refreshAccountAddress(String v) async {
+    final mnemonic = v.trim();
+
+    if (mnemonic.split(" ").length >= 12) {
+      final addressInfo = widget.service.plugin.basic.pluginType ==
+              PluginType.Etherem
+          ? await widget.service.plugin.sdk.api.ethKeyring.addressFromMnemonic(
+              derivePath: _advanceOptions.path.length > 0
                   ? "m/44'/60'/0'/0/${_advanceOptions.path}"
-                  : "m/44'/60'/0'/0/0"
-              : _advanceOptions.path);
+                  : "m/44'/60'/0'/0/0",
+              mnemonic: mnemonic)
+          : await widget.service.plugin.sdk.api.keyring.addressFromMnemonic(
+              widget.service.plugin.basic.ss58,
+              cryptoType: _advanceOptions.type,
+              derivePath: _advanceOptions.path,
+              mnemonic: mnemonic);
+      setState(() {
+        _addressIcon = addressInfo;
+      });
     }
   }
 }

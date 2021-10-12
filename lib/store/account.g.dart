@@ -131,11 +131,11 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setNewAccountKey(String key,String address,String icon) {
+  void setNewAccountKey(String key) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setNewAccountKey');
     try {
-      return super.setNewAccountKey(key,address,icon);
+      return super.setNewAccountKey(key);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
