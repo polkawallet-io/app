@@ -36,8 +36,9 @@ class ACACrowdLoanBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
-      final active =
-          service.store.settings.adBannerState['startedAca'] ?? false;
+      final active = service.buildTarget == BuildTargets.dev
+          ? true
+          : (service.store.settings.adBannerState['startedAca'] ?? false);
       return Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [

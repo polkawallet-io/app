@@ -215,6 +215,22 @@ class WalletApi {
     }
   }
 
+  static Future<Map> checkKarRewardValid(
+      String address, String endpoint) async {
+    try {
+      final res =
+          await get(Uri.parse('https://$endpoint/promotion/karura/$address'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> postKarCrowdLoan(
       String address,
       BigInt amount,
