@@ -18,6 +18,9 @@ abstract class _AccountStore with Store {
   AccountCreate newAccount = AccountCreate();
 
   @observable
+  bool accountCreated = false;
+
+  @observable
   ObservableMap<int, Map<String, String>> pubKeyAddressMap =
       ObservableMap<int, Map<String, String>>();
 
@@ -51,6 +54,11 @@ abstract class _AccountStore with Store {
   @action
   void resetNewAccount() {
     newAccount = AccountCreate();
+  }
+
+  @action
+  void setAccountCreated() {
+    accountCreated = true;
   }
 
   @action
@@ -117,10 +125,4 @@ abstract class _AccountCreate with Store {
 
   @observable
   String key = '';
-
-  @observable
-  String address = '';
-
-  @observable
-  String icon = '';
 }

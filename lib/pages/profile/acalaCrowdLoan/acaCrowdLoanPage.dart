@@ -489,6 +489,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                                 'promotion']
                                                             ['acaExtraBonus'])
                                                         : BigInt.zero;
+                                                    // todo: add karura reward here
                                                     final karAmountMin =
                                                         Fmt.bigIntToDouble(
                                                             karAmountInt +

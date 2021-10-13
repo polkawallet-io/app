@@ -66,6 +66,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
   bool _amountValid = false;
   bool _amountEnough = false;
   bool _referralValid = false;
+  bool _karRewardValid = false;
+  double _karRewardRate = 0.02;
 
   String _email = '';
   bool _emailValid = true;
@@ -126,10 +128,27 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
     final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     final res = await WalletApi.verifyKarReferralCode(v, endpoint);
     final valid2 = res != null && res['result'];
-    setState(() {
-      _referral = v;
-      _referralValid = valid2;
-    });
+    if (mounted) {
+      setState(() {
+        _referral = v;
+        _referralValid = valid2;
+      });
+    }
+  }
+
+  Future<void> _checkKarRewardValid() async {
+    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
+    final AcaCrowdLoanPageParams params =
+        ModalRoute.of(context).settings.arguments;
+    final res =
+        await WalletApi.checkKarRewardValid(params.account.address, endpoint);
+    final valid = res != null && res['result'];
+    if (mounted) {
+      setState(() {
+        _karRewardValid = valid;
+        _karRewardRate = res['rate'];
+      });
+    }
   }
 
   void _onEmailChange(String value) {
@@ -353,6 +372,15 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkKarRewardValid();
+    });
+  }
+
+  @override
   Widget build(_) {
     return Observer(builder: (BuildContext context) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
@@ -387,18 +415,17 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
           ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
           : AcaCrowdLoanPage.rewardAmountMax;
 
+      final double karReward = _karRewardValid ? amountAca * _karRewardRate : 0;
+
       double acaAmountTotal = amountAca * (_referralValid ? 1.05 : 1);
-      double karPromotion = 0;
       double acaPromotion = 0;
       if (params.promotion['result']) {
-        if (params.promotion['karRate'] > 0) {
-          karPromotion = amountAca * params.promotion['karRate'];
-        }
         if (params.promotion['acaRate'] > 0) {
           acaPromotion = amountAca * params.promotion['acaRate'];
         }
       }
       acaAmountTotal += acaPromotion;
+      acaAmountTotal += karReward;
       return AcaPloPageLayout(
           dic['auction.contribute'],
           Column(
@@ -546,19 +573,17 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                       ],
                     ),
                     Text(
-                        '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal / 3 * ratioAcaMax, lengthMax: 4)} ACA' +
-                            (karPromotion > 0
-                                ? ' + ${Fmt.priceFloor(karPromotion, lengthMax: 4)} KAR'
-                                : ''),
+                        '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal / 3 * ratioAcaMax, lengthMax: 4)} ACA',
                         style: karStyle),
                     amountAca > 0
                         ? RewardDetailPanel(
-                            amountAca,
-                            ratioAcaMax,
-                            _referralValid,
-                            params.promotion,
-                            karPromotion,
-                            acaPromotion)
+                            acaAmountMin: amountAca,
+                            ratioAcaMax: ratioAcaMax,
+                            referralValid: _referralValid,
+                            karReward: karReward,
+                            karRewardRate: _karRewardRate,
+                            promotion: params.promotion,
+                            acaPromotion: acaPromotion)
                         : Container(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -678,14 +703,21 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
 }
 
 class RewardDetailPanel extends StatelessWidget {
-  RewardDetailPanel(this.acaAmountMin, this.ratioAcaMax, this.referralValid,
-      this.promotion, this.karPromotion, this.acaPromotion);
+  RewardDetailPanel(
+      {this.acaAmountMin,
+      this.ratioAcaMax,
+      this.referralValid,
+      this.karReward,
+      this.karRewardRate,
+      this.promotion,
+      this.acaPromotion});
 
   final double acaAmountMin;
   final double ratioAcaMax;
   final bool referralValid;
+  final double karReward;
+  final double karRewardRate;
   final Map promotion;
-  final double karPromotion;
   final double acaPromotion;
 
   @override
@@ -729,15 +761,16 @@ class RewardDetailPanel extends StatelessWidget {
                   ],
                 )
               : Container(),
-          karPromotion > 0
+          karReward > 0
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Expanded(
                         child: Text(
-                            '+${Fmt.ratio(promotion['karRate'])} ${promotion['name']}',
+                            '+${Fmt.ratio(karRewardRate)} Karura Reward',
                             style: karInfoStyle)),
-                    Text('${Fmt.priceFloor(karPromotion, lengthMax: 4)} KAR',
+                    Text(
+                        '${Fmt.priceFloor(karReward, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * karRewardRate, lengthMax: 4)} ACA',
                         style: karInfoStyle),
                   ],
                 )
@@ -750,7 +783,8 @@ class RewardDetailPanel extends StatelessWidget {
                         child: Text(
                             '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
                             style: karInfoStyle)),
-                    Text('${Fmt.priceFloor(acaPromotion, lengthMax: 4)} ACA',
+                    Text(
+                        '${Fmt.priceFloor(acaPromotion, lengthMax: 4)}  - ${Fmt.priceFloor(acaAmountMax * promotion['acaRate'], lengthMax: 4)} ACA',
                         style: karInfoStyle),
                   ],
                 )
