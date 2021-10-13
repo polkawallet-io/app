@@ -123,6 +123,9 @@ class _TransferPageState extends State<TransferPage> {
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
+        final isV1XCM = await widget.service.plugin.sdk.webView.evalJavascript(
+            'api.createType(api.tx.$txModule.$txCall.meta.args[0].toJSON()["type"]).defKeys.includes("V1")',
+            wrapPromise: false);
         final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
             'api.tx.$txModule.$txCall.meta.args.length === 5',
             wrapPromise: false);
@@ -157,7 +160,7 @@ class _TransferPageState extends State<TransferPage> {
           };
           final beneficiary = {
             'X1': {
-              'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+              'AccountId32': {'id': _accountTo.pubKey, 'network': 'Any'}
             }
           };
           final assets = [
@@ -170,20 +173,22 @@ class _TransferPageState extends State<TransferPage> {
                   : {'amount': amount}
             }
           ];
-          paramsX = is9100
-              ? [
-                  {'V0': dest},
-                  {'V0': beneficiary},
-                  {'V0': assets},
-                  0,
-                  xcm_dest_weight_ksm
-                ]
-              : [
-                  {'V0': dest},
-                  {'V0': beneficiary},
-                  {'V0': assets},
-                  0
-                ];
+          paramsX = isV1XCM
+              ? is9100
+                  ? [
+                      {'V0': dest},
+                      {'V0': beneficiary},
+                      {'V0': assets},
+                      0,
+                      xcm_dest_weight_ksm
+                    ]
+                  : [
+                      {'V0': dest},
+                      {'V0': beneficiary},
+                      {'V0': assets},
+                      0
+                    ]
+              : [dest, beneficiary, assets, xcm_dest_weight_ksm];
         }
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
@@ -252,7 +257,7 @@ class _TransferPageState extends State<TransferPage> {
         'V0': {
           'X1': {
             'AccountId32': {
-              'id': widget.service.keyring.current.address,
+              'id': widget.service.keyring.current.pubKey,
               'network': 'Any'
             }
           }
@@ -261,7 +266,7 @@ class _TransferPageState extends State<TransferPage> {
       {
         'V0': [
           {
-            'ConcreteFungible': {'amount': xcm_dest_weight_ksm, 'id': 'Here'}
+            'ConcreteFungible': {'amount': xcm_dest_weight_ksm}
           }
         ]
       },
@@ -510,11 +515,10 @@ class _TransferPageState extends State<TransferPage> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      padding: EdgeInsets.all(16),
-                      children: <Widget>[
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
                         AddressInputField(
                           widget.service.plugin.sdk.api,
                           _accountOptions,
@@ -597,46 +601,53 @@ class _TransferPageState extends State<TransferPage> {
                                 onTap: _onSelectChain,
                               )
                             : Container(),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          decoration: InputDecoration(
-                            hintText: dic['amount'],
-                            labelText:
-                                '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
-                              available,
-                              decimals,
-                              lengthMax: 6,
-                            )})',
-                            suffix: GestureDetector(
-                              child: Text(dic['amount.max'],
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor)),
-                              onTap: () =>
-                                  _setMaxAmount(available, existAmount),
+                        Form(
+                          key: _formKey,
+                          child: TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            decoration: InputDecoration(
+                              hintText: dic['amount'],
+                              labelText:
+                                  '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                                available,
+                                decimals,
+                                lengthMax: 6,
+                              )})',
+                              suffix: GestureDetector(
+                                child: Text(dic['amount.max'],
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor)),
+                                onTap: () =>
+                                    _setMaxAmount(available, existAmount),
+                              ),
                             ),
+                            inputFormatters: [
+                              UI.decimalInputFormatter(decimals)
+                            ],
+                            controller: _amountCtrl,
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            validator: (v) {
+                              if (v.isEmpty) {
+                                return dic['amount.error'];
+                              }
+                              final input = Fmt.tokenInt(v, decimals);
+                              final feeLeft = available -
+                                  input -
+                                  (_keepAlive ? existAmount : BigInt.zero);
+                              BigInt fee = BigInt.zero;
+                              if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
+                                  _fee?.partialFee != null) {
+                                fee =
+                                    Fmt.balanceInt(_fee.partialFee.toString());
+                              }
+                              if (feeLeft - fee < BigInt.zero) {
+                                return dic['amount.low'];
+                              }
+                              return null;
+                            },
                           ),
-                          inputFormatters: [UI.decimalInputFormatter(decimals)],
-                          controller: _amountCtrl,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          validator: (v) {
-                            if (v.isEmpty) {
-                              return dic['amount.error'];
-                            }
-                            final input = Fmt.tokenInt(v, decimals);
-                            final feeLeft = available -
-                                input -
-                                (_keepAlive ? existAmount : BigInt.zero);
-                            BigInt fee = BigInt.zero;
-                            if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
-                                _fee?.partialFee != null) {
-                              fee = Fmt.balanceInt(_fee.partialFee.toString());
-                            }
-                            if (feeLeft - fee < BigInt.zero) {
-                              return dic['amount.low'];
-                            }
-                            return null;
-                          },
                         ),
                         isCrossChain
                             ? Padding(
