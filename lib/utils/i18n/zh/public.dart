@@ -25,7 +25,7 @@ const Map<String, String> zhPublic = {
   'auction.amount1': '贡献数量（DOT）',
   'auction.balance': '可用余额',
   'auction.referral': '邀请码（选填）',
-  'auction.estimate': '预估奖励（ACA）',
+  'auction.estimate': '预估奖励范围（ACA）',
   'auction.receive.dot': '获得 lcDOT 数量',
   'auction.invite': '邀请奖励',
   'auction.extra': '额外奖励',

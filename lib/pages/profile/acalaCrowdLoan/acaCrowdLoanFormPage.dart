@@ -573,7 +573,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                       ],
                     ),
                     Text(
-                        '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal / 3 * ratioAcaMax, lengthMax: 4)} ACA',
+                        '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal * ratioAcaMax / 3, lengthMax: 4)} ACA',
                         style: karStyle),
                     amountAca > 0
                         ? RewardDetailPanel(

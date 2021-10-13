@@ -123,10 +123,10 @@ class _TransferPageState extends State<TransferPage> {
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
-        final isV1XCM = await widget.service.plugin.sdk.webView.evalJavascript(
+        final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
             'api.tx.$txModule.$txCall.meta.args.length === 5',
             wrapPromise: false);
-        print('isXCM V1: $isV1XCM');
+        print('is runtime 9100: $is9100');
         List paramsX;
         if (isFromXTokensParaChain && isToParaChain) {
           /// this is transfer KAR from Karura to Bifrost
@@ -134,15 +134,17 @@ class _TransferPageState extends State<TransferPage> {
           paramsX = [
             {'Token': symbol},
             amount,
-            {
-              'X3': [
-                'Parent',
-                {'Parachain': _chainTo.basic.parachainId},
-                {
-                  'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-                }
-              ]
-            },
+            [
+              1,
+              {
+                'X2': [
+                  {'Parachain': _chainTo.basic.parachainId},
+                  {
+                    'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+                  }
+                ]
+              }
+            ],
             xcm_dest_weight_bifrost
           ];
         } else {
@@ -160,13 +162,15 @@ class _TransferPageState extends State<TransferPage> {
           };
           final assets = [
             {
-              'ConcreteFungible': {
-                'amount': amount,
-                'id': isToParent ? {'X1': 'Parent'} : 'Here'
-              }
+              'ConcreteFungible': isToParent
+                  ? {
+                      'amount': amount,
+                      'id': {'X1': 'Parent'}
+                    }
+                  : {'amount': amount}
             }
           ];
-          paramsX = isV1XCM
+          paramsX = is9100
               ? [
                   {'V0': dest},
                   {'V0': beneficiary},
@@ -174,7 +178,12 @@ class _TransferPageState extends State<TransferPage> {
                   0,
                   xcm_dest_weight_ksm
                 ]
-              : [dest, beneficiary, assets, xcm_dest_weight_ksm];
+              : [
+                  {'V0': dest},
+                  {'V0': beneficiary},
+                  {'V0': assets},
+                  0
+                ];
         }
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
@@ -230,31 +239,41 @@ class _TransferPageState extends State<TransferPage> {
                 : 'reserveTransferAssets'
             : 'transfer',
         sender);
+    final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
+        'api.tx.${txInfo.module}.${txInfo.call}.meta.args.length === 5',
+        wrapPromise: false);
+    final List paramsX = [
+      {
+        'V0': {
+          'X1': isStatemint ? 'Parent' : {'Parachain': '2000'}
+        }
+      },
+      {
+        'V0': {
+          'X1': {
+            'AccountId32': {
+              'id': widget.service.keyring.current.address,
+              'network': 'Any'
+            }
+          }
+        }
+      },
+      {
+        'V0': [
+          {
+            'ConcreteFungible': {'amount': xcm_dest_weight_ksm, 'id': 'Here'}
+          }
+        ]
+      },
+      0,
+    ];
+    if (is9100) {
+      paramsX.add(xcm_dest_weight_ksm);
+    }
     final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
         txInfo,
         isXCM
-            ? [
-                {
-                  'X1': isStatemint ? 'Parent' : {'Parachain': '2000'}
-                },
-                {
-                  'X1': {
-                    'AccountId32': {
-                      'id': widget.service.keyring.current.address,
-                      'network': 'Any'
-                    }
-                  }
-                },
-                [
-                  {
-                    'ConcreteFungible': {
-                      'amount': xcm_dest_weight_ksm,
-                      'id': 'Here'
-                    }
-                  }
-                ],
-                xcm_dest_weight_ksm
-              ]
+            ? paramsX
             : [widget.service.keyring.current.address, '10000000000']);
     if (mounted) {
       setState(() {
