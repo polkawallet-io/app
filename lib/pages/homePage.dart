@@ -220,10 +220,10 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _tabIndex,
         iconSize: 32,
         onTap: (index) {
+          _pageController.jumpToPage(index);
           setState(() {
             _tabIndex = index;
           });
-          _pageController.jumpToPage(index);
         },
         type: BottomNavigationBarType.fixed,
         items: _buildNavItems(pages),
