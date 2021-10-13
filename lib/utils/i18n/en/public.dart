@@ -26,13 +26,13 @@ const Map<String, String> enPublic = {
   'auction.amount.error': 'amount, minimum',
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code(optional)',
-  'auction.estimate': 'Estimated ACA Paradrop',
+  'auction.estimate': 'Estimated ACA Reward Range',
   'auction.receive.dot': 'Total lcDOT receipt',
   'auction.invite': 'Referral',
   'auction.extra': 'Extra',
   'auction.note':
       'If Acala wins the auction, ACA rewards will be distributed upon genesis. Otherwise, the DOT locked will automatically bid for the next available auction. Check the Terms & Conditions for details.',
-  'auction.init': 'Initial transferable',
+  'auction.init': 'ACA Unlocked at Launch',
   'auction.vest': 'Vested over the lease period',
   'auction.lease': 'Lease period',
   'auction.notify':

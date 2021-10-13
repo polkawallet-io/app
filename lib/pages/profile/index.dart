@@ -81,6 +81,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final acc = widget.service.keyring.current;
     final primaryColor = Theme.of(context).primaryColor;
 
+    final acaCrowdLoanVisible = widget.service.buildTarget == BuildTargets.dev;
+    // todo: activate the banner
+    // final acaCrowdLoanVisible = widget.service.buildTarget == BuildTargets.dev
+    //     ? true
+    //     : (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['title']),
@@ -105,7 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
           widget.connectedNode != null
               ? widget.service.plugin.basic.name == relay_chain_name_ksm
                   ? KarCrowdLoanBanner()
-                  : widget.service.plugin.basic.name == relay_chain_name_dot
+                  : widget.service.plugin.basic.name == relay_chain_name_dot &&
+                          acaCrowdLoanVisible
                       ? ACACrowdLoanBanner(widget.service, (network) => null)
                       : Container()
               : Container(),

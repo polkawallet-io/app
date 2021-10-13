@@ -368,7 +368,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                               margin: EdgeInsets.zero,
                             ),
                           ),
-                          _tab == 1 && !_signed
+                          (_tab == 1 && !_signed) ||
+                                  (_tab == 0 && contributions.length == 0)
                               ? Column(
                                   children: [
                                     Row(
@@ -469,55 +470,46 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                       Fmt.balance(
                                                           e['contributionAmount'],
                                                           decimals);
-                                                  List<Widget> karAmount = [
+                                                  List<Widget> acaAmount = [
                                                     Text(
                                                       dic['auction.tx.confirming'],
                                                       style: karAmountStyle,
                                                     )
                                                   ];
                                                   if (e['blockHash'] != null) {
-                                                    final karAmountInt =
+                                                    final acaAmountInt =
                                                         Fmt.balanceInt(
                                                             e['baseBonus']);
-                                                    final karRefereeBonus =
+                                                    final refereeBonus =
                                                         Fmt.balanceInt(
                                                             e['refereeBonus']);
-                                                    final karExtraBonus = e[
+                                                    final karContributionBonus =
+                                                        Fmt.balanceInt(e[
+                                                            'karuraContributorBonus']);
+                                                    final acaExtraBonus = e[
                                                                 'promotion'] !=
                                                             null
                                                         ? Fmt.balanceInt(e[
                                                                 'promotion']
                                                             ['acaExtraBonus'])
                                                         : BigInt.zero;
-                                                    // todo: add karura reward here
                                                     final karAmountMin =
                                                         Fmt.bigIntToDouble(
-                                                            karAmountInt +
-                                                                karRefereeBonus +
-                                                                karExtraBonus,
+                                                            acaAmountInt +
+                                                                refereeBonus +
+                                                                karContributionBonus +
+                                                                acaExtraBonus,
                                                             aca_token_decimal);
                                                     final karAmountMax =
-                                                        karAmountMin /
-                                                            3 *
-                                                            ratioAcaMax;
-                                                    karAmount = [
+                                                        karAmountMin *
+                                                            ratioAcaMax /
+                                                            3;
+                                                    acaAmount = [
                                                       Text(
                                                         '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
                                                         style: karAmountStyle,
                                                       )
                                                     ];
-                                                    // if (e['promotion'] !=
-                                                    //         null &&
-                                                    //     Fmt.balanceInt(e[
-                                                    //                 'promotion']
-                                                    //             [
-                                                    //             'acaExtraBonus']) >
-                                                    //         BigInt.zero) {
-                                                    //   karAmount.add(Text(
-                                                    //     '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
-                                                    //     style: karAmountStyle,
-                                                    //   ));
-                                                    // }
                                                   }
                                                   return Container(
                                                     margin: EdgeInsets.only(
@@ -567,7 +559,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                               CrossAxisAlignment
                                                                   .end,
                                                           children: [
-                                                            ...karAmount,
+                                                            ...acaAmount,
                                                             JumpToLink(
                                                               e['blockHash'] ==
                                                                       null
@@ -595,7 +587,9 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                     text: dic['auction.contribute'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: _goToContribute,
+                                    onPressed: _accepted
+                                        ? _goToContribute
+                                        : () => null,
                                   )
                                 : RoundedButton(
                                     icon: _submitting

@@ -44,18 +44,18 @@ class _AdBannerState extends State<AdBanner> {
       if (widget.connectedNode == null) {
         return Container();
       }
-      final visible = widget.service.buildTarget == BuildTargets.dev
-          ? true
-          : (widget.service.store.settings.adBannerState['visibleAca'] ??
-              false);
+      final visible = widget.service.buildTarget == BuildTargets.dev;
+      // todo: activate the banner
+      // final visible = widget.service.buildTarget == BuildTargets.dev
+      //     ? true
+      //     : (widget.service.store.settings.adBannerState['visibleAca'] ??
+      //         false);
       if (!visible) {
         final network = widget.service.plugin.basic.name;
         if (network == relay_chain_name_ksm) {
           return KarCrowdLoanBanner();
         }
-        if (network == relay_chain_name_dot) {
-          return ACACrowdLoanBanner(widget.service, widget.switchNetwork);
-        }
+        return Container();
       }
 
       return Stack(
