@@ -51,7 +51,6 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         .toList();
     txs.add(
         'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
-    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
             txTitle: dic['lock.unlock'],
@@ -61,8 +60,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
               "actions": ['democracy.removeVote', 'democracy.unlock'],
             },
             params: [],
-            rawParams: '[[${txs.join(',')}]]',
-            txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]));
+            rawParams: '[[${txs.join(',')}]]'));
     if (res != null) {
       _refreshKey.currentState.show();
     }
@@ -103,14 +101,12 @@ class LocksDetailPageState extends State<LocksDetailPage> {
   Future<void> _claimVest(
       String claimableAmount, int decimals, String symbol) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final params = TxConfirmParams(
         txTitle: '${dic['lock.vest.claim']} $symbol',
         module: 'vesting',
         call: 'claim',
         txDisplay: {'amount': '$claimableAmount $symbol'},
-        params: [],
-        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
+        params: []);
     setState(() {
       _submitting = true;
     });

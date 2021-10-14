@@ -133,7 +133,6 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
     if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final txParams = [params.paraId, amountInt.toString(), null];
-      var disabledCalls = await widget.service.store.settings.disabledCalls;
       final txArgs = TxConfirmParams(
           module: 'crowdloan',
           call: 'contribute',
@@ -143,8 +142,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
             "amount": '$_amount KSM',
             // "signingPayload": signingPayload
           },
-          params: txParams,
-          txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
+          params: txParams);
       final res = (await Navigator.of(context)
           .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
       if (res != null) {

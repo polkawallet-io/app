@@ -387,9 +387,6 @@ class _WalletAppState extends State<WalletApp> {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
       }
 
-      /// load DisabledCalls
-      service.store.settings.disabledCalls;
-
       _startPlugin(service);
     }
 
@@ -427,7 +424,12 @@ class _WalletAppState extends State<WalletApp> {
             ),
           ),
       TxConfirmPage.route: (_) => TxConfirmPage(
-          _service.plugin, _keyring, _service.account.getPassword),
+            _service.plugin,
+            _keyring,
+            _service.account.getPassword,
+            txDisabledCalls: _service.store.settings
+                .getDisabledCalls(_service.plugin.basic.name),
+          ),
       WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),

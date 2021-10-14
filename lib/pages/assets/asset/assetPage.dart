@@ -68,7 +68,6 @@ class _AssetPageState extends State<AssetPage> {
         .toList();
     txs.add(
         'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
-    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
             txTitle: dic['lock.unlock'],
@@ -78,8 +77,7 @@ class _AssetPageState extends State<AssetPage> {
               "actions": ['democracy.removeVote', 'democracy.unlock'],
             },
             params: [],
-            rawParams: '[[${txs.join(',')}]]',
-            txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]));
+            rawParams: '[[${txs.join(',')}]]'));
     if (res != null) {
       _refreshKey.currentState.show();
     }

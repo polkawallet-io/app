@@ -94,7 +94,6 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
 
   Future<void> _onSubmit() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final params = TxConfirmParams(
         txTitle: dic['recovery.init'],
         module: 'recovery',
@@ -104,8 +103,9 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
           'deposit':
               '${Fmt.doubleFormat(_recoveryDeposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
         },
-        params: [_recoverable.address],
-        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
+        params: [
+          _recoverable.address
+        ]);
 
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: params);

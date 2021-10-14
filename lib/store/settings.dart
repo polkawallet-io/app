@@ -30,11 +30,11 @@ abstract class _SettingsStore with Store {
 
   Map _disabledCalls;
 
-  Future<Map> get disabledCalls async {
+  Future<Map> getDisabledCalls(String pluginName) async {
     if (_disabledCalls == null) {
       _disabledCalls = await WalletApi.getDisabledCalls();
     }
-    return _disabledCalls;
+    return _disabledCalls[pluginName];
   }
 
   @action
