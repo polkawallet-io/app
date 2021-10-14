@@ -3,6 +3,9 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_ui/components/entryPageCard.dart';
+import 'package:polkawallet_ui/components/entryPageCard.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class PluginTestETH extends PolkawalletPlugin {
   PluginTestETH({name = 'testETH'})
@@ -33,7 +36,32 @@ class PluginTestETH extends PolkawalletPlugin {
         text: "test",
         icon: Text("test"),
         iconActive: Text("test"),
-        content: Container(),
+        content: Container(
+          child: SafeArea(
+              child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: GestureDetector(
+                  child: EntryPageCard(
+                    'Polkassembly',
+                    'polkassembly',
+                    Image.asset(
+                      'packages/polkawallet_plugin_kusama/assets/images/public/polkassembly.png',
+                      width: 48,
+                    ),
+                    color: Colors.transparent,
+                  ),
+                  onTap: () => Navigator.of(context).pushNamed(
+                    DAppWrapperPage.route,
+                    arguments: 'https://app.uniswap.org/#/swap',
+                    // "https://polkadot.js.org/apps/",
+                  ),
+                ),
+              )
+            ],
+          )),
+        ),
       )
     ];
   }
