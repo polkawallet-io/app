@@ -518,6 +518,7 @@ class _TransferPageState extends State<TransferPage> {
                   child: SingleChildScrollView(
                     padding: EdgeInsets.all(16),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AddressInputField(
                           widget.service.plugin.sdk.api,

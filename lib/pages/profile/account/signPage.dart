@@ -2,10 +2,9 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
@@ -71,8 +70,8 @@ class _SignMessagePageState extends State<SignMessagePage>
         _submitting = true;
       });
       final res = await widget.service.plugin.sdk.api.keyring.signatureVerify(
-        _messageVerifyCtrl.text,
-        _signatureCtrl.text,
+        _messageVerifyCtrl.text.trim(),
+        _signatureCtrl.text.trim(),
         _verifySigner.address,
       );
       setState(() {

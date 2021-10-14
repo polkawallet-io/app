@@ -1,3 +1,6 @@
+# [2.3.8-beta] - 20211014
+- KSM xcm transfer compatible update.
+
 # [2.3.7-beta] - 20210930
 - fix null address bug.
 
