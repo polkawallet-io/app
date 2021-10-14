@@ -60,7 +60,7 @@ const xcm_send_fees = {
     'existentialDeposit': '33333333',
   },
   para_chain_name_karura: {
-    'fee': '240000000',
+    'fee': '160000000',
     'existentialDeposit': '100000000',
   },
   para_chain_name_bifrost: {
