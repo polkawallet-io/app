@@ -89,16 +89,17 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
 
   Future<void> _onSubmit(String addressOld, String addressNew) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final args = TxConfirmParams(
-      txTitle: dic['recovery.help'],
-      module: 'recovery',
-      call: 'vouchRecovery',
-      txDisplay: {
-        'lost': addressOld,
-        'rescuer': addressNew,
-      },
-      params: [addressOld, addressNew],
-    );
+        txTitle: dic['recovery.help'],
+        module: 'recovery',
+        call: 'vouchRecovery',
+        txDisplay: {
+          'lost': addressOld,
+          'rescuer': addressNew,
+        },
+        params: [addressOld, addressNew],
+        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: args);
     if (res != null) {

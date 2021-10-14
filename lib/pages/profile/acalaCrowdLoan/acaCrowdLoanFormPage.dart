@@ -213,18 +213,19 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         amountInt.toString(),
         null
       ];
+      var disabledCalls = await widget.service.store.settings.disabledCalls;
       final txArgs = TxConfirmParams(
-        module: 'crowdloan',
-        call: 'contribute',
-        txTitle: dic['auction.contribute'],
-        txDisplay: {
-          "type": 'direct contribute',
-          "paraIndex": params.statement['paraId'],
-          "amount": '$_amount DOT',
-          // "signingPayload": signingPayload
-        },
-        params: txParams,
-      );
+          module: 'crowdloan',
+          call: 'contribute',
+          txTitle: dic['auction.contribute'],
+          txDisplay: {
+            "type": 'direct contribute',
+            "paraIndex": params.statement['paraId'],
+            "amount": '$_amount DOT',
+            // "signingPayload": signingPayload
+          },
+          params: txParams,
+          txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
       final res = (await Navigator.of(context)
           .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
       if (res != null) {
@@ -293,6 +294,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         '',
         endpoint,
         isProxy: true);
+    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final txArgs = TxConfirmParams(
         module: 'utility',
         call: 'batchAll',
@@ -303,7 +305,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
           // "signingPayload": signingPayload
         },
         params: [],
-        rawParams: '[[${batchTxs.join(',')}]]');
+        rawParams: '[[${batchTxs.join(',')}]]',
+        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
     final res = (await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
     if (res != null) {

@@ -94,17 +94,18 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
 
   Future<void> _onSubmit() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final params = TxConfirmParams(
-      txTitle: dic['recovery.init'],
-      module: 'recovery',
-      call: 'initiateRecovery',
-      txDisplay: {
-        'accountId': _recoverable.address,
-        'deposit':
-            '${Fmt.doubleFormat(_recoveryDeposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
-      },
-      params: [_recoverable.address],
-    );
+        txTitle: dic['recovery.init'],
+        module: 'recovery',
+        call: 'initiateRecovery',
+        txDisplay: {
+          'accountId': _recoverable.address,
+          'deposit':
+              '${Fmt.doubleFormat(_recoveryDeposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
+        },
+        params: [_recoverable.address],
+        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
 
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: params);

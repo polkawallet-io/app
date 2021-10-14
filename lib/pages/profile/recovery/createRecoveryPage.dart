@@ -136,19 +136,20 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
     double deposit =
         _configDepositBase + _friends.length * _friendDepositFactor;
 
+    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final params = TxConfirmParams(
-      txTitle: dic['recovery.create'],
-      module: 'recovery',
-      call: 'createRecovery',
-      txDisplay: {
-        'friends': friends,
-        'threshold': _threshold.toInt(),
-        'delay': '$_delay ${dic['recovery.day']}',
-        'deposit':
-            '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
-      },
-      params: [friends, _threshold.toInt(), delayBlocks],
-    );
+        txTitle: dic['recovery.create'],
+        module: 'recovery',
+        call: 'createRecovery',
+        txDisplay: {
+          'friends': friends,
+          'threshold': _threshold.toInt(),
+          'delay': '$_delay ${dic['recovery.day']}',
+          'deposit':
+              '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
+        },
+        params: [friends, _threshold.toInt(), delayBlocks],
+        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
 
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: params);

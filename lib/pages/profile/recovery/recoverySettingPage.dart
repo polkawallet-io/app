@@ -119,13 +119,14 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
         },
       );
     } else {
+      var disabledCalls = await widget.service.store.settings.disabledCalls;
       final args = TxConfirmParams(
-        txTitle: dic['recovery.remove'],
-        module: 'recovery',
-        call: 'removeRecovery',
-        txDisplay: {},
-        params: [],
-      );
+          txTitle: dic['recovery.remove'],
+          module: 'recovery',
+          call: 'removeRecovery',
+          txDisplay: {},
+          params: [],
+          txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
       final res = await Navigator.of(context)
           .pushNamed(TxConfirmPage.route, arguments: args);
       if (res != null) {
@@ -136,13 +137,14 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
 
   Future<void> _closeRecovery(TxData tx) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    var disabledCalls = await widget.service.store.settings.disabledCalls;
     final args = TxConfirmParams(
-      txTitle: dic['recovery.close'],
-      module: 'recovery',
-      call: 'closeRecovery',
-      txDisplay: {"rescuer": tx.accountId},
-      params: [tx.accountId],
-    );
+        txTitle: dic['recovery.close'],
+        module: 'recovery',
+        call: 'closeRecovery',
+        txDisplay: {"rescuer": tx.accountId},
+        params: [tx.accountId],
+        txDisabledCalls: disabledCalls[widget.service.plugin.basic.name]);
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: args);
     if (res != null) {

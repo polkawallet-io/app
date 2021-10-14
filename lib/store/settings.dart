@@ -1,3 +1,4 @@
+import 'package:app/service/walletApi.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 
@@ -26,6 +27,15 @@ abstract class _SettingsStore with Store {
 
   @observable
   Map adBannerState = Map();
+
+  Map _disabledCalls;
+
+  Future<Map> get disabledCalls async {
+    if (_disabledCalls == null) {
+      _disabledCalls = await WalletApi.getDisabledCalls();
+    }
+    return _disabledCalls;
+  }
 
   @action
   Future<void> init() async {

@@ -387,6 +387,9 @@ class _WalletAppState extends State<WalletApp> {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
       }
 
+      /// load DisabledCalls
+      service.store.settings.disabledCalls;
+
       _startPlugin(service);
     }
 

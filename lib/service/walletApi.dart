@@ -17,6 +17,21 @@ class WalletApi {
     return 'https://$relayChainName.api.subscan.io/api/scan';
   }
 
+  static Future<Map> getDisabledCalls() async {
+    try {
+      Response res =
+          await get(Uri.parse('$_endpoint/config/disabledCalls.json'));
+      if (res == null) {
+        return {};
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return {};
+    }
+  }
+
   static Future<Map> getLatestVersion() async {
     try {
       Response res =
