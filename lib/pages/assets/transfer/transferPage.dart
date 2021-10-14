@@ -52,6 +52,8 @@ class _TransferPageState extends State<TransferPage> {
 
   TxFeeEstimateResult _fee;
 
+  bool _submitting = false;
+
   Future<String> _checkAccountTo(KeyPairData acc) async {
     if (widget.service.keyring.allAccounts
             .indexWhere((e) => e.pubKey == acc.pubKey) >=
@@ -90,7 +92,9 @@ class _TransferPageState extends State<TransferPage> {
   }
 
   Future<TxConfirmParams> _getTxParams() async {
-    if (_accountToError == null && _formKey.currentState.validate()) {
+    if (_accountToError == null &&
+        _formKey.currentState.validate() &&
+        !_submitting) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
       final symbol =
           (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
@@ -151,6 +155,22 @@ class _TransferPageState extends State<TransferPage> {
             xcm_dest_weight_bifrost
           ];
         } else {
+          String destPubKey = _accountTo.pubKey;
+          // we need to decode address for the pubKey here
+          if (destPubKey == null || destPubKey.isEmpty) {
+            setState(() {
+              _submitting = true;
+            });
+            final pk = await widget.service.plugin.sdk.api.account
+                .decodeAddress([_accountTo.address]);
+            setState(() {
+              _submitting = false;
+            });
+            if (pk == null) return null;
+
+            destPubKey = pk.keys.toList()[0];
+          }
+
           /// this is KSM/DOT transfer RelayChain <-> ParaChain
           /// paramsX: [dest, beneficiary, assets, dest_weight]
           final dest = {
@@ -160,7 +180,7 @@ class _TransferPageState extends State<TransferPage> {
           };
           final beneficiary = {
             'X1': {
-              'AccountId32': {'id': _accountTo.pubKey, 'network': 'Any'}
+              'AccountId32': {'id': destPubKey, 'network': 'Any'}
             }
           };
           final assets = [
