@@ -134,16 +134,15 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final txParams = [params.paraId, amountInt.toString(), null];
       final txArgs = TxConfirmParams(
-        module: 'crowdloan',
-        call: 'contribute',
-        txTitle: dic['auction.contribute'],
-        txDisplay: {
-          "paraIndex": params.paraId,
-          "amount": '$_amount KSM',
-          // "signingPayload": signingPayload
-        },
-        params: txParams,
-      );
+          module: 'crowdloan',
+          call: 'contribute',
+          txTitle: dic['auction.contribute'],
+          txDisplay: {
+            "paraIndex": params.paraId,
+            "amount": '$_amount KSM',
+            // "signingPayload": signingPayload
+          },
+          params: txParams);
       final res = (await Navigator.of(context)
           .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
       if (res != null) {

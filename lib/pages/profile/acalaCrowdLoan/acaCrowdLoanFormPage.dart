@@ -294,16 +294,17 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         endpoint,
         isProxy: true);
     final txArgs = TxConfirmParams(
-        module: 'utility',
-        call: 'batchAll',
-        txTitle: dic['auction.contribute'],
-        txDisplay: {
-          "type": 'via Acala proxy',
-          "amount": '$_amount DOT',
-          // "signingPayload": signingPayload
-        },
-        params: [],
-        rawParams: '[[${batchTxs.join(',')}]]');
+      module: 'utility',
+      call: 'batchAll',
+      txTitle: dic['auction.contribute'],
+      txDisplay: {
+        "type": 'via Acala proxy',
+        "amount": '$_amount DOT',
+        // "signingPayload": signingPayload
+      },
+      params: [],
+      rawParams: '[[${batchTxs.join(',')}]]',
+    );
     final res = (await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
     if (res != null) {

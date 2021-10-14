@@ -53,15 +53,14 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
     final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
-          txTitle: dic['lock.unlock'],
-          module: 'utility',
-          call: 'batch',
-          txDisplay: {
-            "actions": ['democracy.removeVote', 'democracy.unlock'],
-          },
-          params: [],
-          rawParams: '[[${txs.join(',')}]]',
-        ));
+            txTitle: dic['lock.unlock'],
+            module: 'utility',
+            call: 'batch',
+            txDisplay: {
+              "actions": ['democracy.removeVote', 'democracy.unlock'],
+            },
+            params: [],
+            rawParams: '[[${txs.join(',')}]]'));
     if (res != null) {
       _refreshKey.currentState.show();
     }
@@ -103,12 +102,11 @@ class LocksDetailPageState extends State<LocksDetailPage> {
       String claimableAmount, int decimals, String symbol) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final params = TxConfirmParams(
-      txTitle: '${dic['lock.vest.claim']} $symbol',
-      module: 'vesting',
-      call: 'claim',
-      txDisplay: {'amount': '$claimableAmount $symbol'},
-      params: [],
-    );
+        txTitle: '${dic['lock.vest.claim']} $symbol',
+        module: 'vesting',
+        call: 'claim',
+        txDisplay: {'amount': '$claimableAmount $symbol'},
+        params: []);
     setState(() {
       _submitting = true;
     });

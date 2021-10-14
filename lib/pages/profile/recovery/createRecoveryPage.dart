@@ -137,18 +137,21 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
         _configDepositBase + _friends.length * _friendDepositFactor;
 
     final params = TxConfirmParams(
-      txTitle: dic['recovery.create'],
-      module: 'recovery',
-      call: 'createRecovery',
-      txDisplay: {
-        'friends': friends,
-        'threshold': _threshold.toInt(),
-        'delay': '$_delay ${dic['recovery.day']}',
-        'deposit':
-            '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
-      },
-      params: [friends, _threshold.toInt(), delayBlocks],
-    );
+        txTitle: dic['recovery.create'],
+        module: 'recovery',
+        call: 'createRecovery',
+        txDisplay: {
+          'friends': friends,
+          'threshold': _threshold.toInt(),
+          'delay': '$_delay ${dic['recovery.day']}',
+          'deposit':
+              '${Fmt.doubleFormat(deposit)} ${widget.service.plugin.networkState.tokenSymbol[0]}'
+        },
+        params: [
+          friends,
+          _threshold.toInt(),
+          delayBlocks
+        ]);
 
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: params);

@@ -28,7 +28,7 @@ packages:
       name: archive
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.1.5"
+    version: "3.1.6"
   args:
     dependency: transitive
     description:
@@ -163,7 +163,7 @@ packages:
       name: cli_util
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.5"
   clock:
     dependency: transitive
     description:
@@ -205,7 +205,7 @@ packages:
       name: connectivity_plus_macos
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -745,7 +745,7 @@ packages:
       name: path_drawing
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.5.1"
+    version: "0.5.1+1"
   path_parsing:
     dependency: transitive
     description:
@@ -877,11 +877,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5c116fb20a6698871cbad2a8910fbba8597a5aed"
-      resolved-ref: "5c116fb20a6698871cbad2a8910fbba8597a5aed"
+      ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
+      resolved-ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
     source: git
-    version: "0.0.1"
+    version: "0.3.4"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:

@@ -53,7 +53,7 @@ dependencies:
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: 5c116fb20a6698871cbad2a8910fbba8597a5aed
+      ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git

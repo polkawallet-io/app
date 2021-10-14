@@ -106,13 +106,13 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
   Future<void> _onAction(RecoveryInfo info, String action) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final args = TxConfirmParams(
-      txTitle: dic['recovery.$action'],
-      module: 'recovery',
-      call:
-          action == _actionClaimRecovery ? 'claimRecovery' : 'cancelRecovered',
-      txDisplay: {"accountId": info.address},
-      params: [info.address],
-    );
+        txTitle: dic['recovery.$action'],
+        module: 'recovery',
+        call: action == _actionClaimRecovery
+            ? 'claimRecovery'
+            : 'cancelRecovered',
+        txDisplay: {"accountId": info.address},
+        params: [info.address]);
     final res = await Navigator.of(context)
         .pushNamed(TxConfirmPage.route, arguments: args);
     if (res != null) {
