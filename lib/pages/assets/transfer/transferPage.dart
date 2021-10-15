@@ -51,6 +51,7 @@ class _TransferPageState extends State<TransferPage> {
   String _accountToError;
 
   TxFeeEstimateResult _fee;
+  List _xcmEnabledChains;
 
   bool _submitting = false;
 
@@ -88,7 +89,18 @@ class _TransferPageState extends State<TransferPage> {
     if (to == null) return;
 
     _updateAccountTo(to.address.address, name: to.address.name);
-    print(to.address.address);
+  }
+
+  bool _isFromXTokensParaChain() {
+    return widget.service.plugin.basic.name == para_chain_name_karura ||
+        widget.service.plugin.basic.name == para_chain_name_bifrost;
+  }
+
+  bool _isToParaChain() {
+    return _chainTo.basic.name != relay_chain_name_ksm &&
+        _chainTo.basic.name != relay_chain_name_dot &&
+        _chainTo.basic.name != para_chain_name_statemine &&
+        _chainTo.basic.name != para_chain_name_statemint;
   }
 
   Future<TxConfirmParams> _getTxParams() async {
@@ -103,13 +115,8 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        final isFromXTokensParaChain =
-            widget.service.plugin.basic.name == para_chain_name_karura ||
-                widget.service.plugin.basic.name == para_chain_name_bifrost;
-        final isToParaChain = _chainTo.basic.name != relay_chain_name_ksm &&
-            _chainTo.basic.name != relay_chain_name_dot &&
-            _chainTo.basic.name != para_chain_name_statemine &&
-            _chainTo.basic.name != para_chain_name_statemint;
+        final isFromXTokensParaChain = _isFromXTokensParaChain();
+        final isToParaChain = _isToParaChain();
 
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
@@ -133,7 +140,6 @@ class _TransferPageState extends State<TransferPage> {
         final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
             'api.tx.$txModule.$txCall.meta.args.length === 5',
             wrapPromise: false);
-        print('is runtime 9100: $is9100');
         List paramsX;
         if (isFromXTokensParaChain && isToParaChain) {
           /// this is transfer KAR from Karura to Bifrost
@@ -141,17 +147,15 @@ class _TransferPageState extends State<TransferPage> {
           paramsX = [
             {'Token': symbol},
             amount,
-            [
-              1,
-              {
-                'X2': [
-                  {'Parachain': _chainTo.basic.parachainId},
-                  {
-                    'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-                  }
-                ]
-              }
-            ],
+            {
+              'X3': [
+                'Parent',
+                {'Parachain': _chainTo.basic.parachainId},
+                {
+                  'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
+                }
+              ]
+            },
             xcm_dest_weight_bifrost
           ];
         } else {
@@ -250,56 +254,17 @@ class _TransferPageState extends State<TransferPage> {
       return _fee.partialFee.toString();
     }
 
-    final isStatemint =
-        widget.service.plugin.basic.name == para_chain_name_statemine ||
-            widget.service.plugin.basic.name == para_chain_name_statemint;
+    final txParams = await _getTxParams();
+    if (txParams == null) return '';
 
-    final sender = TxSenderData(widget.service.keyring.current.address,
-        widget.service.keyring.current.pubKey);
     final txInfo = TxInfoData(
-        isXCM ? 'xcmPallet' : 'balances',
-        isXCM
-            ? isStatemint
-                ? 'teleportAssets'
-                : 'reserveTransferAssets'
-            : 'transfer',
-        sender);
-    final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
-        'api.tx.${txInfo.module}.${txInfo.call}.meta.args.length === 5',
-        wrapPromise: false);
-    final List paramsX = [
-      {
-        'V0': {
-          'X1': isStatemint ? 'Parent' : {'Parachain': '2000'}
-        }
-      },
-      {
-        'V0': {
-          'X1': {
-            'AccountId32': {
-              'id': widget.service.keyring.current.pubKey,
-              'network': 'Any'
-            }
-          }
-        }
-      },
-      {
-        'V0': [
-          {
-            'ConcreteFungible': {'amount': xcm_dest_weight_ksm}
-          }
-        ]
-      },
-      0,
-    ];
-    if (is9100) {
-      paramsX.add(xcm_dest_weight_ksm);
-    }
-    final fee = await widget.service.plugin.sdk.api.tx.estimateFees(
-        txInfo,
-        isXCM
-            ? paramsX
-            : [widget.service.keyring.current.address, '10000000000']);
+        txParams.module,
+        txParams.call,
+        TxSenderData(widget.service.keyring.current.address,
+            widget.service.keyring.current.pubKey));
+
+    final fee = await widget.service.plugin.sdk.api.tx
+        .estimateFees(txInfo, txParams.params);
     if (mounted) {
       setState(() {
         _fee = fee;
@@ -374,7 +339,7 @@ class _TransferPageState extends State<TransferPage> {
 
     final allPlugins = widget.service.allPlugins.toList();
     allPlugins.retainWhere((e) {
-      return xcm_support_dest_chains[widget.service.plugin.basic.name]
+      return [widget.service.plugin.basic.name, ..._xcmEnabledChains]
               .indexOf(e.basic.name) >
           -1;
     });
@@ -448,7 +413,7 @@ class _TransferPageState extends State<TransferPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getTxFee();
 
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
@@ -462,9 +427,12 @@ class _TransferPageState extends State<TransferPage> {
         }
       }
 
+      final xcmEnabledChains = await widget.service.store.settings
+          .getXcmEnabledChains(widget.service.plugin.basic.name);
       setState(() {
         _chainTo = widget.service.plugin;
         _accountOptions = widget.service.keyring.allWithContacts.toList();
+        _xcmEnabledChains = xcmEnabledChains;
       });
     });
   }
@@ -497,7 +465,7 @@ class _TransferPageState extends State<TransferPage> {
         final notTransferable = reserved + locked;
 
         final canCrossChain =
-            xcm_support_dest_chains[widget.service.plugin.basic.name] != null;
+            _xcmEnabledChains != null && _xcmEnabledChains.length > 0;
 
         final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;

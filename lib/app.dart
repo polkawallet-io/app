@@ -207,6 +207,7 @@ class _WalletAppState extends State<WalletApp> {
     // _initWalletConnect();
 
     _service.assets.fetchMarketPriceFromSubScan();
+    _store.settings.getXcmEnabledChains(service.plugin.basic.name);
 
     setState(() {
       _connectedNode = null;
