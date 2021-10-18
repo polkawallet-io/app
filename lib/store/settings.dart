@@ -36,11 +36,20 @@ abstract class _SettingsStore with Store {
 
   Map _disabledCalls;
 
+  Map _xcmEnabledChains;
+
   Future<Map> getDisabledCalls(String pluginName) async {
     if (_disabledCalls == null) {
       _disabledCalls = await WalletApi.getDisabledCalls();
     }
     return _disabledCalls[pluginName];
+  }
+
+  Future<List> getXcmEnabledChains(String pluginName) async {
+    if (_xcmEnabledChains == null) {
+      _xcmEnabledChains = await WalletApi.getXcmEnabledConfig();
+    }
+    return _xcmEnabledChains[pluginName] ?? [];
   }
 
   @action

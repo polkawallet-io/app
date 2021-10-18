@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
+import 'package:app/utils/UI.dart';
 
 class JumpToLink extends StatefulWidget {
   JumpToLink(this.url, {this.text, this.color});
@@ -23,7 +23,7 @@ class _JumpToLinkState extends State<JumpToLink> {
       _loading = true;
     });
 
-    await UI.launchURL(widget.url);
+    await AppUI.launchURL(widget.url);
 
     setState(() {
       _loading = false;

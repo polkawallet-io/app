@@ -18,8 +18,8 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.3.8-beta.1';
-const int app_beta_version_code = 2381;
+const String app_beta_version = 'v2.3.8-beta.2';
+const int app_beta_version_code = 2382;
 
 /// para-chains
 const relay_chain_name_ksm = 'kusama';
@@ -75,10 +75,11 @@ const xcm_support_dest_chains = {
     para_chain_name_statemine,
     para_chain_name_karura,
   ],
-  para_chain_name_statemine: [
-    para_chain_name_statemine,
-    relay_chain_name_ksm,
-  ],
+  // todo: KSM from statemine to kusasma has bug
+  // para_chain_name_statemine: [
+  //   para_chain_name_statemine,
+  //   relay_chain_name_ksm,
+  // ],
   // todo: transfer KAR to bifrost is not open yet
   // para_chain_name_karura: [
   //   para_chain_name_karura,

@@ -86,8 +86,8 @@ class _SignMessagePageState extends State<SignMessagePage>
           ? await widget.service.plugin.sdk.api.ethKeyring
               .signatureVerify(_messageVerifyCtrl.text, _signatureCtrl.text)
           : await widget.service.plugin.sdk.api.keyring.signatureVerify(
-              _messageVerifyCtrl.text,
-              _signatureCtrl.text,
+              _messageVerifyCtrl.text.trim(),
+              _signatureCtrl.text.trim(),
               _verifySigner.address,
             );
       setState(() {

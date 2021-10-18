@@ -425,7 +425,7 @@ packages:
       name: flutter_svg
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.22.0"
+    version: "0.23.0+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -837,75 +837,19 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.2"
-  polkawallet_plugin_acala:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      resolved-ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
-    version: "0.3.0"
-  polkawallet_plugin_bifrost:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
-      resolved-ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
-      url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
-    source: git
-    version: "0.3.2"
-  polkawallet_plugin_chainx:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: a4a1d472e06822b22ccc25287405fba2048fe6e8
-      resolved-ref: a4a1d472e06822b22ccc25287405fba2048fe6e8
-      url: "https://github.com/chainx-org/polkawallet_plugin_chainx.git"
-    source: git
-    version: "0.0.2"
-  polkawallet_plugin_edgeware:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "11be316dc77b721d41ed6774fbf8d444a5a8eaa9"
-      resolved-ref: "11be316dc77b721d41ed6774fbf8d444a5a8eaa9"
-      url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
-    source: git
-    version: "0.3.0"
   polkawallet_plugin_karura:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
-      path: "."
-      ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
-      resolved-ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_karura"
+      relative: true
+    source: path
     version: "0.3.4"
   polkawallet_plugin_kusama:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/polkawallet_plugin_kusama"
       relative: true
     source: path
-    version: "0.3.0"
-  polkawallet_plugin_laminar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "7950c74abe74494aed49662b37dcebdacf1013c1"
-      resolved-ref: "7950c74abe74494aed49662b37dcebdacf1013c1"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
-    version: "0.2.8"
-  polkawallet_plugin_statemine:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "7d8cf727c5eb78d97205e53fe2ade55c513754a9"
-      resolved-ref: "7d8cf727c5eb78d97205e53fe2ade55c513754a9"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
-    source: git
     version: "0.3.0"
   polkawallet_sdk:
     dependency: "direct overridden"
@@ -913,14 +857,14 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.3.3"
+    version: "0.3.4"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.3.3"
+    version: "0.3.4"
   pool:
     dependency: transitive
     description:
