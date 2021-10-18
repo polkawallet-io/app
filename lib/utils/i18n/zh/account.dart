@@ -29,6 +29,7 @@ const Map<String, String> zhAccount = {
   'import.type': '导入类型',
   'import.encrypt': '加密类型',
   'import.invalid': '无效的',
+  'import.warn': '警告',
   'import.duplicate': '账户已存在，将覆盖原有账户。',
   'advanced': '高级选项',
   'path': '加密派生路径',

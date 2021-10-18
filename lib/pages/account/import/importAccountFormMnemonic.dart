@@ -1,6 +1,7 @@
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
@@ -31,6 +32,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
   AccountAdvanceOptionParams _advanceOptions = AccountAdvanceOptionParams();
   final _formKey = GlobalKey<FormState>();
 
+  bool _validating = false;
   AddressIconData _addressIcon = AddressIconData();
 
   @override
@@ -107,6 +109,8 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                           onPressed: () async {
                             if (_formKey.currentState.validate() &&
                                 !(_advanceOptions.error ?? false)) {
+                              if (!(await _validateMnemonic())) return;
+
                               /// we should save user's key before next page
                               widget.service.store.account
                                   .setNewAccountKey(_keyCtrl.text.trim());
@@ -137,6 +141,42 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
       passed = true;
     }
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
+  }
+
+  Future<bool> _validateMnemonic() async {
+    if (_validating) return false;
+
+    setState(() {
+      _validating = true;
+    });
+    final input = _keyCtrl.text.trim();
+    final res =
+        await widget.service.plugin.sdk.api.keyring.checkMnemonicValid(input);
+    if (!res) {
+      final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(dic['import.warn']),
+            content: Text('${dic['import.invalid']} ${dic['mnemonic']}'),
+            actions: [
+              CupertinoButton(
+                child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    setState(() {
+      _validating = false;
+    });
+    return res;
   }
 
   void _onKeyChange(String v) {
