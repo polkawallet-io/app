@@ -83,8 +83,8 @@ class _SignMessagePageState extends State<SignMessagePage>
         _submitting = true;
       });
       var res = widget.service.plugin.basic.pluginType == PluginType.Etherem
-          ? await widget.service.plugin.sdk.api.ethKeyring
-              .signatureVerify(_messageVerifyCtrl.text, _signatureCtrl.text)
+          ? await widget.service.plugin.sdk.api.ethKeyring.signatureVerify(
+              _messageVerifyCtrl.text.trim(), _signatureCtrl.text.trim())
           : await widget.service.plugin.sdk.api.keyring.signatureVerify(
               _messageVerifyCtrl.text.trim(),
               _signatureCtrl.text.trim(),
