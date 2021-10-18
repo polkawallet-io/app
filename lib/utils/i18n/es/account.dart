@@ -34,6 +34,7 @@ const Map<String, String> enAccount = {
   'import.type': 'Source Type',
   'import.encrypt': 'Encrypt Type',
   'import.invalid': 'Invalid',
+  'import.warn': 'Warning',
   'import.duplicate': 'account exist, it will override the existing account.',
   'advanced': 'Advanced Options',
   'path': 'Secret derivation path',
