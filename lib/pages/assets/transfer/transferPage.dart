@@ -140,6 +140,23 @@ class _TransferPageState extends State<TransferPage> {
         final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
             'api.tx.$txModule.$txCall.meta.args.length === 5',
             wrapPromise: false);
+
+        String destPubKey = _accountTo.pubKey;
+        // we need to decode address for the pubKey here
+        if (destPubKey == null || destPubKey.isEmpty) {
+          setState(() {
+            _submitting = true;
+          });
+          final pk = await widget.service.plugin.sdk.api.account
+              .decodeAddress([_accountTo.address]);
+          setState(() {
+            _submitting = false;
+          });
+          if (pk == null) return null;
+
+          destPubKey = pk.keys.toList()[0];
+        }
+
         List paramsX;
         if (isFromXTokensParaChain && isToParaChain) {
           /// this is transfer KAR from Karura to Bifrost
@@ -147,34 +164,20 @@ class _TransferPageState extends State<TransferPage> {
           paramsX = [
             {'Token': symbol},
             amount,
-            {
-              'X3': [
-                'Parent',
-                {'Parachain': _chainTo.basic.parachainId},
-                {
-                  'AccountId32': {'id': _accountTo.address, 'network': 'Any'}
-                }
-              ]
-            },
+            [
+              1,
+              {
+                'X2': [
+                  {'Parachain': _chainTo.basic.parachainId},
+                  {
+                    'AccountId32': {'id': destPubKey, 'network': 'Any'}
+                  }
+                ]
+              }
+            ],
             xcm_dest_weight_bifrost
           ];
         } else {
-          String destPubKey = _accountTo.pubKey;
-          // we need to decode address for the pubKey here
-          if (destPubKey == null || destPubKey.isEmpty) {
-            setState(() {
-              _submitting = true;
-            });
-            final pk = await widget.service.plugin.sdk.api.account
-                .decodeAddress([_accountTo.address]);
-            setState(() {
-              _submitting = false;
-            });
-            if (pk == null) return null;
-
-            destPubKey = pk.keys.toList()[0];
-          }
-
           /// this is KSM/DOT transfer RelayChain <-> ParaChain
           /// paramsX: [dest, beneficiary, assets, dest_weight]
           final dest = {
