@@ -1,3 +1,6 @@
+# [2.3.9-beta] - 20211018
+- update config from walletApi.
+
 # [2.3.8-beta] - 20211014
 - KSM xcm transfer compatible update.
 

@@ -132,7 +132,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
     bool passed = false;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     String input = v.trim();
-    if (input.length <= 32 || input.length == 66) {
+    if (input.isNotEmpty && (input.length <= 32 || input.length == 66)) {
       passed = true;
     }
     return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
