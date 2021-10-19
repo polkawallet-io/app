@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.9+2392
+version: 2.4.0+2401
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -46,7 +46,7 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: e9e7c2546a1a6241c55a064d2fa57987a9265051
+      ref: 4b450366c90ec7ac2fa4f332600cb756fce82453
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
@@ -66,11 +66,11 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: 28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6
+      ref: 87c54fe160c88992d04c8ce30ef23fe09e9732af
   polkawallet_plugin_chainx:
     git:
       url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
-      ref: a4a1d472e06822b22ccc25287405fba2048fe6e8
+      ref: 2cc634bc4f0b873e7fe0801d5d3fba46756f5315
   polkawallet_plugin_edgeware:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
@@ -81,8 +81,8 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  # polkawallet_plugin_kusama:
+  #   path: ../../coding/polkawallet/polkawallet_plugin_kusama
   # polkawallet_plugin_acala:
   #   path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:

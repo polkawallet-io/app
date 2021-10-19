@@ -857,8 +857,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
-      resolved-ref: "28fdd7e3d7e66e6fbe31bdbae3b09d88627e51b6"
+      ref: "87c54fe160c88992d04c8ce30ef23fe09e9732af"
+      resolved-ref: "87c54fe160c88992d04c8ce30ef23fe09e9732af"
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
     version: "0.3.2"
@@ -866,8 +866,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a4a1d472e06822b22ccc25287405fba2048fe6e8
-      resolved-ref: a4a1d472e06822b22ccc25287405fba2048fe6e8
+      ref: "2cc634bc4f0b873e7fe0801d5d3fba46756f5315"
+      resolved-ref: "2cc634bc4f0b873e7fe0801d5d3fba46756f5315"
       url: "https://github.com/chainx-org/polkawallet_plugin_chainx.git"
     source: git
     version: "0.0.2"
@@ -890,10 +890,12 @@ packages:
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
-    version: "0.3.0"
+      path: "."
+      ref: "4b450366c90ec7ac2fa4f332600cb756fce82453"
+      resolved-ref: "4b450366c90ec7ac2fa4f332600cb756fce82453"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
+    version: "0.3.4"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:

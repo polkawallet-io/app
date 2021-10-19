@@ -20,7 +20,8 @@ void main() async {
   await Firebase.initializeApp();
   var packageInfo = await PackageInfo.fromPlatform();
   app_beta_version_code = int.tryParse(packageInfo.buildNumber);
-  app_beta_version = "${packageInfo.version}-beta${packageInfo.buildNumber}";
+  app_beta_version =
+      "${packageInfo.version}-beta.${packageInfo.buildNumber.substring(packageInfo.buildNumber.length - 1)}";
 
   final plugins = [
     PluginKusama(name: 'polkadot'),
