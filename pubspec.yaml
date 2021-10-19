@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.8+2382
+version: 2.3.8+2383
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -32,7 +32,8 @@ dependencies:
   get_storage: ^2.0.2
   biometric_storage: ^2.0.2
   update_app: ^0.1.7
-  device_info: ^2.0.1
+  # device_info: ^2.0.1
+  package_info: ^2.0.2
   uni_links: ^0.5.1
   firebase_core: 1.5.0
   firebase_analytics: 8.3.0
@@ -96,9 +97,9 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:
 #    path: ../../coding/polkawallet/polkawallet_plugin_edgeware
-  polkawallet_ui: ^0.3.3
-#  polkawallet_ui:
-#     path: ../../coding/polkawallet/ui
+  # polkawallet_ui: ^0.3.3
+  polkawallet_ui:
+     path: ../../coding/polkawallet/ui
 #    git:
 #      url: https://github.com/polkawallet-io/ui.git
 #      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
@@ -111,6 +112,7 @@ dependency_overrides:
        url: https://github.com/google/charts
        path: charts_flutter
   flutter_mobx: ^2.0.0
+  flutter_svg: ^0.23.0+1
 
 
 dev_dependencies:

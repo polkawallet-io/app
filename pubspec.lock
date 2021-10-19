@@ -270,7 +270,7 @@ packages:
     source: hosted
     version: "0.5.6"
   device_info:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: device_info
       url: "https://pub.flutter-io.cn"
@@ -425,7 +425,7 @@ packages:
       name: flutter_svg
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.22.0"
+    version: "0.23.0+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -732,6 +732,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.2"
+  package_info:
+    dependency: "direct main"
+    description:
+      name: package_info
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.2"
   path:
     dependency: transitive
     description:
@@ -879,7 +886,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.3.2"
+    version: "0.3.4"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
@@ -911,14 +918,14 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.3.3"
+    version: "0.3.5"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.3.3"
+    version: "0.3.4"
   pool:
     dependency: transitive
     description:

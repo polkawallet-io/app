@@ -12,11 +12,15 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+import 'package:package_info/package_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(get_storage_container);
   await Firebase.initializeApp();
+  var packageInfo = await PackageInfo.fromPlatform();
+  app_beta_version_code = int.tryParse(packageInfo.buildNumber);
+  app_beta_version = "${packageInfo.version}-beta${packageInfo.buildNumber}";
 
   final plugins = [
     PluginKusama(name: 'polkadot'),
