@@ -15,7 +15,7 @@ const Map<String, String> zhAccount = {
   'create.warn2': '获得助记词等于拥有钱包资产所有权',
   'create.warn3': '备份助记词',
   'create.warn4': '使用纸和笔正确抄写助记词',
-  'create.warn5': '如果你的手机丢失、被盗、损坏，助记词将可以恢复你的资产',
+  'create.warn5': '如果你的手机丢失、被盗、损坏，助记词可以用来恢复你的账户',
   'create.warn6': '离线保存',
   'create.warn7': '妥善保管至隔离网络的安全地方',
   'create.warn8': '请勿将助记词在联网环境下分享和储存，比如邮件、相册、社交应用等',
