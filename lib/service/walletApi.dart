@@ -20,7 +20,7 @@ class WalletApi {
   static Future<Map> getXcmEnabledConfig() async {
     try {
       Response res =
-          await get(Uri.parse('$_endpoint/config/nativeTokenXCM.json'));
+          await get(Uri.parse('$_configEndpoint/wallet/nativeTokenXCM.json'));
       if (res == null) {
         return {};
       } else {
@@ -35,7 +35,7 @@ class WalletApi {
   static Future<Map> getDisabledCalls() async {
     try {
       Response res =
-          await get(Uri.parse('$_endpoint/config/disabledCalls.json'));
+          await get(Uri.parse('$_configEndpoint/wallet/disabledCalls.json'));
       if (res == null) {
         return {};
       } else {

@@ -696,7 +696,7 @@ packages:
       name: mime
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   mobx:
     dependency: transitive
     description:
@@ -829,7 +829,7 @@ packages:
       name: petitparser
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.3.0"
+    version: "4.4.0"
   platform:
     dependency: transitive
     description:
@@ -915,16 +915,16 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
+      name: polkawallet_sdk
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.3.5"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
+      name: polkawallet_ui
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.3.4"
   pool:
     dependency: transitive
@@ -939,7 +939,7 @@ packages:
       name: process
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.2.3"
+    version: "4.2.4"
   pub_semver:
     dependency: transitive
     description:
@@ -1252,7 +1252,7 @@ packages:
       name: xml
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.3.0"
+    version: "5.3.1"
   yaml:
     dependency: transitive
     description:
