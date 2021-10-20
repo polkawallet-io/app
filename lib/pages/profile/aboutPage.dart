@@ -2,6 +2,7 @@ import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/UI.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPage extends State<AboutPage> {
   bool _loading = false;
+  String _appVersion;
 
   Future<void> _checkUpdate() async {
     setState(() {
@@ -34,6 +36,19 @@ class _AboutPage extends State<AboutPage> {
       _loading = false;
     });
     AppUI.checkUpdate(context, versions, widget.service.buildTarget);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAppVersion();
+  }
+
+  getAppVersion() async {
+    var appVersion = await Utils.getAppVersion();
+    setState(() {
+      _appVersion = appVersion;
+    });
   }
 
   @override
@@ -90,7 +105,7 @@ class _AboutPage extends State<AboutPage> {
             ),
             Padding(
               padding: EdgeInsets.all(8),
-              child: Text('${dic['about.version']}: $app_beta_version'),
+              child: Text('${dic['about.version']}: ${_appVersion ?? ""}'),
             ),
             Padding(
               padding: EdgeInsets.only(bottom: 8),

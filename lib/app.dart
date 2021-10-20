@@ -47,6 +47,7 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -349,7 +350,7 @@ class _WalletAppState extends State<WalletApp> {
     //   return;
     // }
 
-    final storeKey = '${show_guide_status_key}_$app_beta_version';
+    final storeKey = '${show_guide_status_key}_${Utils.getAppVersion()}';
     final showGuideStatus = storage.read(storeKey);
     if (showGuideStatus == null) {
       final res = await Navigator.of(context).pushNamed(GuidePage.route);
