@@ -412,9 +412,12 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       final double amountAca =
           _amountValid ? _amount * _rewardMultiplier / _rewardDivider : 0;
       final raised = BigInt.parse(params.fundInfo['raised'].toString());
-      final double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
-          ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
+      double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
+          ? AcaCrowdLoanPage.contributeAmountMaxDivider / raised
           : AcaCrowdLoanPage.rewardAmountMax;
+      if (ratioAcaMax < 3) {
+        ratioAcaMax = 3;
+      }
 
       final double karReward = _karRewardValid ? amountAca * _karRewardRate : 0;
 

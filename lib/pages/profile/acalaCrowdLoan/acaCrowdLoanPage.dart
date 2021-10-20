@@ -64,6 +64,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   bool _submitting = false;
 
   bool _accepted = false;
+  bool _acceptedDirect = false;
 
   Map _statement;
   Map _promotion;
@@ -214,6 +215,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
       setState(() {
         _account = acc;
         _accepted = false;
+        _acceptedDirect = false;
         _signed = signed != null;
       });
 
@@ -276,10 +278,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final acc = widget.service.keyring.current;
-      final signed = widget.service.buildTarget == BuildTargets.dev
-          ? null
-          : widget.service.store.storage
-              .read('$aca_statement_store_key${acc.pubKey}');
+      final signed = widget.service.store.storage
+          .read('$aca_statement_store_key${acc.pubKey}');
 
       setState(() {
         _account = widget.service.keyring.current;
@@ -316,9 +316,12 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     final raised = _fundInfo != null
         ? BigInt.parse(_fundInfo['raised'].toString())
         : BigInt.zero;
-    final double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
-        ? raised / AcaCrowdLoanPage.contributeAmountMaxDivider
+    double ratioAcaMax = raised > AcaCrowdLoanPage.contributeAmountMax
+        ? AcaCrowdLoanPage.contributeAmountMaxDivider / raised
         : AcaCrowdLoanPage.rewardAmountMax;
+    if (ratioAcaMax < 3) {
+      ratioAcaMax = 3;
+    }
 
     final contributions = _contributions.toList();
     if (_tab == 0) {
@@ -384,10 +387,16 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                               padding:
                                                   EdgeInsets.only(right: 8),
                                               child: Checkbox(
-                                                value: _accepted,
+                                                value: _tab == 0
+                                                    ? _accepted
+                                                    : _acceptedDirect,
                                                 onChanged: (v) {
                                                   setState(() {
-                                                    _accepted = v;
+                                                    if (_tab == 0) {
+                                                      _accepted = v;
+                                                    } else {
+                                                      _acceptedDirect = v;
+                                                    }
                                                   });
                                                 },
                                               ),
@@ -582,7 +591,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                       : Container(),
                           Container(
                             margin: EdgeInsets.only(top: 16, bottom: 32),
-                            child: _signed || _tab == 0
+                            child: _tab == 0
                                 ? RoundedButton(
                                     text: dic['auction.contribute'],
                                     color: acaThemeColor,
@@ -595,11 +604,15 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                     icon: _submitting
                                         ? CupertinoActivityIndicator()
                                         : null,
-                                    text: dic['auction.accept'],
+                                    text: _signed
+                                        ? dic['auction.contribute']
+                                        : dic['auction.accept'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: _accepted && !_submitting
-                                        ? _acceptAndSign
+                                    onPressed: _acceptedDirect && !_submitting
+                                        ? _signed
+                                            ? _goToContribute
+                                            : _acceptAndSign
                                         : () => null,
                                   ),
                           )
@@ -746,13 +759,13 @@ class _InfoPanelsInDialogState extends State<_InfoPanelsInDialog> {
             ),
             GestureDetector(
               child: Text(
-                dic2['next'],
+                dic2[_page == 2 ? 'ok' : 'next'],
                 style: TextStyle(color: acaThemeColor),
               ),
               onTap: () {
                 setState(() {
                   if (_page == 2) {
-                    _page = 0;
+                    widget.closeDialog();
                   } else {
                     _page += 1;
                   }
