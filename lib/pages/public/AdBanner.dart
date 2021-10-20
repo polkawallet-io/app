@@ -40,48 +40,48 @@ class _AdBannerState extends State<AdBanner> {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(builder: (_) {
-      if (widget.connectedNode == null) {
-        return Container();
+    // return Observer(builder: (_) {
+    if (widget.connectedNode == null) {
+      return Container();
+    }
+    final visible = widget.service.buildTarget == BuildTargets.dev;
+    // todo: activate the banner
+    // final visible = widget.service.buildTarget == BuildTargets.dev
+    //     ? true
+    //     : (widget.service.store.settings.adBannerState['visibleAca'] ??
+    //         false);
+    if (!visible) {
+      final network = widget.service.plugin.basic.name;
+      if (network == relay_chain_name_ksm) {
+        return KarCrowdLoanBanner();
       }
-      final visible = widget.service.buildTarget == BuildTargets.dev;
-      // todo: activate the banner
-      // final visible = widget.service.buildTarget == BuildTargets.dev
-      //     ? true
-      //     : (widget.service.store.settings.adBannerState['visibleAca'] ??
-      //         false);
-      if (!visible) {
-        final network = widget.service.plugin.basic.name;
-        if (network == relay_chain_name_ksm) {
-          return KarCrowdLoanBanner();
-        }
-        return Container();
-      }
+      return Container();
+    }
 
-      return Stack(
-        alignment: AlignmentDirectional.topEnd,
-        children: [
-          ACACrowdLoanBanner(widget.service, widget.switchNetwork),
-          Visibility(
-            visible: widget.canClose,
-            child: Container(
-              padding: EdgeInsets.only(top: 12, right: 12),
-              child: GestureDetector(
-                child: Icon(
-                  Icons.cancel,
-                  color: Colors.white60,
-                  size: 16,
-                ),
-                onTap: () {
-                  widget.service.store.storage
-                      .write(show_banner_status_key, 'closed');
-                  widget.service.store.account.setBannerVisible(false);
-                },
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: [
+        ACACrowdLoanBanner(widget.service, widget.switchNetwork),
+        Visibility(
+          visible: widget.canClose,
+          child: Container(
+            padding: EdgeInsets.only(top: 12, right: 12),
+            child: GestureDetector(
+              child: Icon(
+                Icons.cancel,
+                color: Colors.white60,
+                size: 16,
               ),
+              onTap: () {
+                widget.service.store.storage
+                    .write(show_banner_status_key, 'closed');
+                widget.service.store.account.setBannerVisible(false);
+              },
             ),
-          )
-        ],
-      );
-    });
+          ),
+        )
+      ],
+    );
+    // });
   }
 }
