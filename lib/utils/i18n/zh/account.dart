@@ -75,4 +75,6 @@ const Map<String, String> zhAccount = {
   'plugin.note': '功能插件由 ',
   'plugin.team': ' 团队维护。',
   'plugin.disable': '该插件与当前 App 版本不兼容，请等待插件修复。',
+  'bad.warn': '警告!!!',
+  'bad.warn.info': '是一个助记词为【null】的公共账户，请将其删除并创建新的账户使用.',
 };

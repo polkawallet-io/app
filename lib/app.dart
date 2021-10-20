@@ -47,6 +47,7 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,6 +71,8 @@ import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'pages/account/import/importAccountCreatePage.dart';
@@ -280,6 +283,31 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
+  Future<void> _checkBadAddressAndWarn(BuildContext context) async {
+    if (_keyring != null &&
+        _keyring.current != null &&
+        _keyring.current.pubKey ==
+            '0xda99a528d2cbe6b908408c4f887d2d0336394414a9edb474c33a690a4202341a') {
+      final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+      showCupertinoDialog(
+          context: context,
+          builder: (_) {
+            return CupertinoAlertDialog(
+              title: Text(dic['bad.warn']),
+              content: Text(
+                  '${Fmt.address(_keyring.current.address)} ${dic['bad.warn.info']}'),
+              actions: [
+                CupertinoButton(
+                  child: Text(I18n.of(context)
+                      .getDic(i18n_full_dic_ui, 'common')['ok']),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          });
+    }
+  }
+
   Future<void> _checkUpdate(BuildContext context) async {
     final versions = await WalletApi.getLatestVersion();
     AppUI.checkUpdate(context, versions, widget.buildTarget, autoCheck: true);
@@ -288,6 +316,7 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _checkJSCodeUpdate(
       BuildContext context, PolkawalletPlugin plugin,
       {bool needReload = true}) async {
+    _checkBadAddressAndWarn(context);
     // check js code update
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
     if (jsVersions == null) return;
