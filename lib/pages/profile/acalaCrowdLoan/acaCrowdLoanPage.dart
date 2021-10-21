@@ -50,6 +50,9 @@ class AcaCrowdLoanPage extends StatefulWidget {
   static BigInt contributeAmountMaxDivider = BigInt.from(1500000000000000000);
   static double rewardAmountMax = 150;
 
+  static String typeProxy = 'TRANSFER';
+  static String typeDirect = 'CONTRIBUTION';
+
   @override
   _AcaCrowdLoanPageState createState() => _AcaCrowdLoanPageState();
 }
@@ -125,6 +128,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
           'contributionAmount': tx['args'][1],
           'timestamp': tx['timestamp'],
           'eventId': tx['hash'],
+          'type': tx['type'],
         }
       ];
       res.addAll(txs);
@@ -325,9 +329,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
 
     final contributions = _contributions.toList();
     if (_tab == 0) {
-      contributions.removeWhere((e) => e['type'] == 'CONTRIBUTION');
+      contributions
+          .removeWhere((e) => e['type'] == AcaCrowdLoanPage.typeDirect);
     } else {
-      contributions.removeWhere((e) => e['type'] == 'TRANSFER');
+      contributions.removeWhere((e) => e['type'] == AcaCrowdLoanPage.typeProxy);
     }
     return Scaffold(
       body: AcaPloPageLayout(

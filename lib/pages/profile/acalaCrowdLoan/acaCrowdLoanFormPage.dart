@@ -228,7 +228,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       final res = (await Navigator.of(context)
           .pushNamed(TxConfirmPage.route, arguments: txArgs)) as Map;
       if (res != null) {
-        _saveLocalTxData(txArgs, txParams, res);
+        _saveLocalTxData(txArgs, txParams, res, isProxy: false);
 
         await showCupertinoDialog(
           context: context,
@@ -346,7 +346,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
   }
 
   // todo: make this local-tx-storage a plugin function
-  void _saveLocalTxData(TxConfirmParams txArgs, List txParams, Map txRes) {
+  void _saveLocalTxData(TxConfirmParams txArgs, List txParams, Map txRes,
+      {bool isProxy = true}) {
     final pubKey = widget.service.keyring.current.pubKey;
     final Map cache =
         widget.service.store.storage.read('$local_tx_store_key:$pubKey') ?? {};
@@ -359,6 +360,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       'blockHash': txRes['blockHash'],
       'eventId': txRes['eventId'],
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'type':
+          isProxy ? AcaCrowdLoanPage.typeProxy : AcaCrowdLoanPage.typeDirect,
     });
     cache[pubKey] = txs;
     widget.service.store.storage.write('$local_tx_store_key:$pubKey', cache);
