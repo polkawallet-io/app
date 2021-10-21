@@ -572,8 +572,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                             JumpToLink(
                                                               e['blockHash'] ==
                                                                       null
-                                                                  ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
-                                                                  : 'https://kusama.subscan.io/account/${_account.address}',
+                                                                  ? 'https://polkadot.subscan.io/extrinsic/${e['eventId']}'
+                                                                  : 'https://polkadot.subscan.io/account/${_account.address}',
                                                               text: 'Subscan',
                                                               color:
                                                                   acaThemeColor,
