@@ -5,14 +5,10 @@ import 'package:polkawallet_sdk/api/types/parachain/auctionData.dart';
 part 'parachain.g.dart';
 
 class ParachainStore extends _ParachainStore with _$ParachainStore {
-  ParachainStore(GetStorage storage) : super(storage);
+  ParachainStore() : super();
 }
 
 abstract class _ParachainStore with Store {
-  _ParachainStore(this.storage);
-
-  final GetStorage storage;
-
   @observable
   AuctionData auctionData = AuctionData();
 

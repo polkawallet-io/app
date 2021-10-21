@@ -19,13 +19,11 @@ abstract class _SettingsStore with Store {
   @observable
   String localeCode = '';
 
-  @observable
   String network = 'polkadot';
 
   @observable
   Map liveModules = Map();
 
-  @observable
   Map adBannerState = Map();
 
   Map _disabledCalls;
@@ -66,13 +64,11 @@ abstract class _SettingsStore with Store {
     }
   }
 
-  @action
   void setNetwork(String value) {
     network = value;
     storage.write(localStorageNetworkKey, value);
   }
 
-  @action
   Future<void> loadNetwork() async {
     final value = await storage.read(localStorageNetworkKey);
     if (value != null) {
@@ -85,7 +81,6 @@ abstract class _SettingsStore with Store {
     liveModules = value;
   }
 
-  @action
   void setAdBannerState(Map value) {
     adBannerState = value;
   }
