@@ -596,9 +596,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                     text: dic['auction.contribute'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: _accepted
-                                        ? _goToContribute
-                                        : () => null,
+                                    onPressed:
+                                        _accepted || contributions.length > 0
+                                            ? _goToContribute
+                                            : () => null,
                                   )
                                 : RoundedButton(
                                     icon: _submitting
@@ -609,11 +610,11 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                         : dic['auction.accept'],
                                     color: acaThemeColor,
                                     borderRadius: 8,
-                                    onPressed: _acceptedDirect && !_submitting
-                                        ? _signed
-                                            ? _goToContribute
-                                            : _acceptAndSign
-                                        : () => null,
+                                    onPressed: _signed
+                                        ? _goToContribute
+                                        : _acceptedDirect && !_submitting
+                                            ? _acceptAndSign
+                                            : () => null,
                                   ),
                           )
                         ],

@@ -185,11 +185,18 @@ class ApiAccount {
     }
   }
 
-  Future<Map> postKarCrowdLoan(String address, BigInt amount, String email,
-      bool receiveEmail, String referral, String signature, String endpoint,
+  Future<Map> postKarCrowdLoan(
+      String address,
+      BigInt amount,
+      String email,
+      bool receiveEmail,
+      String referral,
+      String signature,
+      String endpoint,
+      String authToken,
       {bool isProxy = false}) async {
-    final submitted = await WalletApi.postKarCrowdLoan(
-        address, amount, email, receiveEmail, referral, signature, endpoint,
+    final submitted = await WalletApi.postKarCrowdLoan(address, amount, email,
+        receiveEmail, referral, signature, endpoint, authToken,
         isProxy: isProxy);
     print(submitted);
     if (submitted != null && (submitted['result'] ?? false)) {

@@ -269,12 +269,12 @@ class WalletApi {
       String referral,
       String signature,
       String endpoint,
+      String authToken,
       {bool isProxy = false}) async {
     final headers = {
       "Content-type": "application/json",
       "Accept": "*/*",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicG9sa2F3YWxsZXQiLCJpYXQiOjE2MzI5MDk1MTd9.iDMOCyRGAttGbgDeD14XLHlAo12VVTKRXdoET3urdZU"
+      "Authorization": "Bearer $authToken"
     };
     final Map body = {
       "address": address,
@@ -333,9 +333,11 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getKSMCrowdLoansConfig() async {
+  static Future<Map> getCrowdLoansConfig({bool isKSM = true}) async {
     try {
-      Response res = await get(Uri.parse('$_configEndpoint/wallet/paras.json'));
+      Response res = await get(Uri.parse(isKSM
+          ? '$_configEndpoint/wallet/paras.json'
+          : '$_endpoint/config/parasDot.json'));
       if (res == null) {
         return null;
       } else {

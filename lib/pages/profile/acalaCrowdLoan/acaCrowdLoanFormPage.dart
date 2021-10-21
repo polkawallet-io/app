@@ -197,7 +197,6 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
     final amountInt = Fmt.tokenInt(_amount.toString(), decimals);
     final signed = widget.service.store.storage
         .read('$aca_statement_store_key${account.pubKey}');
-    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     final signingRes = await widget.service.account.postKarCrowdLoan(
         account.address,
         amountInt,
@@ -205,7 +204,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         _emailAccept,
         _referral,
         signed,
-        endpoint);
+        widget.service.store.settings.adBannerState['endpoint'],
+        widget.service.store.settings.adBannerState['subscribe']);
     if (signingRes != null && (signingRes['result'] ?? false)) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final txParams = [
@@ -283,7 +283,6 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
     if (_referral.isNotEmpty && _referralValid) {
       batchTxs.add('api.tx.system.remarkWithEvent("referrer:$_referral")');
     }
-    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     await widget.service.account.postKarCrowdLoan(
         params.account.address,
         amountInt,
@@ -291,7 +290,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
         _emailAccept,
         _referral,
         '',
-        endpoint,
+        widget.service.store.settings.adBannerState['endpoint'],
+        widget.service.store.settings.adBannerState['subscribe'],
         isProxy: true);
     final txArgs = TxConfirmParams(
       module: 'utility',
