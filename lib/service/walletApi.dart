@@ -337,7 +337,7 @@ class WalletApi {
     try {
       Response res = await get(Uri.parse(isKSM
           ? '$_configEndpoint/wallet/paras.json'
-          : '$_endpoint/config/parasDot.json'));
+          : '$_configEndpoint/wallet/parasDot.json'));
       if (res == null) {
         return null;
       } else {

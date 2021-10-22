@@ -81,11 +81,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final acc = widget.service.keyring.current;
     final primaryColor = Theme.of(context).primaryColor;
 
-    final acaCrowdLoanVisible = widget.service.buildTarget == BuildTargets.dev;
-    // todo: activate the banner
-    // final acaCrowdLoanVisible = widget.service.buildTarget == BuildTargets.dev
-    //     ? true
-    //     : (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
+    final acaCrowdLoanVisible = widget.service.buildTarget == BuildTargets.dev
+        ? true
+        : (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
 
     return Scaffold(
       appBar: AppBar(

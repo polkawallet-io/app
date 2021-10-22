@@ -54,7 +54,7 @@ dependencies:
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: a4a86b310b94fd14714fc8067fc1a7c86c445dd4
+      ref: 5db24a99a47728bac59400f10ce0a426ffd71174
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -81,12 +81,12 @@ dependencies:
   cupertino_icons: ^1.0.0
 
 dependency_overrides:
-  # polkawallet_plugin_kusama:
-  #   path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#  polkawallet_plugin_kusama:
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
   # polkawallet_plugin_acala:
   #   path: ../../coding/polkawallet/polkawallet_plugin_acala
-  polkawallet_plugin_karura:
-    path: ../../coding/polkawallet/polkawallet_plugin_karura
+#  polkawallet_plugin_karura:
+#    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:
 #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
 #  polkawallet_plugin_laminar:

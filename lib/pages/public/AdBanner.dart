@@ -7,7 +7,6 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 
 class AdBanner extends StatefulWidget {
@@ -44,12 +43,9 @@ class _AdBannerState extends State<AdBanner> {
     if (widget.connectedNode == null) {
       return Container();
     }
-    final visible = widget.service.buildTarget == BuildTargets.dev;
-    // todo: activate the banner
-    // final visible = widget.service.buildTarget == BuildTargets.dev
-    //     ? true
-    //     : (widget.service.store.settings.adBannerState['visibleAca'] ??
-    //         false);
+    final visible = widget.service.buildTarget == BuildTargets.dev
+        ? true
+        : (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
     if (!visible) {
       final network = widget.service.plugin.basic.name;
       if (network == relay_chain_name_ksm) {
