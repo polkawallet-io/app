@@ -58,7 +58,7 @@ class AcaCrowdLoanPage extends StatefulWidget {
 }
 
 class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
-  int _tab = 0;
+  int _tab = 1;
   int _bestNumber = 0;
   Map _fundInfo;
 
@@ -268,7 +268,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
         arguments: AcaCrowdLoanPageParams(
             _account,
             _statement,
-            _tab == 0 ? AcaPloType.proxy : AcaPloType.direct,
+            _tab == 1 ? AcaPloType.proxy : AcaPloType.direct,
             _promotion,
             _fundInfo));
     if (res != null) {
@@ -327,8 +327,10 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
       ratioAcaMax = 3;
     }
 
+    final isProxy = _tab == 1;
+
     final contributions = _contributions.toList();
-    if (_tab == 0) {
+    if (isProxy) {
       contributions
           .removeWhere((e) => e['type'] == AcaCrowdLoanPage.typeDirect);
     } else {
@@ -376,8 +378,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                               margin: EdgeInsets.zero,
                             ),
                           ),
-                          (_tab == 1 && !_signed) ||
-                                  (_tab == 0 && contributions.length == 0)
+                          (!isProxy && !_signed) ||
+                                  (isProxy && contributions.length == 0)
                               ? Column(
                                   children: [
                                     Row(
@@ -392,12 +394,12 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                               padding:
                                                   EdgeInsets.only(right: 8),
                                               child: Checkbox(
-                                                value: _tab == 0
+                                                value: isProxy
                                                     ? _accepted
                                                     : _acceptedDirect,
                                                 onChanged: (v) {
                                                   setState(() {
-                                                    if (_tab == 0) {
+                                                    if (isProxy) {
                                                       _accepted = v;
                                                     } else {
                                                       _acceptedDirect = v;
@@ -549,7 +551,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                                                           FontWeight
                                                                               .bold),
                                                                 ),
-                                                                _tab == 0
+                                                                isProxy
                                                                     ? Text(
                                                                         '(= $contributeAmount lcDOT)',
                                                                         style:
@@ -596,7 +598,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                       : Container(),
                           Container(
                             margin: EdgeInsets.only(top: 16, bottom: 32),
-                            child: _tab == 0
+                            child: isProxy
                                 ? RoundedButton(
                                     text: dic['auction.contribute'],
                                     color: acaThemeColor,
@@ -638,15 +640,40 @@ class _PLOTabs extends StatelessWidget {
 
   void _showProxyInfo(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final fontStyle = TextStyle(fontSize: 14.0, color: Colors.black);
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
-        title: Text(dic['auction.proxy.title']),
-        content: _InfoPanelsInDialog(
-          closeDialog: () {
-            Navigator.of(context).pop();
-          },
+        content: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: RichText(
+                text: TextSpan(style: fontStyle, children: [
+                  TextSpan(
+                      text: dic['auction.direct'],
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: dic['auction.direct.info']),
+                ]),
+              ),
+            ),
+            RichText(
+              text: TextSpan(style: fontStyle, children: [
+                TextSpan(
+                    text: dic['auction.proxy'],
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: dic['auction.proxy.info']),
+              ]),
+            ),
+          ],
         ),
+        actions: [
+          CupertinoButton(
+            child:
+                Text(I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+            onPressed: () => Navigator.of(context).pop(),
+          )
+        ],
       ),
     );
   }
@@ -671,7 +698,7 @@ class _PLOTabs extends StatelessWidget {
                     : Theme.of(context).cardColor,
               ),
               child: Text(
-                dic['auction.proxy'],
+                dic['auction.direct'],
                 style: TextStyle(
                     color: activeTab == 0
                         ? Theme.of(context).cardColor
@@ -693,7 +720,7 @@ class _PLOTabs extends StatelessWidget {
                     : Theme.of(context).cardColor,
               ),
               child: Text(
-                dic['auction.direct'],
+                dic['auction.proxy'],
                 style: TextStyle(
                     color: activeTab == 1
                         ? Theme.of(context).cardColor
@@ -719,68 +746,6 @@ class _PLOTabs extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
-}
-
-class _InfoPanelsInDialog extends StatefulWidget {
-  _InfoPanelsInDialog({this.closeDialog});
-  final Function closeDialog;
-  @override
-  _InfoPanelsInDialogState createState() => _InfoPanelsInDialogState();
-}
-
-class _InfoPanelsInDialogState extends State<_InfoPanelsInDialog> {
-  int _page = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    final dic2 = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 8, bottom: 8),
-          child: Image.asset("assets/images/public/plo_proxy_$_page.png",
-              height: 80),
-        ),
-        Container(
-          height: 80,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [Text(dic['auction.proxy.${_page + 1}'])],
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              child: Text(
-                dic2['cancel'],
-                style: TextStyle(
-                  color: acaThemeColor,
-                ),
-              ),
-              onTap: widget.closeDialog,
-            ),
-            GestureDetector(
-              child: Text(
-                dic2[_page == 2 ? 'ok' : 'next'],
-                style: TextStyle(color: acaThemeColor),
-              ),
-              onTap: () {
-                setState(() {
-                  if (_page == 2) {
-                    widget.closeDialog();
-                  } else {
-                    _page += 1;
-                  }
-                });
-              },
-            )
-          ],
-        )
-      ],
     );
   }
 }

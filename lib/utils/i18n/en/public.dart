@@ -4,15 +4,12 @@ const Map<String, String> enPublic = {
   'auction.kar': 'Parachain Auction',
   'auction.live': 'Event now live',
   'auction.finish': 'Event has ended',
-  'auction.proxy': 'Proxy',
-  'auction.direct': 'Direct',
-  'auction.proxy.title': 'Contribute via Acala proxy',
-  'auction.proxy.1':
-      '1. Besides the ACA tokens, receive Liquid Crowdloan DOT (lcDOT), a liquid token representing your locked DOT.',
-  'auction.proxy.2':
-      '2. lcDOT lets you access the underlying DOT liquidity for use in DeFi protocols. Swap, use as collateral to mint aUSD, and more.',
-  'auction.proxy.3':
-      '3. In 2 years, you can use lcDOT to redeem the underlying DOT locked in the Acala crowdloan.',
+  'auction.proxy': 'Liquid',
+  'auction.direct': 'Standard',
+  'auction.proxy.info':
+      ' contributions enable access to your underlying DOT liquidity. With this method you will receive ACA rewards and Liquid Crowdloan DOT (lcDOT), which can be used to earn more yield in DeFi on Acala.',
+  'auction.direct.info':
+      ' contributions invite you to lock DOT for 2 years to receive ACA rewards after Acala launches.',
   'auction.address': 'Address',
   'auction.read': 'I have read and accept the',
   'auction.meet': 'I have check and was meet the',
@@ -20,19 +17,19 @@ const Map<String, String> enPublic = {
   'auction.term.2': 'Privacy Policy',
   'auction.accept': 'Accept & Sign',
   'auction.contribute': 'Contribute',
-  'auction.email': 'Email(optional)',
+  'auction.email': 'Email (optional)',
   'auction.amount': 'Amount',
   'auction.amount1': 'Amount to Contribute (DOT)',
   'auction.amount.error': 'amount, minimum',
   'auction.balance': 'Available',
-  'auction.referral': 'Referral Code(optional)',
+  'auction.referral': 'Referral Code (optional)',
   'auction.estimate': 'Estimated ACA Reward Range',
   'auction.receive.dot': 'Total lcDOT receipt',
   'auction.invite': 'Referral',
   'auction.extra': 'Extra',
   'auction.note':
       'If Acala wins the auction, ACA rewards will be distributed upon genesis. Otherwise, the DOT locked will automatically bid for the next available auction. Check the Terms & Conditions for details.',
-  'auction.init': 'ACA Unlocked at Launch',
+  'auction.init': 'ACA unlocked at launch',
   'auction.vest': 'Vested over the lease period',
   'auction.lease': 'Lease period',
   'auction.notify':

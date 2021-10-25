@@ -4,14 +4,11 @@ const Map<String, String> zhPublic = {
   'auction.kar': '平行链拍卖',
   'auction.live': '活动进行中',
   'auction.finish': '活动已结束',
-  'auction.proxy': '代理参与',
+  'auction.proxy': '保持流动性参与',
   'auction.direct': '直接参与',
-  'auction.proxy.title': '通过 Acala 代理账户参与',
-  'auction.proxy.1':
-      '1. 获得 ACA 奖励的同时，还能获得你贡献 DOT 对应数量的 Liquid Crowdloan DOT (lcDOT)',
-  'auction.proxy.2': '2. Acala 网络启动后，可以使用 lcDOT 参与各种 DeFi 活动.',
-  'auction.proxy.3':
-      '3. Acala 插槽到期（2年）后，可以使用 lcDOT 换回 Acala crowdloan 中锁定的对应数量的 DOT',
+  'auction.proxy.info':
+      ' 将会释放锁定 DOT 的流动性。通过这种方式你可以同时获得 ACA 奖励和 Liquid Crowdloan DOT (lcDOT)，lcDOT 可以用于参与 Acala 网络上的 DeFi 并获得更多收益。',
+  'auction.direct.info': ' 将会在 Acala 网络启动后获得 ACA 奖励，同时会锁定 DOT 直到插槽到期（2年）。',
   'auction.address': '地址',
   'auction.read': '我已阅读并接受',
   'auction.meet': '我已检查并符合',
