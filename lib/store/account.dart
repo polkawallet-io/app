@@ -81,8 +81,8 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setAccountRecoveryInfo(Map json) {
-    recoveryInfo = json != null ? RecoveryInfo.fromJson(json) : RecoveryInfo();
+  void setAccountRecoveryInfo(RecoveryInfo data) {
+    recoveryInfo = data ?? RecoveryInfo();
   }
 
   @action

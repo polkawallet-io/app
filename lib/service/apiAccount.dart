@@ -167,6 +167,7 @@ class ApiAccount {
   Future<RecoveryInfo> queryRecoverable(String address) async {
 //    address = "J4sW13h2HNerfxTzPGpLT66B3HVvuU32S6upxwSeFJQnAzg";
     final res = await apiRoot.plugin.sdk.api.recovery.queryRecoverable(address);
+    apiRoot.store.account.setAccountRecoveryInfo(res);
 
     if (res != null && res.friends.length > 0) {
       queryAddressIcons(res.friends);
