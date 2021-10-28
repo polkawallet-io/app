@@ -453,149 +453,146 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                 )
                               : _txQuerying
                                   ? CupertinoActivityIndicator()
-                                  : contributions.length > 0
-                                      ? Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              margin:
-                                                  EdgeInsets.only(bottom: 8),
-                                              child: Text(dic['auction.txs'],
-                                                  style: labelStyle),
+                                  : Visibility(
+                                      visible: contributions.length > 0,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(bottom: 8),
+                                            child: Text(dic['auction.txs'],
+                                                style: labelStyle),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                16, 8, 16, 8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(8)),
+                                              border: Border.all(
+                                                  width: 4.w,
+                                                  color: acaThemeColor),
                                             ),
-                                            Container(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  16, 8, 16, 8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(8)),
-                                                border: Border.all(
-                                                    width: 4.w,
-                                                    color: acaThemeColor),
-                                              ),
-                                              child: Column(
-                                                children:
-                                                    contributions.map((e) {
-                                                  final karAmountStyle =
-                                                      TextStyle(
-                                                          color: Colors.black87,
-                                                          fontSize: 12);
-                                                  final contributeAmount =
-                                                      Fmt.balance(
-                                                          e['contributionAmount'],
-                                                          decimals);
-                                                  List<Widget> acaAmount = [
+                                            child: Column(
+                                              children: contributions.map((e) {
+                                                final karAmountStyle =
+                                                    TextStyle(
+                                                        color: Colors.black87,
+                                                        fontSize: 12);
+                                                final contributeAmount =
+                                                    Fmt.balance(
+                                                        e['contributionAmount'],
+                                                        decimals);
+                                                List<Widget> acaAmount = [
+                                                  Text(
+                                                    dic['auction.tx.confirming'],
+                                                    style: karAmountStyle,
+                                                  )
+                                                ];
+                                                if (e['blockHash'] != null) {
+                                                  final acaAmountInt =
+                                                      Fmt.balanceInt(
+                                                          e['baseBonus']);
+                                                  final refereeBonus =
+                                                      Fmt.balanceInt(
+                                                          e['refereeBonus']);
+                                                  final karContributionBonus =
+                                                      Fmt.balanceInt(e[
+                                                          'karuraContributorBonus']);
+                                                  final acaExtraBonus =
+                                                      e['promotion'] != null
+                                                          ? Fmt.balanceInt(e[
+                                                                  'promotion']
+                                                              ['acaExtraBonus'])
+                                                          : BigInt.zero;
+                                                  final karAmountMin =
+                                                      Fmt.bigIntToDouble(
+                                                          acaAmountInt +
+                                                              refereeBonus +
+                                                              karContributionBonus +
+                                                              acaExtraBonus,
+                                                          aca_token_decimal);
+                                                  final karAmountMax =
+                                                      karAmountMin *
+                                                          ratioAcaMax /
+                                                          3;
+                                                  acaAmount = [
                                                     Text(
-                                                      dic['auction.tx.confirming'],
+                                                      '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
                                                       style: karAmountStyle,
                                                     )
                                                   ];
-                                                  if (e['blockHash'] != null) {
-                                                    final acaAmountInt =
-                                                        Fmt.balanceInt(
-                                                            e['baseBonus']);
-                                                    final refereeBonus =
-                                                        Fmt.balanceInt(
-                                                            e['refereeBonus']);
-                                                    final karContributionBonus =
-                                                        Fmt.balanceInt(e[
-                                                            'karuraContributorBonus']);
-                                                    final acaExtraBonus = e[
-                                                                'promotion'] !=
-                                                            null
-                                                        ? Fmt.balanceInt(e[
-                                                                'promotion']
-                                                            ['acaExtraBonus'])
-                                                        : BigInt.zero;
-                                                    final karAmountMin =
-                                                        Fmt.bigIntToDouble(
-                                                            acaAmountInt +
-                                                                refereeBonus +
-                                                                karContributionBonus +
-                                                                acaExtraBonus,
-                                                            aca_token_decimal);
-                                                    final karAmountMax =
-                                                        karAmountMin *
-                                                            ratioAcaMax /
-                                                            3;
-                                                    acaAmount = [
-                                                      Text(
-                                                        '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
-                                                        style: karAmountStyle,
-                                                      )
-                                                    ];
-                                                  }
-                                                  return Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 8, bottom: 8),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  '$contributeAmount DOT',
-                                                                  style: TextStyle(
-                                                                      color:
-                                                                          titleColor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold),
-                                                                ),
-                                                                isProxy
-                                                                    ? Text(
-                                                                        '(= $contributeAmount lcDOT)',
-                                                                        style:
-                                                                            karAmountStyle)
-                                                                    : Container()
-                                                              ],
-                                                            ),
-                                                            Text(
-                                                                Fmt.dateTime(DateTime
-                                                                    .fromMillisecondsSinceEpoch(e[
-                                                                        'timestamp'])),
+                                                }
+                                                return Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 8, bottom: 8),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Text(
+                                                                '$contributeAmount DOT',
                                                                 style: TextStyle(
                                                                     color:
-                                                                        grayColor,
-                                                                    fontSize:
-                                                                        13))
-                                                          ],
-                                                        ),
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .end,
-                                                          children: [
-                                                            ...acaAmount,
-                                                            JumpToLink(
-                                                              e['blockHash'] ==
-                                                                      null
-                                                                  ? 'https://polkadot.subscan.io/extrinsic/${e['eventId']}'
-                                                                  : 'https://polkadot.subscan.io/account/${_account.address}',
-                                                              text: 'Subscan',
-                                                              color:
-                                                                  acaThemeColor,
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      : Container(),
+                                                                        titleColor,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                              Visibility(
+                                                                  visible:
+                                                                      isProxy,
+                                                                  child: Text(
+                                                                      '(= $contributeAmount lcDOT)',
+                                                                      style:
+                                                                          karAmountStyle))
+                                                            ],
+                                                          ),
+                                                          Text(
+                                                              Fmt.dateTime(DateTime
+                                                                  .fromMillisecondsSinceEpoch(e[
+                                                                      'timestamp'])),
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      grayColor,
+                                                                  fontSize: 13))
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          ...acaAmount,
+                                                          JumpToLink(
+                                                            e['blockHash'] ==
+                                                                    null
+                                                                ? 'https://polkadot.subscan.io/extrinsic/${e['eventId']}'
+                                                                : 'https://polkadot.subscan.io/account/${_account.address}',
+                                                            text: 'Subscan',
+                                                            color:
+                                                                acaThemeColor,
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          )
+                                        ],
+                                      )),
                           Container(
                             margin: EdgeInsets.only(top: 16, bottom: 32),
                             child: isProxy

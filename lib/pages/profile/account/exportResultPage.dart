@@ -35,9 +35,9 @@ class ExportResultPage extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.all(16),
                 children: <Widget>[
-                  args.type == 'keystore'
-                      ? Container()
-                      : Text(dic['export.warn']),
+                  Visibility(
+                      visible: args.type != 'keystore',
+                      child: Text(dic['export.warn'])),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
@@ -70,56 +70,55 @@ class ExportResultPage extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
-                  hasDerivePath
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(top: 16, bottom: 8),
-                                  child: Text(I18n.of(context).getDic(
-                                      i18n_full_dic_app, 'account')['path']),
-                                ),
-                                GestureDetector(
-                                  child: Container(
-                                    padding: EdgeInsets.all(8),
-                                    child: Text(
-                                      I18n.of(context).getDic(
-                                          i18n_full_dic_ui, 'common')['copy'],
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                    ),
+                  Visibility(
+                      visible: hasDerivePath,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(top: 16, bottom: 8),
+                                child: Text(I18n.of(context).getDic(
+                                    i18n_full_dic_app, 'account')['path']),
+                              ),
+                              GestureDetector(
+                                child: Container(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    I18n.of(context).getDic(
+                                        i18n_full_dic_ui, 'common')['copy'],
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(context).primaryColor),
                                   ),
-                                  onTap: () => UI.copyAndNotify(context, path),
-                                )
+                                ),
+                                onTap: () => UI.copyAndNotify(context, path),
+                              )
+                            ],
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.black12,
+                                  width: 1,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4))),
+                            padding: EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Text(path,
+                                    style:
+                                        Theme.of(context).textTheme.headline4)
                               ],
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.black12,
-                                    width: 1,
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(4))),
-                              padding: EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Text(path,
-                                      style:
-                                          Theme.of(context).textTheme.headline4)
-                                ],
-                              ),
-                            )
-                          ],
-                        )
-                      : Container(),
+                          )
+                        ],
+                      )),
                 ],
               ),
             ),

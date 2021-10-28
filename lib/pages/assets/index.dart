@@ -545,40 +545,42 @@ class _AssetsState extends State<AssetsPage> {
                             title: I18n.of(context)
                                 .getDic(i18n_full_dic_app, 'assets')['assets'],
                           ),
-                          widget.service.plugin.basic.name == 'karura' &&
-                                  claimKarEnabled
-                              ? OutlinedButtonSmall(
-                                  content: 'Claim KAR',
-                                  active: true,
-                                  margin: EdgeInsets.only(left: 8),
-                                  onPressed: () =>
-                                      Navigator.of(context).pushNamed(
-                                    DAppWrapperPage.route,
-                                    arguments:
-                                        'https://distribution.acala.network/claim',
-                                  ),
-                                )
-                              : Container(),
-                          (widget.service.plugin.noneNativeTokensAll ?? [])
-                                      .length >
-                                  0
-                              ? Expanded(
+                          Visibility(
+                              visible: widget.service.plugin.basic.name ==
+                                      'karura' &&
+                                  claimKarEnabled,
+                              child: OutlinedButtonSmall(
+                                content: 'Claim KAR',
+                                active: true,
+                                margin: EdgeInsets.only(left: 8),
+                                onPressed: () =>
+                                    Navigator.of(context).pushNamed(
+                                  DAppWrapperPage.route,
+                                  arguments:
+                                      'https://distribution.acala.network/claim',
+                                ),
+                              )),
+                          Visibility(
+                              visible:
+                                  (widget.service.plugin.noneNativeTokensAll ??
+                                              [])
+                                          .length >
+                                      0,
+                              child: Expanded(
                                   child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).pushNamed(
-                                              ManageAssetsPage.route);
-                                        },
-                                        child: Icon(
-                                          Icons.add_circle,
-                                          color:
-                                              Theme.of(context).disabledColor,
-                                        ))
-                                  ],
-                                ))
-                              : Container()
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed(ManageAssetsPage.route);
+                                      },
+                                      child: Icon(
+                                        Icons.add_circle,
+                                        color: Theme.of(context).disabledColor,
+                                      ))
+                                ],
+                              )))
                         ],
                       ),
                       RoundedCard(
@@ -627,57 +629,57 @@ class _AssetsState extends State<AssetsPage> {
                               : null,
                         ),
                       ),
-                      Column(
-                        children: tokens == null || tokens.length == 0
-                            ? [Container()]
-                            : tokens.map((TokenBalanceData i) {
-                                // we can use token price form plugin or from market
-                                final price = i.price ??
-                                    widget.service.store.assets
-                                        .marketPrices[i.symbol];
-                                return TokenItem(
-                                  i,
-                                  i.decimals,
-                                  isFromCache: isTokensFromCache,
-                                  detailPageRoute: i.detailPageRoute,
-                                  marketPrice: price,
-                                  icon: TokenIcon(
-                                    i.id ?? i.symbol,
-                                    widget.service.plugin.tokenIcons,
-                                    symbol: i.symbol,
-                                  ),
-                                );
-                              }).toList(),
-                      ),
-                      Column(
-                        children: extraTokens == null || extraTokens.length == 0
-                            ? [Container()]
-                            : extraTokens.map((ExtraTokenData i) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 16),
-                                      child: BorderedTitle(
-                                        title: i.title,
-                                      ),
-                                    ),
-                                    Column(
-                                      children: i.tokens
-                                          .map((e) => TokenItem(
-                                                e,
-                                                e.decimals,
-                                                isFromCache: isTokensFromCache,
-                                                detailPageRoute:
-                                                    e.detailPageRoute,
-                                                icon: widget.service.plugin
-                                                    .tokenIcons[e.symbol],
-                                              ))
-                                          .toList(),
-                                    )
-                                  ],
-                                );
-                              }).toList(),
+                      Visibility(
+                          visible: tokens != null && tokens.length > 0,
+                          child: Column(
+                            children: (tokens ?? []).map((TokenBalanceData i) {
+                              // we can use token price form plugin or from market
+                              final price = i.price ??
+                                  widget.service.store.assets
+                                      .marketPrices[i.symbol];
+                              return TokenItem(
+                                i,
+                                i.decimals,
+                                isFromCache: isTokensFromCache,
+                                detailPageRoute: i.detailPageRoute,
+                                marketPrice: price,
+                                icon: TokenIcon(
+                                  i.id ?? i.symbol,
+                                  widget.service.plugin.tokenIcons,
+                                  symbol: i.symbol,
+                                ),
+                              );
+                            }).toList(),
+                          )),
+                      Visibility(
+                        visible: extraTokens == null || extraTokens.length == 0,
+                        child: Column(
+                            children:
+                                (extraTokens ?? []).map((ExtraTokenData i) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: BorderedTitle(
+                                  title: i.title,
+                                ),
+                              ),
+                              Column(
+                                children: i.tokens
+                                    .map((e) => TokenItem(
+                                          e,
+                                          e.decimals,
+                                          isFromCache: isTokensFromCache,
+                                          detailPageRoute: e.detailPageRoute,
+                                          icon: widget.service.plugin
+                                              .tokenIcons[e.symbol],
+                                        ))
+                                    .toList(),
+                              )
+                            ],
+                          );
+                        }).toList()),
                       ),
                     ],
                   ),

@@ -103,63 +103,63 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
             },
           ),
         ),
-        _expanded
-            ? ListTile(
-                title: Text(dic['import.encrypt']),
-                subtitle:
-                    Text(_typeOptions[_typeSelection].toString().split('.')[1]),
-                trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                onTap: () {
-                  showCupertinoModalPopup(
-                    context: context,
-                    builder: (_) => Container(
-                      height: MediaQuery.of(context).copyWith().size.height / 3,
-                      child: CupertinoPicker(
-                        backgroundColor: Colors.white,
-                        itemExtent: 56,
-                        scrollController: FixedExtentScrollController(
-                            initialItem: _typeSelection),
-                        children: _typeOptions
-                            .map((i) => Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text(i.toString().split('.')[1])))
-                            .toList(),
-                        onSelectedItemChanged: (v) {
-                          setState(() {
-                            _typeSelection = v;
-                          });
-                          String error;
-                          if (_pathCtrl.text.isNotEmpty) {
-                            error = _checkDerivePath(_pathCtrl.text,
-                                forceCheck: true);
-                          }
-                          widget.onChange(AccountAdvanceOptionParams(
-                            type: _typeOptions[v],
-                            // path: _derivePath,
-                            path: _pathCtrl.text,
-                            error: error != null,
-                          ));
-                        },
-                      ),
+        Visibility(
+            visible: _expanded,
+            child: ListTile(
+              title: Text(dic['import.encrypt']),
+              subtitle:
+                  Text(_typeOptions[_typeSelection].toString().split('.')[1]),
+              trailing: Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (_) => Container(
+                    height: MediaQuery.of(context).copyWith().size.height / 3,
+                    child: CupertinoPicker(
+                      backgroundColor: Colors.white,
+                      itemExtent: 56,
+                      scrollController: FixedExtentScrollController(
+                          initialItem: _typeSelection),
+                      children: _typeOptions
+                          .map((i) => Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(i.toString().split('.')[1])))
+                          .toList(),
+                      onSelectedItemChanged: (v) {
+                        setState(() {
+                          _typeSelection = v;
+                        });
+                        String error;
+                        if (_pathCtrl.text.isNotEmpty) {
+                          error = _checkDerivePath(_pathCtrl.text,
+                              forceCheck: true);
+                        }
+                        widget.onChange(AccountAdvanceOptionParams(
+                          type: _typeOptions[v],
+                          // path: _derivePath,
+                          path: _pathCtrl.text,
+                          error: error != null,
+                        ));
+                      },
                     ),
-                  );
-                },
-              )
-            : Container(),
-        _expanded
-            ? Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: '//hard/soft///password',
-                    labelText: dic['path'],
                   ),
-                  controller: _pathCtrl,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: _checkDerivePath,
+                );
+              },
+            )),
+        Visibility(
+            visible: _expanded,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: '//hard/soft///password',
+                  labelText: dic['path'],
                 ),
-              )
-            : Container(),
+                controller: _pathCtrl,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: _checkDerivePath,
+              ),
+            )),
       ],
     );
   }

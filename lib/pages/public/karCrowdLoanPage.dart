@@ -355,10 +355,10 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                     color: karColor,
                     fontWeight: FontWeight.bold)),
           ),
-          _fundInfo == null
-              ? Container()
-              : KarCrowdLoanTitleSet(
-                  dic['auction.${finished ? 'finish' : 'live'}']),
+          Visibility(
+              visible: _fundInfo != null,
+              child: KarCrowdLoanTitleSet(
+                  dic['auction.${finished ? 'finish' : 'live'}'])),
           Container(
             margin: EdgeInsets.only(top: 8, bottom: 32),
             child: widget.connectedNode == null || _fundInfo == null || finished
@@ -373,9 +373,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
         ],
       ),
       _fundInfo == null || finished
-          ? _bestNumber == 0
-              ? loadingIndicator
-              : Container()
+          ? Visibility(visible: _bestNumber == 0, child: loadingIndicator)
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -432,244 +430,239 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                   ),
                   onTap: _selectAccount,
                 ),
-                _signed
-                    ? Container()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(bottom: 8),
-                            child:
-                                Text(dic['auction.email'], style: titleStyle),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 4),
-                            child: CupertinoTextField(
-                              padding: EdgeInsets.all(16),
-                              placeholder: dic['auction.email'],
-                              placeholderStyle:
-                                  TextStyle(color: grayColor, fontSize: 18),
-                              style: TextStyle(color: cardColor, fontSize: 18),
-                              decoration: BoxDecoration(
-                                color: Colors.white12,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(64)),
-                                border: Border.all(
-                                    color: _emailFocusNode.hasFocus
-                                        ? karColor
-                                        : grayColor),
-                              ),
-                              cursorColor: karColor,
-                              clearButtonMode: OverlayVisibilityMode.editing,
-                              focusNode: _emailFocusNode,
-                              onChanged: _onEmailChange,
+                Visibility(
+                    visible: !_signed,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(bottom: 8),
+                          child: Text(dic['auction.email'], style: titleStyle),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 4),
+                          child: CupertinoTextField(
+                            padding: EdgeInsets.all(16),
+                            placeholder: dic['auction.email'],
+                            placeholderStyle:
+                                TextStyle(color: grayColor, fontSize: 18),
+                            style: TextStyle(color: cardColor, fontSize: 18),
+                            decoration: BoxDecoration(
+                              color: Colors.white12,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(64)),
+                              border: Border.all(
+                                  color: _emailFocusNode.hasFocus
+                                      ? karColor
+                                      : grayColor),
                             ),
+                            cursorColor: karColor,
+                            clearButtonMode: OverlayVisibilityMode.editing,
+                            focusNode: _emailFocusNode,
+                            onChanged: _onEmailChange,
                           ),
-                          Container(
-                            margin: EdgeInsets.only(left: 16, bottom: 4),
-                            child: _email.isEmpty || _emailValid
-                                ? Container()
-                                : Text(
-                                    '${dic['auction.invalid']} ${dic['auction.email']}',
-                                    style: TextStyle(
-                                        color: karColor, fontSize: 10),
-                                  ),
-                          ),
-                        ],
-                      ),
-                _signed
-                    ? Container()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Theme(
-                            child: SizedBox(
-                              height: 48,
-                              width: 32,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: Checkbox(
-                                  value: _accepted0,
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _accepted0 = v;
-                                    });
-                                  },
-                                ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 16, bottom: 4),
+                          child: Visibility(
+                              visible: _email.isNotEmpty && !_emailValid,
+                              child: Text(
+                                '${dic['auction.invalid']} ${dic['auction.email']}',
+                                style: TextStyle(color: karColor, fontSize: 10),
+                              )),
+                        ),
+                      ],
+                    )),
+                Visibility(
+                    visible: !_signed,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Theme(
+                          child: SizedBox(
+                            height: 48,
+                            width: 32,
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Checkbox(
+                                value: _accepted0,
+                                onChanged: (v) {
+                                  setState(() {
+                                    _accepted0 = v;
+                                  });
+                                },
                               ),
                             ),
-                            data: ThemeData(
-                              primarySwatch: karColor,
-                              unselectedWidgetColor: karColor, // Your color
-                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dic['auction.read'],
-                                style: TextStyle(color: cardColor),
-                              ),
-                              JumpToLink(
-                                'https://acala.network/karura/terms',
-                                text: ' ${dic['auction.term.0']}',
-                                color: karColor,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                !_signed
-                    ? Container()
-                    : _txQuerying
+                          data: ThemeData(
+                            primarySwatch: karColor,
+                            unselectedWidgetColor: karColor, // Your color
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dic['auction.read'],
+                              style: TextStyle(color: cardColor),
+                            ),
+                            JumpToLink(
+                              'https://acala.network/karura/terms',
+                              text: ' ${dic['auction.term.0']}',
+                              color: karColor,
+                            )
+                          ],
+                        )
+                      ],
+                    )),
+                Visibility(
+                    visible: _signed,
+                    child: _txQuerying
                         ? loadingIndicator
-                        : _contributions.length > 0
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(bottom: 8),
-                                    child: Text(dic['auction.txs'],
-                                        style: titleStyle),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: grayColor, width: 0.5),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(16))),
-                                    child: Column(
-                                      children: _contributions.map((e) {
-                                        final karAmountStyle = TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 12);
-                                        List<Widget> karAmount = [
+                        : Visibility(
+                            visible: _contributions.length > 0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  child: Text(dic['auction.txs'],
+                                      style: titleStyle),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: grayColor, width: 0.5),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(16))),
+                                  child: Column(
+                                    children: _contributions.map((e) {
+                                      final karAmountStyle = TextStyle(
+                                          color: Colors.white70, fontSize: 12);
+                                      List<Widget> karAmount = [
+                                        Text(
+                                          dic['auction.tx.confirming'],
+                                          style: karAmountStyle,
+                                        )
+                                      ];
+                                      if (e['blockHash'] != null) {
+                                        final karAmountInt =
+                                            Fmt.balanceInt(e['karAmount']);
+                                        final karRefereeBonus = Fmt.balanceInt(
+                                            e['karRefereeBonus']);
+                                        final karExtraBonus = e['promotion'] !=
+                                                null
+                                            ? Fmt.balanceInt(
+                                                e['promotion']['karExtraBonus'])
+                                            : BigInt.zero;
+                                        karAmount = [
                                           Text(
-                                            dic['auction.tx.confirming'],
+                                            '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} KAR',
                                             style: karAmountStyle,
                                           )
                                         ];
-                                        if (e['blockHash'] != null) {
-                                          final karAmountInt =
-                                              Fmt.balanceInt(e['karAmount']);
-                                          final karRefereeBonus =
-                                              Fmt.balanceInt(
-                                                  e['karRefereeBonus']);
-                                          final karExtraBonus =
-                                              e['promotion'] != null
-                                                  ? Fmt.balanceInt(
-                                                      e['promotion']
-                                                          ['karExtraBonus'])
-                                                  : BigInt.zero;
-                                          karAmount = [
-                                            Text(
-                                              '≈ ${Fmt.priceFloorBigInt(karAmountInt + karRefereeBonus + karExtraBonus, decimals)} KAR',
-                                              style: karAmountStyle,
-                                            )
-                                          ];
-                                          if (e['promotion'] != null &&
-                                              Fmt.balanceInt(e['promotion']
-                                                      ['acaExtraBonus']) >
-                                                  BigInt.zero) {
-                                            karAmount.add(Text(
-                                              '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
-                                              style: karAmountStyle,
-                                            ));
-                                          }
+                                        if (e['promotion'] != null &&
+                                            Fmt.balanceInt(e['promotion']
+                                                    ['acaExtraBonus']) >
+                                                BigInt.zero) {
+                                          karAmount.add(Text(
+                                            '+ ${Fmt.balance(e['promotion']['acaExtraBonus'], decimals)} ACA',
+                                            style: karAmountStyle,
+                                          ));
                                         }
-                                        return Container(
-                                          margin: EdgeInsets.only(
-                                              top: 8, bottom: 8),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    '${Fmt.balance(e['ksmAmount'], decimals)} KSM',
+                                      }
+                                      return Container(
+                                        margin:
+                                            EdgeInsets.only(top: 8, bottom: 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${Fmt.balance(e['ksmAmount'], decimals)} KSM',
+                                                  style: TextStyle(
+                                                      color: cardColor,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                    Fmt.dateTime(DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            e['timestamp'])),
                                                     style: TextStyle(
-                                                        color: cardColor,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                      Fmt.dateTime(DateTime
-                                                          .fromMillisecondsSinceEpoch(
-                                                              e['timestamp'])),
-                                                      style: TextStyle(
-                                                          color: grayColor,
-                                                          fontSize: 13))
-                                                ],
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  ...karAmount,
-                                                  JumpToLink(
-                                                    e['blockHash'] == null
-                                                        ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
-                                                        : 'https://kusama.subscan.io/account/${_account.address}',
-                                                    text: 'Subscan',
-                                                    color: karColor,
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  )
-                                ],
-                              )
-                            : Container(),
-                _signed
-                    ? Container()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Theme(
-                            child: SizedBox(
-                              height: 48,
-                              width: 32,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: Checkbox(
-                                  value: _accepted2,
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _accepted2 = v;
-                                    });
-                                  },
-                                ),
+                                                        color: grayColor,
+                                                        fontSize: 13))
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                ...karAmount,
+                                                JumpToLink(
+                                                  e['blockHash'] == null
+                                                      ? 'https://kusama.subscan.io/extrinsic/${e['eventId']}'
+                                                      : 'https://kusama.subscan.io/account/${_account.address}',
+                                                  text: 'Subscan',
+                                                  color: karColor,
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                )
+                              ],
+                            ))),
+                Visibility(
+                    visible: !_signed,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Theme(
+                          child: SizedBox(
+                            height: 48,
+                            width: 32,
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Checkbox(
+                                value: _accepted2,
+                                onChanged: (v) {
+                                  setState(() {
+                                    _accepted2 = v;
+                                  });
+                                },
                               ),
-                            ),
-                            data: ThemeData(
-                              primarySwatch: karColor,
-                              unselectedWidgetColor: karColor, // Your color
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dic['auction.read'],
-                                style: TextStyle(color: cardColor),
-                              ),
-                              JumpToLink(
-                                'https://acala.network/privacy',
-                                text: ' ${dic['auction.term.2']}',
-                                color: karColor,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                          data: ThemeData(
+                            primarySwatch: karColor,
+                            unselectedWidgetColor: karColor, // Your color
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dic['auction.read'],
+                              style: TextStyle(color: cardColor),
+                            ),
+                            JumpToLink(
+                              'https://acala.network/privacy',
+                              text: ' ${dic['auction.term.2']}',
+                              color: karColor,
+                            )
+                          ],
+                        )
+                      ],
+                    )),
                 Container(
                   margin: EdgeInsets.only(top: 16, bottom: 32),
                   child: _signed

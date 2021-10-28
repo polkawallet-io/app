@@ -72,16 +72,16 @@ class _GuidePageState extends State<GuidePage> {
                                   ))
                               .toList(),
                         ),
-                        e == 4
-                            ? Container(
-                                margin: EdgeInsets.fromLTRB(24, 16, 24, 0),
-                                child: RoundedButton(
-                                  text: dic['guide.enter'],
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
-                                ),
-                              )
-                            : Container()
+                        Visibility(
+                            visible: e == 4,
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(24, 16, 24, 0),
+                              child: RoundedButton(
+                                text: dic['guide.enter'],
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                              ),
+                            ))
                       ],
                     ))
                 .toList(),

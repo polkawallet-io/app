@@ -496,14 +496,14 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
               ),
               Container(
                 margin: EdgeInsets.only(left: 16, bottom: 4),
-                child: _amount == 0 || _amountValid
-                    ? Container()
-                    : Text(
-                        _amountEnough
-                            ? '${dic['auction.invalid']} ${dic['auction.amount.error']} ${minContribute.toInt()} DOT'
-                            : dic['balance.insufficient'],
-                        style: errorStyle,
-                      ),
+                child: Visibility(
+                    visible: _amount > 0 && !_amountValid,
+                    child: Text(
+                      _amountEnough
+                          ? '${dic['auction.invalid']} ${dic['auction.amount.error']} ${minContribute.toInt()} DOT'
+                          : dic['balance.insufficient'],
+                      style: errorStyle,
+                    )),
               ),
               _getTitle(dic['auction.referral']),
               Container(
@@ -530,12 +530,12 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
               ),
               Container(
                 margin: EdgeInsets.only(left: 16, bottom: 4),
-                child: _referral.isEmpty || _referralValid
-                    ? Container()
-                    : Text(
-                        '${dic['auction.invalid']} ${dic['auction.referral']}',
-                        style: errorStyle,
-                      ),
+                child: Visibility(
+                    visible: _referral.isNotEmpty && !_referralValid,
+                    child: Text(
+                      '${dic['auction.invalid']} ${dic['auction.referral']}',
+                      style: errorStyle,
+                    )),
               ),
               Container(
                 margin: EdgeInsets.only(
@@ -548,19 +548,19 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    params.ploType == AcaPloType.proxy
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(dic['auction.receive.dot'],
-                                  style: karKeyStyle),
-                              Text(
-                                  '${Fmt.priceFloor(_amount, lengthMax: 4)} lcDOT',
-                                  style: karStyle),
-                              Divider(color: acaThemeColor),
-                            ],
-                          )
-                        : Container(),
+                    Visibility(
+                        visible: params.ploType == AcaPloType.proxy,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(dic['auction.receive.dot'],
+                                style: karKeyStyle),
+                            Text(
+                                '${Fmt.priceFloor(_amount, lengthMax: 4)} lcDOT',
+                                style: karStyle),
+                            Divider(color: acaThemeColor),
+                          ],
+                        )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -582,16 +582,16 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                     Text(
                         '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal * ratioAcaMax / 3, lengthMax: 4)} ACA',
                         style: karStyle),
-                    amountAca > 0
-                        ? RewardDetailPanel(
+                    Visibility(
+                        visible: amountAca > 0,
+                        child: RewardDetailPanel(
                             acaAmountMin: amountAca,
                             ratioAcaMax: ratioAcaMax,
                             referralValid: _referralValid,
                             karReward: karReward,
                             karRewardRate: _karRewardRate,
                             promotion: params.promotion,
-                            acaPromotion: acaPromotion)
-                        : Container(),
+                            acaPromotion: acaPromotion)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -644,12 +644,12 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
               ),
               Container(
                 margin: EdgeInsets.only(left: 16, bottom: 4),
-                child: _email.isEmpty || _emailValid
-                    ? Container()
-                    : Text(
-                        '${dic['auction.invalid']} ${dic['auction.email']}',
-                        style: TextStyle(color: Colors.red, fontSize: 10),
-                      ),
+                child: Visibility(
+                    visible: _email.isNotEmpty && !_emailValid,
+                    child: Text(
+                      '${dic['auction.invalid']} ${dic['auction.email']}',
+                      style: TextStyle(color: Colors.red, fontSize: 10),
+                    )),
               ),
               _email.isNotEmpty
                   ? Container(
@@ -755,47 +755,46 @@ class RewardDetailPanel extends StatelessWidget {
                   style: karAmountStyle),
             ],
           ),
-          referralValid
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                        child: Text('+5% ${dic['auction.invite']}',
-                            style: karInfoStyle)),
-                    Text(
-                        '${Fmt.priceFloor(acaAmountMin * 0.05, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * 0.05, lengthMax: 4)} ACA',
-                        style: karInfoStyle),
-                  ],
-                )
-              : Container(),
-          karReward > 0
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                        child: Text(
-                            '+${Fmt.ratio(karRewardRate)} Karura Reward',
-                            style: karInfoStyle)),
-                    Text(
-                        '${Fmt.priceFloor(karReward, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * karRewardRate, lengthMax: 4)} ACA',
-                        style: karInfoStyle),
-                  ],
-                )
-              : Container(),
-          acaPromotion > 0
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                        child: Text(
-                            '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
-                            style: karInfoStyle)),
-                    Text(
-                        '${Fmt.priceFloor(acaPromotion, lengthMax: 4)}  - ${Fmt.priceFloor(acaAmountMax * promotion['acaRate'], lengthMax: 4)} ACA',
-                        style: karInfoStyle),
-                  ],
-                )
-              : Container(),
+          Visibility(
+              visible: referralValid,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text('+5% ${dic['auction.invite']}',
+                          style: karInfoStyle)),
+                  Text(
+                      '${Fmt.priceFloor(acaAmountMin * 0.05, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * 0.05, lengthMax: 4)} ACA',
+                      style: karInfoStyle),
+                ],
+              )),
+          Visibility(
+              visible: karReward > 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text('+${Fmt.ratio(karRewardRate)} Karura Reward',
+                          style: karInfoStyle)),
+                  Text(
+                      '${Fmt.priceFloor(karReward, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * karRewardRate, lengthMax: 4)} ACA',
+                      style: karInfoStyle),
+                ],
+              )),
+          Visibility(
+              visible: acaPromotion > 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                          '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
+                          style: karInfoStyle)),
+                  Text(
+                      '${Fmt.priceFloor(acaPromotion, lengthMax: 4)}  - ${Fmt.priceFloor(acaAmountMax * promotion['acaRate'], lengthMax: 4)} ACA',
+                      style: karInfoStyle),
+                ],
+              )),
         ],
       ),
     );

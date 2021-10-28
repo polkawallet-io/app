@@ -200,39 +200,39 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                       padding: EdgeInsets.only(left: 16),
                       child: RecoveryFriendList(friends: _friends),
                     ),
-                    _friends.length > 1
-                        ? Padding(
-                            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  dic['recovery.threshold'],
-                                  style: TextStyle(fontSize: 16),
+                    Visibility(
+                        visible: _friends.length > 1,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                dic['recovery.threshold'],
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                '${_threshold.toInt()} / ${_friends.length}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).primaryColor,
                                 ),
-                                Text(
-                                  '${_threshold.toInt()} / ${_friends.length}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        : Container(),
-                    _friends.length > 1
-                        ? ThresholdSlider(
-                            value: _threshold,
-                            friends: _friends,
-                            onChanged: (v) {
-                              setState(() {
-                                _threshold = v;
-                              });
-                            },
-                          )
-                        : Container(),
+                              )
+                            ],
+                          ),
+                        )),
+                    Visibility(
+                        visible: _friends.length > 1,
+                        child: ThresholdSlider(
+                          value: _threshold,
+                          friends: _friends,
+                          onChanged: (v) {
+                            setState(() {
+                              _threshold = v;
+                            });
+                          },
+                        )),
                     Padding(
                       padding: EdgeInsets.only(left: 16, top: 16),
                       child: Text(
@@ -296,13 +296,13 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                                     ),
                                   ),
                                 ),
-                                _delayError != null
-                                    ? Text(
-                                        _delayError,
-                                        style: TextStyle(
-                                            color: Colors.red, fontSize: 12),
-                                      )
-                                    : Container()
+                                Visibility(
+                                    visible: _delayError != null,
+                                    child: Text(
+                                      _delayError ?? "",
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
+                                    ))
                               ],
                             ),
                           )

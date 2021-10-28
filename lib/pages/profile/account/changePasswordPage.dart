@@ -181,31 +181,31 @@ class _ChangePassword extends State<ChangePasswordPage> {
                       },
                       obscureText: true,
                     ),
-                    _supportBiometric
-                        ? Padding(
-                            padding: EdgeInsets.only(top: 24),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: Checkbox(
-                                    value: _enableBiometric,
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _enableBiometric = v;
-                                      });
-                                    },
-                                  ),
+                    Visibility(
+                        visible: _supportBiometric,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 24),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Checkbox(
+                                  value: _enableBiometric,
+                                  onChanged: (v) {
+                                    setState(() {
+                                      _enableBiometric = v;
+                                    });
+                                  },
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 16),
-                                  child: Text(accDic['unlock.bio.enable']),
-                                )
-                              ],
-                            ),
-                          )
-                        : Container(),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 16),
+                                child: Text(accDic['unlock.bio.enable']),
+                              )
+                            ],
+                          ),
+                        )),
                   ],
                 ),
               ),

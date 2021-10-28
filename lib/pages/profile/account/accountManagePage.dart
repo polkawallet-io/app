@@ -184,20 +184,20 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     onTap: () => Navigator.of(context)
                         .pushNamed(ExportAccountPage.route),
                   ),
-                  _supportBiometric
-                      ? ListTile(
-                          title: Text(I18n.of(context).getDic(i18n_full_dic_app,
-                              'account')['unlock.bio.enable']),
-                          trailing: CupertinoSwitch(
-                            value: _isBiometricAuthorized,
-                            onChanged: (v) {
-                              if (v != _isBiometricAuthorized) {
-                                _updateBiometricAuth(v);
-                              }
-                            },
-                          ),
-                        )
-                      : Container(),
+                  Visibility(
+                      visible: _supportBiometric,
+                      child: ListTile(
+                        title: Text(I18n.of(context).getDic(
+                            i18n_full_dic_app, 'account')['unlock.bio.enable']),
+                        trailing: CupertinoSwitch(
+                          value: _isBiometricAuthorized,
+                          onChanged: (v) {
+                            if (v != _isBiometricAuthorized) {
+                              _updateBiometricAuth(v);
+                            }
+                          },
+                        ),
+                      )),
                 ],
               ),
             ),

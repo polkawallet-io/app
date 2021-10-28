@@ -222,72 +222,72 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
                                   onRemove: _onRemoveRecovery,
                                 ),
                         ),
-                        friends.length > 0
-                            ? Padding(
-                                padding: EdgeInsets.fromLTRB(16, 8, 0, 16),
-                                child: BorderedTitle(
-                                  title: dic['recovery.process'],
-                                ),
-                              )
-                            : Container(),
-                        friends.length > 0
-                            ? Column(
-                                children: activeList.length > 0
-                                    ? activeList.map((e) {
-                                        String start = Fmt.blockToTime(
-                                            _currentBlock - e[1]['created'],
-                                            blockDuration);
-                                        TxData tx = e[0];
-                                        bool hasProxy = false;
-                                        if (e[2] != null) {
-                                          hasProxy = e[2] == info.address;
-                                        }
-                                        return ActiveRecovery(
-                                          tx: tx,
-                                          status: e[1],
-                                          info: info,
-                                          start: start,
-                                          delay: delay,
-                                          proxy: hasProxy,
-                                          networkState: widget
-                                              .service.plugin.networkState,
-                                          action: CupertinoActionSheetAction(
-                                            child: Text(dic['recovery.close']),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              _closeRecovery(tx);
-                                            },
-                                          ),
-                                        );
-                                      }).toList()
-                                    : [
-                                        Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: Text(I18n.of(context).getDic(
-                                              i18n_full_dic_ui,
-                                              'common')['list.empty']),
-                                        )
-                                      ],
-                              )
-                            : Container()
+                        Visibility(
+                            visible: friends.length > 0,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(16, 8, 0, 16),
+                              child: BorderedTitle(
+                                title: dic['recovery.process'],
+                              ),
+                            )),
+                        Visibility(
+                            visible: friends.length > 0,
+                            child: Column(
+                              children: activeList.length > 0
+                                  ? activeList.map((e) {
+                                      String start = Fmt.blockToTime(
+                                          _currentBlock - e[1]['created'],
+                                          blockDuration);
+                                      TxData tx = e[0];
+                                      bool hasProxy = false;
+                                      if (e[2] != null) {
+                                        hasProxy = e[2] == info.address;
+                                      }
+                                      return ActiveRecovery(
+                                        tx: tx,
+                                        status: e[1],
+                                        info: info,
+                                        start: start,
+                                        delay: delay,
+                                        proxy: hasProxy,
+                                        networkState:
+                                            widget.service.plugin.networkState,
+                                        action: CupertinoActionSheetAction(
+                                          child: Text(dic['recovery.close']),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            _closeRecovery(tx);
+                                          },
+                                        ),
+                                      );
+                                    }).toList()
+                                  : [
+                                      Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child: Text(I18n.of(context).getDic(
+                                            i18n_full_dic_ui,
+                                            'common')['list.empty']),
+                                      )
+                                    ],
+                            ))
                       ],
                     ),
                   ),
                 ),
-                info.friends == null
-                    ? Padding(
-                        padding: EdgeInsets.all(16),
-                        child: RoundedButton(
-                          text: dic['recovery.create'],
-                          onPressed: () {
-                            Navigator.of(context).pushNamed(
-                              CreateRecoveryPage.route,
-                              arguments: friends,
-                            );
-                          },
-                        ),
-                      )
-                    : Container(),
+                Visibility(
+                    visible: info.friends == null,
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: RoundedButton(
+                        text: dic['recovery.create'],
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(
+                            CreateRecoveryPage.route,
+                            arguments: friends,
+                          );
+                        },
+                      ),
+                    )),
               ],
             );
           },
@@ -395,9 +395,9 @@ class RecoveryFriendList extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  e.name != null && e.name.isNotEmpty
-                      ? Text(e.name)
-                      : Container(),
+                  Visibility(
+                      visible: e.name != null && e.name.isNotEmpty,
+                      child: Text(e.name)),
                   Text(
                     Fmt.address(e.address),
                     style: TextStyle(
@@ -495,16 +495,16 @@ class ActiveRecovery extends StatelessWidget {
                           style: Theme.of(context).textTheme.headline4,
                         ),
                       ),
-                      !isRescuer
-                          ? TapTooltip(
-                              child: Icon(
-                                Icons.info,
-                                color: Theme.of(context).disabledColor,
-                                size: 16,
-                              ),
-                              message: dic['recovery.close.info'],
-                            )
-                          : Container()
+                      Visibility(
+                          visible: !isRescuer,
+                          child: TapTooltip(
+                            child: Icon(
+                              Icons.info,
+                              color: Theme.of(context).disabledColor,
+                              size: 16,
+                            ),
+                            message: dic['recovery.close.info'],
+                          ))
                     ],
                   )
                 ],

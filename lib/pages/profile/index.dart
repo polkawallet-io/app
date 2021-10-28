@@ -106,14 +106,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          widget.connectedNode != null
-              ? widget.service.plugin.basic.name == relay_chain_name_ksm
+          Visibility(
+              visible: widget.connectedNode != null,
+              child: widget.service.plugin.basic.name == relay_chain_name_ksm
                   ? KarCrowdLoanBanner()
-                  : widget.service.plugin.basic.name == relay_chain_name_dot &&
-                          acaCrowdLoanVisible
-                      ? ACACrowdLoanBanner(widget.service, (network) => null)
-                      : Container()
-              : Container(),
+                  : Visibility(
+                      visible: widget.service.plugin.basic.name ==
+                              relay_chain_name_dot &&
+                          acaCrowdLoanVisible,
+                      child: ACACrowdLoanBanner(
+                          widget.service, (network) => null))),
           Container(
             padding: EdgeInsets.all(24),
             child: Row(
@@ -151,19 +153,19 @@ class _ProfilePageState extends State<ProfilePage> {
               });
             },
           ),
-          widget.service.plugin.recoveryEnabled
-              ? ListTile(
-                  leading: Container(
-                    width: 32,
-                    child: Icon(Icons.security, color: grey, size: 22),
-                  ),
-                  title: Text(dic['recovery']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: widget.connectedNode == null
-                      ? null
-                      : () => _showRecoveryMenu(context),
-                )
-              : Container(),
+          Visibility(
+              visible: widget.service.plugin.recoveryEnabled,
+              child: ListTile(
+                leading: Container(
+                  width: 32,
+                  child: Icon(Icons.security, color: grey, size: 22),
+                ),
+                title: Text(dic['recovery']),
+                trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                onTap: widget.connectedNode == null
+                    ? null
+                    : () => _showRecoveryMenu(context),
+              )),
           ListTile(
             leading: Container(
               width: 32,

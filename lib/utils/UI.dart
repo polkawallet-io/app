@@ -102,14 +102,14 @@ class AppUI {
                 child:
                     Text(needUpdate ? dic['update.up'] : dic['update.latest']),
               ),
-              needUpdate
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: versionInfo
-                          .map((e) => Text('- $e', textAlign: TextAlign.left))
-                          .toList(),
-                    )
-                  : Container()
+              Visibility(
+                  visible: needUpdate,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: versionInfo
+                        .map((e) => Text('- $e', textAlign: TextAlign.left))
+                        .toList(),
+                  ))
             ],
           ),
           actions: <Widget>[

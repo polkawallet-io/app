@@ -100,9 +100,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         name.toUpperCase(),
         style: Theme.of(context).textTheme.headline4,
       ),
-      plugin_from_community.indexOf(name) > -1
-          ? _CommunityPluginNote(name, false)
-          : Container(),
+      Visibility(
+          visible: plugin_from_community.indexOf(name) > -1,
+          child: _CommunityPluginNote(name, false)),
       GestureDetector(
         child: RoundedCard(
           margin: EdgeInsets.only(top: 8, bottom: 16),
@@ -367,8 +367,8 @@ class _CommunityPluginNote extends StatelessWidget {
               )
             ],
           ),
-          disabled ? Divider() : Container(),
-          disabled ? Text(dic['plugin.disable']) : Container(),
+          Visibility(visible: disabled, child: Divider()),
+          Visibility(visible: disabled, child: Text(dic['plugin.disable'])),
         ],
       ),
     );
