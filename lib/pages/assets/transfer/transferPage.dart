@@ -159,22 +159,28 @@ class _TransferPageState extends State<TransferPage> {
 
         List paramsX;
         if (isFromXTokensParaChain && isToParaChain) {
+          final isV2XTokens = await widget.service.plugin.sdk.webView
+              .evalJavascript(
+                  'api.createType(api.tx.$txModule.$txCall.meta.args[2].toJSON()["type"]).defKeys.includes("V1")',
+                  wrapPromise: false);
+          final dest = {
+            'parents': 1,
+            'interior': {
+              'X2': [
+                {'Parachain': _chainTo.basic.parachainId},
+                {
+                  'AccountId32': {'id': destPubKey, 'network': 'Any'}
+                }
+              ]
+            }
+          };
+
           /// this is transfer KAR from Karura to Bifrost
           /// paramsX: [token, amount, dest, dest_weight]
           paramsX = [
             {'Token': symbol},
             amount,
-            [
-              1,
-              {
-                'X2': [
-                  {'Parachain': _chainTo.basic.parachainId},
-                  {
-                    'AccountId32': {'id': destPubKey, 'network': 'Any'}
-                  }
-                ]
-              }
-            ],
+            isV2XTokens ? {'V1': dest} : dest,
             xcm_dest_weight_bifrost
           ];
         } else {
@@ -459,13 +465,12 @@ class _TransferPageState extends State<TransferPage> {
         final available = Fmt.balanceInt(
             (widget.service.plugin.balances.native?.availableBalance ?? 0)
                 .toString());
-        final reserved = Fmt.balanceInt(
-            (widget.service.plugin.balances.native?.reservedBalance ?? 0)
-                .toString());
-        final locked = Fmt.balanceInt(
-            (widget.service.plugin.balances.native?.lockedBalance ?? 0)
-                .toString());
-        final notTransferable = reserved + locked;
+        final notTransferable = Fmt.balanceInt(
+                (widget.service.plugin.balances.native?.reservedBalance ?? 0)
+                    .toString()) +
+            Fmt.balanceInt(
+                (widget.service.plugin.balances.native?.lockedBalance ?? 0)
+                    .toString());
 
         final canCrossChain =
             _xcmEnabledChains != null && _xcmEnabledChains.length > 0;

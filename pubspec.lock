@@ -883,21 +883,17 @@ packages:
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "5db24a99a47728bac59400f10ce0a426ffd71174"
-      resolved-ref: "5db24a99a47728bac59400f10ce0a426ffd71174"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
-    source: git
-    version: "0.3.5"
+      path: "../../coding/polkawallet/polkawallet_plugin_karura"
+      relative: true
+    source: path
+    version: "0.3.6"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "4b450366c90ec7ac2fa4f332600cb756fce82453"
-      resolved-ref: "4b450366c90ec7ac2fa4f332600cb756fce82453"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
-    source: git
-    version: "0.3.4"
+      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
+      relative: true
+    source: path
+    version: "0.3.5"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
@@ -922,14 +918,14 @@ packages:
       name: polkawallet_sdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.5"
+    version: "0.3.6"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
       name: polkawallet_ui
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.5"
   pool:
     dependency: transitive
     description:
@@ -1214,7 +1210,7 @@ packages:
       name: webview_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   webview_flutter_android:
     dependency: transitive
     description:
