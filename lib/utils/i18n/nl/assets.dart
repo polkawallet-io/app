@@ -17,7 +17,7 @@ const Map<String, String> enAssets = {
   'amount.low': 'Insufficient balance',
   'amount.exist': 'existential deposit',
   'amount.exist.msg':
-      '\nThe minimum amount that an account should have to be deemed active.\n',
+      '\nED (existential deposit): The minimum amount that an account should have to be deemed active.\n',
   'amount.fee': 'estimated transfer fee',
   'currency': 'Currency',
   'currency.select': 'Select Currency',
@@ -71,8 +71,8 @@ const Map<String, String> enAssets = {
   'cross.to': 'To Address',
   'cross.chain': 'Cross chain',
   'cross.para.select': 'Select Chain',
-  'cross.fee': 'destination chain transfer fee',
-  'cross.exist': 'destination chain existential deposit',
+  'cross.fee': 'dest chain transfer fee',
+  'cross.exist': 'dest chain ED',
   'assets': 'Assets',
   'assets.test': 'Test Tokens',
   'assets.warn':
