@@ -263,18 +263,20 @@ class _TransferPageState extends State<TransferPage> {
       return _fee.partialFee.toString();
     }
 
-    TxConfirmParams txParams = await _getTxParams();
-    if (txParams == null) {
+    TxConfirmParams txParams;
+    if (_fee == null) {
       txParams = TxConfirmParams(
         txTitle: '',
         module: 'balances',
         call: _keepAlive ? 'transferKeepAlive' : 'transfer',
         txDisplay: {},
         params: [
-          _accountTo.address,
+          widget.service.keyring.allWithContacts[0].address,
           '10000000000',
         ],
       );
+    } else {
+      txParams = await _getTxParams();
     }
 
     final txInfo = TxInfoData(
