@@ -398,6 +398,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  flutter_page_indicator:
+    dependency: transitive
+    description:
+      name: flutter_page_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -426,6 +433,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.23.0+1"
+  flutter_swiper:
+    dependency: "direct overridden"
+    description:
+      name: flutter_swiper
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -915,16 +929,16 @@ packages:
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      name: polkawallet_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
     version: "0.3.6"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      name: polkawallet_ui
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../coding/polkawallet/ui"
+      relative: true
+    source: path
     version: "0.3.5"
   pool:
     dependency: transitive
@@ -1099,6 +1113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  transformer_page_view:
+    dependency: transitive
+    description:
+      name: transformer_page_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.6"
   typed_data:
     dependency: transitive
     description:
