@@ -613,8 +613,8 @@ class _TransferPageState extends State<TransferPage> {
                         Form(
                           key: _formKey,
                           child: TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            // autovalidateMode:
+                            //     AutovalidateMode.onUserInteraction,
                             decoration: InputDecoration(
                               hintText: dic['amount'],
                               labelText:

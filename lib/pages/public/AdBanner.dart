@@ -26,7 +26,6 @@ class AdBanner extends StatefulWidget {
 class _AdBannerState extends State<AdBanner> {
   Future<void> _getAdBannerStatus() async {
     final res = await WalletApi.getAdBannerStatus();
-    print("====================_AdBannerState=================");
     widget.service.store.settings.setAdBannerState(res);
   }
 
