@@ -370,6 +370,8 @@
 				CURRENT_PROJECT_VERSION = 2431;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 armv7 armv64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -514,6 +516,8 @@
 				CURRENT_PROJECT_VERSION = 2431;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 armv7 armv64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -551,7 +555,8 @@
 				CURRENT_PROJECT_VERSION = 2431;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
+				EXCLUDED_ARCHS = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64 armv7";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
