@@ -613,7 +613,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(dic['auction.lease'], style: karKeyStyle),
-                        Text('24 Months', style: karInfoStyle),
+                        Text('96 weeks', style: karInfoStyle),
                       ],
                     ),
                   ],
