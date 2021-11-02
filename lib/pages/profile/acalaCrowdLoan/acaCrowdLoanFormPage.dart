@@ -582,16 +582,16 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                     Text(
                         '${Fmt.priceFloor(acaAmountTotal, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountTotal * ratioAcaMax / 3, lengthMax: 4)} ACA',
                         style: karStyle),
-                    Visibility(
-                        visible: amountAca > 0,
-                        child: RewardDetailPanel(
+                    amountAca > 0
+                        ? RewardDetailPanel(
                             acaAmountMin: amountAca,
                             ratioAcaMax: ratioAcaMax,
                             referralValid: _referralValid,
                             karReward: karReward,
                             karRewardRate: _karRewardRate,
                             promotion: params.promotion,
-                            acaPromotion: acaPromotion)),
+                            acaPromotion: acaPromotion)
+                        : Container(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -755,46 +755,47 @@ class RewardDetailPanel extends StatelessWidget {
                   style: karAmountStyle),
             ],
           ),
-          Visibility(
-              visible: referralValid,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Text('+5% ${dic['auction.invite']}',
-                          style: karInfoStyle)),
-                  Text(
-                      '${Fmt.priceFloor(acaAmountMin * 0.05, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * 0.05, lengthMax: 4)} ACA',
-                      style: karInfoStyle),
-                ],
-              )),
-          Visibility(
-              visible: karReward > 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Text('+${Fmt.ratio(karRewardRate)} Karura Reward',
-                          style: karInfoStyle)),
-                  Text(
-                      '${Fmt.priceFloor(karReward, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * karRewardRate, lengthMax: 4)} ACA',
-                      style: karInfoStyle),
-                ],
-              )),
-          Visibility(
-              visible: acaPromotion > 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Text(
-                          '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
-                          style: karInfoStyle)),
-                  Text(
-                      '${Fmt.priceFloor(acaPromotion, lengthMax: 4)}  - ${Fmt.priceFloor(acaAmountMax * promotion['acaRate'], lengthMax: 4)} ACA',
-                      style: karInfoStyle),
-                ],
-              )),
+          referralValid
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text('+5% ${dic['auction.invite']}',
+                            style: karInfoStyle)),
+                    Text(
+                        '${Fmt.priceFloor(acaAmountMin * 0.05, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * 0.05, lengthMax: 4)} ACA',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
+          karReward > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text(
+                            '+${Fmt.ratio(karRewardRate)} Karura Reward',
+                            style: karInfoStyle)),
+                    Text(
+                        '${Fmt.priceFloor(karReward, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * karRewardRate, lengthMax: 4)} ACA',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
+          acaPromotion > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                        child: Text(
+                            '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
+                            style: karInfoStyle)),
+                    Text(
+                        '${Fmt.priceFloor(acaPromotion, lengthMax: 4)}  - ${Fmt.priceFloor(acaAmountMax * promotion['acaRate'], lengthMax: 4)} ACA',
+                        style: karInfoStyle),
+                  ],
+                )
+              : Container(),
         ],
       ),
     );
