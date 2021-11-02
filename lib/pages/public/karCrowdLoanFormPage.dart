@@ -551,7 +551,8 @@ class RewardDetailPanel extends StatelessWidget {
                       child: Text(
                           '+${Fmt.ratio(promotion['karRate'])} ${promotion['name']}',
                           style: karInfoStyle)),
-                  Text('+ ${Fmt.priceFloor(karPromotion, lengthMax: 4)} KAR',
+                  Text(
+                      '+ ${Fmt.priceFloor(karPromotion ?? 0, lengthMax: 4)} KAR',
                       style: karInfoStyle),
                 ],
               )),
@@ -564,7 +565,8 @@ class RewardDetailPanel extends StatelessWidget {
                       child: Text(
                           '+${Fmt.ratio(promotion['acaRate'])} ${promotion['name']}',
                           style: karInfoStyle)),
-                  Text('+ ${Fmt.priceFloor(acaPromotion, lengthMax: 4)} ACA',
+                  Text(
+                      '+ ${Fmt.priceFloor(acaPromotion ?? 0, lengthMax: 4)} ACA',
                       style: karInfoStyle),
                 ],
               )),

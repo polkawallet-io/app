@@ -537,7 +537,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(16))),
                                   child: Column(
-                                    children: _contributions.map((e) {
+                                    children: (_contributions ?? []).map((e) {
                                       final karAmountStyle = TextStyle(
                                           color: Colors.white70, fontSize: 12);
                                       List<Widget> karAmount = [

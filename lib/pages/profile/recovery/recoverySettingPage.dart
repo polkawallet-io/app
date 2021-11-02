@@ -397,7 +397,7 @@ class RecoveryFriendList extends StatelessWidget {
                 children: [
                   Visibility(
                       visible: e.name != null && e.name.isNotEmpty,
-                      child: Text(e.name)),
+                      child: Text(e.name ?? "")),
                   Text(
                     Fmt.address(e.address),
                     style: TextStyle(

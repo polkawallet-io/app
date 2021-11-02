@@ -3,8 +3,8 @@ import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
@@ -145,14 +145,14 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
                       trailing: Icon(Icons.arrow_forward_ios, size: 18),
                       onTap: () => _handleRecoverableSelect(),
                     ),
-                    Visibility(
-                        visible: _recoverable != null,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: AddressFormItem(
-                            _recoverable,
-                          ),
-                        )),
+                    _recoverable != null
+                        ? Padding(
+                            padding: EdgeInsets.only(left: 16, right: 16),
+                            child: AddressFormItem(
+                              _recoverable,
+                            ),
+                          )
+                        : Container(),
                     ListTile(
                       title: Text(dic['recovery.deposit']),
                       trailing: Text(
