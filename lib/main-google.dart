@@ -38,7 +38,7 @@ void main() async {
     plugins.removeWhere((i) {
       final List disabled = pluginsConfig[i.basic.name]['disabled'];
       if (disabled != null) {
-        return disabled.contains(appVersionCode);
+        return disabled.contains(appVersionCode) || disabled.contains(0);
       }
       return false;
     });

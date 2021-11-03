@@ -40,17 +40,12 @@ class _AdBannerState extends State<AdBanner> {
 
   List<Widget> crowdLoanBannerList() {
     final widgets = <Widget>[];
-    if (widget.service.buildTarget == BuildTargets.dev
-        ? true
-        : (widget.service.store.settings.adBannerState['visibleAca'] ??
-            false)) {
+    if ((widget.service.store.settings.adBannerState['visibleAca'] ?? false)) {
       widgets.add(ACACrowdLoanBanner(widget.service, widget.switchNetwork));
     }
 
-    if (widget.service.buildTarget == BuildTargets.dev
-        ? true
-        : (widget.service.store.settings.adBannerState['visibleQuests'] ??
-            false)) {
+    if ((widget.service.store.settings.adBannerState['visibleQuests'] ??
+        false)) {
       widgets.add(GeneralCrowdLoanBanner(
           'assets/images/public/banner_aca_quests.png',
           'https://acala.network/acala/quests#quests'));
@@ -65,16 +60,6 @@ class _AdBannerState extends State<AdBanner> {
     if (widget.connectedNode == null) {
       return Container();
     }
-    // final visible = widget.service.buildTarget == BuildTargets.dev
-    //     ? true
-    //     : (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
-    // if (!visible) {
-    //   final network = widget.service.plugin.basic.name;
-    //   if (network == relay_chain_name_ksm) {
-    //     return KarCrowdLoanBanner();
-    //   }
-    //   return Container();
-    // }
     var widgets = crowdLoanBannerList();
     if (widgets.length == 0) {
       return Container();

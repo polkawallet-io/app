@@ -387,26 +387,19 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool transferEnabled = true;
+        bool transferEnabled = false;
         // todo: fix this after new acala online
         if (widget.service.plugin.basic.name == 'acala') {
-          if (widget.service.buildTarget != BuildTargets.dev) {
-            transferEnabled = false;
-            if (widget.service.store.settings.liveModules['assets'] != null) {
-              transferEnabled = widget
-                  .service.store.settings.liveModules['assets']['enabled'];
-            }
+          if (widget.service.store.settings.liveModules['assets'] != null) {
+            transferEnabled =
+                widget.service.store.settings.liveModules['assets']['enabled'];
           }
         }
         bool claimKarEnabled = false;
         if (widget.service.plugin.basic.name == 'karura') {
-          if (widget.service.buildTarget != BuildTargets.dev) {
-            if (widget.service.store.settings.liveModules['claim'] != null) {
-              claimKarEnabled =
-                  widget.service.store.settings.liveModules['claim']['enabled'];
-            }
-          } else {
-            claimKarEnabled = true;
+          if (widget.service.store.settings.liveModules['claim'] != null) {
+            claimKarEnabled =
+                widget.service.store.settings.liveModules['claim']['enabled'];
           }
         }
         final symbol =

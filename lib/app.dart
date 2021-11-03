@@ -247,8 +247,7 @@ class _WalletAppState extends State<WalletApp> {
         ) >
         network.basic.jsCodeVersion;
 
-    final service = AppService(
-        widget.plugins, network, _keyring, _store, WalletApp.buildTarget);
+    final service = AppService(widget.plugins, network, _keyring, _store);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -377,12 +376,8 @@ class _WalletAppState extends State<WalletApp> {
 
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
-      final service = AppService(
-          widget.plugins,
-          widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
-          _keyring,
-          store,
-          WalletApp.buildTarget);
+      final service = AppService(widget.plugins,
+          widget.plugins[pluginIndex > -1 ? pluginIndex : 0], _keyring, store);
       service.init();
       setState(() {
         _store = store;

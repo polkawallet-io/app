@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
@@ -270,7 +271,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final acc = widget.service.keyring.current;
-      final signed = widget.service.buildTarget == BuildTargets.dev
+      final signed = WalletApp.buildTarget == BuildTargets.dev
           ? null
           : widget.service.store.storage
               .read('$kar_statement_store_key${acc.pubKey}');
