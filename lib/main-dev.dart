@@ -32,7 +32,7 @@ void main() async {
     PluginLaminar(),
   ];
 
-  final pluginsConfig = await WalletApi.getPluginsConfig();
+  final pluginsConfig = await WalletApi.getPluginsConfig(BuildTargets.dev);
   if (pluginsConfig != null) {
     plugins.removeWhere((i) {
       final List disabled = pluginsConfig[i.basic.name]['disabled'];

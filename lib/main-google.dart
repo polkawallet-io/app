@@ -13,7 +13,6 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
-import 'package:package_info/package_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +32,8 @@ void main() async {
     PluginLaminar(),
   ];
 
-  final pluginsConfig = await WalletApi.getPluginsConfig();
+  final pluginsConfig =
+      await WalletApi.getPluginsConfig(BuildTargets.playStore);
   if (pluginsConfig != null) {
     plugins.removeWhere((i) {
       final List disabled = pluginsConfig[i.basic.name]['disabled'];

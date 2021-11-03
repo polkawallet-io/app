@@ -87,10 +87,12 @@ const get_storage_container = 'configuration';
 bool _isInitialUriHandled = false;
 
 class WalletApp extends StatefulWidget {
-  WalletApp(this.plugins, this.disabledPlugins, this.buildTarget);
+  WalletApp(this.plugins, this.disabledPlugins, BuildTargets buildTarget) {
+    WalletApp.buildTarget = buildTarget;
+  }
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
-  final BuildTargets buildTarget;
+  static BuildTargets buildTarget;
   @override
   _WalletAppState createState() => _WalletAppState();
 }
@@ -246,7 +248,7 @@ class _WalletAppState extends State<WalletApp> {
         network.basic.jsCodeVersion;
 
     final service = AppService(
-        widget.plugins, network, _keyring, _store, widget.buildTarget);
+        widget.plugins, network, _keyring, _store, WalletApp.buildTarget);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -311,7 +313,8 @@ class _WalletAppState extends State<WalletApp> {
 
   Future<void> _checkUpdate(BuildContext context) async {
     final versions = await WalletApi.getLatestVersion();
-    AppUI.checkUpdate(context, versions, widget.buildTarget, autoCheck: true);
+    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+        autoCheck: true);
   }
 
   Future<void> _checkJSCodeUpdate(
@@ -379,7 +382,7 @@ class _WalletAppState extends State<WalletApp> {
           widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           store,
-          widget.buildTarget);
+          WalletApp.buildTarget);
       service.init();
       setState(() {
         _store = store;

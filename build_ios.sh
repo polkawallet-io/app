@@ -9,7 +9,6 @@ read number
 done
 
 if [ $number == 1 ]; then
-    echo "Build xhome..."
     flutter build ios --release
     exit 1
 
@@ -18,7 +17,6 @@ elif [ $number == 2 ]; then
     exit 1
 
 elif [ $number == 3 ]; then
-    echo "Build xhome..."
     flutter build ios --release
     sh ./ios/shell.sh
     exit 1

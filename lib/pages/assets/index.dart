@@ -72,14 +72,20 @@ class _AssetsState extends State<AssetsPage> {
     });
   }
 
-  Future<List> _fetchAnnouncements() async {
-    if (_announcements != null) return _announcements;
-
-    final List res = await WalletApi.getAnnouncements();
-    setState(() {
-      _announcements = res;
+  Future<dynamic> _fetchAnnouncements() async {
+    if (_announcements == null) {
+      _announcements = await WalletApi.getAnnouncements();
+    }
+    var index = _announcements.indexWhere((element) {
+      return element["plugin"] == widget.service.plugin.basic.name;
     });
-    return res;
+    if (index == -1) {
+      return _announcements.where((element) {
+        return element["plugin"] == "all";
+      }).first;
+    } else {
+      return _announcements[index];
+    }
   }
 
   Future<void> _updateMarketPrices() async {
@@ -502,15 +508,16 @@ class _AssetsState extends State<AssetsPage> {
                           : Container(height: 24),
                       FutureBuilder(
                         future: _fetchAnnouncements(),
-                        builder: (_, AsyncSnapshot<List> snapshot) {
+                        builder: (_, AsyncSnapshot<dynamic> snapshot) {
                           final String lang =
                               I18n.of(context).locale.toString().contains('zh')
                                   ? 'zh'
                                   : 'en';
-                          if (!snapshot.hasData || snapshot.data.length == 0) {
+                          if (!snapshot.hasData || snapshot.data == null) {
                             return Container();
                           }
-                          final Map announce = snapshot.data[0][lang];
+                          int level = snapshot.data['level'];
+                          final Map announce = snapshot.data[lang];
                           return GestureDetector(
                             child: Container(
                               margin: EdgeInsets.only(bottom: 16),
@@ -521,7 +528,11 @@ class _AssetsState extends State<AssetsPage> {
                                       announce['title'],
                                       padding:
                                           EdgeInsets.fromLTRB(16, 12, 16, 12),
-                                      color: Colors.lightGreen,
+                                      color: level == 0
+                                          ? Colors.blue
+                                          : level == 1
+                                              ? Colors.yellow
+                                              : Colors.red,
                                     ),
                                   )
                                 ],
