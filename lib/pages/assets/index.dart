@@ -22,12 +22,10 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
-import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -387,16 +385,17 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool transferEnabled = false;
-        // todo: fix this after new acala online
+        bool transferEnabled = true;
+        // // todo: fix this after new acala online
         if (widget.service.plugin.basic.name == 'acala') {
+          transferEnabled = false;
           if (widget.service.store.settings.liveModules['assets'] != null) {
             transferEnabled =
                 widget.service.store.settings.liveModules['assets']['enabled'];
           }
         }
         bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == 'karura') {
+        if (widget.service.plugin.basic.name == 'acala') {
           if (widget.service.store.settings.liveModules['claim'] != null) {
             claimKarEnabled =
                 widget.service.store.settings.liveModules['claim']['enabled'];
@@ -549,21 +548,21 @@ class _AssetsState extends State<AssetsPage> {
                             title: I18n.of(context)
                                 .getDic(i18n_full_dic_app, 'assets')['assets'],
                           ),
-                          Visibility(
-                              visible: widget.service.plugin.basic.name ==
-                                      'karura' &&
-                                  claimKarEnabled,
-                              child: OutlinedButtonSmall(
-                                content: 'Claim KAR',
-                                active: true,
-                                margin: EdgeInsets.only(left: 8),
-                                onPressed: () =>
-                                    Navigator.of(context).pushNamed(
-                                  DAppWrapperPage.route,
-                                  arguments:
-                                      'https://distribution.acala.network/claim',
-                                ),
-                              )),
+                          // Visibility(
+                          //     visible:
+                          //         widget.service.plugin.basic.name == 'aca' &&
+                          //             claimKarEnabled,
+                          //     child: OutlinedButtonSmall(
+                          //       content: 'Claim ACA',
+                          //       active: true,
+                          //       margin: EdgeInsets.only(left: 8),
+                          //       onPressed: () =>
+                          //           Navigator.of(context).pushNamed(
+                          //         DAppWrapperPage.route,
+                          //         arguments:
+                          //             'https://distribution.acala.network/claim',
+                          //       ),
+                          //     )),
                           Visibility(
                               visible:
                                   (widget.service.plugin.noneNativeTokensAll ??

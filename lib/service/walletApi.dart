@@ -334,7 +334,8 @@ class WalletApi {
 
   static Future<Map> getKarModulesConfig() async {
     try {
-      Response res = await get(getUrl(_configEndpoint, '/config/modules.json'));
+      Response res =
+          await get(getUrl(_configEndpoint, '/config/modulesAcala.json'));
       if (res == null) {
         return null;
       } else {
