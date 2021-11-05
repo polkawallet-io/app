@@ -23,6 +23,7 @@ const Map<String, String> enPublic = {
   'auction.amount.error': 'amount, minimum',
   'auction.balance': 'Available',
   'auction.referral': 'Referral Code (optional)',
+  'auction.referral.my': 'My Referral Code',
   'auction.estimate': 'Estimated ACA Reward Range',
   'auction.receive.dot': 'Total lcDOT receipt',
   'auction.invite': 'Referral',
@@ -40,6 +41,7 @@ const Map<String, String> enPublic = {
   'auction.txs': 'My Contributions',
   'auction.tx.confirming': 'Confirming...',
   'auction.coming': 'Coming Soon...',
+  'auction.refresh': 'Refresh',
   'balance.insufficient': 'Insufficient balance',
   'tx.action': 'Action',
 };
