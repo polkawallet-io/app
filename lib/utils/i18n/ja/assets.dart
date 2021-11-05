@@ -4,7 +4,7 @@ const Map<String, String> enAssets = {
   'transfer': 'Transfer',
   'transfer.alive': 'keep-alive',
   'transfer.alive.msg':
-      'With the keep-alive option set, the account is protected against removal due to low balances.',
+      '\nWith the keep-alive option set, the account is protected against removal due to low balances.\n',
   'receive': 'Receive',
   'lock.unlock': 'Clear expired locks',
   'copy': 'Copy',
