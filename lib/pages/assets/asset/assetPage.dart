@@ -536,35 +536,52 @@ class BalanceCard extends StatelessWidget {
                               ? GestureDetector(
                                   child: Container(
                                     padding: EdgeInsets.only(right: 4),
-                                    child: Icon(Icons.info,
-                                        size: 16, color: titleColor),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.info,
+                                            size: 16, color: titleColor),
+                                        Text(
+                                          Fmt.priceFloorBigInt(
+                                            Fmt.balanceInt(
+                                                (balancesInfo?.lockedBalance ??
+                                                        0)
+                                                    .toString()),
+                                            decimals,
+                                            lengthMax: 4,
+                                          ),
+                                          style: TextStyle(color: titleColor),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   onTap: () => Navigator.of(context)
                                       .pushNamed(LocksDetailPage.route),
                                 )
                               : TapTooltip(
                                   message: lockedInfo,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 4),
-                                    child: Icon(Icons.info,
-                                        size: 16, color: titleColor),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.info,
+                                          size: 16, color: titleColor),
+                                      Text(
+                                        Fmt.priceFloorBigInt(
+                                          Fmt.balanceInt(
+                                              (balancesInfo?.lockedBalance ?? 0)
+                                                  .toString()),
+                                          decimals,
+                                          lengthMax: 4,
+                                        ),
+                                        style: TextStyle(color: titleColor),
+                                      ),
+                                    ],
                                   ),
                                   waitDuration: Duration(seconds: 0),
                                 )),
-                      Text(
-                        Fmt.priceFloorBigInt(
-                          Fmt.balanceInt(
-                              (balancesInfo?.lockedBalance ?? 0).toString()),
-                          decimals,
-                          lengthMax: 4,
-                        ),
-                        style: TextStyle(color: titleColor),
-                      ),
                       Visibility(
                           visible: unlocks.length > 0,
                           child: GestureDetector(
                             child: Padding(
-                              padding: EdgeInsets.only(left: 6),
+                              padding: EdgeInsets.only(left: 4),
                               child: Icon(
                                 Icons.lock_open,
                                 size: 16,

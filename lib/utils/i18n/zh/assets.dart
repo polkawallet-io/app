@@ -3,7 +3,7 @@ const Map<String, String> zhAssets = {
   'node.failed': '远程节点连接失败',
   'transfer': '转账',
   'transfer.alive': '保持存活',
-  'transfer.alive.msg': '保持存活开关打开，可以保护账户不会因为余额过低而被网络移除。',
+  'transfer.alive.msg': '\n保持存活开关打开，可以保护账户不会因为余额过低而被网络移除。\n',
   'receive': '收款',
   'lock.unlock': '释放到期锁定',
   'copy': '复制',
