@@ -435,6 +435,13 @@ class _AssetsState extends State<AssetsPage> {
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
         }
 
+        /// Banner visible:
+        /// 1. Polkadot always shows banner.
+        /// 2. Other plugins can be closed.
+        final bannerVisible =
+            widget.service.plugin.basic.name == relay_chain_name_dot ||
+                widget.service.store.account.showBanner;
+
         return Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -694,7 +701,7 @@ class _AssetsState extends State<AssetsPage> {
                   _buildTopCard(context, transferEnabled),
                   Expanded(child: Container()),
                   Visibility(
-                      visible: widget.service.store.account.showBanner &&
+                      visible: bannerVisible &&
                           !(widget.service.keyring.current.observation ??
                               false),
                       child: AdBanner(widget.service, widget.connectedNode,

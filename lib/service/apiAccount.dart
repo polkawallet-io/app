@@ -199,10 +199,11 @@ class ApiAccount {
     final submitted = await WalletApi.postKarCrowdLoan(address, amount, email,
         receiveEmail, referral, signature, endpoint, authToken,
         isProxy: isProxy);
-    print(submitted);
-    if (submitted != null && (submitted['result'] ?? false)) {
-      apiRoot.store.account.setBannerVisible(false);
-    }
+    // note: do not hide banner after contribute
+    // print(submitted);
+    // if (submitted != null && (submitted['result'] ?? false)) {
+    //   apiRoot.store.account.setBannerVisible(false);
+    // }
     return submitted;
   }
 }

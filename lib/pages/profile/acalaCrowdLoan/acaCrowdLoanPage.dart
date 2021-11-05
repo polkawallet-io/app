@@ -18,6 +18,7 @@ import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 const acaThemeColor = MaterialColor(
   0xFF7E74FA,
@@ -74,6 +75,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
   bool _signed = false;
 
   List _contributions = [];
+  bool _hasRef = false;
   Timer _txQueryTimer;
   bool _txQuerying = true;
 
@@ -161,13 +163,15 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
         _txQuerying = true;
       });
     }
+    _getAccountRef();
+
     final endpoint = widget.service.store.settings.adBannerState['endpoint'];
     final res =
         await WalletApi.getKarCrowdLoanHistory(_account.address, endpoint);
     if (res != null && mounted) {
-      final txs = _mergeLocalTxData(res.reversed.toList());
+      // final txs = _mergeLocalTxData(res.reversed.toList());
       setState(() {
-        _contributions = txs;
+        _contributions = res;
         _txQuerying = false;
       });
     }
@@ -199,6 +203,17 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     }
   }
 
+  Future<void> _getAccountRef() async {
+    final endpoint = widget.service.store.settings.adBannerState['endpoint'];
+    final res = await WalletApi.verifyKarReferralCode(
+        widget.service.keyring.current.pubKey, endpoint);
+    if (res != null && mounted) {
+      setState(() {
+        _hasRef = res['result'] ?? false;
+      });
+    }
+  }
+
   Future<void> _selectAccount() async {
     final res = await Navigator.of(context).pushNamed(AccountListPage.route,
         arguments: AccountListPageParams(
@@ -221,6 +236,8 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
         _accepted = false;
         _acceptedDirect = false;
         _signed = signed != null;
+        _contributions = [];
+        _hasRef = false;
       });
 
       _getCrowdLoanHistory();
@@ -274,6 +291,28 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
     if (res != null) {
       _getCrowdLoanInfo();
     }
+  }
+
+  void _showReferral() async {
+    showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: Text(I18n.of(context)
+                .getDic(i18n_full_dic_app, 'public')['auction.referral.my']),
+            content: Text(widget.service.keyring.current.pubKey),
+            actions: [
+              CupertinoButton(
+                  child: Text(I18n.of(context)
+                      .getDic(i18n_full_dic_ui, 'common')['copy']),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    UI.copyAndNotify(
+                        context, widget.service.keyring.current.pubKey);
+                  })
+            ],
+          );
+        });
   }
 
   @override
@@ -362,9 +401,25 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            dic['auction.address'],
-                            style: labelStyle,
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                dic['auction.address'],
+                                style: labelStyle,
+                              )),
+                              Visibility(
+                                visible: _hasRef,
+                                child: GestureDetector(
+                                  child: Text(
+                                    dic['auction.referral.my'],
+                                    style: TextStyle(
+                                        fontSize: 14, color: acaThemeColor),
+                                  ),
+                                  onTap: _showReferral,
+                                ),
+                              )
+                            ],
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 20.h, bottom: 48.h),
@@ -378,221 +433,240 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                               margin: EdgeInsets.zero,
                             ),
                           ),
-                          (!isProxy && !_signed) ||
-                                  (isProxy && contributions.length == 0)
-                              ? Column(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(bottom: 8),
+                                child: Row(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Theme(
-                                          child: SizedBox(
-                                            height: 48,
-                                            width: 32,
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 8),
-                                              child: Checkbox(
-                                                value: isProxy
-                                                    ? _accepted
-                                                    : _acceptedDirect,
-                                                onChanged: (v) {
-                                                  setState(() {
-                                                    if (isProxy) {
-                                                      _accepted = v;
-                                                    } else {
-                                                      _acceptedDirect = v;
-                                                    }
-                                                  });
-                                                },
-                                              ),
-                                            ),
+                                    Text(dic['auction.txs'], style: labelStyle),
+                                    Expanded(child: Container(width: 4)),
+                                    GestureDetector(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.refresh,
+                                            size: 20,
+                                            color: acaThemeColor,
                                           ),
-                                          data: ThemeData(
-                                            primarySwatch: acaThemeColor,
-                                            unselectedWidgetColor:
-                                                acaThemeColor, // Your color
+                                          Text(
+                                            dic['auction.refresh'],
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: acaThemeColor),
+                                          )
+                                        ],
+                                      ),
+                                      onTap: _getCrowdLoanHistory,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
+                                  border: Border.all(
+                                      width: 4.w, color: acaThemeColor),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Visibility(
+                                        visible: _txQuerying,
+                                        child: CupertinoActivityIndicator()),
+                                    Visibility(
+                                        visible: contributions.length == 0,
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              top: 4, bottom: 4),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                I18n.of(context).getDic(
+                                                    i18n_full_dic_ui,
+                                                    'common')['list.empty'],
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .unselectedWidgetColor),
+                                              )
+                                            ],
                                           ),
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        )),
+                                    ...contributions.map((e) {
+                                      final karAmountStyle = TextStyle(
+                                          color: Colors.black87, fontSize: 12);
+                                      final contributeAmount = Fmt.balance(
+                                          e['contributionAmount'], decimals);
+                                      List<Widget> acaAmount = [
+                                        Text(
+                                          dic['auction.tx.confirming'],
+                                          style: karAmountStyle,
+                                        )
+                                      ];
+                                      if (e['blockHash'] != null) {
+                                        final acaAmountInt =
+                                            Fmt.balanceInt(e['baseBonus']);
+                                        final refereeBonus =
+                                            Fmt.balanceInt(e['refereeBonus']);
+                                        final karContributionBonus =
+                                            Fmt.balanceInt(
+                                                e['karuraContributorBonus']);
+                                        final acaExtraBonus = e['promotion'] !=
+                                                null
+                                            ? Fmt.balanceInt(
+                                                e['promotion']['acaExtraBonus'])
+                                            : BigInt.zero;
+                                        final karAmountMin = Fmt.bigIntToDouble(
+                                            acaAmountInt +
+                                                refereeBonus +
+                                                karContributionBonus +
+                                                acaExtraBonus,
+                                            aca_token_decimal);
+                                        final karAmountMax =
+                                            karAmountMin * ratioAcaMax / 3;
+                                        acaAmount = [
+                                          Text(
+                                            '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
+                                            style: karAmountStyle,
+                                          )
+                                        ];
+                                      }
+                                      return Container(
+                                        margin:
+                                            EdgeInsets.only(top: 8, bottom: 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              dic['auction.read'],
-                                              style:
-                                                  TextStyle(color: titleColor),
-                                            ),
-                                            Row(
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                JumpToLink(
-                                                  'https://acala.network/terms',
-                                                  text:
-                                                      '${dic['auction.term.0']}',
-                                                  color: acaThemeColor,
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '$contributeAmount DOT',
+                                                      style: TextStyle(
+                                                          color: titleColor,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Visibility(
+                                                        visible: isProxy,
+                                                        child: Text(
+                                                            '(= $contributeAmount lcDOT)',
+                                                            style:
+                                                                karAmountStyle))
+                                                  ],
                                                 ),
                                                 Text(
-                                                  ' & ',
-                                                  style: TextStyle(
-                                                      color: titleColor),
-                                                ),
+                                                    Fmt.dateTime(DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            e['timestamp'])),
+                                                    style: TextStyle(
+                                                        color: grayColor,
+                                                        fontSize: 13))
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                ...acaAmount,
                                                 JumpToLink(
-                                                  'https://acala.network/privacy',
-                                                  text:
-                                                      ' ${dic['auction.term.2']}',
+                                                  e['blockHash'] == null
+                                                      ? 'https://polkadot.subscan.io/extrinsic/${e['eventId']}'
+                                                      : 'https://polkadot.subscan.io/account/${_account.address}',
+                                                  text: 'Subscan',
                                                   color: acaThemeColor,
                                                 )
                                               ],
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList()
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          Visibility(
+                            visible: (!isProxy && !_signed) ||
+                                (isProxy && contributions.length == 0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Theme(
+                                      child: SizedBox(
+                                        height: 48,
+                                        width: 32,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(right: 8),
+                                          child: Checkbox(
+                                            value: isProxy
+                                                ? _accepted
+                                                : _acceptedDirect,
+                                            onChanged: (v) {
+                                              setState(() {
+                                                if (isProxy) {
+                                                  _accepted = v;
+                                                } else {
+                                                  _acceptedDirect = v;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      data: ThemeData(
+                                        primarySwatch: acaThemeColor,
+                                        unselectedWidgetColor:
+                                            acaThemeColor, // Your color
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          dic['auction.read'],
+                                          style: TextStyle(color: titleColor),
+                                        ),
+                                        Row(
+                                          children: [
+                                            JumpToLink(
+                                              'https://acala.network/terms',
+                                              text: '${dic['auction.term.0']}',
+                                              color: acaThemeColor,
+                                            ),
+                                            Text(
+                                              ' & ',
+                                              style:
+                                                  TextStyle(color: titleColor),
+                                            ),
+                                            JumpToLink(
+                                              'https://acala.network/privacy',
+                                              text: ' ${dic['auction.term.2']}',
+                                              color: acaThemeColor,
                                             )
                                           ],
                                         )
                                       ],
-                                    ),
+                                    )
                                   ],
-                                )
-                              : _txQuerying
-                                  ? CupertinoActivityIndicator()
-                                  : Visibility(
-                                      visible: contributions.length > 0,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(bottom: 8),
-                                            child: Text(dic['auction.txs'],
-                                                style: labelStyle),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                16, 8, 16, 8),
-                                            decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(8)),
-                                              border: Border.all(
-                                                  width: 4.w,
-                                                  color: acaThemeColor),
-                                            ),
-                                            child: Column(
-                                              children: contributions.map((e) {
-                                                final karAmountStyle =
-                                                    TextStyle(
-                                                        color: Colors.black87,
-                                                        fontSize: 12);
-                                                final contributeAmount =
-                                                    Fmt.balance(
-                                                        e['contributionAmount'],
-                                                        decimals);
-                                                List<Widget> acaAmount = [
-                                                  Text(
-                                                    dic['auction.tx.confirming'],
-                                                    style: karAmountStyle,
-                                                  )
-                                                ];
-                                                if (e['blockHash'] != null) {
-                                                  final acaAmountInt =
-                                                      Fmt.balanceInt(
-                                                          e['baseBonus']);
-                                                  final refereeBonus =
-                                                      Fmt.balanceInt(
-                                                          e['refereeBonus']);
-                                                  final karContributionBonus =
-                                                      Fmt.balanceInt(e[
-                                                          'karuraContributorBonus']);
-                                                  final acaExtraBonus =
-                                                      e['promotion'] != null
-                                                          ? Fmt.balanceInt(e[
-                                                                  'promotion']
-                                                              ['acaExtraBonus'])
-                                                          : BigInt.zero;
-                                                  final karAmountMin =
-                                                      Fmt.bigIntToDouble(
-                                                          acaAmountInt +
-                                                              refereeBonus +
-                                                              karContributionBonus +
-                                                              acaExtraBonus,
-                                                          aca_token_decimal);
-                                                  final karAmountMax =
-                                                      karAmountMin *
-                                                          ratioAcaMax /
-                                                          3;
-                                                  acaAmount = [
-                                                    Text(
-                                                      '≈ ${Fmt.priceFloor(karAmountMin)} - ${Fmt.priceFloor(karAmountMax)} ACA',
-                                                      style: karAmountStyle,
-                                                    )
-                                                  ];
-                                                }
-                                                return Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 8, bottom: 8),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                '$contributeAmount DOT',
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        titleColor,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                              Visibility(
-                                                                  visible:
-                                                                      isProxy,
-                                                                  child: Text(
-                                                                      '(= $contributeAmount lcDOT)',
-                                                                      style:
-                                                                          karAmountStyle))
-                                                            ],
-                                                          ),
-                                                          Text(
-                                                              Fmt.dateTime(DateTime
-                                                                  .fromMillisecondsSinceEpoch(e[
-                                                                      'timestamp'])),
-                                                              style: TextStyle(
-                                                                  color:
-                                                                      grayColor,
-                                                                  fontSize: 13))
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          ...acaAmount,
-                                                          JumpToLink(
-                                                            e['blockHash'] ==
-                                                                    null
-                                                                ? 'https://polkadot.subscan.io/extrinsic/${e['eventId']}'
-                                                                : 'https://polkadot.subscan.io/account/${_account.address}',
-                                                            text: 'Subscan',
-                                                            color:
-                                                                acaThemeColor,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
-                                          )
-                                        ],
-                                      )),
+                                ),
+                              ],
+                            ),
+                          ),
                           Container(
                             margin: EdgeInsets.only(top: 16, bottom: 32),
                             child: isProxy
