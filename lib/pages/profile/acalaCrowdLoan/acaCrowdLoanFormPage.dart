@@ -72,6 +72,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
   String _email = '';
   bool _emailValid = true;
   bool _emailAccept = true;
+  bool _keepAlive = true;
 
   void _onAmountChange(String value, BigInt balanceInt, Map promotion) {
     final v = value.trim();
@@ -92,7 +93,8 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
 
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-    final enough = amt < Fmt.bigIntToDouble(balanceInt, decimals);
+    final enough = (amt + (_keepAlive ? 1.1 : 0.0)) <
+        Fmt.bigIntToDouble(balanceInt, decimals);
     final AcaCrowdLoanPageParams params =
         ModalRoute.of(context).settings.arguments;
     final valid = enough &&
@@ -405,7 +407,7 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
       final balanceInt = Fmt.balanceInt(
           widget.service.plugin.balances.native.availableBalance.toString());
       final balanceView =
-          Fmt.priceFloorBigInt(balanceInt, decimals, lengthMax: 8);
+          Fmt.priceFloorBigInt(balanceInt, decimals, lengthMax: 4);
 
       final isConnected = widget.connectedNode != null;
 
@@ -505,6 +507,44 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                           : dic['balance.insufficient'],
                       style: errorStyle,
                     )),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 14),
+                child: Row(
+                  children: [
+                    Theme(
+                      child: SizedBox(
+                        height: 32,
+                        width: 32,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Checkbox(
+                            value: _keepAlive,
+                            onChanged: (v) {
+                              setState(() {
+                                _keepAlive = v;
+                              });
+                              _onAmountChange(_amount.toString(), balanceInt,
+                                  params.promotion);
+                            },
+                          ),
+                        ),
+                      ),
+                      data: ThemeData(
+                        primarySwatch: acaThemeColor,
+                        unselectedWidgetColor: acaThemeColor, // Your color
+                      ),
+                    ),
+                    Text(dic['auction.alive']),
+                    TapTooltip(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Icon(Icons.info, color: acaThemeColor, size: 16),
+                      ),
+                      message: dic['auction.alive.msg'],
+                    ),
+                  ],
+                ),
               ),
               _getTitle(dic['auction.referral']),
               Container(

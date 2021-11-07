@@ -40,6 +40,8 @@ const Map<String, String> zhPublic = {
   'auction.tx.confirming': '确认中...',
   'auction.coming': '敬请期待...',
   'auction.refresh': '刷新',
+  'auction.alive': '保持存活',
+  'auction.alive.msg': '\n保持存活开关打开，账户将会保留最低 1.1DOT 余额，以保护账户不会因为余额过低而被网络移除。\n',
   'balance.insufficient': '余额不足',
   'tx.action': '操作',
 };

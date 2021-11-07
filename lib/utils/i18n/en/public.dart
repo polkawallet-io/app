@@ -42,6 +42,9 @@ const Map<String, String> enPublic = {
   'auction.tx.confirming': 'Confirming...',
   'auction.coming': 'Coming Soon...',
   'auction.refresh': 'Refresh',
+  'auction.alive': 'keep-alive',
+  'auction.alive.msg':
+      '\nWith the keep-alive option set, the account will have a minimum balance of 1.1 DOT and is protected against removal due to low balances.\n',
   'balance.insufficient': 'Insufficient balance',
   'tx.action': 'Action',
 };
