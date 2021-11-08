@@ -185,6 +185,21 @@ class WalletApi {
     }
   }
 
+  static Future<Map> getClaim(String address) async {
+    final url = '$_endpoint/claim/claim?address=$address';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> getAdBannerStatus() async {
     try {
       final res = await get(getUrl(_endpoint, '/crowdloan/health'));

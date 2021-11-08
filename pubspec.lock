@@ -861,11 +861,9 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      resolved-ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.3.0"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
@@ -1045,6 +1043,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  shimmer:
+    dependency: transitive
+    description:
+      name: shimmer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  skeleton_loader:
+    dependency: transitive
+    description:
+      name: skeleton_loader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+4"
   sky_engine:
     dependency: transitive
     description: flutter

@@ -25,8 +25,11 @@ class AdBanner extends StatefulWidget {
 
 class _AdBannerState extends State<AdBanner> {
   Future<void> _getAdBannerStatus() async {
-    final res = await WalletApi.getAdBannerStatus();
+    var res = await WalletApi.getAdBannerStatus();
     widget.service.store.settings.setAdBannerState(res);
+
+    widget.service.store.settings.claimState =
+        await WalletApi.getClaim(widget.service.keyring.current.address);
   }
 
   @override
@@ -49,6 +52,17 @@ class _AdBannerState extends State<AdBanner> {
       widgets.add(GeneralCrowdLoanBanner(
           'assets/images/public/banner_aca_quests.png',
           'https://acala.network/acala/quests#quests'));
+    }
+
+    if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
+            false) &&
+        (widget.service.store.settings.claimState['result'] == true &&
+            widget.service.store.settings.claimState['claimed'] == false &&
+            widget.service.store.settings.claimState['originClaimed'] ==
+                false)) {
+      widgets.add(GeneralCrowdLoanBanner(
+          'assets/images/public/banner_aca_quests.png',
+          'https://distribution.acala.network/claim'));
     }
 
     return widgets;

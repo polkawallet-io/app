@@ -83,8 +83,8 @@ dependencies:
 dependency_overrides:
   polkawallet_plugin_kusama:
     path: ../../coding/polkawallet/polkawallet_plugin_kusama
-#  polkawallet_plugin_acala:
-#    path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:
     path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:

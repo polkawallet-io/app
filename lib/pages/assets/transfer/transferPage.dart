@@ -715,23 +715,35 @@ class _TransferPageState extends State<TransferPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Expanded(
-                                child: TapTooltip(
-                                  message: dic['amount.exist.msg'],
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 4),
-                                        child: Text(dic['amount.exist']),
-                                      ),
-                                      Icon(
-                                        Icons.info,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor,
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                child: Container(
+                                    child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(dic['amount.exist']),
+                                    Text(
+                                      dic['amount.exist.msg'],
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                )),
+                                // child: TapTooltip(
+                                //   message: dic['amount.exist.msg'],
+                                //   child: Row(
+                                //     children: [
+                                //       Padding(
+                                //         padding: EdgeInsets.only(right: 4),
+                                //         child: Text(dic['amount.exist']),
+                                //       ),
+                                //       Icon(
+                                //         Icons.info,
+                                //         size: 16,
+                                //         color: Theme.of(context)
+                                //             .unselectedWidgetColor,
+                                //       )
+                                //     ],
+                                //   ),
+                                // ),
                               ),
                               Text(
                                   '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
@@ -762,22 +774,36 @@ class _TransferPageState extends State<TransferPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Expanded(
-                                flex: 0,
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 4),
-                                  child: Text(dic['transfer.alive']),
-                                ),
+                                child: Container(
+                                    child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(dic['transfer.alive']),
+                                    Text(
+                                      dic['transfer.alive.msg'],
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                )),
                               ),
-                              TapTooltip(
-                                message: dic['transfer.alive.msg'],
-                                child: Icon(
-                                  Icons.info,
-                                  size: 16,
-                                  color:
-                                      Theme.of(context).unselectedWidgetColor,
-                                ),
-                              ),
-                              Expanded(child: Container(width: 2)),
+                              // Expanded(
+                              //   flex: 0,
+                              //   child: Padding(
+                              //     padding: EdgeInsets.only(right: 4),
+                              //     child: Text(dic['transfer.alive']),
+                              //   ),
+                              // ),
+                              // TapTooltip(
+                              //   message: dic['transfer.alive.msg'],
+                              //   child: Icon(
+                              //     Icons.info,
+                              //     size: 16,
+                              //     color:
+                              //         Theme.of(context).unselectedWidgetColor,
+                              //   ),
+                              // ),
+                              // Expanded(child: Container(width: 2)),
                               CupertinoSwitch(
                                 value: _keepAlive,
                                 // account is not allow_death if it has
