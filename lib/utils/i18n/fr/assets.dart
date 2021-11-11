@@ -4,7 +4,7 @@ const Map<String, String> enAssets = {
   'transfer': 'Transfer',
   'transfer.alive': 'keep-alive',
   'transfer.alive.msg':
-      '\nWith the keep-alive option set, the account is protected against removal due to low balances.\n',
+      'With the keep-alive option set, the account is protected against removal due to low balances.',
   'receive': 'Receive',
   'lock.unlock': 'Clear expired locks',
   'copy': 'Copy',
@@ -12,12 +12,13 @@ const Map<String, String> enAssets = {
   'address.error': 'Invalid Address',
   'address.subscan': 'More on Subscan',
   'amount': 'Amount',
+  'amount.hint': 'Please enter the transfer amount',
   'amount.max': 'Max',
   'amount.error': 'Invalid amount',
   'amount.low': 'Insufficient balance',
   'amount.exist': 'existential deposit',
   'amount.exist.msg':
-      '\nED (existential deposit): The minimum amount that an account should have to be deemed active.\n',
+      'The minimum amount that an account should have to be deemed active.',
   'amount.fee': 'estimated transfer fee',
   'currency': 'Currency',
   'currency.select': 'Select Currency',
@@ -84,4 +85,9 @@ const Map<String, String> enAssets = {
   'manage.save': 'Save',
   'manage.save.ok': 'success',
   'manage.hide': 'Hide 0 assets',
+  'note': 'Note',
+  'note.msg1':
+      'Unset the keep-alive option, the account will be removed due to low balance.',
+  'note.msg2':
+      'There are other locked assets in this account that cannot be removed.',
 };
