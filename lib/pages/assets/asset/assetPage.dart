@@ -540,17 +540,7 @@ class BalanceCard extends StatelessWidget {
                                       children: [
                                         Icon(Icons.info,
                                             size: 16, color: titleColor),
-                                        Text(
-                                          Fmt.priceFloorBigInt(
-                                            Fmt.balanceInt(
-                                                (balancesInfo?.lockedBalance ??
-                                                        0)
-                                                    .toString()),
-                                            decimals,
-                                            lengthMax: 4,
-                                          ),
-                                          style: TextStyle(color: titleColor),
-                                        ),
+                                        priceBuild(balancesInfo, titleColor),
                                       ],
                                     ),
                                   ),
@@ -563,20 +553,14 @@ class BalanceCard extends StatelessWidget {
                                     children: [
                                       Icon(Icons.info,
                                           size: 16, color: titleColor),
-                                      Text(
-                                        Fmt.priceFloorBigInt(
-                                          Fmt.balanceInt(
-                                              (balancesInfo?.lockedBalance ?? 0)
-                                                  .toString()),
-                                          decimals,
-                                          lengthMax: 4,
-                                        ),
-                                        style: TextStyle(color: titleColor),
-                                      ),
+                                      priceBuild(balancesInfo, titleColor),
                                     ],
                                   ),
                                   waitDuration: Duration(seconds: 0),
                                 )),
+                      Visibility(
+                          visible: lockedInfo.length <= 2,
+                          child: priceBuild(balancesInfo, titleColor)),
                       Visibility(
                           visible: unlocks.length > 0,
                           child: GestureDetector(
@@ -606,6 +590,17 @@ class BalanceCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget priceBuild(BalanceData balancesInfo, Color titleColor) {
+    return Text(
+      Fmt.priceFloorBigInt(
+        Fmt.balanceInt((balancesInfo?.lockedBalance ?? 0).toString()),
+        decimals,
+        lengthMax: 4,
+      ),
+      style: TextStyle(color: titleColor),
     );
   }
 }

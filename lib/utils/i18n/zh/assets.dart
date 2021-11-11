@@ -11,6 +11,7 @@ const Map<String, String> zhAssets = {
   'address.error': '无效地址',
   'address.subscan': '前往 Subscan 查看更多',
   'amount': '数量',
+  'amount.hint': '请输入您想转账的数额',
   'amount.max': '最大值',
   'amount.error': '格式错误',
   'amount.low': '余额不足',
@@ -78,4 +79,7 @@ const Map<String, String> zhAssets = {
   'manage.save': '保存',
   'manage.save.ok': '成功',
   'manage.hide': '隐藏 0 资产',
+  'note': '提示',
+  'note.msg1': '关闭帐户保护后，账户很可能会因为余额过低被网络移除，是否确认关闭',
+  'note.msg2': '非常抱歉，该账户中存在其他锁定资产，无法被移除。',
 };

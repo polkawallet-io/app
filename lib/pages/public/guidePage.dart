@@ -1,3 +1,6 @@
+import 'package:app/common/consts.dart';
+import 'package:app/pages/homePage.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,7 @@ class _GuidePageState extends State<GuidePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final size = MediaQuery.of(context).size;
+    final data = (ModalRoute.of(context).settings.arguments as Map);
     return new WillPopScope(
       onWillPop: () async => _pageIndex == 4,
       child: Scaffold(
@@ -78,8 +82,11 @@ class _GuidePageState extends State<GuidePage> {
                               margin: EdgeInsets.fromLTRB(24, 16, 24, 0),
                               child: RoundedButton(
                                 text: dic['guide.enter'],
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
+                                onPressed: () async {
+                                  data["storage"].write(data["storeKey"], true);
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      HomePage.route, (route) => false);
+                                },
                               ),
                             ))
                       ],

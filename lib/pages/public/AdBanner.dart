@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanBanner.dart';
 import 'package:app/service/index.dart';
@@ -54,16 +55,17 @@ class _AdBannerState extends State<AdBanner> {
           'https://acala.network/acala/quests#quests'));
     }
 
-    if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
-            false) &&
-        (widget.service.store.settings.claimState['result'] == true &&
-            widget.service.store.settings.claimState['claimed'] == false &&
-            widget.service.store.settings.claimState['originClaimed'] ==
-                false)) {
-      widgets.add(GeneralCrowdLoanBanner(
-          'assets/images/public/banner_aca_quests.png',
-          'https://distribution.acala.network/claim'));
-    }
+    // if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
+    //         false) &&
+    //     ((widget.service.store.settings.claimState['result'] == true &&
+    //             widget.service.store.settings.claimState['claimed'] == false &&
+    //             widget.service.store.settings.claimState['originClaimed'] ==
+    //                 false) ||
+    //         WalletApp.buildTarget == BuildTargets.dev)) {
+    //   widgets.add(GeneralCrowdLoanBanner(
+    //       'assets/images/public/banner_aca_claim.gif',
+    //       'https://distribution.acala.network/claim'));
+    // }
 
     return widgets;
   }
@@ -85,7 +87,7 @@ class _AdBannerState extends State<AdBanner> {
         widgets.length == 1
             ? widgets[0]
             : Container(
-                height: MediaQuery.of(context).size.width / 1240.0 * 289 + 10,
+                height: MediaQuery.of(context).size.width / 1240.0 * 289 + 15,
                 width: double.infinity,
                 padding: EdgeInsets.zero,
                 child: Swiper(
@@ -137,7 +139,10 @@ class GeneralCrowdLoanBanner extends StatelessWidget {
         GestureDetector(
           child: Container(
             margin: EdgeInsets.all(8),
-            child: Image.asset(image),
+            color: Colors.transparent,
+            child: Image.asset(
+              image,
+            ),
           ),
           onTap: () => Navigator.of(context).pushNamed(
             DAppWrapperPage.route,

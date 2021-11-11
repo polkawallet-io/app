@@ -427,7 +427,12 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
 
       final double karReward = _karRewardValid ? amountAca * _karRewardRate : 0;
 
-      double acaAmountTotal = amountAca * (_referralValid ? 1.05 : 1);
+      double acaAmountTotal = amountAca *
+          (_referralValid
+              ? (_referral == widget.service.keyring.current.pubKey
+                  ? 1.1
+                  : 1.05)
+              : 1);
       double acaPromotion = 0;
       if (params.promotion['result']) {
         if (params.promotion['acaRate'] > 0) {
@@ -631,7 +636,9 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                             karReward: karReward,
                             karRewardRate: _karRewardRate,
                             promotion: params.promotion,
-                            acaPromotion: acaPromotion)
+                            acaPromotion: acaPromotion,
+                            referralIsSelf: _referral ==
+                                widget.service.keyring.current.pubKey)
                         : Container(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -758,7 +765,8 @@ class RewardDetailPanel extends StatelessWidget {
       this.karReward,
       this.karRewardRate,
       this.promotion,
-      this.acaPromotion});
+      this.acaPromotion,
+      this.referralIsSelf = false});
 
   final double acaAmountMin;
   final double ratioAcaMax;
@@ -767,6 +775,7 @@ class RewardDetailPanel extends StatelessWidget {
   final double karRewardRate;
   final Map promotion;
   final double acaPromotion;
+  final bool referralIsSelf;
 
   @override
   Widget build(BuildContext context) {
@@ -801,10 +810,11 @@ class RewardDetailPanel extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Expanded(
-                        child: Text('+5% ${dic['auction.invite']}',
+                        child: Text(
+                            '${referralIsSelf ? "+10%" : "+5%"} ${dic['auction.invite']}',
                             style: karInfoStyle)),
                     Text(
-                        '${Fmt.priceFloor(acaAmountMin * 0.05, lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * 0.05, lengthMax: 4)} ACA',
+                        '${Fmt.priceFloor(acaAmountMin * (referralIsSelf ? 0.1 : 0.05), lengthMax: 4)} - ${Fmt.priceFloor(acaAmountMax * (referralIsSelf ? 0.1 : 0.05), lengthMax: 4)} ACA',
                         style: karInfoStyle),
                   ],
                 )

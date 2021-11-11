@@ -109,7 +109,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: ListView(
             children: <Widget>[
               Visibility(
-                  visible: widget.connectedNode != null,
+                  visible: widget.connectedNode != null &&
+                      !(acc.observation ?? false),
                   child:
                       widget.service.plugin.basic.name == relay_chain_name_ksm
                           ? KarCrowdLoanBanner()

@@ -11,7 +11,6 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
-import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
@@ -105,6 +104,7 @@ class _TransferPageState extends State<TransferPage> {
 
   Future<TxConfirmParams> _getTxParams() async {
     if (_accountToError == null &&
+        _amountCtrl.text.length > 0 &&
         _formKey.currentState.validate() &&
         !_submitting) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
@@ -616,7 +616,7 @@ class _TransferPageState extends State<TransferPage> {
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             decoration: InputDecoration(
-                              hintText: dic['amount'],
+                              hintText: dic['amount.hint'],
                               labelText:
                                   '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
                                 available,
@@ -666,23 +666,41 @@ class _TransferPageState extends State<TransferPage> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Expanded(
-                                    child: TapTooltip(
-                                      message: dic['amount.exist.msg'],
-                                      child: Row(
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(right: 4),
-                                            child: Text(dic['cross.exist']),
-                                          ),
-                                          Icon(
-                                            Icons.info,
-                                            size: 16,
-                                            color: Theme.of(context)
-                                                .unselectedWidgetColor,
-                                          )
-                                        ],
-                                      ),
-                                    ),
+                                    child: Container(
+                                        padding: EdgeInsets.only(right: 40),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              dic['cross.exist'],
+                                            ),
+                                            Text(
+                                              dic['amount.exist.msg'],
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w200),
+                                            ),
+                                          ],
+                                        )),
+                                    // child: TapTooltip(
+                                    //   message: dic['amount.exist.msg'],
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Padding(
+                                    //         padding: EdgeInsets.only(right: 4),
+                                    //         child: Text(dic['cross.exist']),
+                                    //       ),
+                                    //       Icon(
+                                    //         Icons.info,
+                                    //         size: 16,
+                                    //         color: Theme.of(context)
+                                    //             .unselectedWidgetColor,
+                                    //       )
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ),
                                   Expanded(
                                       flex: 0,
@@ -701,7 +719,9 @@ class _TransferPageState extends State<TransferPage> {
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['cross.fee']),
+                                      child: Text(
+                                        dic['cross.fee'],
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -716,17 +736,23 @@ class _TransferPageState extends State<TransferPage> {
                             children: [
                               Expanded(
                                 child: Container(
+                                    padding: EdgeInsets.only(right: 60),
                                     child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(dic['amount.exist']),
-                                    Text(
-                                      dic['amount.exist.msg'],
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                )),
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          dic['amount.exist'],
+                                        ),
+                                        Text(
+                                          dic['amount.exist.msg'],
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w200),
+                                        ),
+                                      ],
+                                    )),
                                 // child: TapTooltip(
                                 //   message: dic['amount.exist.msg'],
                                 //   child: Row(
@@ -760,7 +786,9 @@ class _TransferPageState extends State<TransferPage> {
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 4),
-                                      child: Text(dic['amount.fee']),
+                                      child: Text(
+                                        dic['amount.fee'],
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -775,17 +803,23 @@ class _TransferPageState extends State<TransferPage> {
                             children: [
                               Expanded(
                                 child: Container(
+                                    padding: EdgeInsets.only(right: 60),
                                     child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(dic['transfer.alive']),
-                                    Text(
-                                      dic['transfer.alive.msg'],
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                )),
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          dic['transfer.alive'],
+                                        ),
+                                        Text(
+                                          dic['transfer.alive.msg'],
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w200),
+                                        ),
+                                      ],
+                                    )),
                               ),
                               // Expanded(
                               //   flex: 0,
@@ -808,13 +842,64 @@ class _TransferPageState extends State<TransferPage> {
                                 value: _keepAlive,
                                 // account is not allow_death if it has
                                 // locked/reserved balances
-                                onChanged: notTransferable > BigInt.zero
-                                    ? null
-                                    : (res) {
-                                        setState(() {
-                                          _keepAlive = res;
-                                        });
+                                onChanged: (res) {
+                                  if (notTransferable > BigInt.zero) {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text(dic['note']),
+                                          content: Text(dic['note.msg1']),
+                                          actions: <Widget>[
+                                            CupertinoButton(
+                                              child: Text(I18n.of(context)
+                                                  .getDic(i18n_full_dic_ui,
+                                                      'common')['cancel']),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                            ),
+                                            CupertinoButton(
+                                              child: Text(I18n.of(context)
+                                                  .getDic(i18n_full_dic_ui,
+                                                      'common')['ok']),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                showCupertinoDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return CupertinoAlertDialog(
+                                                      title: Text(dic['note']),
+                                                      content: Text(
+                                                          dic['note.msg2']),
+                                                      actions: <Widget>[
+                                                        CupertinoButton(
+                                                          child: Text(I18n.of(
+                                                                  context)
+                                                              .getDic(
+                                                                  i18n_full_dic_ui,
+                                                                  'common')['ok']),
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        );
                                       },
+                                    );
+                                  } else {
+                                    setState(() {
+                                      _keepAlive = res;
+                                    });
+                                  }
+                                },
                               )
                             ],
                           ),

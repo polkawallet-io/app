@@ -45,9 +45,9 @@ import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/startPage.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -198,8 +198,10 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _getAcalaModulesConfig() async {
-    final karModulesConfig = await WalletApi.getKarModulesConfig();
+  Future<void> _getAcalaModulesConfig(String pluginName) async {
+    final karModulesConfig = await (pluginName == 'karura'
+        ? WalletApi.getKarModulesConfig()
+        : WalletApi.getAcalaModulesConfig());
     if (karModulesConfig != null) {
       _store.settings.setLiveModules(karModulesConfig);
     } else {
@@ -225,7 +227,7 @@ class _WalletAppState extends State<WalletApp> {
 
     if (_service.plugin.basic.name == 'karura' ||
         _service.plugin.basic.name == 'acala') {
-      _getAcalaModulesConfig();
+      _getAcalaModulesConfig(_service.plugin.basic.name);
     }
   }
 
@@ -344,23 +346,23 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _showGuide(BuildContext context, GetStorage storage) async {
-    // todo: remove this after crowd loan
-    // final karStarted = await WalletApi.getKarCrowdLoanStarted();
-    // if (karStarted != null && karStarted['started']) {
-    //   Navigator.of(context).pushNamed(AdPage.route);
-    //   return;
-    // }
+  // Future<void> _showGuide(BuildContext context, GetStorage storage) async {
+  //   // todo: remove this after crowd loan
+  //   // final karStarted = await WalletApi.getKarCrowdLoanStarted();
+  //   // if (karStarted != null && karStarted['started']) {
+  //   //   Navigator.of(context).pushNamed(AdPage.route);
+  //   //   return;
+  //   // }
 
-    final storeKey = '${show_guide_status_key}_${Utils.getAppVersion()}';
-    final showGuideStatus = storage.read(storeKey);
-    if (showGuideStatus == null) {
-      final res = await Navigator.of(context).pushNamed(GuidePage.route);
-      if (res != null) {
-        storage.write(storeKey, true);
-      }
-    }
-  }
+  //   final storeKey = '${show_guide_status_key}_${await Utils.getAppVersion()}';
+  //   final showGuideStatus = storage.read(storeKey);
+  //   if (showGuideStatus == null) {
+  //     final res = await Navigator.of(context).pushNamed(GuidePage.route);
+  //     if (res != null) {
+  //       storage.write(storeKey, true);
+  //     }
+  //   }
+  // }
 
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
@@ -372,7 +374,7 @@ class _WalletAppState extends State<WalletApp> {
       final store = AppStore(storage);
       await store.init();
 
-      _showGuide(context, storage);
+      // await _showGuide(context, storage);
 
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
@@ -429,6 +431,11 @@ class _WalletAppState extends State<WalletApp> {
     return {
       /// pages of plugin
       ...pluginPages,
+
+      StartPage.route: (_) {
+        _startApp(context);
+        return StartPage();
+      },
 
       /// basic pages
       HomePage.route: (_) => WillPopScopWrapper(
@@ -600,7 +607,7 @@ class _WalletAppState extends State<WalletApp> {
                   const Locale('en', ''),
                   const Locale('zh', ''),
                 ],
-                initialRoute: HomePage.route,
+                initialRoute: StartPage.route,
                 onGenerateRoute: (settings) => CupertinoPageRoute(
                     builder: routes[settings.name], settings: settings),
                 navigatorObservers: [

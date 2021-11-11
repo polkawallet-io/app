@@ -31,6 +31,8 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class AssetsPage extends StatefulWidget {
   AssetsPage(
@@ -395,7 +397,7 @@ class _AssetsState extends State<AssetsPage> {
           }
         }
         bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == 'acala') {
+        if (widget.service.plugin.basic.name == 'karura') {
           if (widget.service.store.settings.liveModules['claim'] != null) {
             claimKarEnabled =
                 widget.service.store.settings.liveModules['claim']['enabled'];
@@ -555,21 +557,21 @@ class _AssetsState extends State<AssetsPage> {
                             title: I18n.of(context)
                                 .getDic(i18n_full_dic_app, 'assets')['assets'],
                           ),
-                          // Visibility(
-                          //     visible:
-                          //         widget.service.plugin.basic.name == 'aca' &&
-                          //             claimKarEnabled,
-                          //     child: OutlinedButtonSmall(
-                          //       content: 'Claim ACA',
-                          //       active: true,
-                          //       margin: EdgeInsets.only(left: 8),
-                          //       onPressed: () =>
-                          //           Navigator.of(context).pushNamed(
-                          //         DAppWrapperPage.route,
-                          //         arguments:
-                          //             'https://distribution.acala.network/claim',
-                          //       ),
-                          //     )),
+                          Visibility(
+                              visible: widget.service.plugin.basic.name ==
+                                      'karura' &&
+                                  claimKarEnabled,
+                              child: OutlinedButtonSmall(
+                                content: 'Claim KAR',
+                                active: true,
+                                margin: EdgeInsets.only(left: 8),
+                                onPressed: () =>
+                                    Navigator.of(context).pushNamed(
+                                  DAppWrapperPage.route,
+                                  arguments:
+                                      'https://distribution.acala.network/claim',
+                                ),
+                              )),
                           Visibility(
                               visible:
                                   (widget.service.plugin.noneNativeTokensAll ??
