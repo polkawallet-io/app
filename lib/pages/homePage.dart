@@ -194,25 +194,24 @@ class _HomePageState extends State<HomePage> {
                 widget.service.store.account.wcSessions.length > 0;
             final walletConnecting =
                 widget.service.store.account.walletConnectPairing;
-            return walletConnectAlive || walletConnecting
-                ? Container(
-                    margin: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).size.height / 4),
-                    child: FloatingActionButton(
-                      backgroundColor: Theme.of(context).cardColor,
-                      child: walletConnecting
-                          ? CupertinoActivityIndicator()
-                          : Image.asset(
-                              'assets/images/wallet_connect_logo.png'),
-                      onPressed: walletConnectAlive
-                          ? () {
-                              Navigator.of(context)
-                                  .pushNamed(WCSessionsPage.route);
-                            }
-                          : () => null,
-                    ),
-                  )
-                : Container();
+            return Visibility(
+                visible: walletConnectAlive || walletConnecting,
+                child: Container(
+                  margin: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.height / 4),
+                  child: FloatingActionButton(
+                    backgroundColor: Theme.of(context).cardColor,
+                    child: walletConnecting
+                        ? CupertinoActivityIndicator()
+                        : Image.asset('assets/images/wallet_connect_logo.png'),
+                    onPressed: walletConnectAlive
+                        ? () {
+                            Navigator.of(context)
+                                .pushNamed(WCSessionsPage.route);
+                          }
+                        : () => null,
+                  ),
+                ));
           })
         ],
       ),

@@ -161,6 +161,6 @@ field on the right only. Note that the `\n` symbol split a long string into seve
  - [ ] sdk version code of `polkawallet-io/ui` updated.
  - [ ] sdk & ui dependencies of plugins updated.
  - [ ] plugins version updated.
+ - [ ] plugins node list updated.
  - [ ] version code in `pubspec.yaml` updated.
- - [ ] version code in `lib/common/consts.dart` updated.
  - [ ] version code in Xcode for IOS updated.

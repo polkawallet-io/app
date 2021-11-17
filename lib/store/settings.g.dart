@@ -24,19 +24,12 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
-  final _$networkAtom = Atom(name: '_SettingsStore.network');
-
-  @override
   String get network {
-    _$networkAtom.reportRead();
     return super.network;
   }
 
-  @override
   set network(String value) {
-    _$networkAtom.reportWrite(value, super.network, () {
-      super.network = value;
-    });
+    super.network = value;
   }
 
   final _$liveModulesAtom = Atom(name: '_SettingsStore.liveModules');
@@ -54,19 +47,12 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
-  final _$adBannerStateAtom = Atom(name: '_SettingsStore.adBannerState');
-
-  @override
   Map<dynamic, dynamic> get adBannerState {
-    _$adBannerStateAtom.reportRead();
     return super.adBannerState;
   }
 
-  @override
   set adBannerState(Map<dynamic, dynamic> value) {
-    _$adBannerStateAtom.reportWrite(value, super.adBannerState, () {
-      super.adBannerState = value;
-    });
+    super.adBannerState = value;
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
@@ -91,25 +77,15 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadLocalCodeAsyncAction.run(() => super.loadLocalCode());
   }
 
-  final _$loadNetworkAsyncAction = AsyncAction('_SettingsStore.loadNetwork');
-
-  @override
   Future<void> loadNetwork() {
-    return _$loadNetworkAsyncAction.run(() => super.loadNetwork());
+    return super.loadNetwork();
   }
 
   final _$_SettingsStoreActionController =
       ActionController(name: '_SettingsStore');
 
-  @override
   void setNetwork(String value) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setNetwork');
-    try {
-      return super.setNetwork(value);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
+    return super.setNetwork(value);
   }
 
   @override
@@ -123,15 +99,8 @@ mixin _$SettingsStore on _SettingsStore, Store {
     }
   }
 
-  @override
   void setAdBannerState(Map<dynamic, dynamic> value) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setAdBannerState');
-    try {
-      return super.setAdBannerState(value);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
+    return super.setAdBannerState(value);
   }
 
   @override

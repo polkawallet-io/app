@@ -5,7 +5,6 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class ACACrowdLoanBanner extends StatelessWidget {
@@ -35,24 +34,19 @@ class ACACrowdLoanBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(builder: (_) {
-      final active = service.buildTarget == BuildTargets.dev;
-      // todo: activate the banner
-      // final active = service.buildTarget == BuildTargets.dev
-      //     ? true
-      //     : (service.store.settings.adBannerState['startedAca'] ?? false);
-      return Stack(
-        alignment: AlignmentDirectional.topEnd,
-        children: [
-          GestureDetector(
-            child: Container(
-              margin: EdgeInsets.all(8),
-              child: Image.asset('assets/images/public/banner_aca_plo.png'),
-            ),
-            onTap: () => _goToCrowdLoan(context, active),
+    final active =
+        (service.store.settings.adBannerState['startedAca'] ?? false);
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: [
+        GestureDetector(
+          child: Container(
+            margin: EdgeInsets.all(8),
+            child: Image.asset('assets/images/public/banner_aca_plo.png'),
           ),
-        ],
-      );
-    });
+          onTap: () => _goToCrowdLoan(context, active),
+        ),
+      ],
+    );
   }
 }

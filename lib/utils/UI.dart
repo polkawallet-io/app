@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,10 +76,11 @@ class AppUI {
     final int versionCodeMin = versions[platform]['version-code-min'];
 
     bool needUpdate = false;
-    if ((autoCheck ? latestCode : latestCodeBeta) > app_beta_version_code) {
+    if ((autoCheck ? latestCode : latestCodeBeta) >
+        await Utils.getBuildNumber()) {
       // new version found
       if (Platform.isAndroid && buildTarget == BuildTargets.playStore) {
-        needUpdate = (latestCodeStore) > app_beta_version_code;
+        needUpdate = (latestCodeStore) > await Utils.getBuildNumber();
         if (!needUpdate && autoCheck) return;
       } else {
         needUpdate = true;
@@ -101,23 +103,24 @@ class AppUI {
                 child:
                     Text(needUpdate ? dic['update.up'] : dic['update.latest']),
               ),
-              needUpdate
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: versionInfo
-                          .map((e) => Text('- $e', textAlign: TextAlign.left))
-                          .toList(),
-                    )
-                  : Container()
+              Visibility(
+                  visible: needUpdate,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: versionInfo
+                        .map((e) => Text('- $e', textAlign: TextAlign.left))
+                        .toList(),
+                  ))
             ],
           ),
           actions: <Widget>[
             CupertinoButton(
               child: Text(I18n.of(context)
                   .getDic(i18n_full_dic_ui, 'common')['cancel']),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                if (needUpdate && versionCodeMin > app_beta_version_code) {
+                if (needUpdate &&
+                    versionCodeMin > await Utils.getBuildNumber()) {
                   exit(0);
                 }
               },

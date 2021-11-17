@@ -1,6 +1,7 @@
 import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -17,6 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(get_storage_container);
   await Firebase.initializeApp();
+  var appVersionCode = await Utils.getBuildNumber();
 
   final plugins = [
     PluginKusama(name: 'polkadot'),
@@ -30,12 +32,13 @@ void main() async {
     PluginLaminar(),
   ];
 
-  final pluginsConfig = await WalletApi.getPluginsConfig();
+  final pluginsConfig =
+      await WalletApi.getPluginsConfig(BuildTargets.playStore);
   if (pluginsConfig != null) {
     plugins.removeWhere((i) {
       final List disabled = pluginsConfig[i.basic.name]['disabled'];
       if (disabled != null) {
-        return disabled.contains(app_beta_version_code);
+        return disabled.contains(appVersionCode) || disabled.contains(0);
       }
       return false;
     });

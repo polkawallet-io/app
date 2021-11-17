@@ -12,16 +12,17 @@ const Map<String, String> enAccount = {
   'create.password.error': '6 to 18 digits and contains numbers and letters',
   'create.password2': 'Confirm Password',
   'create.password2.error': 'Inconsistent passwords',
-  'create.warn1': 'Backup prom',
-  'create.warn2': 'Getting a mnemonic equals ownership of a wallet asset',
+  'create.warn1': 'Please note',
+  'create.warn2':
+      'We never copy or store your account mnemonic outside of your phone storage. It’s your responsibility to keep it safe.',
   'create.warn3': 'Backup mnemonic',
-  'create.warn4': 'Use paper and pen to correctly copy mnemonics',
-  'create.warn5':
-      'If your phone is lost, stolen or damaged, the mnemonic will restore your assets',
-  'create.warn6': 'Offline storage',
-  'create.warn7': 'Keep it safe to a safe place on the isolated network',
+  'create.warn4':
+      'Please write down your mnemonic seed and keep it in a safe place.',
+  'create.warn5': 'The mnemonic can be used to restore your wallet.',
+  'create.warn6': 'Don’t share your mnemonic',
+  'create.warn7': 'Keep your mnemonic carefully to not lose your assets.',
   'create.warn8':
-      'Do not share and store mnemonics in a networked environment, such as emails, photo albums, social applications',
+      'Anyone who has your mnemonic has full access to your account.',
   'create.warn9': 'Do not take screenshots',
   'create.warn10':
       'Do not take screenshots, which may be collected by third-party malware, resulting in asset loss',
@@ -35,6 +36,7 @@ const Map<String, String> enAccount = {
   'import.type': 'Source Type',
   'import.encrypt': 'Encrypt Type',
   'import.invalid': 'Invalid',
+  'import.warn': 'Warning',
   'import.duplicate': 'account exist, it will override the existing account.',
   'advanced': 'Advanced Options',
   'path': 'Secret derivation path',
@@ -84,4 +86,9 @@ const Map<String, String> enAccount = {
   'plugin.note': 'Maintained by ',
   'plugin.team': ' team.',
   'plugin.disable': 'This plugin is outdated and needs fix from maintainer.',
+  'bad.warn': 'WARNING!!!',
+  'bad.warn.info':
+      'is a public account which is derived by Mnemonic 【null】, please delete it and create a new one.',
+  'biometric.msg':
+      "Enter the password to activate fingerprint/face ID due to the biometrics has expired."
 };

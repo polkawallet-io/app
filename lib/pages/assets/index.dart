@@ -22,17 +22,17 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
-import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class AssetsPage extends StatefulWidget {
   AssetsPage(
@@ -75,14 +75,20 @@ class _AssetsState extends State<AssetsPage> {
     });
   }
 
-  Future<List> _fetchAnnouncements() async {
-    if (_announcements != null) return _announcements;
-
-    final List res = await WalletApi.getAnnouncements();
-    setState(() {
-      _announcements = res;
+  Future<dynamic> _fetchAnnouncements() async {
+    if (_announcements == null) {
+      _announcements = await WalletApi.getAnnouncements();
+    }
+    var index = _announcements.indexWhere((element) {
+      return element["plugin"] == widget.service.plugin.basic.name;
     });
-    return res;
+    if (index == -1) {
+      return _announcements.where((element) {
+        return element["plugin"] == "all";
+      }).first;
+    } else {
+      return _announcements[index];
+    }
   }
 
   Future<void> _updateMarketPrices() async {
@@ -390,309 +396,334 @@ class _AssetsState extends State<AssetsPage> {
     return Observer(
       builder: (_) {
         bool transferEnabled = true;
-        // todo: fix this after new acala online
+        // // todo: fix this after new acala online
         if (widget.service.plugin.basic.name == 'acala') {
-          if (widget.service.buildTarget != BuildTargets.dev) {
-            transferEnabled = false;
-            if (widget.service.store.settings.liveModules['assets'] != null) {
-              transferEnabled = widget
-                  .service.store.settings.liveModules['assets']['enabled'];
-            }
+          transferEnabled = false;
+          if (widget.service.store.settings.liveModules['assets'] != null) {
+            transferEnabled =
+                widget.service.store.settings.liveModules['assets']['enabled'];
           }
         }
+        bool claimKarEnabled = false;
+        if (widget.service.plugin.basic.name == 'karura') {
+          if (widget.service.store.settings.liveModules['claim'] != null) {
+            claimKarEnabled =
+                widget.service.store.settings.liveModules['claim']['enabled'];
+          }
+        }
+        final symbol =
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final decimals =
+            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+
+        final balancesInfo = widget.service.plugin.balances.native;
+        final tokens = widget.service.plugin.balances.tokens.toList();
+        final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
+
+        // add custom assets from user's config & tokensAll
+        final customTokensConfig = widget.service.store.assets.customAssets;
+        if (customTokensConfig.keys.length > 0) {
+          tokens.retainWhere((e) => customTokensConfig[e.id]);
+
+          tokensAll.retainWhere((e) => customTokensConfig[e.id]);
+          tokensAll.forEach((e) {
+            if (tokens.indexWhere((token) => token.id == e.id) < 0) {
+              tokens.add(e);
+            }
+          });
+        }
+
+        final extraTokens = widget.service.plugin.balances.extraTokens;
+        final isTokensFromCache =
+            widget.service.plugin.balances.isTokensFromCache;
+
+        String tokenPrice;
+        if (widget.service.store.assets.marketPrices[symbol] != null &&
+            balancesInfo != null) {
+          tokenPrice = Fmt.priceCeil(
+              widget.service.store.assets.marketPrices[symbol] *
+                  Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
+        }
+
+        /// Banner visible:
+        /// 1. Polkadot always shows banner.
+        /// 2. Other plugins can be closed.
+        final bannerVisible =
+            widget.service.plugin.basic.name == relay_chain_name_dot ||
+                widget.service.store.account.showBanner;
 
         return Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              title: SizedBox(
-                height: 36,
-                child: Image.asset('assets/images/logo.png'),
-              ),
-              centerTitle: false,
-              backgroundColor: Colors.transparent,
-              elevation: 0.0,
-              actions: <Widget>[
-                IconButton(
-                  padding: EdgeInsets.only(right: 8),
-                  icon: SvgPicture.asset(
-                    'assets/images/menu.svg',
-                    color: Theme.of(context).cardColor,
-                    width: 24,
-                  ),
-                  onPressed: widget.service.keyring.allAccounts.length > 0
-                      ? () async {
-                          final selected = (await Navigator.of(context)
-                                  .pushNamed(NetworkSelectPage.route))
-                              as PolkawalletPlugin;
-                          setState(() {});
-                          if (selected != null &&
-                              selected.basic.name !=
-                                  widget.service.plugin.basic.name) {
-                            widget.checkJSCodeUpdate(selected);
-                          }
-                        }
-                      : null,
-                ),
-              ],
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: SizedBox(
+              height: 36,
+              child: Image.asset('assets/images/logo.png'),
             ),
-            body: Column(
-              children: [
-                _buildTopCard(context, transferEnabled),
-                Expanded(child: _buildMainbodyView(transferEnabled)),
-                Visibility(
-                    visible: widget.service.store.account.showBanner &&
-                        !(widget.service.keyring.current.observation ?? false),
-                    child: AdBanner(widget.service, widget.connectedNode,
-                        widget.switchNetwork,
-                        canClose: true))
-              ],
-            ));
-      },
-    );
-  }
-
-  Widget _buildMainbodyView(bool transferEnabled) {
-    bool claimKarEnabled = false;
-    if (widget.service.plugin.basic.name == 'karura') {
-      if (widget.service.buildTarget != BuildTargets.dev) {
-        if (widget.service.store.settings.liveModules['claim'] != null) {
-          claimKarEnabled =
-              widget.service.store.settings.liveModules['claim']['enabled'];
-        }
-      } else {
-        claimKarEnabled = true;
-      }
-    }
-
-    final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-    final decimals =
-        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-
-    final balancesInfo = widget.service.plugin.balances.native;
-    final tokens = widget.service.plugin.balances.tokens.toList();
-    final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
-
-    // add custom assets from user's config & tokensAll
-    final customTokensConfig = widget.service.store.assets.customAssets;
-    if (customTokensConfig.keys.length > 0) {
-      tokens.retainWhere((e) => customTokensConfig[e.id]);
-
-      tokensAll.retainWhere((e) => customTokensConfig[e.id]);
-      tokensAll.forEach((e) {
-        if (tokens.indexWhere((token) => token.id == e.id) < 0) {
-          tokens.add(e);
-        }
-      });
-    }
-
-    final extraTokens = widget.service.plugin.balances.extraTokens ?? [];
-    final isTokensFromCache = widget.service.plugin.balances.isTokensFromCache;
-
-    String tokenPrice;
-    if (widget.service.store.assets.marketPrices[symbol] != null &&
-        balancesInfo != null) {
-      tokenPrice = Fmt.priceCeil(
-          widget.service.store.assets.marketPrices[symbol] *
-              Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
-    }
-    return CustomRefreshIndicator(
-      edgeOffset: 16,
-      key: _refreshKey,
-      onRefresh: _updateBalances,
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(16, 10, 16, 24),
-        children: [
-          Visibility(
-              visible: widget.service.plugin.basic.isTestNet,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 16, top: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: TextTag(
-                      I18n.of(context)
-                          .getDic(i18n_full_dic_app, 'assets')['assets.warn'],
-                      color: Colors.deepOrange,
-                      fontSize: 12,
-                      margin: EdgeInsets.all(0),
-                      padding: EdgeInsets.all(8),
-                    ))
-                  ],
+            centerTitle: false,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            actions: <Widget>[
+              IconButton(
+                padding: EdgeInsets.only(right: 8),
+                icon: SvgPicture.asset(
+                  'assets/images/menu.svg',
+                  color: Theme.of(context).cardColor,
+                  width: 24,
                 ),
-              )),
-          FutureBuilder(
-            future: _fetchAnnouncements(),
-            builder: (_, AsyncSnapshot<List> snapshot) {
-              final String lang =
-                  I18n.of(context).locale.toString().contains('zh')
-                      ? 'zh'
-                      : 'en';
-              if (!snapshot.hasData || snapshot.data.length == 0) {
-                return Container();
-              }
-              final Map announce = snapshot.data[0][lang];
-              return GestureDetector(
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: TextTag(
-                          announce['title'],
-                          padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-                          color: Colors.lightGreen,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                    AnnouncementPage.route,
-                    arguments: AnnouncePageParams(
-                      title: announce['title'],
-                      link: announce['link'],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          Row(
-            children: [
-              BorderedTitle(
-                title: I18n.of(context)
-                    .getDic(i18n_full_dic_app, 'assets')['assets'],
+                onPressed: widget.service.keyring.allAccounts.length > 0
+                    ? () async {
+                        final selected = (await Navigator.of(context)
+                                .pushNamed(NetworkSelectPage.route))
+                            as PolkawalletPlugin;
+                        setState(() {});
+                        if (selected != null &&
+                            selected.basic.name !=
+                                widget.service.plugin.basic.name) {
+                          widget.checkJSCodeUpdate(selected);
+                        }
+                      }
+                    : null,
               ),
-              Visibility(
-                  visible: widget.service.plugin.basic.name == 'karura' &&
-                      claimKarEnabled,
-                  child: OutlinedButtonSmall(
-                    content: 'Claim KAR',
-                    active: true,
-                    margin: EdgeInsets.only(left: 8),
-                    onPressed: () => Navigator.of(context).pushNamed(
-                      DAppWrapperPage.route,
-                      arguments: 'https://distribution.acala.network/claim',
-                    ),
-                  )),
-              Visibility(
-                  visible:
-                      (widget.service.plugin.noneNativeTokensAll ?? []).length >
-                          0,
-                  child: Expanded(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(ManageAssetsPage.route);
-                          },
-                          child: Icon(
-                            Icons.add_circle,
-                            color: Theme.of(context).disabledColor,
-                          ))
-                    ],
-                  )))
             ],
           ),
-          RoundedCard(
-            margin: EdgeInsets.only(top: 16),
-            child: ListTile(
-              leading: Container(
-                height: 36,
-                width: 37,
-                margin: EdgeInsets.only(right: 8),
-                child: widget.service.plugin.tokenIcons[symbol],
-              ),
-              title: Text(symbol),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    balancesInfo != null && balancesInfo.freeBalance != null
-                        ? Fmt.priceFloorBigInt(
-                            Fmt.balanceTotal(balancesInfo), decimals,
-                            lengthFixed: 4)
-                        : '--.--',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        letterSpacing: -0.6,
-                        color: balancesInfo?.isFromCache == false
-                            ? Colors.black54
-                            : Colors.black26),
-                  ),
-                  Text(
-                    '≈ \$${tokenPrice ?? '--.--'}',
-                    style: TextStyle(
-                      color: Theme.of(context).disabledColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-              onTap: transferEnabled
-                  ? () {
-                      Navigator.pushNamed(context, AssetPage.route);
-                    }
-                  : null,
-            ),
-          ),
-          Visibility(
-              visible: tokens != null && tokens.length > 0,
-              child: Column(
-                children: tokens.map((TokenBalanceData i) {
-                  // we can use token price form plugin or from market
-                  final price = i.price ??
-                      widget.service.store.assets.marketPrices[i.symbol];
-                  return TokenItem(
-                    i,
-                    i.decimals,
-                    isFromCache: isTokensFromCache,
-                    detailPageRoute: i.detailPageRoute,
-                    marketPrice: price,
-                    icon: TokenIcon(
-                      i.id ?? i.symbol,
-                      widget.service.plugin.tokenIcons,
-                      symbol: i.symbol,
-                    ),
-                  );
-                }).toList(),
-              )),
-          Visibility(
-              visible: extraTokens != null && extraTokens.length > 0,
-              child: Column(
-                children: extraTokens.map((ExtraTokenData i) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          body: Stack(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 120),
+                child: CustomRefreshIndicator(
+                  edgeOffset: 16,
+                  key: _refreshKey,
+                  onRefresh: _updateBalances,
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: BorderedTitle(
-                          title: i.title,
+                      widget.service.plugin.basic.isTestNet
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: 16, top: 8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: TextTag(
+                                    I18n.of(context).getDic(i18n_full_dic_app,
+                                        'assets')['assets.warn'],
+                                    color: Colors.deepOrange,
+                                    fontSize: 12,
+                                    margin: EdgeInsets.all(0),
+                                    padding: EdgeInsets.all(8),
+                                  ))
+                                ],
+                              ),
+                            )
+                          : Container(height: 24),
+                      FutureBuilder(
+                        future: _fetchAnnouncements(),
+                        builder: (_, AsyncSnapshot<dynamic> snapshot) {
+                          final String lang =
+                              I18n.of(context).locale.toString().contains('zh')
+                                  ? 'zh'
+                                  : 'en';
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return Container();
+                          }
+                          int level = snapshot.data['level'];
+                          final Map announce = snapshot.data[lang];
+                          return GestureDetector(
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: TextTag(
+                                      announce['title'],
+                                      padding:
+                                          EdgeInsets.fromLTRB(16, 12, 16, 12),
+                                      color: level == 0
+                                          ? Colors.blue
+                                          : level == 1
+                                              ? Colors.yellow
+                                              : Colors.red,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AnnouncementPage.route,
+                                arguments: AnnouncePageParams(
+                                  title: announce['title'],
+                                  link: announce['link'],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      Row(
+                        children: [
+                          BorderedTitle(
+                            title: I18n.of(context)
+                                .getDic(i18n_full_dic_app, 'assets')['assets'],
+                          ),
+                          Visibility(
+                              visible: widget.service.plugin.basic.name ==
+                                      'karura' &&
+                                  claimKarEnabled,
+                              child: OutlinedButtonSmall(
+                                content: 'Claim KAR',
+                                active: true,
+                                margin: EdgeInsets.only(left: 8),
+                                onPressed: () =>
+                                    Navigator.of(context).pushNamed(
+                                  DAppWrapperPage.route,
+                                  arguments:
+                                      'https://distribution.acala.network/claim',
+                                ),
+                              )),
+                          Visibility(
+                              visible:
+                                  (widget.service.plugin.noneNativeTokensAll ??
+                                              [])
+                                          .length >
+                                      0,
+                              child: Expanded(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed(ManageAssetsPage.route);
+                                      },
+                                      child: Icon(
+                                        Icons.add_circle,
+                                        color: Theme.of(context).disabledColor,
+                                      ))
+                                ],
+                              )))
+                        ],
+                      ),
+                      RoundedCard(
+                        margin: EdgeInsets.only(top: 16),
+                        child: ListTile(
+                          leading: Container(
+                            height: 36,
+                            width: 37,
+                            margin: EdgeInsets.only(right: 8),
+                            child: widget.service.plugin.tokenIcons[symbol],
+                          ),
+                          title: Text(symbol),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                balancesInfo != null &&
+                                        balancesInfo.freeBalance != null
+                                    ? Fmt.priceFloorBigInt(
+                                        Fmt.balanceTotal(balancesInfo),
+                                        decimals,
+                                        lengthFixed: 4)
+                                    : '--.--',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    letterSpacing: -0.6,
+                                    color: balancesInfo?.isFromCache == false
+                                        ? Colors.black54
+                                        : Colors.black26),
+                              ),
+                              Text(
+                                '≈ \$${tokenPrice ?? '--.--'}',
+                                style: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: transferEnabled
+                              ? () {
+                                  Navigator.pushNamed(context, AssetPage.route);
+                                }
+                              : null,
                         ),
                       ),
-                      Column(
-                        children: i.tokens
-                            .map((e) => TokenItem(
-                                  e,
-                                  e.decimals,
-                                  isFromCache: isTokensFromCache,
-                                  detailPageRoute: e.detailPageRoute,
-                                  icon: widget
-                                      .service.plugin.tokenIcons[e.symbol],
-                                ))
-                            .toList(),
-                      )
+                      Visibility(
+                          visible: tokens != null && tokens.length > 0,
+                          child: Column(
+                            children: (tokens ?? []).map((TokenBalanceData i) {
+                              // we can use token price form plugin or from market
+                              final price = i.price ??
+                                  widget.service.store.assets
+                                      .marketPrices[i.symbol];
+                              return TokenItem(
+                                i,
+                                i.decimals,
+                                isFromCache: isTokensFromCache,
+                                detailPageRoute: i.detailPageRoute,
+                                marketPrice: price,
+                                icon: TokenIcon(
+                                  i.id ?? i.symbol,
+                                  widget.service.plugin.tokenIcons,
+                                  symbol: i.symbol,
+                                ),
+                              );
+                            }).toList(),
+                          )),
+                      Visibility(
+                        visible: extraTokens == null || extraTokens.length == 0,
+                        child: Column(
+                            children:
+                                (extraTokens ?? []).map((ExtraTokenData i) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: BorderedTitle(
+                                  title: i.title,
+                                ),
+                              ),
+                              Column(
+                                children: i.tokens
+                                    .map((e) => TokenItem(
+                                          e,
+                                          e.decimals,
+                                          isFromCache: isTokensFromCache,
+                                          detailPageRoute: e.detailPageRoute,
+                                          icon: widget.service.plugin
+                                              .tokenIcons[e.symbol],
+                                        ))
+                                    .toList(),
+                              )
+                            ],
+                          );
+                        }).toList()),
+                      ),
                     ],
-                  );
-                }).toList(),
-              )),
-        ],
-      ),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildTopCard(context, transferEnabled),
+                  Expanded(child: Container()),
+                  Visibility(
+                      visible: bannerVisible &&
+                          !(widget.service.keyring.current.observation ??
+                              false),
+                      child: AdBanner(widget.service, widget.connectedNode,
+                          widget.switchNetwork,
+                          canClose: widget.service.plugin.basic.name !=
+                              relay_chain_name_dot))
+                ],
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }

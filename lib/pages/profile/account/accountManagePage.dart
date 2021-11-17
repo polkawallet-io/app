@@ -97,10 +97,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
       } catch (err) {
         print(err);
         // user may cancel the biometric auth. then we set biometric disabled
-        widget.service.account.setBiometricDisabled(key);
+        widget.service.account.closeBiometricDisabled(key);
       }
     } else {
-      widget.service.account.setBiometricDisabled(key);
+      widget.service.account.closeBiometricDisabled(key);
       result = enable;
     }
 
@@ -126,7 +126,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
         : widget.service.keyring.current.pubKey;
     final storeFile =
         await widget.service.account.getBiometricPassStoreFile(context, key);
-    final isAuthorized = widget.service.account.getBiometricEnabled(key);
+    final isAuthorized = !widget.service.account.isCloseBiometricDisabled(key);
     setState(() {
       _isBiometricAuthorized = isAuthorized;
       _authStorage = storeFile;
@@ -213,20 +213,20 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     onTap: () => Navigator.of(context)
                         .pushNamed(ExportAccountPage.route),
                   ),
-                  _supportBiometric
-                      ? ListTile(
-                          title: Text(I18n.of(context).getDic(i18n_full_dic_app,
-                              'account')['unlock.bio.enable']),
-                          trailing: CupertinoSwitch(
-                            value: _isBiometricAuthorized,
-                            onChanged: (v) {
-                              if (v != _isBiometricAuthorized) {
-                                _updateBiometricAuth(v);
-                              }
-                            },
-                          ),
-                        )
-                      : Container(),
+                  Visibility(
+                      visible: _supportBiometric,
+                      child: ListTile(
+                        title: Text(I18n.of(context).getDic(
+                            i18n_full_dic_app, 'account')['unlock.bio.enable']),
+                        trailing: CupertinoSwitch(
+                          value: _isBiometricAuthorized,
+                          onChanged: (v) {
+                            if (v != _isBiometricAuthorized) {
+                              _updateBiometricAuth(v);
+                            }
+                          },
+                        ),
+                      )),
                 ],
               ),
             ),

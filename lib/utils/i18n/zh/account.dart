@@ -16,7 +16,7 @@ const Map<String, String> zhAccount = {
   'create.warn2': '获得助记词等于拥有钱包资产所有权',
   'create.warn3': '备份助记词',
   'create.warn4': '使用纸和笔正确抄写助记词',
-  'create.warn5': '如果你的手机丢失、被盗、损坏，助记词将可以恢复你的资产',
+  'create.warn5': '如果你的手机丢失、被盗、损坏，助记词可以用来恢复你的账户',
   'create.warn6': '离线保存',
   'create.warn7': '妥善保管至隔离网络的安全地方',
   'create.warn8': '请勿将助记词在联网环境下分享和储存，比如邮件、相册、社交应用等',
@@ -30,6 +30,7 @@ const Map<String, String> zhAccount = {
   'import.type': '导入类型',
   'import.encrypt': '加密类型',
   'import.invalid': '无效的',
+  'import.warn': '警告',
   'import.duplicate': '账户已存在，将覆盖原有账户。',
   'advanced': '高级选项',
   'path': '加密派生路径',
@@ -76,4 +77,7 @@ const Map<String, String> zhAccount = {
   'plugin.note': '功能插件由 ',
   'plugin.team': ' 团队维护。',
   'plugin.disable': '该插件与当前 App 版本不兼容，请等待插件修复。',
+  'bad.warn': '警告!!!',
+  'bad.warn.info': '是一个助记词为【null】的公共账户，请将其删除并创建新的账户使用.',
+  'biometric.msg': "由于该账户超过7日未使用过指纹/面容ID，需要输入密码进行解锁。"
 };

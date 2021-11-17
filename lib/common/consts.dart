@@ -18,8 +18,6 @@ const local_tx_store_key = 'local_tx_store';
 
 /// app versions
 enum BuildTargets { apk, playStore, dev }
-const String app_beta_version = 'v2.3.8-beta.2';
-const int app_beta_version_code = 2382;
 
 /// para-chains
 const relay_chain_name_ksm = 'kusama';
@@ -48,7 +46,7 @@ const plugin_from_community = ['chainx', 'edgeware', para_chain_name_bifrost];
 
 const xcm_base_weight = 1000000000;
 const xcm_dest_weight_ksm = 3 * xcm_base_weight;
-const xcm_dest_weight_bifrost = 600000000;
+const xcm_dest_weight_bifrost = 5000000000;
 
 const xcm_send_fees = {
   relay_chain_name_ksm: {
@@ -60,7 +58,7 @@ const xcm_send_fees = {
     'existentialDeposit': '33333333',
   },
   para_chain_name_karura: {
-    'fee': '160000000',
+    'fee': '64000000',
     'existentialDeposit': '100000000',
   },
   para_chain_name_bifrost: {

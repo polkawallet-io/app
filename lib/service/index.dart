@@ -1,4 +1,3 @@
-import 'package:app/common/consts.dart';
 import 'package:app/service/apiAccount.dart';
 import 'package:app/service/apiAssets.dart';
 import 'package:app/store/index.dart';
@@ -8,18 +7,14 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
 
 class AppService {
-  AppService.init(this.allPlugins, this.plugin, this.keyring, this.keyringETH,
-      this.store, this.buildTarget) {
-    _account = ApiAccount(this);
-    _assets = ApiAssets(this);
-  }
+  AppService(
+      this.allPlugins, this.plugin, this.keyring, this.keyringETH, this.store);
 
   final List<PolkawalletPlugin> allPlugins;
   final PolkawalletPlugin plugin;
   final Keyring keyring;
   final KeyringETH keyringETH;
   final AppStore store;
-  final BuildTargets buildTarget;
 
   final subScan = SubScanApi();
 

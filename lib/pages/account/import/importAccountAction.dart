@@ -115,7 +115,7 @@ class ImportAccountAction {
               ? _keyType
               : null,
         );
-        service.account.setBiometricDisabled(
+        service.account.closeBiometricDisabled(
             service.plugin.basic.pluginType == PluginType.Etherem
                 ? acc['address']
                 : acc['pubKey']);

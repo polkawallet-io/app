@@ -61,7 +61,9 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
       });
       final pubKeyAddressMap =
           await widget.service.plugin.sdk.api.account.encodeAddress(pubKeys);
-
+      // set pubKeyAddressMap so we can parse the pubKey from subscan tx.
+      widget.service.store.account.setPubKeyAddressMap(Map<String, Map>.from(
+          {'${widget.service.plugin.basic.ss58}': pubKeyAddressMap}));
       final addresses =
           pubKeys.map((e) => pubKeyAddressMap[e] as String).toList();
 

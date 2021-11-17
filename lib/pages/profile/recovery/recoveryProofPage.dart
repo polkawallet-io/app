@@ -43,7 +43,12 @@ class _RecoveryStatePage extends State<RecoveryProofPage> {
       ls.forEach((i) {
         pubKeys.addAll(List.of(jsonDecode(i.params)).map((e) => e['value']));
       });
-      widget.service.plugin.sdk.api.account.encodeAddress(pubKeys);
+
+      final pubKeyAddressMap =
+          await widget.service.plugin.sdk.api.account.encodeAddress(pubKeys);
+      widget.service.store.account.setPubKeyAddressMap(Map<String, Map>.from(
+          {'${widget.service.plugin.basic.ss58}': pubKeyAddressMap}));
+
       setState(() {
         _txs = ls;
       });

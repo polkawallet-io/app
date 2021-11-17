@@ -28,9 +28,10 @@ class RemoteNodeListPage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              isCurrent
-                  ? Icon(Icons.check_circle, color: Colors.lightGreen, size: 18)
-                  : Container(),
+              Visibility(
+                  visible: isCurrent,
+                  child: Icon(Icons.check_circle,
+                      color: Colors.lightGreen, size: 18)),
               Icon(Icons.arrow_forward_ios, size: 18)
             ],
           ),

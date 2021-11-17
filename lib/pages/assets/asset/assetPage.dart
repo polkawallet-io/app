@@ -1,4 +1,3 @@
-import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -8,7 +7,6 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -23,6 +21,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/TransferIcon.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -269,9 +268,6 @@ class _AssetPageState extends State<AssetPage> {
                 transferEnabled = widget
                     .service.store.settings.liveModules['assets']['enabled'];
               }
-              if (widget.service.buildTarget == BuildTargets.dev) {
-                transferEnabled = true;
-              }
             }
 
             BalanceData balancesInfo = widget.service.plugin.balances.native;
@@ -466,17 +462,17 @@ class BalanceCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          tokenPrice != null
-              ? Padding(
-                  padding: EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    '≈ \$ ${tokenPrice ?? '--.--'}',
-                    style: TextStyle(
-                      color: Theme.of(context).cardColor,
-                    ),
+          Visibility(
+              visible: tokenPrice != null,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: Text(
+                  '≈ \$ ${tokenPrice ?? '--.--'}',
+                  style: TextStyle(
+                    color: Theme.of(context).cardColor,
                   ),
-                )
-              : Container(),
+                ),
+              )),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
@@ -540,35 +536,36 @@ class BalanceCard extends StatelessWidget {
                               ? GestureDetector(
                                   child: Container(
                                     padding: EdgeInsets.only(right: 4),
-                                    child: Icon(Icons.info,
-                                        size: 16, color: titleColor),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.info,
+                                            size: 16, color: titleColor),
+                                        priceBuild(balancesInfo, titleColor),
+                                      ],
+                                    ),
                                   ),
                                   onTap: () => Navigator.of(context)
                                       .pushNamed(LocksDetailPage.route),
                                 )
                               : TapTooltip(
                                   message: lockedInfo,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 4),
-                                    child: Icon(Icons.info,
-                                        size: 16, color: titleColor),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.info,
+                                          size: 16, color: titleColor),
+                                      priceBuild(balancesInfo, titleColor),
+                                    ],
                                   ),
                                   waitDuration: Duration(seconds: 0),
                                 )),
-                      Text(
-                        Fmt.priceFloorBigInt(
-                          Fmt.balanceInt(
-                              (balancesInfo?.lockedBalance ?? 0).toString()),
-                          decimals,
-                          lengthMax: 4,
-                        ),
-                        style: TextStyle(color: titleColor),
-                      ),
+                      Visibility(
+                          visible: lockedInfo.length <= 2,
+                          child: priceBuild(balancesInfo, titleColor)),
                       Visibility(
                           visible: unlocks.length > 0,
                           child: GestureDetector(
                             child: Padding(
-                              padding: EdgeInsets.only(left: 6),
+                              padding: EdgeInsets.only(left: 4),
                               child: Icon(
                                 Icons.lock_open,
                                 size: 16,
@@ -593,6 +590,17 @@ class BalanceCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget priceBuild(BalanceData balancesInfo, Color titleColor) {
+    return Text(
+      Fmt.priceFloorBigInt(
+        Fmt.balanceInt((balancesInfo?.lockedBalance ?? 0).toString()),
+        decimals,
+        lengthMax: 4,
+      ),
+      style: TextStyle(color: titleColor),
     );
   }
 }
@@ -628,9 +636,12 @@ class TransferListItem extends StatelessWidget {
         children: [
           data.success
               ? isOut
-                  ? SvgPicture.asset('assets/images/assets_up.svg', width: 32)
-                  : SvgPicture.asset('assets/images/assets_down.svg', width: 32)
-              : SvgPicture.asset('assets/images/tx_failed.svg', width: 32)
+                  ? TransferIcon(type: TransferIconType.rollOut)
+                  : TransferIcon(type: TransferIconType.rollIn)
+              : TransferIcon(
+                  type: TransferIconType.failure,
+                  paddingHorizontal: 7,
+                )
         ],
       ),
       title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),

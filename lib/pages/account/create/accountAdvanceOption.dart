@@ -141,14 +141,16 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
                                   setState(() {
                                     _typeSelection = v;
                                   });
+                                  String error;
                                   if (_pathCtrl.text.isNotEmpty) {
-                                    _checkDerivePath(_pathCtrl.text,
+                                    error = _checkDerivePath(_pathCtrl.text,
                                         forceCheck: true);
                                   }
                                   widget.onChange(AccountAdvanceOptionParams(
                                     type: _typeOptions[v],
                                     // path: _derivePath,
                                     path: _pathCtrl.text,
+                                    error: error != null,
                                   ));
                                 },
                               ),

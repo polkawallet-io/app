@@ -1,4 +1,3 @@
-import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
@@ -6,13 +5,11 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 part 'account.g.dart';
 
 class AccountStore extends _AccountStore with _$AccountStore {
-  AccountStore(GetStorage storage) : super(storage);
+  AccountStore() : super();
 }
 
 abstract class _AccountStore with Store {
-  _AccountStore(this.storage);
-
-  final GetStorage storage;
+  _AccountStore();
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -84,8 +81,8 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setAccountRecoveryInfo(Map json) {
-    recoveryInfo = json != null ? RecoveryInfo.fromJson(json) : RecoveryInfo();
+  void setAccountRecoveryInfo(RecoveryInfo data) {
+    recoveryInfo = data ?? RecoveryInfo();
   }
 
   @action

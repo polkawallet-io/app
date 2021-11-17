@@ -45,8 +45,10 @@ import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/startPage.dart';
 import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,6 +75,8 @@ import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'pages/account/import/importAccountCreatePage.dart';
@@ -87,10 +91,12 @@ const get_storage_container = 'configuration';
 bool _isInitialUriHandled = false;
 
 class WalletApp extends StatefulWidget {
-  WalletApp(this.plugins, this.disabledPlugins, this.buildTarget);
+  WalletApp(this.plugins, this.disabledPlugins, BuildTargets buildTarget) {
+    WalletApp.buildTarget = buildTarget;
+  }
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
-  final BuildTargets buildTarget;
+  static BuildTargets buildTarget;
   @override
   _WalletAppState createState() => _WalletAppState();
 }
@@ -198,8 +204,10 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _getAcalaModulesConfig() async {
-    final karModulesConfig = await WalletApi.getKarModulesConfig();
+  Future<void> _getAcalaModulesConfig(String pluginName) async {
+    final karModulesConfig = await (pluginName == 'karura'
+        ? WalletApi.getKarModulesConfig()
+        : WalletApi.getAcalaModulesConfig());
     if (karModulesConfig != null) {
       _store.settings.setLiveModules(karModulesConfig);
     } else {
@@ -213,7 +221,7 @@ class _WalletAppState extends State<WalletApp> {
     // _initWalletConnect();
 
     _service.assets.fetchMarketPriceFromSubScan();
-    _store.settings.getXcmEnabledChains(service.plugin.basic.name);
+    // _store.settings.getXcmEnabledChains(service.plugin.basic.name);
 
     setState(() {
       _connectedNode = null;
@@ -225,7 +233,7 @@ class _WalletAppState extends State<WalletApp> {
 
     if (_service.plugin.basic.name == 'karura' ||
         _service.plugin.basic.name == 'acala') {
-      _getAcalaModulesConfig();
+      _getAcalaModulesConfig(_service.plugin.basic.name);
     }
   }
 
@@ -248,8 +256,8 @@ class _WalletAppState extends State<WalletApp> {
             network.basic.pluginType) >
         network.basic.jsCodeVersion;
 
-    final service = AppService.init(widget.plugins, network, _keyring,
-        _keyringEth, _store, widget.buildTarget);
+    final service =
+        AppService(widget.plugins, network, _keyring, _keyringEth, _store);
 
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(
@@ -300,14 +308,41 @@ class _WalletAppState extends State<WalletApp> {
     });
   }
 
+  Future<void> _checkBadAddressAndWarn(BuildContext context) async {
+    if (_keyring != null &&
+        _keyring.current != null &&
+        _keyring.current.pubKey ==
+            '0xda99a528d2cbe6b908408c4f887d2d0336394414a9edb474c33a690a4202341a') {
+      final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+      showCupertinoDialog(
+          context: context,
+          builder: (_) {
+            return CupertinoAlertDialog(
+              title: Text(dic['bad.warn']),
+              content: Text(
+                  '${Fmt.address(_keyring.current.address)} ${dic['bad.warn.info']}'),
+              actions: [
+                CupertinoButton(
+                  child: Text(I18n.of(context)
+                      .getDic(i18n_full_dic_ui, 'common')['ok']),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          });
+    }
+  }
+
   Future<void> _checkUpdate(BuildContext context) async {
     final versions = await WalletApi.getLatestVersion();
-    AppUI.checkUpdate(context, versions, widget.buildTarget, autoCheck: true);
+    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+        autoCheck: true);
   }
 
   Future<void> _checkJSCodeUpdate(
       BuildContext context, PolkawalletPlugin plugin,
       {bool needReload = true}) async {
+    _checkBadAddressAndWarn(context);
     // check js code update
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
     if (jsVersions == null) return;
@@ -333,23 +368,23 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _showGuide(BuildContext context, GetStorage storage) async {
-    // todo: remove this after crowd loan
-    // final karStarted = await WalletApi.getKarCrowdLoanStarted();
-    // if (karStarted != null && karStarted['started']) {
-    //   Navigator.of(context).pushNamed(AdPage.route);
-    //   return;
-    // }
+  // Future<void> _showGuide(BuildContext context, GetStorage storage) async {
+  //   // todo: remove this after crowd loan
+  //   // final karStarted = await WalletApi.getKarCrowdLoanStarted();
+  //   // if (karStarted != null && karStarted['started']) {
+  //   //   Navigator.of(context).pushNamed(AdPage.route);
+  //   //   return;
+  //   // }
 
-    final storeKey = '${show_guide_status_key}_$app_beta_version';
-    final showGuideStatus = storage.read(storeKey);
-    if (showGuideStatus == null) {
-      final res = await Navigator.of(context).pushNamed(GuidePage.route);
-      if (res != null) {
-        storage.write(storeKey, true);
-      }
-    }
-  }
+  //   final storeKey = '${show_guide_status_key}_${await Utils.getAppVersion()}';
+  //   final showGuideStatus = storage.read(storeKey);
+  //   if (showGuideStatus == null) {
+  //     final res = await Navigator.of(context).pushNamed(GuidePage.route);
+  //     if (res != null) {
+  //       storage.write(storeKey, true);
+  //     }
+  //   }
+  // }
 
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
@@ -363,18 +398,17 @@ class _WalletAppState extends State<WalletApp> {
       final store = AppStore(storage);
       await store.init();
 
-      _showGuide(context, storage);
+      // await _showGuide(context, storage);
 
       final pluginIndex = widget.plugins.indexWhere((e) =>
           e.basic.name == store.settings.network &&
           e.basic.pluginType == store.settings.pluginType);
-      final service = AppService.init(
+      final service = AppService(
           widget.plugins,
           widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           _keyringEth,
-          store,
-          widget.buildTarget);
+          store);
       setState(() {
         _store = store;
         _service = service;
@@ -426,6 +460,11 @@ class _WalletAppState extends State<WalletApp> {
     return {
       /// pages of plugin
       ...pluginPages,
+
+      StartPage.route: (_) {
+        _startApp(context);
+        return StartPage();
+      },
 
       /// basic pages
       HomePage.route: (_) => WillPopScopWrapper(
@@ -603,7 +642,7 @@ class _WalletAppState extends State<WalletApp> {
                   const Locale('en', ''),
                   const Locale('zh', ''),
                 ],
-                initialRoute: HomePage.route,
+                initialRoute: StartPage.route,
                 onGenerateRoute: (settings) => CupertinoPageRoute(
                     builder: routes[settings.name], settings: settings),
                 navigatorObservers: [

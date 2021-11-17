@@ -242,13 +242,13 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                           fontWeight: FontWeight.bold,
                                           color: colorGrey),
                                     ),
-                                    list[i].name != null
-                                        ? Text(
-                                            '$id${list[i].name}',
-                                            style: TextStyle(
-                                                fontSize: 12, color: colorGrey),
-                                          )
-                                        : Container()
+                                    Visibility(
+                                        visible: list[i].name != null,
+                                        child: Text(
+                                          '$id${list[i].name}',
+                                          style: TextStyle(
+                                              fontSize: 12, color: colorGrey),
+                                        ))
                                   ],
                                 ),
                               ),

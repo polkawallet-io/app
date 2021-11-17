@@ -55,109 +55,108 @@ class CrowdLoanList extends StatelessWidget {
                       : Icons.keyboard_arrow_down))
             ],
           ),
-          expanded
-              ? Column(
-                  children: funds.map((e) {
-                    final logoUri = config[e.paraId]['logo'] as String;
-                    return Column(
-                      children: [
-                        Divider(height: 32),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 8),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(32),
-                                child: logoUri.contains('.svg')
-                                    ? SvgPicture.network(logoUri,
-                                        height: 32, width: 32)
-                                    : Image.network(logoUri,
-                                        height: 32, width: 32),
-                              ),
+          Visibility(
+              visible: expanded,
+              child: Column(
+                children: funds.map((e) {
+                  final logoUri = config[e.paraId]['logo'] as String;
+                  return Column(
+                    children: [
+                      Divider(height: 32),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 8),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(32),
+                              child: logoUri.contains('.svg')
+                                  ? SvgPicture.network(logoUri,
+                                      height: 32, width: 32)
+                                  : Image.network(logoUri,
+                                      height: 32, width: 32),
                             ),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 4),
-                                    child: Text(
-                                      config[e.paraId]['name'],
-                                      style: titleStyle,
-                                    ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text(
+                                    config[e.paraId]['name'],
+                                    style: titleStyle,
                                   ),
-                                  JumpToLink(
-                                    config[e.paraId]['homepage'],
-                                    text: '',
-                                    color: Colors.blueAccent,
-                                  )
-                                ],
-                              ),
+                                ),
+                                JumpToLink(
+                                  config[e.paraId]['homepage'],
+                                  text: '',
+                                  color: Colors.blueAccent,
+                                )
+                              ],
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Text('${e.firstSlot} - ${e.lastSlot}'),
+                              Text('Leases', style: textStyleSmall)
+                            ],
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 24, bottom: 24),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                    contributions[e.paraId] == null
+                                        ? '--.--'
+                                        : Fmt.balance(
+                                            contributions[e.paraId], decimals,
+                                            length: 2),
+                                    style: titleStyle),
+                                Padding(
+                                    padding: EdgeInsets.only(top: 8),
+                                    child: Text('My Contribution($tokenSymbol)',
+                                        style: textStyleSmall))
+                              ],
                             ),
                             Column(
                               children: [
-                                Text('${e.firstSlot} - ${e.lastSlot}'),
-                                Text('Leases', style: textStyleSmall)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                        Fmt.balance(
+                                            e.value.toString(), decimals,
+                                            length: 0),
+                                        style: titleStyle),
+                                    Text(
+                                        '/${Fmt.balance(e.cap.toString(), decimals, length: 0)}',
+                                        style: textStyleSmall)
+                                  ],
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.only(top: 8),
+                                    child: Text('Raised/Cap ($tokenSymbol)',
+                                        style: textStyleSmall))
                               ],
                             )
                           ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 24, bottom: 24),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                      contributions[e.paraId] == null
-                                          ? '--.--'
-                                          : Fmt.balance(
-                                              contributions[e.paraId], decimals,
-                                              length: 2),
-                                      style: titleStyle),
-                                  Padding(
-                                      padding: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                          'My Contribution($tokenSymbol)',
-                                          style: textStyleSmall))
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                          Fmt.balance(
-                                              e.value.toString(), decimals,
-                                              length: 0),
-                                          style: titleStyle),
-                                      Text(
-                                          '/${Fmt.balance(e.cap.toString(), decimals, length: 0)}',
-                                          style: textStyleSmall)
-                                    ],
-                                  ),
-                                  Padding(
-                                      padding: EdgeInsets.only(top: 8),
-                                      child: Text('Raised/Cap ($tokenSymbol)',
-                                          style: textStyleSmall))
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                        (!e.isWinner && !e.isEnded)
-                            ? RoundedButton(
-                                text: e.isCapped ? 'Capped' : 'Contribute',
-                                onPressed:
-                                    e.isCapped ? null : () => onContribute(e),
-                              )
-                            : Container(),
-                      ],
-                    );
-                  }).toList(),
-                )
-              : Container(),
+                      ),
+                      Visibility(
+                          visible: (!e.isWinner && !e.isEnded),
+                          child: RoundedButton(
+                            text: e.isCapped ? 'Capped' : 'Contribute',
+                            onPressed:
+                                e.isCapped ? null : () => onContribute(e),
+                          )),
+                    ],
+                  );
+                }).toList(),
+              )),
         ],
       ),
     );

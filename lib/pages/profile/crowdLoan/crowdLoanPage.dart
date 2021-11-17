@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/crowdLoan/auctionPanel.dart';
 import 'package:app/pages/profile/crowdLoan/contributePage.dart';
 import 'package:app/pages/profile/crowdLoan/crowdLoanList.dart';
@@ -41,7 +42,8 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
 
     final res = await Future.wait([
       widget.service.plugin.sdk.api.parachain.queryAuctionWithWinners(),
-      WalletApi.getKSMCrowdLoansConfig(),
+      WalletApi.getCrowdLoansConfig(
+          isKSM: widget.service.plugin.basic.name == relay_chain_name_ksm),
     ]);
 
     if (mounted && res[0] != null && res[1] != null) {
