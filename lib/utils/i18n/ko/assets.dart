@@ -14,7 +14,6 @@ const Map<String, String> enAssets = {
   'amount': 'Amount',
   'amount.hint': 'Please enter the transfer amount',
   'amount.max': 'Max',
-  'amount.error': 'Invalid amount',
   'amount.low': 'Insufficient balance',
   'amount.exist': 'existential deposit',
   'amount.exist.msg':
