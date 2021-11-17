@@ -48,7 +48,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
 
       widget.service.account.setBiometricEnabled(pubKey);
     } else {
-      widget.service.account.setBiometricDisabled(pubKey);
+      widget.service.account.closeBiometricDisabled(pubKey);
     }
 
     setState(() {

@@ -1,3 +1,4 @@
+import 'package:app/pages/account/import/importAccountAction.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -40,21 +41,6 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     });
   }
 
-  Future<void> _authBiometric() async {
-    final pubKey = widget.service.keyring.current.pubKey;
-    final storeFile = await widget.service.account.getBiometricPassStoreFile(
-      context,
-      pubKey,
-    );
-
-    try {
-      await storeFile.write(widget.service.store.account.newAccount.password);
-      widget.service.account.setBiometricEnabled(pubKey);
-    } catch (err) {
-      // ignore
-    }
-  }
-
   Future<void> _onSubmit() async {
     if (_formKey.currentState.validate()) {
       widget.service.store.account
@@ -64,7 +50,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       if (success) {
         /// save password with biometrics after import success
         if (_supportBiometric && _enableBiometric) {
-          await _authBiometric();
+          await ImportAccountAction.authBiometric(context, widget.service);
         }
 
         widget.service.plugin.changeAccount(widget.service.keyring.current);

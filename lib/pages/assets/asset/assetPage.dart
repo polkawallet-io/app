@@ -7,7 +7,6 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -22,6 +21,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/TransferIcon.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -636,9 +636,12 @@ class TransferListItem extends StatelessWidget {
         children: [
           data.success
               ? isOut
-                  ? SvgPicture.asset('assets/images/assets_up.svg', width: 32)
-                  : SvgPicture.asset('assets/images/assets_down.svg', width: 32)
-              : SvgPicture.asset('assets/images/tx_failed.svg', width: 32)
+                  ? TransferIcon(type: TransferIconType.rollOut)
+                  : TransferIcon(type: TransferIconType.rollIn)
+              : TransferIcon(
+                  type: TransferIconType.failure,
+                  paddingHorizontal: 7,
+                )
         ],
       ),
       title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),

@@ -55,17 +55,17 @@ class _AdBannerState extends State<AdBanner> {
           'https://acala.network/acala/quests#quests'));
     }
 
-    // if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
-    //         false) &&
-    //     ((widget.service.store.settings.claimState['result'] == true &&
-    //             widget.service.store.settings.claimState['claimed'] == false &&
-    //             widget.service.store.settings.claimState['originClaimed'] ==
-    //                 false) ||
-    //         WalletApp.buildTarget == BuildTargets.dev)) {
-    //   widgets.add(GeneralCrowdLoanBanner(
-    //       'assets/images/public/banner_aca_claim.gif',
-    //       'https://distribution.acala.network/claim'));
-    // }
+    if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
+            false) &&
+        ((widget.service.store.settings.claimState['result'] == true &&
+                widget.service.store.settings.claimState['claimed'] == false &&
+                widget.service.store.settings.claimState['originClaimed'] ==
+                    false) ||
+            WalletApp.buildTarget == BuildTargets.dev)) {
+      widgets.add(GeneralCrowdLoanBanner(
+          'assets/images/public/banner_aca_claim.gif',
+          'https://distribution.acala.network/claim'));
+    }
 
     return widgets;
   }

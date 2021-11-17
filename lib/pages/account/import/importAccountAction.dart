@@ -91,7 +91,7 @@ class ImportAccountAction {
           cryptoType: _cryptoType,
           derivePath: _derivePath,
         );
-        service.account.setBiometricDisabled(acc['pubKey']);
+        service.account.closeBiometricDisabled(acc['pubKey']);
       }
       obSubmittingChang(false);
       Navigator.of(context).pop();

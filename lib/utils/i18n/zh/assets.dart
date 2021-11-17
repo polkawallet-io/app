@@ -13,7 +13,6 @@ const Map<String, String> zhAssets = {
   'amount': '数量',
   'amount.hint': '请输入您想转账的数额',
   'amount.max': '最大值',
-  'amount.error': '格式错误',
   'amount.low': '余额不足',
   'amount.exist': '账户保留金',
   'amount.exist.msg': '为保证账户不被网络移除所需要的最小余额。',
