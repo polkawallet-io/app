@@ -639,8 +639,7 @@ class TransferListItem extends StatelessWidget {
                   ? TransferIcon(type: TransferIconType.rollOut)
                   : TransferIcon(type: TransferIconType.rollIn)
               : TransferIcon(
-                  type: TransferIconType.failure,
-                  paddingHorizontal: 7,
+                  type: TransferIconType.failure
                 )
         ],
       ),

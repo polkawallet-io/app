@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.4.9+2491
+version: 2.5.0+2503
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -83,16 +83,16 @@ dependencies:
 dependency_overrides:
   polkawallet_plugin_kusama:
     path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#  polkawallet_plugin_acala:
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
   polkawallet_plugin_karura:
     path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_bifrost:
 #    path: ../../coding/polkawallet/polkawallet_plugin_bifrost
 #  polkawallet_plugin_laminar:
 #    path: ../../coding/polkawallet/polkawallet_plugin_laminar
-#  polkawallet_plugin_statemine:
-#    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+  polkawallet_plugin_statemine:
+    path: ../../coding/polkawallet/polkawallet_plugin_statemine
 #  polkawallet_plugin_chainx:
 #    path: ../../coding/polkawallet/polkawallet_plugin_chainx
 #  polkawallet_plugin_edgeware:

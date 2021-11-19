@@ -138,25 +138,25 @@ class _AccountManagePageState extends State<AccountManagePage> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
+            Container(
+              color: primaryColor,
+              padding: EdgeInsets.only(bottom: 16),
+              child: ListTile(
+                leading: AddressIcon(
+                  acc.address,
+                  svg: acc.icon,
+                ),
+                title: Text(acc.name ?? 'name',
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                subtitle: Text(
+                  Fmt.address(acc.address) ?? '',
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
+                ),
+              ),
+            ),
             Expanded(
               child: ListView(
                 children: <Widget>[
-                  Container(
-                    color: primaryColor,
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: ListTile(
-                      leading: AddressIcon(
-                        acc.address,
-                        svg: acc.icon,
-                      ),
-                      title: Text(acc.name ?? 'name',
-                          style: TextStyle(fontSize: 16, color: Colors.white)),
-                      subtitle: Text(
-                        Fmt.address(acc.address) ?? '',
-                        style: TextStyle(fontSize: 16, color: Colors.white70),
-                      ),
-                    ),
-                  ),
                   Container(padding: EdgeInsets.only(top: 16)),
                   ListTile(
                     title: Text(dic['name.change']),

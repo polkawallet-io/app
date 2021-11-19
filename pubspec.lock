@@ -861,9 +861,11 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
+      path: "."
+      ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
+      resolved-ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
     version: "0.3.0"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
@@ -918,11 +920,9 @@ packages:
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "7d8cf727c5eb78d97205e53fe2ade55c513754a9"
-      resolved-ref: "7d8cf727c5eb78d97205e53fe2ade55c513754a9"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
+      relative: true
+    source: path
     version: "0.3.0"
   polkawallet_sdk:
     dependency: "direct overridden"
