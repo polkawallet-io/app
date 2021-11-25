@@ -50,11 +50,11 @@ const xcm_dest_weight_bifrost = 5000000000;
 
 const xcm_send_fees = {
   relay_chain_name_ksm: {
-    'fee': '30000000000',
+    'fee': '106666660',
     'existentialDeposit': '333333333',
   },
   para_chain_name_statemine: {
-    'fee': '3000000000',
+    'fee': '4000000000',
     'existentialDeposit': '33333333',
   },
   para_chain_name_karura: {

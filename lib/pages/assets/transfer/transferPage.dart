@@ -130,7 +130,7 @@ class _TransferPageState extends State<TransferPage> {
             ? isFromXTokensParaChain
                 ? 'transfer'
                 : 'reserveTransferAssets'
-            : 'teleportAssets';
+            : 'limitedTeleportAssets';
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
@@ -213,7 +213,7 @@ class _TransferPageState extends State<TransferPage> {
                       {'V0': beneficiary},
                       {'V0': assets},
                       0,
-                      xcm_dest_weight_ksm
+                      "Unlimited"
                     ]
                   : [
                       {'V0': dest},

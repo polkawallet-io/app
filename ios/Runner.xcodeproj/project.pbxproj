@@ -367,7 +367,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2503;
+				CURRENT_PROJECT_VERSION = 2511;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -385,7 +385,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.5.0;
+				MARKETING_VERSION = 2.5.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -513,7 +513,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2503;
+				CURRENT_PROJECT_VERSION = 2511;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -531,7 +531,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.5.0;
+				MARKETING_VERSION = 2.5.1;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -552,7 +552,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2503;
+				CURRENT_PROJECT_VERSION = 2511;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -570,7 +570,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.5.0;
+				MARKETING_VERSION = 2.5.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
