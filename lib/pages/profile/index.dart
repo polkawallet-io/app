@@ -8,6 +8,7 @@ import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
+import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -81,9 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final acc = widget.service.keyring.current;
     final primaryColor = Theme.of(context).primaryColor;
 
-    final acaCrowdLoanVisible =
-        (widget.service.store.settings.adBannerState['visibleAca'] ?? false);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['title']),
@@ -116,8 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ? KarCrowdLoanBanner()
                           : Visibility(
                               visible: widget.service.plugin.basic.name ==
-                                      relay_chain_name_dot &&
-                                  acaCrowdLoanVisible,
+                                  relay_chain_name_dot,
                               child: ACACrowdLoanBanner(
                                   widget.service, (network) => null))),
               Container(
@@ -179,6 +176,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 trailing: Icon(Icons.arrow_forward_ios, size: 18),
                 onTap: () =>
                     Navigator.of(context).pushNamed(SettingsPage.route),
+              ),
+              ListTile(
+                leading: Container(
+                  width: 32,
+                  child: Icon(Icons.settings_ethernet, color: grey, size: 22),
+                ),
+                title: Text(dic['setting.node']),
+                trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                onTap: () =>
+                    Navigator.of(context).pushNamed(RemoteNodeListPage.route),
               ),
               ListTile(
                 leading: Container(

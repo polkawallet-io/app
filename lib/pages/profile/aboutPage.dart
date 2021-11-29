@@ -1,5 +1,4 @@
 import 'package:app/app.dart';
-import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/UI.dart';
@@ -7,11 +6,8 @@ import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/jumpToBrowserLink.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class AboutPage extends StatefulWidget {
   AboutPage(this.service);
@@ -26,17 +22,34 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPage extends State<AboutPage> {
   bool _loading = false;
+  bool _updateLoading = false;
   String _appVersion;
 
   Future<void> _checkUpdate() async {
+    if (_updateLoading) return;
+
     setState(() {
-      _loading = true;
+      _updateLoading = true;
     });
     final versions = await WalletApi.getLatestVersion();
     setState(() {
-      _loading = false;
+      _updateLoading = false;
     });
     AppUI.checkUpdate(context, versions, WalletApp.buildTarget);
+  }
+
+  Future<void> _jumpToLink(String uri) async {
+    if (_loading) return;
+
+    setState(() {
+      _loading = true;
+    });
+
+    await UI.launchURL(uri);
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
@@ -59,70 +72,118 @@ class _AboutPage extends State<AboutPage> {
         widget.service.store.storage,
         widget.service.plugin.basic.name,
         widget.service.plugin.basic.jsCodeVersion);
-    final githubLink = plugin_github_links[widget.service.plugin.basic.name];
+    final colorGray = Theme.of(context).unselectedWidgetColor;
+    final labelStyle = TextStyle(fontSize: 16);
+    final contentStyle = TextStyle(fontSize: 14, color: colorGray);
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-        title: Text(dic['about']),
+        title: Text(dic['about.title']),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(48),
-              width: MediaQuery.of(context).size.width / 2,
-              child: Image.asset('assets/images/logo_about.png'),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(16),
+            child: Column(
               children: <Widget>[
-                Text(
-                  dic['about.brif'],
-                  style: Theme.of(context).textTheme.headline4,
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Text(dic['about.terms'], style: labelStyle)),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 16, color: colorGray),
+                      ],
+                    ),
+                  ),
+                  onTap: () => _jumpToLink(
+                      'https://polkawallet.io/terms-conditions.html'),
                 ),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: JumpToBrowserLink('https://polkawallet.io'),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child:
+                                Text(dic['about.privacy'], style: labelStyle)),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 16, color: colorGray),
+                      ],
+                    ),
+                  ),
+                  onTap: () => _jumpToLink(
+                      'https://github.com/polkawallet-io/app/blob/master/privacy-policy.md'),
+                ),
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text('Github', style: labelStyle)),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 16, color: colorGray),
+                      ],
+                    ),
+                  ),
+                  onTap: () => _jumpToLink(
+                      'https://github.com/polkawallet-io/app/issues'),
+                ),
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child:
+                                Text(dic['about.feedback'], style: labelStyle)),
+                        Text("hello@polkawallet.io", style: contentStyle),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 16, color: colorGray),
+                      ],
+                    ),
+                  ),
+                  onTap: () => _jumpToLink('mailto:hello@polkawallet.io'),
+                ),
+                Divider(),
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child:
+                                Text(dic['about.version'], style: labelStyle)),
+                        Visibility(
+                          visible: _updateLoading,
+                          child: Container(
+                            padding: EdgeInsets.only(right: 8),
+                            child: CupertinoActivityIndicator(radius: 8),
+                          ),
+                        ),
+                        Text(_appVersion ?? "", style: contentStyle),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 16, color: colorGray),
+                      ],
+                    ),
+                  ),
+                  onTap: _checkUpdate,
+                ),
                 Container(
-                  margin: EdgeInsets.only(right: 4),
-                  child:
-                      SvgPicture.asset('assets/images/public/github_logo.svg'),
-                ),
-                JumpToBrowserLink(
-                  githubLink,
-                  text: Fmt.address(githubLink, pad: 16),
-                ),
+                  padding: EdgeInsets.only(top: 16, bottom: 16),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text('API', style: labelStyle)),
+                      Text(currentJSVersion.toString(), style: contentStyle),
+                    ],
+                  ),
+                )
               ],
             ),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('${dic['about.version']}: ${_appVersion ?? ""}'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 8),
-              child: Text('API: $currentJSVersion'),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: RoundedButton(
-                text: dic['update'],
-                onPressed: () {
-                  _checkUpdate();
-                },
-                submitting: _loading,
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );

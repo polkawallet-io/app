@@ -1,10 +1,8 @@
-import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
@@ -74,12 +72,6 @@ class _Settings extends State<SettingsPage> {
       );
     }
 
-    final network = widget.service.plugin.sdk.api.connectedNode == null
-        ? I18n.of(context)
-            .getDic(i18n_full_dic_app, 'assets')['node.connecting']
-        : widget.service.plugin.sdk.api.connectedNode.endpoint ??
-            I18n.of(context).getDic(i18n_full_dic_app, 'assets')['node.failed'];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['setting']),
@@ -89,13 +81,6 @@ class _Settings extends State<SettingsPage> {
         builder: (_) => SafeArea(
           child: ListView(
             children: <Widget>[
-              ListTile(
-                title: Text(dic['setting.node']),
-                subtitle: Text(network),
-                trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                onTap: () =>
-                    Navigator.of(context).pushNamed(RemoteNodeListPage.route),
-              ),
               ListTile(
                 title: Text(dic['setting.lang']),
                 subtitle:
