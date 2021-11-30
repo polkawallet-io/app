@@ -24,6 +24,21 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$isHideBalanceAtom = Atom(name: '_SettingsStore.isHideBalance');
+
+  @override
+  bool get isHideBalance {
+    _$isHideBalanceAtom.reportRead();
+    return super.isHideBalance;
+  }
+
+  @override
+  set isHideBalance(bool value) {
+    _$isHideBalanceAtom.reportWrite(value, super.isHideBalance, () {
+      super.isHideBalance = value;
+    });
+  }
+
   String get network {
     return super.network;
   }
@@ -77,6 +92,23 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadLocalCodeAsyncAction.run(() => super.loadLocalCode());
   }
 
+  final _$setIsHideBalanceAsyncAction =
+      AsyncAction('_SettingsStore.setIsHideBalance');
+
+  @override
+  Future<void> setIsHideBalance(bool code) {
+    return _$setIsHideBalanceAsyncAction
+        .run(() => super.setIsHideBalance(code));
+  }
+
+  final _$loadIsHideBalanceAsyncAction =
+      AsyncAction('_SettingsStore.loadIsHideBalance');
+
+  @override
+  Future<void> loadIsHideBalance() {
+    return _$loadIsHideBalanceAsyncAction.run(() => super.loadIsHideBalance());
+  }
+
   Future<void> loadNetwork() {
     return super.loadNetwork();
   }
@@ -108,6 +140,8 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return '''
 localeCode: ${localeCode},
 network: ${network},
+priceCurrency: ${priceCurrency},
+isHideBalance: ${isHideBalance},
 liveModules: ${liveModules},
 adBannerState: ${adBannerState}
     ''';

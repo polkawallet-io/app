@@ -15,9 +15,16 @@ abstract class _SettingsStore with Store {
 
   final String localStorageLocaleKey = 'locale';
   final String localStorageNetworkKey = 'network';
+  final String localStorageHideBalanceKey = 'hideBalance';
+  final String localStoragePriceCurrencyKey = 'priceCurrency';
 
   @observable
   String localeCode = '';
+
+  @observable
+  bool isHideBalance = false;
+
+  String priceCurrency = 'USD';
 
   String network = 'polkadot';
 
@@ -48,8 +55,12 @@ abstract class _SettingsStore with Store {
 
   @action
   Future<void> init() async {
-    await loadLocalCode();
-    await loadNetwork();
+    await Future.wait([
+      loadLocalCode(),
+      loadNetwork(),
+      loadPriceCurrency(),
+      loadIsHideBalance(),
+    ]);
   }
 
   @action
@@ -63,6 +74,32 @@ abstract class _SettingsStore with Store {
     final stored = storage.read(localStorageLocaleKey);
     if (stored != null) {
       localeCode = stored;
+    }
+  }
+
+  @action
+  Future<void> setIsHideBalance(bool hide) async {
+    isHideBalance = hide;
+    storage.write(localStorageHideBalanceKey, hide);
+  }
+
+  @action
+  Future<void> loadIsHideBalance() async {
+    final stored = storage.read(localStorageHideBalanceKey);
+    if (stored != null) {
+      isHideBalance = stored;
+    }
+  }
+
+  void setPriceCurrency(String value) {
+    priceCurrency = value;
+    storage.write(localStoragePriceCurrencyKey, value);
+  }
+
+  Future<void> loadPriceCurrency() async {
+    final value = await storage.read(localStoragePriceCurrencyKey);
+    if (value != null) {
+      priceCurrency = value;
     }
   }
 

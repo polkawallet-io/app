@@ -6,6 +6,7 @@ import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -17,7 +18,6 @@ import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/ui.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate,
@@ -129,10 +129,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final List<HomeNavItem> pages = [
       HomeNavItem(
-        text: dic['assets'],
+        text: I18n.of(context).getDic(i18n_full_dic_app, 'assets')['assets'],
         icon: SvgPicture.asset(
           'assets/images/nav_assets.svg',
           color: Theme.of(context).disabledColor,
@@ -154,7 +153,7 @@ class _HomePageState extends State<HomePage> {
     pages.addAll(
         widget.service.plugin.getNavItems(context, widget.service.keyring));
     pages.add(HomeNavItem(
-      text: dic['profile'],
+      text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: SvgPicture.asset(
         'assets/images/nav_profile.svg',
         color: Theme.of(context).disabledColor,
