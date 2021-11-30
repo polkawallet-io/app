@@ -27,6 +27,7 @@ const Map<String, String> enProfile = {
   'setting.lang': 'Language',
   'setting.lang.auto': 'Auto Detect',
   'setting.network': 'Select Wallet',
+  'setting.network.node': 'Select Wallet Node',
   'setting.currency': 'Price Symbol',
   'setting.currency.tip': 'only affects the main Assets page',
   'setting.balance.hide': 'Hide Balance',
