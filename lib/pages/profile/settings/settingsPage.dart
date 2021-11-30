@@ -19,58 +19,104 @@ class SettingsPage extends StatefulWidget {
 
 class _Settings extends State<SettingsPage> {
   final _langOptions = ['', 'en', 'zh'];
+  final _priceCurrencyOptions = ['USD', 'CNY'];
 
-  int _selected = 0;
+  int _selectedPriceCurrency = 0;
+
+  String _getLang(String code) {
+    var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    switch (code) {
+      case 'zh':
+        return '简体中文';
+      case 'en':
+        return 'English';
+      default:
+        return dic['setting.lang.auto'];
+    }
+  }
+
+  String _getPriceCurrency(String currency) {
+    switch (currency) {
+      case 'CNY':
+        return '¥ CNY';
+      default:
+        return '\$ USD';
+    }
+  }
+
+  void _onLanguageTap() {
+    final cached = widget.service.store.settings.localeCode;
+    int selected = _langOptions.indexOf(cached);
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: MediaQuery.of(context).copyWith().size.height / 3,
+        child: WillPopScope(
+          child: CupertinoPicker(
+            backgroundColor: Colors.white,
+            itemExtent: 58,
+            scrollController:
+                FixedExtentScrollController(initialItem: selected),
+            children: _langOptions.map((i) {
+              return Padding(
+                  padding: EdgeInsets.all(16), child: Text(_getLang(i)));
+            }).toList(),
+            onSelectedItemChanged: (v) {
+              selected = v;
+            },
+          ),
+          onWillPop: () async {
+            final code = _langOptions[selected];
+            if (code != cached) {
+              widget.changeLang(code);
+            }
+            return true;
+          },
+        ),
+      ),
+    );
+  }
+
+  void _onCurrencyTap() {
+    final cached = widget.service.store.settings.priceCurrency;
+    int selected = _priceCurrencyOptions.indexOf(cached);
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: MediaQuery.of(context).copyWith().size.height / 3,
+        child: WillPopScope(
+          child: CupertinoPicker(
+            backgroundColor: Colors.white,
+            itemExtent: 58,
+            scrollController:
+                FixedExtentScrollController(initialItem: selected),
+            children: _priceCurrencyOptions.map((i) {
+              return Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(_getPriceCurrency(i)));
+            }).toList(),
+            onSelectedItemChanged: (v) {
+              selected = v;
+            },
+          ),
+          onWillPop: () async {
+            final currency = _priceCurrencyOptions[selected];
+            if (currency != cached) {
+              setState(() {
+                _selectedPriceCurrency = selected;
+              });
+              widget.service.store.settings.setPriceCurrency(currency);
+            }
+            return true;
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-
-    String getLang(String code) {
-      switch (code) {
-        case 'zh':
-          return '简体中文';
-        case 'en':
-          return 'English';
-        default:
-          return dic['setting.lang.auto'];
-      }
-    }
-
-    void _onLanguageTap() {
-      final cached = widget.service.store.settings.localeCode;
-      _selected = _langOptions.indexOf(cached);
-      showCupertinoModalPopup(
-        context: context,
-        builder: (_) => Container(
-          height: MediaQuery.of(context).copyWith().size.height / 3,
-          child: WillPopScope(
-            child: CupertinoPicker(
-              backgroundColor: Colors.white,
-              itemExtent: 58,
-              scrollController:
-                  FixedExtentScrollController(initialItem: _selected),
-              children: _langOptions.map((i) {
-                return Padding(
-                    padding: EdgeInsets.all(16), child: Text(getLang(i)));
-              }).toList(),
-              onSelectedItemChanged: (v) {
-                setState(() {
-                  _selected = v;
-                });
-              },
-            ),
-            onWillPop: () async {
-              String code = _langOptions[_selected];
-              if (code != cached) {
-                widget.changeLang(code);
-              }
-              return true;
-            },
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -78,19 +124,46 @@ class _Settings extends State<SettingsPage> {
         centerTitle: true,
       ),
       body: Observer(
-        builder: (_) => SafeArea(
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                title: Text(dic['setting.lang']),
-                subtitle:
-                    Text(getLang(widget.service.store.settings.localeCode)),
-                trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                onTap: () => _onLanguageTap(),
-              )
-            ],
-          ),
-        ),
+        builder: (_) {
+          final hideBalanceTip = widget.service.store.settings.isHideBalance
+              ? dic['setting.currency.tip']
+              : '';
+          final currencyTip =
+              widget.service.store.settings.priceCurrency == 'CNY'
+                  ? ' (${dic['setting.currency.tip']})'
+                  : '';
+          return SafeArea(
+            child: ListView(
+              children: <Widget>[
+                ListTile(
+                  title: Text(dic['setting.balance.hide']),
+                  subtitle:
+                      hideBalanceTip.isEmpty ? null : Text(hideBalanceTip),
+                  trailing: CupertinoSwitch(
+                    value: widget.service.store.settings.isHideBalance,
+                    onChanged: (v) =>
+                        widget.service.store.settings.setIsHideBalance(v),
+                  ),
+                ),
+                ListTile(
+                  title: Text(dic['setting.currency']),
+                  subtitle: Text(_getPriceCurrency(
+                          widget.service.store.settings.priceCurrency) +
+                      currencyTip),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: _onCurrencyTap,
+                ),
+                ListTile(
+                  title: Text(dic['setting.lang']),
+                  subtitle:
+                      Text(_getLang(widget.service.store.settings.localeCode)),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                  onTap: _onLanguageTap,
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
