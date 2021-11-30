@@ -5,6 +5,7 @@ import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
+import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -451,9 +452,25 @@ class _AssetsState extends State<AssetsPage> {
               height: 36,
               child: Image.asset('assets/images/logo.png'),
             ),
-            centerTitle: false,
+            centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0.0,
+            leading: IconButton(
+                padding: EdgeInsets.only(right: 8),
+                icon: SvgPicture.asset(
+                  'assets/images/menu.svg',
+                  color: Theme.of(context).cardColor,
+                  width: 24,
+                ),
+                onPressed: () async {
+                  final selected = (await Navigator.of(context)
+                      .pushNamed(NodeSelectPage.route)) as PolkawalletPlugin;
+                  setState(() {});
+                  if (selected != null &&
+                      selected.basic.name != widget.service.plugin.basic.name) {
+                    widget.checkJSCodeUpdate(selected);
+                  }
+                }),
             actions: <Widget>[
               IconButton(
                 padding: EdgeInsets.only(right: 8),

@@ -8,6 +8,7 @@ import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
+import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
@@ -508,6 +509,8 @@ class _WalletAppState extends State<WalletApp> {
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
       AnnouncementPage.route: (_) => AnnouncementPage(),
+      NodeSelectPage.route: (_) =>
+          NodeSelectPage(_service, widget.plugins, _changeNetwork, _changeNode),
 
       /// profile
       SignMessagePage.route: (_) => SignMessagePage(_service),
