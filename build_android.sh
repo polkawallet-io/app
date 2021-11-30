@@ -21,7 +21,7 @@ if [ $number == 1 ]; then
 
     apkPath=${project_path}/build/app/outputs/flutter-apk/
     apkName=polkawallet-v${version}-beta.${buildNumber:0-1}.apk
-    mv ${apkPath}app-release.apk ${apkPath}${apkName}
+    mv ${apkPath}app-release.apk ~/Downloads/${apkName}
 
 elif [ $number == 2 ]; then
     echo "flutter build appbundle --release -t lib/main-google.dart"
@@ -29,7 +29,7 @@ elif [ $number == 2 ]; then
 
     apkPath=${project_path}/build/app/outputs/bundle/release/
     apkName=polkawallet-v${version}-beta.${buildNumber:0-1}.aab
-    mv ${apkPath}app-release.aab ${apkPath}${apkName}
+    mv ${apkPath}app-release.aab ~/Downloads/${apkName}
 
 elif [ $number == 3 ]; then
     echo "flutter build apk --release -t lib/main-dev.dart"
@@ -37,8 +37,8 @@ elif [ $number == 3 ]; then
 
     apkPath=${project_path}/build/app/outputs/flutter-apk/
     apkName=polkawallet-v${version}-dev.${buildNumber:0-1}.apk
-    mv ${apkPath}app-release.apk ${apkPath}${apkName}
+    mv ${apkPath}app-release.apk ~/Downloads/${apkName}
 fi
 
-scp ${apkPath}${apkName} root@47.244.26.104:/data/www/polkawallet
+#scp ${apkPath}${apkName} root@47.244.26.104:/data/www/polkawallet
 exit 1

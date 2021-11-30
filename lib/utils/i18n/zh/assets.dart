@@ -81,4 +81,5 @@ const Map<String, String> zhAssets = {
   'note': '提示',
   'note.msg1': '关闭帐户保护后，账户很可能会因为余额过低被网络移除，是否确认关闭',
   'note.msg2': '非常抱歉，该账户中存在其他锁定资产，无法被移除。',
+  'democracy.unlock': '可解锁',
 };

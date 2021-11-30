@@ -638,9 +638,7 @@ class TransferListItem extends StatelessWidget {
               ? isOut
                   ? TransferIcon(type: TransferIconType.rollOut)
                   : TransferIcon(type: TransferIconType.rollIn)
-              : TransferIcon(
-                  type: TransferIconType.failure
-                )
+              : TransferIcon(type: TransferIconType.failure)
         ],
       ),
       title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
