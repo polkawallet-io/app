@@ -89,4 +89,5 @@ const Map<String, String> enAssets = {
       'Unset the keep-alive option, the account will be removed due to low balance.',
   'note.msg2':
       'There are other locked assets in this account that cannot be removed.',
+  'democracy.unlock': 'Unlock',
 };
