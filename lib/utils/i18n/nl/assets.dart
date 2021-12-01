@@ -90,4 +90,8 @@ const Map<String, String> enAssets = {
   'note.msg2':
       'There are other locked assets in this account that cannot be removed.',
   'democracy.unlock': 'Unlock',
+  'scan': 'Scan',
+  'QRCode': 'my QR code',
+  'unlock': 'Unlock',
+  'history': 'History',
 };
