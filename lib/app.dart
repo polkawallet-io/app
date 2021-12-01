@@ -449,8 +449,8 @@ class _WalletAppState extends State<WalletApp> {
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
                       return snapshot.data > 0
-                          ? HomePage(_service, _connectedNode,
-                              _checkJSCodeUpdate, _switchNetwork)
+                          ? HomePage(_service, widget.plugins, _connectedNode,
+                              _checkJSCodeUpdate, _switchNetwork, _changeNode)
                           : CreateAccountEntryPage();
                     } else {
                       return Container(color: Theme.of(context).canvasColor);
@@ -509,8 +509,8 @@ class _WalletAppState extends State<WalletApp> {
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
       AnnouncementPage.route: (_) => AnnouncementPage(),
-      NodeSelectPage.route: (_) =>
-          NodeSelectPage(_service, widget.plugins, _changeNetwork, _changeNode),
+      // NodeSelectPage.route: (_) =>
+      //     NodeSelectPage(_service, widget.plugins, _changeNetwork, _changeNode),
 
       /// profile
       SignMessagePage.route: (_) => SignMessagePage(_service),

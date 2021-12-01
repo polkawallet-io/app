@@ -1,6 +1,8 @@
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
+import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -82,13 +84,14 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     Navigator.of(context).pop(_selectedNetwork);
   }
 
-  Future<void> _onCreateAccount() async {
+  Future<void> _onCreateAccount(int step) async {
     bool isCurrentNetwork =
         _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     if (!isCurrentNetwork) {
       await _reloadNetwork();
     }
-    Navigator.of(context).pushNamed(CreateAccountEntryPage.route);
+    Navigator.of(context).pushNamed(
+        step == 0 ? CreateAccountPage.route : SelectImportTypePage.route);
   }
 
   List<Widget> _buildAccountList() {
@@ -103,28 +106,34 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       Visibility(
           visible: plugin_from_community.indexOf(name) > -1,
           child: _CommunityPluginNote(name, false)),
-      GestureDetector(
-        child: RoundedCard(
-          margin: EdgeInsets.only(top: 8, bottom: 16),
-          padding: EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.add_circle_outline,
-                color: Theme.of(context).unselectedWidgetColor,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8),
+      Row(
+        children: [
+          Expanded(
+              child: GestureDetector(
+            child: RoundedCard(
+                margin: EdgeInsets.only(top: 8, bottom: 16),
+                padding: EdgeInsets.all(16),
                 child: Text(
-                  dic['add'],
+                  dic['create'],
                   style: Theme.of(context).textTheme.headline4,
-                ),
-              )
-            ],
+                )),
+            onTap: () => _onCreateAccount(0),
+          )),
+          Container(
+            width: 15,
           ),
-        ),
-        onTap: () => _onCreateAccount(),
+          Expanded(
+              child: GestureDetector(
+            child: RoundedCard(
+                margin: EdgeInsets.only(top: 8, bottom: 16),
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  dic['import'],
+                  style: Theme.of(context).textTheme.headline4,
+                )),
+            onTap: () => _onCreateAccount(1),
+          ))
+        ],
       ),
     ];
 

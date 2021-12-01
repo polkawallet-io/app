@@ -38,6 +38,8 @@ import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 class AssetsPage extends StatefulWidget {
   AssetsPage(
     this.service,
+    this.plugins,
+    this.changeNode,
     this.connectedNode,
     this.checkJSCodeUpdate,
     this.switchNetwork,
@@ -49,6 +51,9 @@ class AssetsPage extends StatefulWidget {
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
   final Future<void> Function(String) switchNetwork;
   final Future<void> Function(String) handleWalletConnect;
+
+  final List<PolkawalletPlugin> plugins;
+  final Future<void> Function(NetworkParams) changeNode;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -448,63 +453,192 @@ class _AssetsState extends State<AssetsPage> {
         return Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: SizedBox(
-              height: 36,
-              child: Image.asset('assets/images/logo.png'),
+            title: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: AddressIcon(widget.service.keyring.current.address,
+                          svg: widget.service.keyring.current.icon),
+                      margin: EdgeInsets.only(right: 5),
+                      width: 25,
+                    ),
+                    Text(
+                        "${Fmt.address(widget.service.keyring.current.address)}")
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    showModalBottomSheet(
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top -
+                              MediaQuery.of(context).padding.bottom -
+                              kToolbarHeight -
+                              20,
+                          width: double.infinity,
+                          child: NodeSelectPage(
+                              widget.service,
+                              widget.plugins,
+                              widget.switchNetwork,
+                              widget.changeNode,
+                              widget.checkJSCodeUpdate),
+                        );
+                      },
+                      context: context,
+                    );
+                    // final selected = (await Navigator.of(context)
+                    //     .pushNamed(NodeSelectPage.route)) as PolkawalletPlugin;
+                    // setState(() {});
+                    // if (selected != null &&
+                    //     selected.basic.name !=
+                    //         widget.service.plugin.basic.name) {
+                    //   widget.checkJSCodeUpdate(selected);
+                    // }
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          margin: EdgeInsets.only(right: 3),
+                          decoration: BoxDecoration(
+                              color: widget.connectedNode == null
+                                  ? Colors.yellow
+                                  : Colors.green,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                        ),
+                        Text("${widget.service.plugin.basic.name}"),
+                        Text(">")
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
+            // title: SizedBox(
+            //   height: 36,
+            //   child: Image.asset('assets/images/logo.png'),
+            // ),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             leading: IconButton(
-                padding: EdgeInsets.only(right: 8),
-                icon: SvgPicture.asset(
-                  'assets/images/menu.svg',
-                  color: Theme.of(context).cardColor,
-                  width: 24,
-                ),
-                onPressed: () async {
-                  final selected = (await Navigator.of(context)
-                      .pushNamed(NodeSelectPage.route)) as PolkawalletPlugin;
-                  setState(() {});
-                  if (selected != null &&
-                      selected.basic.name != widget.service.plugin.basic.name) {
-                    widget.checkJSCodeUpdate(selected);
-                  }
-                }),
-            actions: <Widget>[
-              IconButton(
-                padding: EdgeInsets.only(right: 8),
-                icon: SvgPicture.asset(
-                  'assets/images/menu.svg',
-                  color: Theme.of(context).cardColor,
-                  width: 24,
-                ),
-                onPressed: widget.service.keyring.allAccounts.length > 0
-                    ? () async {
-                        final selected = (await Navigator.of(context)
-                                .pushNamed(NetworkSelectPage.route))
-                            as PolkawalletPlugin;
-                        setState(() {});
-                        if (selected != null &&
-                            selected.basic.name !=
-                                widget.service.plugin.basic.name) {
-                          widget.checkJSCodeUpdate(selected);
-                        }
-                      }
-                    : null,
+              padding: EdgeInsets.only(right: 8),
+
+              icon: Icon(
+                Icons.group,
+                color: Theme.of(context).cardColor,
+                size: 30,
               ),
+              // icon: SvgPicture.asset(
+              //   'assets/images/menu.svg',
+              //   color: Theme.of(context).cardColor,
+              //   width: 24,
+              // ),
+              onPressed: widget.service.keyring.allAccounts.length > 0
+                  ? () async {
+                      final selected = (await Navigator.of(context)
+                              .pushNamed(NetworkSelectPage.route))
+                          as PolkawalletPlugin;
+                      setState(() {});
+                      if (selected != null &&
+                          selected.basic.name !=
+                              widget.service.plugin.basic.name) {
+                        widget.checkJSCodeUpdate(selected);
+                      }
+                    }
+                  : null,
+            ),
+            actions: <Widget>[
+              PopupMenuButton(
+                  offset: Offset(0, 50),
+                  color: Color(0xff4c4c4c),
+                  onSelected: (value) {
+                    if (widget.service.keyring.current.address != '') {
+                      if (value == 0) {
+                        _handleScan(transferEnabled);
+                      } else {
+                        Navigator.pushNamed(context, AccountQrCodePage.route);
+                      }
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return <PopupMenuItem<int>>[
+                      PopupMenuItem(
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/scan.svg',
+                              color: Colors.white,
+                              width: 20,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 5),
+                              child: Text(
+                                I18n.of(context).getDic(
+                                    i18n_full_dic_app, 'assets')['scan'],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                          ],
+                        ),
+                        value: 0,
+                      ),
+                      PopupMenuItem(
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/qr.svg',
+                              color: Colors.white,
+                              width: 20,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 5),
+                              child: Text(
+                                I18n.of(context).getDic(
+                                    i18n_full_dic_app, 'assets')['QRCode'],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                          ],
+                        ),
+                        value: 1,
+                      ),
+                    ];
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: Theme.of(context).cardColor,
+                    size: 30,
+                  )),
             ],
           ),
-          body: Stack(
+          body: Column(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 120),
+              Visibility(
+                  visible: bannerVisible &&
+                      !(widget.service.keyring.current.observation ?? false),
+                  child: AdBanner(widget.service, widget.connectedNode,
+                      widget.switchNetwork,
+                      canClose: widget.service.plugin.basic.name !=
+                          relay_chain_name_dot)),
+              Expanded(
+                  child: Container(
+                // margin: EdgeInsets.only(top: 120),
                 child: CustomRefreshIndicator(
                   edgeOffset: 16,
                   key: _refreshKey,
                   onRefresh: _updateBalances,
                   child: ListView(
-                    padding: EdgeInsets.fromLTRB(16, 56, 16, 24),
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 24),
                     children: [
                       widget.service.plugin.basic.isTestNet
                           ? Padding(
@@ -713,22 +847,21 @@ class _AssetsState extends State<AssetsPage> {
                     ],
                   ),
                 ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildTopCard(context, transferEnabled),
-                  Expanded(child: Container()),
-                  Visibility(
-                      visible: bannerVisible &&
-                          !(widget.service.keyring.current.observation ??
-                              false),
-                      child: AdBanner(widget.service, widget.connectedNode,
-                          widget.switchNetwork,
-                          canClose: widget.service.plugin.basic.name !=
-                              relay_chain_name_dot))
-                ],
-              )
+              )),
+              // Column(
+              //   children: [
+              //     // _buildTopCard(context, transferEnabled),
+              //     Expanded(child: Container()),
+              //     Visibility(
+              //         visible: bannerVisible &&
+              //             !(widget.service.keyring.current.observation ??
+              //                 false),
+              //         child: AdBanner(widget.service, widget.connectedNode,
+              //             widget.switchNetwork,
+              //             canClose: widget.service.plugin.basic.name !=
+              //                 relay_chain_name_dot))
+              //   ],
+              // )
             ],
           ),
         );

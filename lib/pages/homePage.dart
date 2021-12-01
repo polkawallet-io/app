@@ -20,14 +20,17 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/ui.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service, this.connectedNode, this.checkJSCodeUpdate,
-      this.switchNetwork);
+  HomePage(this.service, this.plugins, this.connectedNode,
+      this.checkJSCodeUpdate, this.switchNetwork, this.changeNode);
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
   final Future<void> Function(String) switchNetwork;
+
+  final List<PolkawalletPlugin> plugins;
+  final Future<void> Function(NetworkParams) changeNode;
 
   static final String route = '/';
 
@@ -142,6 +145,8 @@ class _HomePageState extends State<HomePage> {
         ),
         content: AssetsPage(
             widget.service,
+            widget.plugins,
+            widget.changeNode,
             widget.connectedNode,
             (PolkawalletPlugin plugin) =>
                 widget.checkJSCodeUpdate(context, plugin),

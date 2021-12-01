@@ -875,11 +875,9 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      resolved-ref: "4e9f4f714666a5e6214fff9e5a89df03d62b756b"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.3.0"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
