@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
-import 'package:polkawallet_ui/components/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -156,8 +157,12 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         _claimable != null && _claimable > BigInt.zero && !_submitting;
     final claimableAmount = Fmt.priceFloorBigInt(_claimable, decimals);
     return Scaffold(
-      appBar:
-          AppBar(title: Text('${dic['locked']} ($symbol)'), centerTitle: true),
+      appBar: AppBar(
+          title: Text('${dic['locked']} ($symbol)'),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: [
@@ -229,7 +234,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                         ],
                       );
                     }
-                    return RoundedCard(
+                    return RoundedCardV3(
                       padding: EdgeInsets.all(16),
                       margin: EdgeInsets.only(bottom: 16),
                       child: e.use.contains('ormlvest')

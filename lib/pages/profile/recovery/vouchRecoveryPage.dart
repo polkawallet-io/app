@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class VouchRecoveryPage extends StatefulWidget {
   VouchRecoveryPage(this.service);
@@ -116,9 +117,11 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['recovery.help']),
-        centerTitle: true,
-      ),
+          title: Text(dic['recovery.help']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,

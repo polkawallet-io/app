@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:app/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 import 'importAccountAction.dart';
 
@@ -28,9 +29,11 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
     final data = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['import']),
-        centerTitle: true,
-      ),
+          title: Text(dic['import']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: CreateAccountForm(
           widget.service,

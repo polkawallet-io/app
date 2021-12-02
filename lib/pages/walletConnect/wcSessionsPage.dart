@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class WCSessionsPage extends StatefulWidget {
   const WCSessionsPage(this.service);
@@ -29,16 +30,18 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
       final sessions = widget.service.store.account.wcSessions;
       return Scaffold(
         appBar: AppBar(
-          title: Image.asset('assets/images/wallet_connect_banner.png',
-              height: 24),
-          centerTitle: true,
-        ),
+            title: Image.asset('assets/images/wallet_connect_banner.png',
+                height: 24),
+            centerTitle: true,
+            leading: BackBtn(
+              onBack: () => Navigator.of(context).pop(),
+            )),
         body: SafeArea(
           child: ListView(
             children: sessions.map((session) {
               final permissions =
                   List.of(session.permissions.jsonrpc['methods']);
-              return RoundedCard(
+              return RoundedCardV3(
                 child: Column(
                   children: <Widget>[
                     Expanded(

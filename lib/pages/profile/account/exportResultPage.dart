@@ -7,6 +7,7 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ExportResultPage extends StatelessWidget {
   static final String route = '/account/key';
@@ -26,7 +27,12 @@ class ExportResultPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(dic['export']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['export']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

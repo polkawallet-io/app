@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class AboutPage extends StatefulWidget {
   AboutPage(this.service);
@@ -78,9 +79,11 @@ class _AboutPage extends State<AboutPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-        title: Text(dic['about.title']),
-        centerTitle: true,
-      ),
+          title: Text(dic['about.title']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(

@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ContributePage extends StatefulWidget {
   const ContributePage(this.service);
@@ -109,7 +110,12 @@ class _ContributePageState extends State<ContributePage> {
         final logoUri = widget.service.store.parachain.fundsVisible[fund.paraId]
             ['logo'] as String;
         return Scaffold(
-          appBar: AppBar(title: Text('Contribute'), centerTitle: true),
+          appBar: AppBar(
+              title: Text('Contribute'),
+              centerTitle: true,
+              leading: BackBtn(
+                onBack: () => Navigator.of(context).pop(),
+              )),
           body: Column(
             children: <Widget>[
               Expanded(

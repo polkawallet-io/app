@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -61,9 +62,11 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
         final mnemonics = widget.service.store.account.newAccount.key ?? '';
         return Scaffold(
           appBar: AppBar(
-            title: Text(dic['create']),
-            centerTitle: true,
-          ),
+              title: Text(dic['create']),
+              centerTitle: true,
+              leading: BackBtn(
+                onBack: () => Navigator.of(context).pop(),
+              )),
           body: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,16 +152,14 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['create']),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            setState(() {
-              _step = 0;
-            });
-          },
-        ),
-      ),
+          title: Text(dic['create']),
+          leading: BackBtn(
+            onBack: () {
+              setState(() {
+                _step = 0;
+              });
+            },
+          )),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

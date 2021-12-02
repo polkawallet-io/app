@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.service, this.changeLang, this.changeNode);
@@ -120,9 +121,11 @@ class _Settings extends State<SettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['setting']),
-        centerTitle: true,
-      ),
+          title: Text(dic['setting']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: Observer(
         builder: (_) {
           final hideBalanceTip = widget.service.store.settings.isHideBalance

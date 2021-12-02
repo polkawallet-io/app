@@ -9,6 +9,7 @@ import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ContactsPage extends StatefulWidget {
   ContactsPage(this.service);
@@ -121,22 +122,24 @@ class _ContactsPageState extends State<ContactsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            I18n.of(context).getDic(i18n_full_dic_app, 'profile')['contact']),
-        centerTitle: true,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: Icon(Icons.add, size: 28),
-              onPressed: () async {
-                await Navigator.of(context).pushNamed(ContactPage.route);
-                _refreshData();
-              },
-            ),
-          )
-        ],
-      ),
+          title: Text(
+              I18n.of(context).getDic(i18n_full_dic_app, 'profile')['contact']),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: Icon(Icons.add, size: 28),
+                onPressed: () async {
+                  await Navigator.of(context).pushNamed(ContactPage.route);
+                  _refreshData();
+                },
+              ),
+            )
+          ],
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Builder(
           builder: (_) {

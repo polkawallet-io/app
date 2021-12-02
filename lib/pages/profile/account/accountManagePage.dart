@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class AccountManagePage extends StatefulWidget {
   AccountManagePage(this.service);
@@ -131,10 +132,12 @@ class _AccountManagePageState extends State<AccountManagePage> {
     final primaryColor = Theme.of(context).primaryColor;
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['account']),
-        centerTitle: true,
-        elevation: 0.0,
-      ),
+          title: Text(dic['account']),
+          centerTitle: true,
+          elevation: 0.0,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: <Widget>[

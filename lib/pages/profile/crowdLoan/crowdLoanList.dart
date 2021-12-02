@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/parachain/fundData.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class CrowdLoanList extends StatelessWidget {
@@ -35,7 +35,7 @@ class CrowdLoanList extends StatelessWidget {
         TextStyle(color: grayColor, fontSize: 20, fontWeight: FontWeight.bold);
     final textStyleSmall = TextStyle(fontSize: 12);
 
-    return RoundedCard(
+    return RoundedCardV3(
       margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: EdgeInsets.all(16),
       child: Column(

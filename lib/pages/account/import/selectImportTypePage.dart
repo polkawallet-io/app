@@ -6,6 +6,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'importAccountFormKeyStore.dart';
 import 'importAccountFormMnemonic.dart';
 import 'importAccountFromRawSeed.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class SelectImportTypePage extends StatefulWidget {
   static final String route = '/account/selectImportType';
@@ -28,7 +29,12 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
-      appBar: AppBar(title: Text(dic['import']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['import']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
           child: Column(
         children: [

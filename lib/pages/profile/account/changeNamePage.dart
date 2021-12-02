@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ChangeNamePage extends StatefulWidget {
   ChangeNamePage(this.service);
@@ -37,9 +38,11 @@ class _ChangeName extends State<ChangeNamePage> {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['name.change']),
-        centerTitle: true,
-      ),
+          title: Text(dic['name.change']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: <Widget>[

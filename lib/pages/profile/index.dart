@@ -83,11 +83,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(dic['title']),
-        centerTitle: true,
-        elevation: 0.0,
-      ),
+      appBar:
+          AppBar(title: Text(dic['title']), centerTitle: true, elevation: 0.0),
       body: Column(
         children: [
           Container(

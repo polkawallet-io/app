@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ContactPage extends StatefulWidget {
   ContactPage(this.service);
@@ -153,10 +154,12 @@ class _Contact extends State<ContactPage> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['contact']),
-        centerTitle: true,
-        actions: _args == null ? action : null,
-      ),
+          title: Text(dic['contact']),
+          centerTitle: true,
+          actions: _args == null ? action : null,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: <Widget>[

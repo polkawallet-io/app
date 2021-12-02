@@ -6,11 +6,11 @@ import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/BottomNavigationBar.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:polkawallet_plugin_kusama/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -135,13 +135,13 @@ class _HomePageState extends State<HomePage> {
     final List<HomeNavItem> pages = [
       HomeNavItem(
         text: I18n.of(context).getDic(i18n_full_dic_app, 'assets')['assets'],
-        icon: SvgPicture.asset(
-          'assets/images/nav_assets.svg',
-          color: Theme.of(context).disabledColor,
+        icon: Image.asset(
+          "assets/images/icon_settings_30_nor.png",
+          fit: BoxFit.contain,
         ),
-        iconActive: SvgPicture.asset(
-          'assets/images/nav_assets.svg',
-          color: Theme.of(context).primaryColor,
+        iconActive: Image.asset(
+          "assets/images/icon_settings_30_sel.png",
+          fit: BoxFit.contain,
         ),
         content: AssetsPage(
             widget.service,
@@ -155,17 +155,61 @@ class _HomePageState extends State<HomePage> {
         // content: Container(),
       )
     ];
+    // final pluginPages =
+    //     widget.service.plugin.getNavItems(context, widget.service.keyring);
+    // if (pluginPages.length > 1) {
+    //   pluginPages[0].content = ListView.builder(
+    //       padding: EdgeInsets.all(16),
+    //       itemCount: pluginPages.length,
+    //       itemBuilder: (context, index) {
+    //         return GestureDetector(
+    //           onTap: () {
+    //             Navigator.of(context).push(new MaterialPageRoute(
+    //               builder: (context) {
+    //                 return widget.service.plugin
+    //                     .getNavItems(context, widget.service.keyring)[index]
+    //                     .content;
+    //               },
+    //             ));
+    //           },
+    //           child: RoundedCard(
+    //             margin: EdgeInsets.only(bottom: 16),
+    //             child: Row(
+    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //               children: [
+    //                 widget.service.plugin
+    //                     .getNavItems(context, widget.service.keyring)[index]
+    //                     .icon,
+    //                 Text(widget.service.plugin
+    //                     .getNavItems(context, widget.service.keyring)[index]
+    //                     .text)
+    //               ],
+    //             ),
+    //           ),
+    //         );
+    //       });
+    // }
+    // pluginPages[0].icon = Image.asset(
+    //   "assets/images/compass.png",
+    //   fit: BoxFit.contain,
+    // );
+    // pluginPages[0].iconActive = Image.asset(
+    //   "assets/images/compass.png",
+    //   fit: BoxFit.contain,
+    // );
+
+    // pages.add(pluginPages[0]);
     pages.addAll(
         widget.service.plugin.getNavItems(context, widget.service.keyring));
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
-      icon: SvgPicture.asset(
-        'assets/images/nav_profile.svg',
-        color: Theme.of(context).disabledColor,
+      icon: Image.asset(
+        "assets/images/icon_settings_30_nor.png",
+        fit: BoxFit.contain,
       ),
-      iconActive: SvgPicture.asset(
-        'assets/images/nav_profile.svg',
-        color: Theme.of(context).primaryColor,
+      iconActive: Image.asset(
+        "assets/images/icon_settings_30_sel.png",
+        fit: BoxFit.contain,
       ),
       content: ProfilePage(
         widget.service,
@@ -173,7 +217,7 @@ class _HomePageState extends State<HomePage> {
         () async => widget.switchNetwork(network_name_kusama),
       ),
     ));
-    return Scaffold(
+    return BottomBarScaffold(
       body: Stack(
         alignment: AlignmentDirectional.bottomEnd,
         children: [
@@ -219,18 +263,14 @@ class _HomePageState extends State<HomePage> {
           })
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tabIndex,
-        iconSize: 32,
-        onTap: (index) {
+      onChanged: (index) {
+        setState(() {
           _pageController.jumpToPage(index);
-          setState(() {
-            _tabIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        items: _buildNavItems(pages),
-      ),
+          _tabIndex = index;
+        });
+      },
+      pages: pages,
+      tabIndex: _tabIndex,
     );
   }
 }

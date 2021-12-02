@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class InitiateRecoveryPage extends StatefulWidget {
   InitiateRecoveryPage(this.service);
@@ -121,9 +122,11 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['recovery.init']),
-        centerTitle: true,
-      ),
+          title: Text(dic['recovery.init']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,

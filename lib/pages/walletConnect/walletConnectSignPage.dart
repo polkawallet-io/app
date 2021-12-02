@@ -13,6 +13,7 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class WalletConnectSignPage extends StatefulWidget {
   WalletConnectSignPage(this.service, this.getPassword);
@@ -76,7 +77,10 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
           title: Text(dic[args.payload.method == 'signExtrinsic'
               ? 'submit.sign.tx'
               : 'submit.sign.msg']),
-          centerTitle: true),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: [

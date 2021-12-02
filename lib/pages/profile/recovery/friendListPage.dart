@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class FriendListPage extends StatefulWidget {
   FriendListPage(this.service);
@@ -82,19 +83,21 @@ class _FriendListPage extends State<FriendListPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['recovery.friends']),
-        centerTitle: true,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: Icon(Icons.add, size: 28),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(ContactPage.route),
-            ),
-          )
-        ],
-      ),
+          title: Text(dic['recovery.friends']),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: Icon(Icons.add, size: 28),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(ContactPage.route),
+              ),
+            )
+          ],
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: [

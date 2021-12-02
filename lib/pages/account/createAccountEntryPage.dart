@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 import 'import/selectImportTypePage.dart';
 
@@ -16,7 +17,12 @@ class CreateAccountEntryPage extends StatelessWidget {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      appBar: AppBar(title: Text(dic['add']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['add']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: <Widget>[

@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class RecoveryProofPage extends StatefulWidget {
   RecoveryProofPage(this.service);
@@ -69,9 +70,11 @@ class _RecoveryStatePage extends State<RecoveryProofPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['recovery.help']),
-        centerTitle: true,
-      ),
+          title: Text(dic['recovery.help']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,

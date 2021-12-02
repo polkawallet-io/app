@@ -23,7 +23,7 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
-import 'package:polkawallet_ui/components/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
@@ -305,7 +305,7 @@ class _AssetsState extends State<AssetsPage> {
         acc.indexInfo != null && acc.indexInfo['accountIndex'] != null
             ? '${acc.indexInfo['accountIndex']}\n'
             : '';
-    return RoundedCard(
+    return RoundedCardV3(
       margin: EdgeInsets.fromLTRB(16, 4, 16, 0),
       padding: EdgeInsets.all(16),
       child: Column(
@@ -746,7 +746,7 @@ class _AssetsState extends State<AssetsPage> {
                               )))
                         ],
                       ),
-                      RoundedCard(
+                      RoundedCardV3(
                         margin: EdgeInsets.only(top: 16),
                         child: ListTile(
                           leading: Container(
@@ -887,7 +887,7 @@ class TokenItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final balanceTotal =
         Fmt.balanceInt(item.amount) + Fmt.balanceInt(item.reserved);
-    return RoundedCard(
+    return RoundedCardV3(
       margin: EdgeInsets.only(top: 16),
       child: ListTile(
         leading: Container(

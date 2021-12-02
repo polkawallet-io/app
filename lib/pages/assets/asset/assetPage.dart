@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -245,9 +246,8 @@ class _AssetPageState extends State<AssetPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: BackBtn(
+          onBack: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(

@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 import 'importAccountCreatePage.dart';
 
@@ -44,7 +45,12 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
     selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
-      appBar: AppBar(title: Text(dic['import']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['import']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
           child: Observer(
               builder: (_) => Column(

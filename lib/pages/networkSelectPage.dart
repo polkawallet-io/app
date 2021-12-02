@@ -1,7 +1,6 @@
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
-import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/index.dart';
@@ -13,10 +12,11 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
-import 'package:polkawallet_ui/components/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -110,7 +110,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         children: [
           Expanded(
               child: GestureDetector(
-            child: RoundedCard(
+            child: RoundedCardV3(
                 margin: EdgeInsets.only(top: 8, bottom: 16),
                 padding: EdgeInsets.all(16),
                 child: Text(
@@ -124,7 +124,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           ),
           Expanded(
               child: GestureDetector(
-            child: RoundedCard(
+            child: RoundedCardV3(
                 margin: EdgeInsets.only(top: 8, bottom: 16),
                 padding: EdgeInsets.all(16),
                 child: Text(
@@ -160,7 +160,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         final double padding = accIndex.isEmpty ? 0 : 7;
         final isCurrent = isCurrentNetwork &&
             i.address == widget.service.keyring.current.address;
-        return RoundedCard(
+        return RoundedCardV3(
           border: isCurrent
               ? Border.all(color: Theme.of(context).primaryColorLight)
               : Border.all(color: Theme.of(context).cardColor),
@@ -212,6 +212,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         title: Text(I18n.of(context)
             .getDic(i18n_full_dic_app, 'profile')['setting.network']),
         centerTitle: true,
+        leading: BackBtn(
+          onBack: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Row(
         children: <Widget>[

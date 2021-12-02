@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ExportAccountPage extends StatelessWidget {
   ExportAccountPage(this.service);
@@ -33,7 +34,12 @@ class ExportAccountPage extends StatelessWidget {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final dicAcc = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
-      appBar: AppBar(title: Text(dic['export']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['export']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: ListView(
         children: <Widget>[
           ListTile(

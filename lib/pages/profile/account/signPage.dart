@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class SignMessagePage extends StatefulWidget {
   const SignMessagePage(this.service);
@@ -109,8 +110,10 @@ class _SignMessagePageState extends State<SignMessagePage>
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['sign']),
-      ),
+          title: Text(dic['sign']),
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: ListView(
         padding: EdgeInsets.only(left: 16, right: 16),
         children: [

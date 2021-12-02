@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class RemoteNodeListPage extends StatelessWidget {
   RemoteNodeListPage(this.service, this.changeNode);
@@ -48,9 +49,11 @@ class RemoteNodeListPage extends StatelessWidget {
     }).toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['setting.node.list']),
-        centerTitle: true,
-      ),
+          title: Text(dic['setting.node.list']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: ListView(padding: EdgeInsets.only(top: 8), children: list),
       ),

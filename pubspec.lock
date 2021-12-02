@@ -1062,6 +1062,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  simple_shadow:
+    dependency: "direct overridden"
+    description:
+      name: simple_shadow
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   skeleton_loader:
     dependency: transitive
     description:

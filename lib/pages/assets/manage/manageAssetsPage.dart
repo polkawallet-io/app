@@ -8,6 +8,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -130,17 +131,19 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(dic['manage']),
-        centerTitle: true,
-        actions: [
-          TextButton(
-              onPressed: _onSave,
-              child: Text(
-                dic['manage.save'],
-                style: TextStyle(color: Theme.of(context).cardColor),
-              ))
-        ],
-      ),
+          title: Text(dic['manage']),
+          centerTitle: true,
+          actions: [
+            TextButton(
+                onPressed: _onSave,
+                child: Text(
+                  dic['manage.save'],
+                  style: TextStyle(color: Theme.of(context).cardColor),
+                ))
+          ],
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          )),
       body: SafeArea(
         child: Column(
           children: [
