@@ -49,7 +49,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
         child: BottomAppBar(
           color: Color(0xFFE3DED8),
           shape: CustomNotchedShape(context),
-          child: SizedBox(height: 86, child: Row(children: children)),
+          child: SizedBox(height: 66, child: Row(children: children)),
         ),
         opacity: 0.7, // Default: 0.5
         color: Color(0x66000000), // Default: Black
@@ -108,7 +108,7 @@ class CentralNavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = Theme.of(context).textTheme.caption;
     return Container(
-        margin: EdgeInsets.only(top: 40),
+        margin: EdgeInsets.only(top: 30),
         child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -161,7 +161,7 @@ class CentralNavItem extends StatelessWidget {
                       ),
                     ),
                   )),
-              const SizedBox(height: 18),
+              const SizedBox(height: 8),
               Text(
                 item.text,
                 style: style?.copyWith(color: active ? Colors.black87 : null),

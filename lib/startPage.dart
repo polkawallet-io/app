@@ -7,6 +7,7 @@ import 'package:app/pages/public/guidePage.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:rive/rive.dart';
 
 import 'store/settings.dart';
 
@@ -80,20 +81,20 @@ class _StartPageState extends State<StartPage>
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.white,
-      // child: Center(
-      //     child: RiveAnimation.asset(
-      //   'assets/images/new_file_1.riv',
-      // ))
-      child: Center(
-          child: Image.asset(
-        "assets/images/logo_about.png",
-        // "assets/images/opening.gif",
-        fit: BoxFit.contain,
-        width: 180,
-      )),
-    );
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.white,
+        child: Center(
+            child: RiveAnimation.asset(
+          'assets/images/connecting.riv',
+        ))
+        // child: Center(
+        //     child: Image.asset(
+        //   "assets/images/logo_about.png",
+        //   // "assets/images/opening.gif",
+        //   fit: BoxFit.contain,
+        //   width: 180,
+        // )),
+        );
   }
 }

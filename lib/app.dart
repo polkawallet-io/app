@@ -114,6 +114,20 @@ class _WalletAppState extends State<WalletApp> {
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
+      // backgroundColor: Color(0xFFF0ECE6),
+      scaffoldBackgroundColor: Color(0xFFF0ECE6),
+      dividerColor: Color(0xFFBAB7B2),
+      cardColor: Color(0xFFF9F8F6),
+      toggleableActiveColor: Color(0xFF768FE1),
+      textSelectionColor: Color(0xFF565554),
+      appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFFF0ECE6),
+          elevation: 0,
+          titleTextStyle: TextStyle(
+              color: Color(0xFF565554),
+              fontSize: 20,
+              fontFamily: 'TitilliumWeb',
+              fontWeight: FontWeight.w600)),
       primarySwatch: color,
       accentColor: secondaryColor,
       textTheme: TextTheme(
@@ -127,10 +141,21 @@ class _WalletAppState extends State<WalletApp> {
             fontSize: 20,
           ),
           headline4: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          bodyText1: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Color(0xFF565554),
+              fontFamily: "SF_Pro"),
+          bodyText2: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+              color: Color(0xFF565554),
+              fontFamily: "SF_Pro"),
           button: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          )),
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontFamily: "SF_Pro")),
     );
   }
 

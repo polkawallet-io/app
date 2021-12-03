@@ -41,7 +41,6 @@ class ACACrowdLoanBanner extends StatelessWidget {
       children: [
         GestureDetector(
           child: Container(
-            margin: EdgeInsets.all(8),
             child: Image.asset('assets/images/public/banner_aca_plo.png'),
           ),
           onTap: () => _goToCrowdLoan(context, active),

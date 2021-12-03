@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 
 class WCSessionsPage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
             children: sessions.map((session) {
               final permissions =
                   List.of(session.permissions.jsonrpc['methods']);
-              return RoundedCardV3(
+              return RoundedCard(
                 child: Column(
                   children: <Widget>[
                     Expanded(

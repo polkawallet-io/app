@@ -127,7 +127,7 @@ dev_dependencies:
 #  mobx_codegen: ^1.1.1
 #  json_serializable: ^3.5.1
   flutter_launcher_icons: ^0.9.0
-#  rive: ^0.7.33
+  rive: ^0.7.33
 
 flutter_icons:
   android: "launcher_icon"
@@ -160,3 +160,21 @@ flutter:
       fonts:
         - asset: assets/fonts/BebasNeue.otf
           weight: 700
+    - family: TitilliumWeb
+      fonts:
+        - asset: assets/fonts/TitilliumWeb-SemiBold.ttf
+        - asset: assets/fonts/TitilliumWeb-Black.ttf
+        - asset: assets/fonts/TitilliumWeb-Bold.ttf
+        - asset: assets/fonts/TitilliumWeb-BoldItalic.ttf
+        - asset: assets/fonts/TitilliumWeb-ExtraLight.ttf
+        - asset: assets/fonts/TitilliumWeb-ExtraLightItalic.ttf
+        - asset: assets/fonts/TitilliumWeb-Italic.ttf
+        - asset: assets/fonts/TitilliumWeb-Light.ttf
+        - asset: assets/fonts/TitilliumWeb-LightItalic.ttf
+        - asset: assets/fonts/TitilliumWeb-Regular.ttf
+        - asset: assets/fonts/TitilliumWeb-SemiBoldItalic.ttf
+    - family: SF_Pro
+      fonts:
+        - asset: assets/fonts/SF-Pro-Text-Light.otf
+        - asset: assets/fonts/SF-Pro-Text-Regular.otf
+        - asset: assets/fonts/SF-Pro-Text-Semibold.otf

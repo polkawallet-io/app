@@ -87,7 +87,7 @@ class _AdBannerState extends State<AdBanner> {
         widgets.length == 1
             ? widgets[0]
             : Container(
-                height: MediaQuery.of(context).size.width / 1240.0 * 289 + 15,
+                height: MediaQuery.of(context).size.width / 340.0 * 80,
                 width: double.infinity,
                 padding: EdgeInsets.zero,
                 child: Swiper(
@@ -138,7 +138,6 @@ class GeneralCrowdLoanBanner extends StatelessWidget {
       children: [
         GestureDetector(
           child: Container(
-            margin: EdgeInsets.all(8),
             color: Colors.transparent,
             child: Image.asset(
               image,

@@ -992,6 +992,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  rive:
+    dependency: "direct dev"
+    description:
+      name: rive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.33"
   rxdart:
     dependency: transitive
     description:

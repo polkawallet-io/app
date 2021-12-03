@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/parachain/auctionData.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/linearProgressBar.dart';
-import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AuctionPanel extends StatelessWidget {
@@ -36,7 +36,7 @@ class AuctionPanel extends StatelessWidget {
         : (0 - ending) / endingPeriodBlocks;
     final endingTime = Fmt.blockToTime(
         ending > 0 ? ending : endingPeriodBlocks + ending, expectedBlockTime);
-    return RoundedCardV3(
+    return RoundedCard(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(16),
       child: auction.auction == null

@@ -12,7 +12,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
-import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -110,7 +110,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         children: [
           Expanded(
               child: GestureDetector(
-            child: RoundedCardV3(
+            child: RoundedCard(
                 margin: EdgeInsets.only(top: 8, bottom: 16),
                 padding: EdgeInsets.all(16),
                 child: Text(
@@ -124,7 +124,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           ),
           Expanded(
               child: GestureDetector(
-            child: RoundedCardV3(
+            child: RoundedCard(
                 margin: EdgeInsets.only(top: 8, bottom: 16),
                 padding: EdgeInsets.all(16),
                 child: Text(
@@ -160,7 +160,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         final double padding = accIndex.isEmpty ? 0 : 7;
         final isCurrent = isCurrentNetwork &&
             i.address == widget.service.keyring.current.address;
-        return RoundedCardV3(
+        return RoundedCard(
           border: isCurrent
               ? Border.all(color: Theme.of(context).primaryColorLight)
               : Border.all(color: Theme.of(context).cardColor),
@@ -379,7 +379,7 @@ class _CommunityPluginNote extends StatelessWidget {
               )
             ],
           ),
-          Visibility(visible: disabled, child: Divider()),
+          Visibility(visible: disabled, child: Divider(height: 1)),
           Visibility(visible: disabled, child: Text(dic['plugin.disable'])),
         ],
       ),

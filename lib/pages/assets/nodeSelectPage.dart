@@ -55,7 +55,8 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
                   },
           );
         },
-        separatorBuilder: (BuildContext context, int index) => Divider(),
+        separatorBuilder: (BuildContext context, int index) =>
+            Divider(height: 1),
       ),
     );
   }
@@ -94,7 +95,7 @@ class NodeSelectItem extends StatelessWidget {
           isExpansion
               ? Column(
                   children: [
-                    Divider(),
+                    Divider(height: 1),
                     Container(
                       margin: EdgeInsets.only(left: 30),
                       child: Column(

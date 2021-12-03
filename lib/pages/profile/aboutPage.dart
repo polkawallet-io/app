@@ -151,7 +151,7 @@ class _AboutPage extends State<AboutPage> {
                   ),
                   onTap: () => _jumpToLink('mailto:hello@polkawallet.io'),
                 ),
-                Divider(),
+                Divider(height: 1),
                 GestureDetector(
                   child: Container(
                     padding: EdgeInsets.only(top: 16, bottom: 16),

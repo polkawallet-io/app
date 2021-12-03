@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
-import 'package:polkawallet_ui/components/v3/roundedCardV3.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -234,7 +234,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                         ],
                       );
                     }
-                    return RoundedCardV3(
+                    return RoundedCard(
                       padding: EdgeInsets.all(16),
                       margin: EdgeInsets.only(bottom: 16),
                       child: e.use.contains('ormlvest')
