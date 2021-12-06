@@ -616,7 +616,7 @@ class _WalletAppState extends State<WalletApp> {
         FocusScope.of(context).focusedChild?.unfocus();
       },
       child: ScreenUtilInit(
-          designSize: Size(1170, 2532),
+          designSize: Size(390, 844),
           builder: () => MaterialApp(
                 title: 'Polkawallet',
                 theme: _theme ??

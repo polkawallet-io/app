@@ -225,7 +225,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 width: 56,
                 // color: Theme.of(context).cardColor,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey[100],
