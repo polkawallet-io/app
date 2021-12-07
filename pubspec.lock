@@ -290,13 +290,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
-  equatable:
-    dependency: transitive
-    description:
-      name: equatable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
   fake_async:
     dependency: transitive
     description:
@@ -374,13 +367,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  fl_chart:
-    dependency: transitive
-    description:
-      name: fl_chart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.40.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -942,7 +928,7 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.3.7"
+    version: "0.3.8"
   polkawallet_ui:
     dependency: "direct overridden"
     description:

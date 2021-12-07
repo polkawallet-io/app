@@ -8,7 +8,6 @@ import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
-import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
@@ -22,6 +21,7 @@ import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
+import 'package:app/pages/profile/communityPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
 import 'package:app/pages/profile/crowdLoan/contributePage.dart';
@@ -140,7 +140,17 @@ class _WalletAppState extends State<WalletApp> {
           headline3: TextStyle(
             fontSize: 20,
           ),
-          headline4: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          headline4: TextStyle(
+            color: Color(0xFF565554),
+            fontSize: 16,
+            fontFamily: 'TitilliumWeb',
+            fontWeight: FontWeight.w400,
+          ),
+          headline6: TextStyle(
+            color: Color(0xFF565554),
+            fontSize: 12,
+            fontFamily: 'TitilliumWeb',
+          ),
           bodyText1: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -543,6 +553,7 @@ class _WalletAppState extends State<WalletApp> {
       ContactPage.route: (_) => ContactPage(_service),
       AboutPage.route: (_) => AboutPage(_service),
       AccountManagePage.route: (_) => AccountManagePage(_service),
+      CommunityPage.route: (_) => CommunityPage(_service),
       ChangeNamePage.route: (_) => ChangeNamePage(_service),
       ChangePasswordPage.route: (_) => ChangePasswordPage(_service),
       ExportAccountPage.route: (_) => ExportAccountPage(_service),

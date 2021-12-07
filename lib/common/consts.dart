@@ -25,6 +25,7 @@ const relay_chain_name_dot = 'polkadot';
 const para_chain_name_statemine = 'statemine';
 const para_chain_name_statemint = 'statemint';
 const para_chain_name_karura = 'karura';
+const para_chain_name_acala = 'acala';
 const para_chain_name_bifrost = 'bifrost';
 const plugin_github_links = {
   relay_chain_name_ksm: 'https://github.com/polkawallet-io/app/issues',

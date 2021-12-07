@@ -31,6 +31,8 @@ const Map<String, String> zhProfile = {
   'setting.currency': '价格单位',
   'setting.currency.tip': '仅影响资产主页',
   'setting.balance.hide': '隐藏余额',
+  'community': '加入社区',
+  'guide': '指南',
   'about': '关于',
   'about.title': '关于 Polkawallet',
   'about.terms': '服务条款',
