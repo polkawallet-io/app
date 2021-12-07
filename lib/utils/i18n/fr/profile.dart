@@ -31,6 +31,8 @@ const Map<String, String> enProfile = {
   'setting.currency': 'Price Symbol',
   'setting.currency.tip': 'only affects the main Assets page',
   'setting.balance.hide': 'Hide Balance',
+  'community': 'Join Community',
+  'guide': 'Guide',
   'about': 'About',
   'about.title': 'About Polkawallet',
   'about.terms': 'Terms & Conditions',
