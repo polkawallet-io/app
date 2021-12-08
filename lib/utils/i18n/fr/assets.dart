@@ -94,4 +94,10 @@ const Map<String, String> enAssets = {
   'QRCode': 'my QR code',
   'unlock': 'Unlock',
   'history': 'History',
+  'v3.switchDefi': 'Switch to Defi',
+  'v3.switchBack': 'Switch Back',
+  'v3.totalBalance': 'Total Balance',
+  'v3.myDefi': 'My Defi',
+  'v3.send': 'Send',
+  'v3.changeNetwork': 'Change Network',
 };
