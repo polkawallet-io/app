@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组备份_2</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.972549 0 0 0 0 0.960784 0 0 0 0 0.949020 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="编组备份-2" transform="translate(-32.000000, -188.000000)" filter="url(#filter-1)">
+            <g transform="translate(32.000000, 188.000000)">
+                <line x1="11.3333333" y1="2.66666667" x2="13.3333333" y2="5.33333333" id="路径-29" stroke="#979797"></line>
+                <line x1="4.66666667" y1="13.3333333" x2="6.66666667" y2="10.6666667" id="路径-29备份" stroke="#979797"></line>
+                <line x1="11.3333333" y1="2.66666667" x2="9.33333333" y2="5.33333333" id="路径-30" stroke="#979797"></line>
+                <line x1="4.66666667" y1="13.3333333" x2="2.66666667" y2="10.6666667" id="路径-30备份" stroke="#979797"></line>
+                <line x1="11.3333333" y1="2.66666667" x2="11.3333333" y2="13.3333333" id="路径-31" stroke="#979797"></line>
+                <line x1="4.66666667" y1="13.3333333" x2="4.66666667" y2="2.66666667" id="路径-31备份" stroke="#979797"></line>
+            </g>
+        </g>
+    </g>
+</svg>

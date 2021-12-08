@@ -17,6 +17,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -208,50 +209,49 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-        title: Text(I18n.of(context)
-            .getDic(i18n_full_dic_app, 'profile')['setting.network']),
-        centerTitle: true,
-        leading: BackBtn(
-          onBack: () => Navigator.of(context).pop(),
-        ),
-      ),
+          title: Text(I18n.of(context)
+              .getDic(i18n_full_dic_app, 'profile')['setting.network']),
+          centerTitle: true,
+          leading: BackBtn(
+            onBack: () => Navigator.of(context).pop(),
+          ),
+          elevation: 2),
       body: Row(
         children: <Widget>[
           // left side bar
-          Stack(
-            children: [
-              Container(
-                width: 56,
-                // color: Theme.of(context).cardColor,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey[100],
-                      blurRadius: 24.0,
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...widget.plugins.map((e) {
-                      final isCurrent =
-                          e.basic.name == _selectedNetwork?.basic?.name;
-                      return isCurrent
-                          ? _NetworkItemActive(icon: e.basic.icon)
-                          : Container(
-                              margin: EdgeInsets.all(8),
-                              child: IconButton(
-                                padding: EdgeInsets.all(8),
-                                icon: isCurrent
-                                    ? e.basic.icon
-                                    : e.basic.iconDisabled,
-                                onPressed: () {
+          Padding(
+              padding: EdgeInsets.only(top: 20.h),
+              child: Stack(
+                children: [
+                  Container(
+                    width: 54.w,
+                    // color: Theme.of(context).cardColor,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFF3F1ED),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(23.91),
+                          topRight: Radius.circular(30)),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 3.0,
+                            spreadRadius: 1.0,
+                            offset: Offset(2.0, 2.0))
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...widget.plugins.map((e) {
+                          final isCurrent =
+                              e.basic.name == _selectedNetwork?.basic?.name;
+                          return isCurrent
+                              ? _NetworkItemActive(icon: e.basic.icon)
+                              : netWorkItem(() {
                                   if (!isCurrent) {
                                     setState(() {
                                       _selectedNetwork = e;
@@ -259,35 +259,30 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                     });
                                   }
                                 },
-                              ),
-                            );
-                    }).toList(),
-                    ...widget.disabledPlugins.map((e) {
-                      final isCurrent = e.name == _pluginDisabledSelected?.name;
-                      return isCurrent
-                          ? _NetworkItemActive(icon: e.icon)
-                          : Container(
-                              margin: EdgeInsets.all(8),
-                              child: IconButton(
-                                padding: EdgeInsets.all(8),
-                                icon: e.icon,
-                                onPressed: () {
+                                  isCurrent
+                                      ? e.basic.icon
+                                      : e.basic.iconDisabled);
+                        }).toList(),
+                        ...widget.disabledPlugins.map((e) {
+                          final isCurrent =
+                              e.name == _pluginDisabledSelected?.name;
+                          return isCurrent
+                              ? _NetworkItemActive(icon: e.icon)
+                              : netWorkItem(() {
                                   if (_pluginDisabledSelected?.name != e.name) {
                                     setState(() {
                                       _pluginDisabledSelected = e;
                                       _selectedNetwork = null;
                                     });
                                   }
-                                },
-                              ),
-                            );
-                    }).toList()
-                  ],
-                  // children: sideBar,
-                ),
-              )
-            ],
-          ),
+                                }, e.icon);
+                        }).toList()
+                      ],
+                      // children: sideBar,
+                    ),
+                  )
+                ],
+              )),
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(16),
@@ -299,6 +294,27 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         ],
       ),
     );
+  }
+
+  Widget netWorkItem(Function() onTap, Widget icon) {
+    return Container(
+        width: 54.w,
+        height: 80.h,
+        child: Center(
+          child: GestureDetector(
+              onTap: onTap,
+              child: Container(
+                  padding: EdgeInsets.all(7),
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 3, bottom: 3),
+                    child: SizedBox(child: icon, height: 28, width: 28),
+                  ),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(
+                              "assets/images/selectWallet_unselect.png"),
+                          fit: BoxFit.fill)))),
+        ));
   }
 }
 
@@ -312,37 +328,22 @@ class _NetworkItemActive extends StatelessWidget {
       alignment: AlignmentDirectional.centerEnd,
       children: [
         Padding(
-          padding: EdgeInsets.only(right: 8),
-          child: SvgPicture.asset(
-            'assets/images/network_icon_bg.svg',
-            color: Colors.grey[100],
-            width: 56,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(right: 44),
-          child: SvgPicture.asset(
-            'assets/images/network_icon_border.svg',
-            color: Theme.of(context).primaryColor,
-            width: 10,
-          ),
-        ),
+            padding: EdgeInsets.only(left: 10),
+            child: Image.asset(
+              "assets/images/selectWallet_select_bg.png",
+              fit: BoxFit.contain,
+              width: 52.w,
+            )),
         Container(
-          padding: EdgeInsets.all(8),
-          child: SizedBox(child: icon, height: 28, width: 28),
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(const Radius.circular(24)),
-            color: Theme.of(context).cardColor,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 12.0,
-                spreadRadius: 0,
-                offset: Offset(6.0, 1.0),
-              )
-            ],
-          ),
-        )
+            padding: EdgeInsets.all(7),
+            child: Padding(
+              padding: EdgeInsets.only(right: 3, bottom: 3),
+              child: SizedBox(child: icon, height: 28, width: 28),
+            ),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/images/selectWallet_select.png"),
+                    fit: BoxFit.fill)))
       ],
     );
   }

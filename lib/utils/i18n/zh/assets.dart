@@ -86,4 +86,10 @@ const Map<String, String> zhAssets = {
   'QRCode': '我的二维码',
   'unlock': '解锁',
   'history': '操作记录',
+  'v3.switchDefi': '切换至Defi',
+  'v3.switchBack': '切换回来',
+  'v3.totalBalance': '总资产',
+  'v3.myDefi': '我的Defi',
+  'v3.send': '发送',
+  'v3.changeNetwork': '切换网络',
 };

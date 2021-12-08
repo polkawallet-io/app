@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="15px" viewBox="0 0 22 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组_7</title>
+    <g id="assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g transform="translate(-183.000000, -262.000000)" id="编组-7" stroke="#FFFFFF" stroke-width="3">
+            <g transform="translate(183.000000, 262.000000)">
+                <line x1="2" y1="12.5" x2="8" y2="12.5" id="路径"></line>
+                <line x1="17" y1="12.5" x2="20.5" y2="12.5" id="路径"></line>
+                <line x1="12.5277232" y1="12.4819223" x2="6.23855409" y2="2.2620225" id="路径-10" transform="translate(9.383139, 7.371972) rotate(-3.000000) translate(-9.383139, -7.371972) "></line>
+            </g>
+        </g>
+    </g>
+</svg>

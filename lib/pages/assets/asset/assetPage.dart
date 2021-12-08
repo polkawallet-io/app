@@ -8,22 +8,22 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/MainTabBar.dart';
-import 'package:polkawallet_ui/components/infoItem.dart';
+import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/TransferIcon.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -211,11 +211,18 @@ class _AssetPageState extends State<AssetPage> {
     });
     final List<Widget> res = [];
     res.addAll(txs.map((i) {
-      return TransferListItem(
-        data: i,
-        token: symbol,
-        isOut: i.from == widget.service.keyring.current.address,
-        hasDetail: true,
+      return Column(
+        children: [
+          TransferListItem(
+            data: i,
+            token: symbol,
+            isOut: i.from == widget.service.keyring.current.address,
+            hasDetail: true,
+          ),
+          Divider(
+            height: 1,
+          )
+        ],
       );
     }));
 
@@ -235,7 +242,25 @@ class _AssetPageState extends State<AssetPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
-    final titleColor = Theme.of(context).cardColor;
+    BalanceData balancesInfo = widget.service.plugin.balances.native;
+
+    // String lockedInfo = '\n';
+    bool hasVesting = false;
+    if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
+      balancesInfo.lockedBreakdown.forEach((i) {
+        final amt = Fmt.balanceInt(i.amount.toString());
+        if (amt > BigInt.zero) {
+          // lockedInfo += '${Fmt.priceFloorBigInt(
+          //   amt,
+          //   decimals,
+          //   lengthMax: 4,
+          // )} $symbol ${dic['lock.${i.use.trim()}']}\n';
+          if (i.use.contains('ormlvest')) {
+            hasVesting = true;
+          }
+        }
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -258,7 +283,7 @@ class _AssetPageState extends State<AssetPage> {
               onPressed: _showAction),
         ],
       ),
-      backgroundColor: titleColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Observer(
           builder: (_) {
@@ -285,163 +310,177 @@ class _AssetPageState extends State<AssetPage> {
                   onUnlock: _onUnlock,
                   icon: widget.service.plugin.tokenIcons[symbol],
                 ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(16, 8, 8, 8),
-                        child: RoundedButton(
-                          icon: Column(
-                            children: [
-                              Icon(Icons.qr_code, color: titleColor, size: 24),
-                              Text(
-                                dic['receive'],
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
+                Padding(
+                    padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 18.h),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: CarButton(
+                              icon: SvgPicture.asset("assets/images/send.svg",
+                                  color: Theme.of(context).textSelectionColor,
+                                  width: 20),
+                              text: dic['v3.send'],
+                              onPressed: transferEnabled
+                                  ? () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        TransferPage.route,
+                                        arguments: TransferPageParams(
+                                          redirect: AssetPage.route,
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                            ),
                           ),
-                          color: colorIn,
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, AccountQrCodePage.route);
-                          },
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                        child: RoundedButton(
-                          icon: Column(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                                child: Image.asset(
-                                    'assets/images/assets_send.png'),
-                              ),
-                              Text(
-                                dic['transfer'],
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: CarButton(
+                              icon: SvgPicture.asset("assets/images/qr.svg",
+                                  color: Theme.of(context).textSelectionColor,
+                                  width: 20),
+                              text: dic['receive'],
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, AccountQrCodePage.route);
+                              },
+                            ),
                           ),
-                          color: colorOut,
-                          onPressed: transferEnabled
-                              ? () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    TransferPage.route,
-                                    arguments: TransferPageParams(
-                                      redirect: AssetPage.route,
-                                    ),
-                                  );
-                                }
-                              : null,
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-                        child: RoundedButton(
-                          icon: Column(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                                child: Image.asset(
-                                    'assets/images/assets_send.png'),
-                              ),
-                              Text(
-                                dic['unlock'],
-                                style: TextStyle(color: titleColor),
-                              )
-                            ],
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: CarButton(
+                              icon: SvgPicture.asset("assets/images/unlock.svg",
+                                  color: Theme.of(context).textSelectionColor,
+                                  width: 20),
+                              text: dic['unlock'],
+                              onPressed: hasVesting
+                                  ? () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        LocksDetailPage.route,
+                                        arguments: TransferPageParams(
+                                          redirect: LocksDetailPage.route,
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                            ),
                           ),
-                          color: colorOut,
-                          onPressed: transferEnabled
-                              ? () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    LocksDetailPage.route,
-                                  );
-                                }
-                              : null,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            dic['history'],
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                          Text(dic[_tab == 0
-                              ? 'all'
-                              : _tab == 1
-                                  ? "in"
-                                  : "out"])
-                        ],
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                            showCupertinoModalPopup(
-                                context: context,
-                                builder: (context) {
-                                  return ShowCustomAlterWidget((value) {
-                                    setState(() {
-                                      if (value == dic['all']) {
-                                        _tab = 0;
-                                      } else if (value == dic['in']) {
-                                        _tab = 1;
-                                      } else {
-                                        _tab = 2;
-                                      }
-                                    });
-                                  },
-                                      dic['history'],
-                                      I18n.of(context).getDic(
-                                          i18n_full_dic_ui, 'common')['cancel'],
-                                      [dic['all'], dic['in'], dic['out']]);
-                                });
-                          },
-                          child: Icon(
-                            Icons.screen_lock_landscape,
-                            color: Theme.of(context).primaryColor,
-                            size: 30,
-                          ))
-                    ],
-                  ),
-                ),
-                // Padding(
-                //   padding: EdgeInsets.all(16),
-                //   child: MainTabBar(
-                //     tabs: [dic['all'], dic['in'], dic['out']],
-                //     activeTab: _tab,
-                //     onTap: (i) {
-                //       setState(() {
-                //         _tab = i;
-                //       });
-                //     },
-                //   ),
-                // ),
+                      ],
+                    )),
                 Expanded(
                   child: Container(
-                    color: Colors.white,
-                    child: RefreshIndicator(
-                      key: _refreshKey,
-                      onRefresh: _refreshData,
-                      child: ListView(
-                        controller: _scrollController,
-                        children: [..._buildTxList()],
-                      ),
+                    color: Theme.of(context).cardColor,
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 22.h),
+                          margin: EdgeInsets.only(bottom: 10.h, top: 0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0x33000000),
+                                blurRadius: 2.0,
+                                spreadRadius: 0.0,
+                                offset: Offset(
+                                  0.0,
+                                  3.0,
+                                ),
+                              )
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              BorderedTitle(title: dic['history']),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 36.w,
+                                    height: 28.h,
+                                    margin: EdgeInsets.only(right: 8.w),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              "assets/images/bg_tag.png"),
+                                          fit: BoxFit.fill),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                          dic[_tab == 0
+                                              ? 'all'
+                                              : _tab == 1
+                                                  ? "in"
+                                                  : "out"],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .toggleableActiveColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: "TitilliumWeb")),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                      onTap: () {
+                                        showCupertinoModalPopup(
+                                            context: context,
+                                            builder: (context) {
+                                              return ShowCustomAlterWidget(
+                                                  (value) {
+                                                setState(() {
+                                                  if (value == dic['all']) {
+                                                    _tab = 0;
+                                                  } else if (value ==
+                                                      dic['in']) {
+                                                    _tab = 1;
+                                                  } else {
+                                                    _tab = 2;
+                                                  }
+                                                });
+                                              },
+                                                  dic['history'],
+                                                  I18n.of(context).getDic(
+                                                      i18n_full_dic_ui,
+                                                      'common')['cancel'],
+                                                  [
+                                                    dic['all'],
+                                                    dic['in'],
+                                                    dic['out']
+                                                  ]);
+                                            });
+                                      },
+                                      child: v3.IconButton(
+                                        icon: SvgPicture.asset(
+                                          'assets/images/icon_screening.svg',
+                                          color: Color(0xFF979797),
+                                          width: 22.h,
+                                        ),
+                                      ))
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: RefreshIndicator(
+                            key: _refreshKey,
+                            onRefresh: _refreshData,
+                            child: ListView(
+                              controller: _scrollController,
+                              children: [..._buildTxList()],
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 )
@@ -451,6 +490,54 @@ class _AssetPageState extends State<AssetPage> {
         ),
       ),
     );
+  }
+}
+
+class CarButton extends StatelessWidget {
+  CarButton(
+      {@required this.onPressed,
+      @required this.text,
+      @required this.icon,
+      Key key})
+      : super(key: key);
+  Function() onPressed;
+  String text;
+  Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          if (onPressed != null) {
+            onPressed();
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 12.h),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            image: DecorationImage(
+                image: AssetImage("assets/images/btn_bg.png"),
+                fit: BoxFit.fill),
+          ),
+          alignment: Alignment.center,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(padding: EdgeInsets.only(bottom: 5.h), child: icon),
+                Text(
+                  text,
+                  style: TextStyle(
+                      color: Theme.of(context).textSelectionColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "TitilliumWeb"),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
 
@@ -479,24 +566,6 @@ class BalanceCard extends StatelessWidget {
 
     final balance = Fmt.balanceTotal(balancesInfo);
 
-    // String lockedInfo = '\n';
-    // bool hasVesting = false;
-    // if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
-    //   balancesInfo.lockedBreakdown.forEach((i) {
-    //     final amt = Fmt.balanceInt(i.amount.toString());
-    //     if (amt > BigInt.zero) {
-    //       lockedInfo += '${Fmt.priceFloorBigInt(
-    //         amt,
-    //         decimals,
-    //         lengthMax: 4,
-    //       )} $symbol ${dic['lock.${i.use.trim()}']}\n';
-    //       if (i.use.contains('ormlvest')) {
-    //         hasVesting = true;
-    //       }
-    //     }
-    //   });
-    // }
-
     String tokenPrice;
     if (marketPrices[symbol] != null && balancesInfo != null) {
       tokenPrice = Fmt.priceFloor(
@@ -506,9 +575,8 @@ class BalanceCard extends StatelessWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final titleColor = Theme.of(context).cardColor;
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 8, 16, 16),
-      padding: EdgeInsets.all(12),
-      // constraints: BoxConstraints(maxHeight: 200, maxWidth: 480),
+      margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(const Radius.circular(16)),
         gradient: LinearGradient(
@@ -525,62 +593,66 @@ class BalanceCard extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withAlpha(100),
-            blurRadius: 16.0,
-            spreadRadius: 2.0,
-            offset: Offset(2.0, 6.0),
+            // color: primaryColor.withAlpha(100),
+            color: Color(0x4D000000),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+            offset: Offset(5.0, 5.0),
           )
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Row(
-            children: [
-              Container(
-                  height: 50,
-                  width: 50,
-                  margin: EdgeInsets.only(right: 8),
-                  child: icon),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+              padding: EdgeInsets.only(bottom: 22.h),
+              child: Row(
                 children: [
-                  Padding(
-                    padding:
-                        EdgeInsets.only(bottom: tokenPrice != null ? 4 : 24),
-                    child: Text(
-                      Fmt.token(balance, decimals, length: 8),
-                      style: TextStyle(
-                        color: titleColor,
-                        fontSize: 30,
-                        letterSpacing: -0.8,
-                        fontWeight: FontWeight.bold,
+                  Container(
+                      height: 45.w,
+                      width: 45.w,
+                      margin: EdgeInsets.only(right: 8.w),
+                      child: icon),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        Fmt.token(balance, decimals, length: 8),
+                        style: TextStyle(
+                            color: titleColor,
+                            fontSize: 20,
+                            letterSpacing: -0.8,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "TitilliumWeb"),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Visibility(
-                      visible: tokenPrice != null,
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 16),
+                      Visibility(
+                        visible: tokenPrice != null,
                         child: Text(
                           '≈ \$ ${tokenPrice ?? '--.--'}',
                           style: TextStyle(
-                            color: Theme.of(context).cardColor,
-                          ),
+                              color: titleColor,
+                              fontSize: 12,
+                              letterSpacing: -0.8,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "SF_Pro"),
                         ),
-                      )),
+                      ),
+                    ],
+                  ),
                 ],
-              ),
-            ],
-          ),
+              )),
           Row(
             children: [
               Expanded(
                 child: Column(
                   children: [
                     priceItemBuild(
-                        icon,
+                        SvgPicture.asset(
+                          'assets/images/transferrable_icon.svg',
+                          color: titleColor,
+                        ),
                         dic['available'],
                         Fmt.priceFloorBigInt(
                           Fmt.balanceInt(
@@ -590,7 +662,10 @@ class BalanceCard extends StatelessWidget {
                         ),
                         titleColor),
                     priceItemBuild(
-                        icon,
+                        SvgPicture.asset(
+                          'assets/images/locked_icon.svg',
+                          color: titleColor,
+                        ),
                         dic['locked'],
                         Fmt.priceFloorBigInt(
                           Fmt.balanceInt(
@@ -600,7 +675,10 @@ class BalanceCard extends StatelessWidget {
                         ),
                         titleColor),
                     priceItemBuild(
-                        icon,
+                        SvgPicture.asset(
+                          'assets/images/reversed_icon.svg',
+                          color: titleColor,
+                        ),
                         dic['reserved'],
                         Fmt.priceFloorBigInt(
                           Fmt.balanceInt(
@@ -611,129 +689,14 @@ class BalanceCard extends StatelessWidget {
                         titleColor),
                   ],
                 ),
-                flex: 19,
+                flex: 1,
               ),
               Expanded(
                 child: Container(),
-                flex: 15,
+                flex: 1,
               )
             ],
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //   children: <Widget>[
-          //     Container(
-          //       height: 24,
-          //       width: 0,
-          //     ),
-          //     InfoItem(
-          //       title: dic['reserved'],
-          //       content: Fmt.priceFloorBigInt(
-          //         Fmt.balanceInt(
-          //             (balancesInfo?.reservedBalance ?? 0).toString()),
-          //         decimals,
-          //         lengthMax: 4,
-          //       ),
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       color: titleColor,
-          //       titleColor: titleColor,
-          //       flex: 0,
-          //       lowTitle: true,
-          //     ),
-          //     Container(
-          //       height: 24,
-          //       width: 0,
-          //       decoration: BoxDecoration(
-          //           border: Border(
-          //         left: BorderSide(
-          //             color: Theme.of(context).cardColor, width: 0.5),
-          //       )),
-          //     ),
-          //     InfoItem(
-          //       title: dic['available'],
-          //       content: Fmt.priceFloorBigInt(
-          //         Fmt.balanceInt(
-          //             (balancesInfo?.availableBalance ?? 0).toString()),
-          //         decimals,
-          //         lengthMax: 4,
-          //       ),
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       color: titleColor,
-          //       titleColor: titleColor,
-          //       flex: 0,
-          //       lowTitle: true,
-          //     ),
-          //     Container(
-          //       height: 24,
-          //       width: 0,
-          //       decoration: BoxDecoration(
-          //           border: Border(
-          //         left: BorderSide(
-          //             color: Theme.of(context).cardColor, width: 0.5),
-          //       )),
-          //     ),
-          //     Column(
-          //       children: [
-          //         Row(
-          //           children: [
-          //             Visibility(
-          //                 visible: lockedInfo.length > 2,
-          //                 child: hasVesting
-          //                     ? GestureDetector(
-          //                         child: Container(
-          //                           padding: EdgeInsets.only(right: 4),
-          //                           child: Row(
-          //                             children: [
-          //                               Icon(Icons.info,
-          //                                   size: 16, color: titleColor),
-          //                               priceBuild(balancesInfo, titleColor),
-          //                             ],
-          //                           ),
-          //                         ),
-          //                         onTap: () => Navigator.of(context)
-          //                             .pushNamed(LocksDetailPage.route),
-          //                       )
-          //                     : TapTooltip(
-          //                         message: lockedInfo,
-          //                         child: Row(
-          //                           children: [
-          //                             Icon(Icons.info,
-          //                                 size: 16, color: titleColor),
-          //                             priceBuild(balancesInfo, titleColor),
-          //                           ],
-          //                         ),
-          //                         waitDuration: Duration(seconds: 0),
-          //                       )),
-          //             Visibility(
-          //                 visible: lockedInfo.length <= 2,
-          //                 child: priceBuild(balancesInfo, titleColor)),
-          //             Visibility(
-          //                 visible: unlocks.length > 0,
-          //                 child: GestureDetector(
-          //                   child: Padding(
-          //                     padding: EdgeInsets.only(left: 4),
-          //                     child: Icon(
-          //                       Icons.lock_open,
-          //                       size: 16,
-          //                       color: titleColor,
-          //                     ),
-          //                   ),
-          //                   onTap: onUnlock,
-          //                 )),
-          //           ],
-          //         ),
-          //         Text(
-          //           dic['locked'],
-          //           style: TextStyle(color: titleColor, fontSize: 12),
-          //         ),
-          //       ],
-          //     ),
-          //     Container(
-          //       height: 24,
-          //       width: 0,
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -746,19 +709,27 @@ class BalanceCard extends StatelessWidget {
         Row(
           children: [
             Container(
-                height: 36,
-                width: 36,
-                margin: EdgeInsets.only(right: 8),
+                height: 16.w,
+                width: 16.w,
+                margin: EdgeInsets.only(right: 8.w),
                 child: icon),
             Text(
               title,
-              style: TextStyle(color: color),
+              style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "TitilliumWeb"),
             )
           ],
         ),
         Text(
           price,
-          style: TextStyle(color: color),
+          style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              fontFamily: "TitilliumWeb"),
         )
       ],
     );

@@ -18,6 +18,8 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -510,15 +512,15 @@ class _TransferPageState extends State<TransferPage> {
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
               actions: <Widget>[
-                IconButton(
-                  padding: EdgeInsets.only(right: 8),
-                  icon: SvgPicture.asset(
-                    'assets/images/scan.svg',
-                    color: Theme.of(context).cardColor,
-                    width: 28,
-                  ),
-                  onPressed: _onScan,
-                )
+                v3.IconButton(
+                    margin: EdgeInsets.only(right: 8),
+                    icon: SvgPicture.asset(
+                      'assets/images/scan.svg',
+                      color: Theme.of(context).cardColor,
+                      width: 22.h,
+                    ),
+                    onPressed: _onScan,
+                    isBlueBg: true)
               ],
               leading: BackBtn(
                 onBack: () => Navigator.of(context).pop(),

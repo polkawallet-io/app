@@ -294,42 +294,45 @@ class SettingsPageListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Row(
-        children: [
-          Visibility(
-            visible: leading != null,
-            child: Container(
-              padding: EdgeInsets.all(4.r),
-              child: leading,
-              decoration: BoxDecoration(
-                  color: Color(0xFFCECECE),
-                  borderRadius: BorderRadius.all(Radius.circular(8.r))),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 8.w, right: 8.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: Theme.of(context).textTheme.headline4),
-                  subtitle != null
-                      ? Text(subtitle,
-                          style: Theme.of(context).textTheme.headline6)
-                      : Container(),
-                ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            Visibility(
+              visible: leading != null,
+              child: Container(
+                padding: EdgeInsets.all(4.r),
+                child: leading,
+                decoration: BoxDecoration(
+                    color: Color(0xFFCECECE),
+                    borderRadius: BorderRadius.all(Radius.circular(8.r))),
               ),
             ),
-          ),
-          Visibility(
-            visible: content != null,
-            child: content ?? Container(),
-          ),
-          onTap != null
-              ? Image.asset('assets/images/icons/arrow_forward.png',
-                  width: 24.w)
-              : Container(width: 1),
-        ],
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.only(left: 8.w, right: 8.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: Theme.of(context).textTheme.headline4),
+                    subtitle != null
+                        ? Text(subtitle,
+                            style: Theme.of(context).textTheme.headline6)
+                        : Container(),
+                  ],
+                ),
+              ),
+            ),
+            Visibility(
+              visible: content != null,
+              child: content ?? Container(),
+            ),
+            onTap != null
+                ? Image.asset('assets/images/icons/arrow_forward.png',
+                    width: 24.w)
+                : Container(width: 1),
+          ],
+        ),
       ),
       onTap: onTap,
     );

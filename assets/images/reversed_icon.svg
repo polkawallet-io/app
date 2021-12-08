@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>reserved备份</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.972549 0 0 0 0 0.960784 0 0 0 0 0.949020 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="reserved备份" transform="translate(-32.000000, -236.000000)" filter="url(#filter-1)">
+            <g transform="translate(32.000000, 236.000000)">
+                <polyline id="路径-41" stroke="#979797" stroke-linejoin="round" points="2.66666667 2.66666667 2.66666667 13.6666667 5.33333333 13.6666667 5.33333333 12 10.6666667 12 10.6666667 13.6666667 13.3333333 13.6666667 13.3333333 2.66666667"></polyline>
+                <line x1="13.3333333" y1="2.66666667" x2="2.66666667" y2="2.66666667" id="路径-42" stroke="#979797" stroke-linejoin="round"></line>
+                <circle id="椭圆形" stroke="#979797" cx="8" cy="6.66666667" r="2"></circle>
+                <line x1="8" y1="8.66666667" x2="8" y2="10.3333333" id="路径-43" stroke="#979797"></line>
+            </g>
+        </g>
+    </g>
+</svg>
