@@ -79,6 +79,8 @@ class _AboutPage extends State<AboutPage> {
     final colorGray = Theme.of(context).unselectedWidgetColor;
     final labelStyle = TextStyle(fontSize: 16);
     final contentStyle = TextStyle(fontSize: 14, color: colorGray);
+
+    final pagePadding = 16.w;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['about.title']),
@@ -89,8 +91,9 @@ class _AboutPage extends State<AboutPage> {
           child: Column(
             children: <Widget>[
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 10.h, 25.h, 20.w),
-                padding: EdgeInsets.fromLTRB(5.w, 15.h, 5.w, 15.h),
+                margin:
+                    EdgeInsets.fromLTRB(pagePadding, 4.h, pagePadding, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
                 child: Column(
                   children: [
                     SettingsPageListItem(
@@ -121,8 +124,9 @@ class _AboutPage extends State<AboutPage> {
                 ),
               ),
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 10.h, 25.h, 20.w),
-                padding: EdgeInsets.fromLTRB(5.w, 15.h, 5.w, 15.h),
+                margin:
+                    EdgeInsets.fromLTRB(pagePadding, 8.h, pagePadding, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
                 child: Column(
                   children: [
                     SettingsPageListItem(
@@ -132,8 +136,8 @@ class _AboutPage extends State<AboutPage> {
                           Visibility(
                             visible: _updateLoading,
                             child: Container(
-                              padding: EdgeInsets.only(right: 8),
-                              child: CupertinoActivityIndicator(radius: 8),
+                              padding: EdgeInsets.only(right: 8.w),
+                              child: CupertinoActivityIndicator(radius: 8.r),
                             ),
                           ),
                           Text(_appVersion ?? "", style: contentStyle)
@@ -145,7 +149,7 @@ class _AboutPage extends State<AboutPage> {
                     SettingsPageListItem(
                       label: 'API',
                       content: Container(
-                        padding: EdgeInsets.only(right: 10.w),
+                        padding: EdgeInsets.only(right: 8.w),
                         child: Text(currentJSVersion.toString(),
                             style: contentStyle),
                       ),

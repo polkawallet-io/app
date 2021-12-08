@@ -2,17 +2,17 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
-import 'package:polkawallet_ui/components/v3/button.dart';
 
 class ContactPage extends StatefulWidget {
   ContactPage(this.service);
@@ -51,6 +51,8 @@ class _Contact extends State<ContactPage> {
   }
 
   Future<void> _onSave() async {
+    if (_submitting) return;
+
     if (_formKey.currentState.validate()) {
       setState(() {
         _submitting = true;
@@ -156,133 +158,123 @@ class _Contact extends State<ContactPage> {
     // ];
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['contact']),
-          centerTitle: true,
-          // actions: _args == null ? action : null,
-          leading: Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: BackBtn(
-              onBack: () => Navigator.of(context).pop(),
-            ),
-          )),
+        title: Text(dic['contact']),
+        centerTitle: true,
+        // actions: _args == null ? action : null,
+        leading: BackBtn(
+          onBack: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: SafeArea(
-        child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      padding: EdgeInsets.only(top: 8, bottom: 8),
-                      children: <Widget>[
-                        Padding(
-                            padding: EdgeInsets.only(top: 20),
-                            child: v3.TextFormField(
-                              decoration: v3.InputDecorationV3(
-                                hintText: dic['contact.address'],
-                                labelText: dic['contact.address'],
-                                suffix: GestureDetector(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 3, left: 5),
-                                    child: SvgPicture.asset(
-                                        'assets/images/scan.svg',
-                                        color: Theme.of(context).disabledColor,
-                                        width: 22),
-                                  ),
-                                  onTap: () async {
-                                    final to = await Navigator.of(context)
-                                        .pushNamed(ScanPage.route);
-                                    if (to != null) {
-                                      setState(() {
-                                        _addressCtrl.text = (to as QRCodeResult)
-                                            .address
-                                            .address;
-                                        _nameCtrl.text =
-                                            (to as QRCodeResult).address.name;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ),
-                              controller: _addressCtrl,
-                              validator: (v) {
-                                if (!Fmt.isAddress(v.trim())) {
-                                  return dic['contact.address.error'];
-                                }
-                                return null;
-                              },
-                              readOnly: _args != null,
-                            )),
-                        Padding(
-                            padding: EdgeInsets.only(top: 20),
-                            child: v3.TextFormField(
-                              decoration: v3.InputDecorationV3(
-                                hintText: dic['contact.name'],
-                                labelText: dic['contact.name'],
-                              ),
-                              controller: _nameCtrl,
-                              validator: (v) {
-                                return v.trim().length > 0
-                                    ? null
-                                    : dic['contact.name.error'];
-                              },
-                            )),
-                        Padding(
-                            padding: EdgeInsets.only(top: 20),
-                            child: v3.TextFormField(
-                              decoration: v3.InputDecorationV3(
-                                hintText: dic['contact.memo'],
-                                labelText: dic['contact.memo'],
-                              ),
-                              controller: _memoCtrl,
-                            )),
-                        Row(
-                          children: <Widget>[
-                            Checkbox(
-                              value: _isObservation,
-                              onChanged: (v) {
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                      child: v3.TextFormField(
+                        decoration: v3.InputDecorationV3(
+                          labelText: dic['contact.address'],
+                          labelStyle: Theme.of(context).textTheme.headline4,
+                          suffix: GestureDetector(
+                            child: SvgPicture.asset('assets/images/scan.svg',
+                                color: Theme.of(context).disabledColor,
+                                width: 24.w),
+                            onTap: () async {
+                              final to = await Navigator.of(context)
+                                  .pushNamed(ScanPage.route);
+                              if (to != null) {
                                 setState(() {
-                                  _isObservation = v;
+                                  _addressCtrl.text =
+                                      (to as QRCodeResult).address.address;
+                                  _nameCtrl.text =
+                                      (to as QRCodeResult).address.name;
                                 });
-                              },
-                            ),
-                            GestureDetector(
-                              child: Text(I18n.of(context).getDic(
-                                  i18n_full_dic_app, 'account')['observe']),
-                              onTap: () {
-                                setState(() {
-                                  _isObservation = !_isObservation;
-                                });
-                              },
-                            ),
-                            TapTooltip(
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 8),
-                                child: Icon(Icons.info_outline, size: 16),
-                              ),
-                              message: I18n.of(context).getDic(
-                                  i18n_full_dic_app,
-                                  'account')['observe.brief'],
-                            ),
-                          ],
-                        )
-                      ],
+                              }
+                            },
+                          ),
+                        ),
+                        controller: _addressCtrl,
+                        validator: (v) {
+                          if (!Fmt.isAddress(v.trim())) {
+                            return dic['contact.address.error'];
+                          }
+                          return null;
+                        },
+                        readOnly: _args != null,
+                      ),
                     ),
-                  ),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                        child: v3.TextFormField(
+                          decoration: v3.InputDecorationV3(
+                            labelText: dic['contact.name'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
+                          ),
+                          controller: _nameCtrl,
+                          validator: (v) {
+                            return v.trim().length > 0
+                                ? null
+                                : dic['contact.name.error'];
+                          },
+                        )),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+                        child: v3.TextFormField(
+                          decoration: v3.InputDecorationV3(
+                            labelText: dic['contact.memo'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
+                          ),
+                          controller: _memoCtrl,
+                        )),
+                    Row(
+                      children: <Widget>[
+                        Checkbox(
+                          value: _isObservation,
+                          onChanged: (v) {
+                            setState(() {
+                              _isObservation = v;
+                            });
+                          },
+                        ),
+                        GestureDetector(
+                          child: Text(I18n.of(context)
+                              .getDic(i18n_full_dic_app, 'account')['observe']),
+                          onTap: () {
+                            setState(() {
+                              _isObservation = !_isObservation;
+                            });
+                          },
+                        ),
+                        TapTooltip(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.w),
+                            child: Icon(Icons.info_outline, size: 16.w),
+                          ),
+                          message: I18n.of(context).getDic(
+                              i18n_full_dic_app, 'account')['observe.brief'],
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: Button(
-                      title: dic['contact.save'], onPressed: () => _onSave()),
-                  // child: RoundedButton(
-                  //   submitting: _submitting,
-                  //   text: dic['contact.save'],
-                  //   onPressed: () => _onSave(),
-                  // ),
-                ),
-              ],
-            )),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+              child: Button(
+                  title: dic['contact.save'], onPressed: () => _onSave()),
+              // child: RoundedButton(
+              //   submitting: _submitting,
+              //   text: dic['contact.save'],
+              //   onPressed: () => _onSave(),
+              // ),
+            ),
+          ],
+        ),
       ),
     );
   }

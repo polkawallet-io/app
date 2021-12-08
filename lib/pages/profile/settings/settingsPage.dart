@@ -1,11 +1,14 @@
+import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.service, this.changeLang, this.changeNode);
@@ -136,34 +139,40 @@ class _Settings extends State<SettingsPage> {
                   ? ' (${dic['setting.currency.tip']})'
                   : '';
           return SafeArea(
-            child: ListView(
-              children: <Widget>[
-                ListTile(
-                  title: Text(dic['setting.balance.hide']),
-                  subtitle:
-                      hideBalanceTip.isEmpty ? null : Text(hideBalanceTip),
-                  trailing: CupertinoSwitch(
-                    value: widget.service.store.settings.isHideBalance,
-                    onChanged: (v) =>
-                        widget.service.store.settings.setIsHideBalance(v),
-                  ),
+            child: SingleChildScrollView(
+              child: RoundedCard(
+                margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                child: Column(
+                  children: <Widget>[
+                    SettingsPageListItem(
+                      label: dic['setting.balance.hide'],
+                      subtitle: hideBalanceTip.isEmpty ? null : hideBalanceTip,
+                      content: CupertinoSwitch(
+                        activeColor: Theme.of(context).errorColor,
+                        value: widget.service.store.settings.isHideBalance,
+                        onChanged: (v) =>
+                            widget.service.store.settings.setIsHideBalance(v),
+                      ),
+                    ),
+                    Divider(),
+                    SettingsPageListItem(
+                      label: dic['setting.currency'],
+                      subtitle: _getPriceCurrency(
+                              widget.service.store.settings.priceCurrency) +
+                          currencyTip,
+                      onTap: _onCurrencyTap,
+                    ),
+                    Divider(),
+                    SettingsPageListItem(
+                      label: dic['setting.lang'],
+                      subtitle:
+                          _getLang(widget.service.store.settings.localeCode),
+                      onTap: _onLanguageTap,
+                    ),
+                  ],
                 ),
-                ListTile(
-                  title: Text(dic['setting.currency']),
-                  subtitle: Text(_getPriceCurrency(
-                          widget.service.store.settings.priceCurrency) +
-                      currencyTip),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: _onCurrencyTap,
-                ),
-                ListTile(
-                  title: Text(dic['setting.lang']),
-                  subtitle:
-                      Text(_getLang(widget.service.store.settings.localeCode)),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: _onLanguageTap,
-                )
-              ],
+              ),
             ),
           );
         },

@@ -3,13 +3,15 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
 
 class ContactsPage extends StatefulWidget {
   ContactsPage(this.service);
@@ -127,9 +129,10 @@ class _ContactsPageState extends State<ContactsPage> {
           centerTitle: true,
           actions: <Widget>[
             Padding(
-              padding: EdgeInsets.only(right: 8),
-              child: IconButton(
-                icon: Icon(Icons.add, size: 28),
+              padding: EdgeInsets.only(right: 12.w),
+              child: v3.IconButton(
+                icon: Icon(Icons.add),
+                isBlueBg: true,
                 onPressed: () async {
                   await Navigator.of(context).pushNamed(ContactPage.route);
                   _refreshData();

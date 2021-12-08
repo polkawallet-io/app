@@ -119,6 +119,7 @@ class _WalletAppState extends State<WalletApp> {
       dividerColor: Color(0xFFBAB7B2),
       cardColor: Color(0xFFF9F8F6),
       toggleableActiveColor: Color(0xFF768FE1),
+      errorColor: Color(0xFFE46B41),
       textSelectionColor: Color(0xFF565554),
       appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFFF0ECE6),
@@ -159,7 +160,7 @@ class _WalletAppState extends State<WalletApp> {
           headline6: TextStyle(
             color: Color(0xFF565554),
             fontSize: 12,
-            fontFamily: 'TitilliumWeb',
+            fontFamily: 'SF_Pro',
           ),
           bodyText1: TextStyle(
               fontSize: 16,

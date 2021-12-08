@@ -54,8 +54,8 @@ class RemoteNodeListPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: RoundedCard(
-              margin: EdgeInsets.fromLTRB(25.w, 10.h, 25.h, 20.w),
-              padding: EdgeInsets.fromLTRB(5.w, 15.h, 5.w, 15.h),
+              margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+              padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
               child: Column(children: list)),
         ),
       ),
