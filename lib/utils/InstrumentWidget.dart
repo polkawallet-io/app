@@ -1,4 +1,5 @@
 import 'package:app/utils/InstrumentItemWidget.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,12 +12,14 @@ class InstrumentWidget extends StatefulWidget {
   InstrumentWidget(this.datas,
       {Key key,
       @required this.onSwitchChange,
+      @required this.onSwitchHideBalance,
       this.hideBalance = false,
       this.enabled = false,
       this.priceCurrency = 'USD'})
       : super(key: key);
   final List<InstrumentData> datas;
   final Function onSwitchChange;
+  final Function onSwitchHideBalance;
   final bool hideBalance;
   final bool enabled;
   final String priceCurrency;
@@ -80,15 +83,20 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context).textSelectionColor)),
-                      Text(
-                          widget.hideBalance
-                              ? "******"
-                              : "${currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
-                          style: TextStyle(
-                              fontFamily: "SF_Pro",
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).textSelectionColor)),
+                      GestureDetector(
+                        onTap: () {
+                          widget.onSwitchHideBalance();
+                        },
+                        child: Text(
+                            widget.hideBalance
+                                ? "******"
+                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                            style: TextStyle(
+                                fontFamily: "SF_Pro",
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).textSelectionColor)),
+                      ),
                       Container(
                         margin: EdgeInsets.only(top: 15.h),
                         child: GestureDetector(
@@ -198,7 +206,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                           Text(
                             widget.hideBalance
                                 ? "******"
-                                : "${currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
                             style: TextStyle(
                                 fontFamily: "TitilliumWeb",
                                 fontSize: 12,
@@ -213,16 +221,5 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
         )
       ],
     );
-  }
-
-  String currencySymbol(String priceCurrency) {
-    switch (priceCurrency) {
-      case "USD":
-        return "\$";
-      case "CNY":
-        return "￥";
-      default:
-        return "\$";
-    }
   }
 }

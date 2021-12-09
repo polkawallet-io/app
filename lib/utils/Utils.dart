@@ -10,4 +10,15 @@ class Utils {
   static Future<String> getAppVersion() async {
     return "${(await PackageInfo.fromPlatform()).version}-${WalletApp.buildTarget == BuildTargets.dev ? "dev" : "beta"}.${(await PackageInfo.fromPlatform()).buildNumber.substring((await PackageInfo.fromPlatform()).buildNumber.length - 1)}";
   }
+
+  static String currencySymbol(String priceCurrency) {
+    switch (priceCurrency) {
+      case "USD":
+        return "\$";
+      case "CNY":
+        return "￥";
+      default:
+        return "\$";
+    }
+  }
 }

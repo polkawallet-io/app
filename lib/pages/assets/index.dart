@@ -12,6 +12,7 @@ import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/InstrumentWidget.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -330,7 +331,9 @@ class _AssetsState extends State<AssetsPage> {
 
   List<InstrumentData> instrumentDatas() {
     final List<InstrumentData> datas = [];
-    if (widget.service.plugin.getAggregatedAssetsWidget() != null) {
+    if (widget.service.plugin.getAggregatedAssetsWidget(
+            onSwitchBack: null, onSwitchHideBalance: null) !=
+        null) {
       InstrumentData totalBalance1 = InstrumentData(0, []);
 
       datas.add(totalBalance1);
@@ -382,7 +385,9 @@ class _AssetsState extends State<AssetsPage> {
 
     datas.add(totalBalance);
 
-    if (widget.service.plugin.getAggregatedAssetsWidget() != null) {
+    if (widget.service.plugin.getAggregatedAssetsWidget(
+            onSwitchBack: null, onSwitchHideBalance: null) !=
+        null) {
       InstrumentData totalBalance1 = InstrumentData(0, []);
 
       datas.add(totalBalance1);
@@ -671,8 +676,9 @@ class _AssetsState extends State<AssetsPage> {
                     Padding(
                       padding: EdgeInsets.only(bottom: 14.h, top: 15.h),
                       child: instrumentIndex == 0 ||
-                              widget.service.plugin
-                                      .getAggregatedAssetsWidget() ==
+                              widget.service.plugin.getAggregatedAssetsWidget(
+                                      onSwitchBack: null,
+                                      onSwitchHideBalance: null) ==
                                   null
                           ? InstrumentWidget(
                               instrumentDatas(),
@@ -680,6 +686,11 @@ class _AssetsState extends State<AssetsPage> {
                                 setState(() {
                                   instrumentIndex = 1;
                                 });
+                              },
+                              onSwitchHideBalance: () {
+                                widget.service.store.settings.setIsHideBalance(
+                                    !widget
+                                        .service.store.settings.isHideBalance);
                               },
                               enabled: widget.connectedNode != null,
                               hideBalance:
@@ -693,6 +704,11 @@ class _AssetsState extends State<AssetsPage> {
                                 setState(() {
                                   instrumentIndex = 0;
                                 });
+                              },
+                              onSwitchHideBalance: () {
+                                widget.service.store.settings.setIsHideBalance(
+                                    !widget
+                                        .service.store.settings.isHideBalance);
                               },
                               priceCurrency:
                                   widget.service.store.settings.priceCurrency,
@@ -856,10 +872,14 @@ class _AssetsState extends State<AssetsPage> {
                                   Text(
                                       balancesInfo != null &&
                                               balancesInfo.freeBalance != null
-                                          ? Fmt.priceFloorBigInt(
-                                              Fmt.balanceTotal(balancesInfo),
-                                              decimals,
-                                              lengthFixed: 4)
+                                          ? widget.service.store.settings
+                                                  .isHideBalance
+                                              ? "******"
+                                              : Fmt.priceFloorBigInt(
+                                                  Fmt.balanceTotal(
+                                                      balancesInfo),
+                                                  decimals,
+                                                  lengthFixed: 4)
                                           : '--.--',
                                       style: TextStyle(
                                           fontSize: 14,
@@ -871,7 +891,9 @@ class _AssetsState extends State<AssetsPage> {
                                               : Theme.of(context).dividerColor,
                                           fontFamily: "TitilliumWeb")),
                                   Text(
-                                    '≈ \$${tokenPrice ?? '--.--'}',
+                                    widget.service.store.settings.isHideBalance
+                                        ? "******"
+                                        : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
@@ -897,18 +919,19 @@ class _AssetsState extends State<AssetsPage> {
                                     final price = i.price ??
                                         widget.service.store.assets
                                             .marketPrices[i.symbol];
-                                    return TokenItem(
-                                      i,
-                                      i.decimals,
-                                      isFromCache: isTokensFromCache,
-                                      detailPageRoute: i.detailPageRoute,
-                                      marketPrice: price,
-                                      icon: TokenIcon(
-                                        i.id ?? i.symbol,
-                                        widget.service.plugin.tokenIcons,
-                                        symbol: i.symbol,
-                                      ),
-                                    );
+                                    return TokenItem(i, i.decimals,
+                                        isFromCache: isTokensFromCache,
+                                        detailPageRoute: i.detailPageRoute,
+                                        marketPrice: price,
+                                        icon: TokenIcon(
+                                          i.id ?? i.symbol,
+                                          widget.service.plugin.tokenIcons,
+                                          symbol: i.symbol,
+                                        ),
+                                        isHideBalance: widget.service.store
+                                            .settings.isHideBalance,
+                                        priceCurrency: widget.service.store
+                                            .settings.priceCurrency);
                                   }).toList(),
                                 )),
                             Visibility(
@@ -928,15 +951,19 @@ class _AssetsState extends State<AssetsPage> {
                                     ),
                                     Column(
                                       children: i.tokens
-                                          .map((e) => TokenItem(
-                                                e,
-                                                e.decimals,
-                                                isFromCache: isTokensFromCache,
-                                                detailPageRoute:
-                                                    e.detailPageRoute,
-                                                icon: widget.service.plugin
-                                                    .tokenIcons[e.symbol],
-                                              ))
+                                          .map((e) => TokenItem(e, e.decimals,
+                                              isFromCache: isTokensFromCache,
+                                              detailPageRoute:
+                                                  e.detailPageRoute,
+                                              icon: widget.service.plugin
+                                                  .tokenIcons[e.symbol],
+                                              isHideBalance: widget.service
+                                                  .store.settings.isHideBalance,
+                                              priceCurrency: widget
+                                                  .service
+                                                  .store
+                                                  .settings
+                                                  .priceCurrency))
                                           .toList(),
                                     )
                                   ],
@@ -963,13 +990,17 @@ class TokenItem extends StatelessWidget {
       {this.marketPrice,
       this.detailPageRoute,
       this.icon,
-      this.isFromCache = false});
+      this.isFromCache = false,
+      this.isHideBalance,
+      this.priceCurrency});
   final TokenBalanceData item;
   final int decimals;
   final double marketPrice;
   final String detailPageRoute;
   final Widget icon;
   final bool isFromCache;
+  final bool isHideBalance;
+  final String priceCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -1001,7 +1032,10 @@ class TokenItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                Fmt.priceFloorBigInt(balanceTotal, decimals, lengthFixed: 4),
+                isHideBalance
+                    ? "******"
+                    : Fmt.priceFloorBigInt(balanceTotal, decimals,
+                        lengthFixed: 4),
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -1012,7 +1046,9 @@ class TokenItem extends StatelessWidget {
               ),
               marketPrice != null
                   ? Text(
-                      '≈ \$${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
+                      isHideBalance
+                          ? "******"
+                          : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

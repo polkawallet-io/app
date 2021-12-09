@@ -246,10 +246,12 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                   widget.service.plugin.tokenIcons,
                                   symbol: list[i].symbol,
                                 ),
-                                title: Text(
-                                  list[i].symbol,
-                                  style: Theme.of(context).textTheme.headline5,
-                                ),
+                                title: Text(list[i].symbol,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF565554),
+                                        fontFamily: "TitilliumWeb")),
                                 subtitle: Visibility(
                                     visible: list[i].name != null,
                                     child: Text('$id${list[i].name}',
