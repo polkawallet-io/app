@@ -475,6 +475,7 @@ class _AssetPageState extends State<AssetPage> {
                             key: _refreshKey,
                             onRefresh: _refreshData,
                             child: ListView(
+                              physics: BouncingScrollPhysics(),
                               controller: _scrollController,
                               children: [..._buildTxList()],
                             ),

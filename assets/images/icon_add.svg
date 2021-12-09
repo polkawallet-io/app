@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组_4备份</title>
+    <g id="assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Select-Wallet" transform="translate(-168.000000, -232.000000)">
+            <g id="编组-4备份" transform="translate(168.000000, 232.000000)">
+                <circle id="椭圆形" fill="#768FE1" cx="8" cy="8" r="8"></circle>
+                <path d="M4,8 L12,8 M8,12 L8,4" id="形状结合" stroke="#FFFFFF" stroke-width="1.23076923" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

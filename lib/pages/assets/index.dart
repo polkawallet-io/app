@@ -497,10 +497,10 @@ class _AssetsState extends State<AssetsPage> {
       leading: v3.IconButton(
         margin: EdgeInsets.only(left: 16.w),
         isBlueBg: true,
-        icon: Icon(
-          Icons.group,
-          color: Theme.of(context).cardColor,
-          size: 20,
+        icon: SvgPicture.asset(
+          "assets/images/icon_car.svg",
+          color: Colors.white,
+          height: 24.h,
         ),
         onPressed: widget.service.keyring.allAccounts.length > 0
             ? () async {

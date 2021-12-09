@@ -7,17 +7,17 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -102,40 +102,72 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     final List<Widget> res = [
       Text(
         name.toUpperCase(),
-        style: Theme.of(context).textTheme.headline4,
+        style: Theme.of(context).textTheme.headline3,
       ),
       Visibility(
           visible: plugin_from_community.indexOf(name) > -1,
           child: _CommunityPluginNote(name, false)),
-      Row(
-        children: [
-          Expanded(
-              child: GestureDetector(
-            child: RoundedCard(
-                margin: EdgeInsets.only(top: 8, bottom: 16),
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  dic['create'],
-                  style: Theme.of(context).textTheme.headline4,
-                )),
-            onTap: () => _onCreateAccount(0),
+      Padding(
+          padding: EdgeInsets.only(bottom: 10.h),
+          child: Column(
+            children: [
+              GestureDetector(
+                child: Container(
+                    width: double.infinity,
+                    child: RoundedCard(
+                        color: Color(0xFFEBEAE8),
+                        margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 4.w),
+                              child: SvgPicture.asset(
+                                "assets/images/icon_add.svg",
+                                width: 16.h,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            Text(
+                              dic['create'],
+                              style: Theme.of(context).textTheme.headline4,
+                            )
+                          ],
+                        ))),
+                onTap: () => _onCreateAccount(0),
+              ),
+              Container(
+                width: 16.h,
+              ),
+              GestureDetector(
+                child: Container(
+                    width: double.infinity,
+                    child: RoundedCard(
+                        color: Color(0xFFEBEAE8),
+                        margin: EdgeInsets.only(bottom: 16.h),
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 4.w),
+                              child: SvgPicture.asset(
+                                "assets/images/icon_add.svg",
+                                width: 16.h,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            Text(
+                              dic['import'],
+                              style: Theme.of(context).textTheme.headline4,
+                            )
+                          ],
+                        ))),
+                onTap: () => _onCreateAccount(1),
+              )
+            ],
           )),
-          Container(
-            width: 15,
-          ),
-          Expanded(
-              child: GestureDetector(
-            child: RoundedCard(
-                margin: EdgeInsets.only(top: 8, bottom: 16),
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  dic['import'],
-                  style: Theme.of(context).textTheme.headline4,
-                )),
-            onTap: () => _onCreateAccount(1),
-          ))
-        ],
-      ),
     ];
 
     /// first item is current account
@@ -161,25 +193,55 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         final double padding = accIndex.isEmpty ? 0 : 7;
         final isCurrent = isCurrentNetwork &&
             i.address == widget.service.keyring.current.address;
-        return RoundedCard(
-          border: isCurrent
-              ? Border.all(color: Theme.of(context).primaryColorLight)
-              : Border.all(color: Theme.of(context).cardColor),
-          margin: EdgeInsets.only(bottom: 16),
-          padding: EdgeInsets.only(top: padding, bottom: padding),
-          child: ListTile(
-            leading: AddressIcon(address, svg: i.icon),
-            title: Text(UI.accountName(context, i)),
-            subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
-            trailing: isCurrent
-                ? Icon(
-                    Icons.check_circle,
-                    color: Theme.of(context).primaryColor,
-                  )
-                : Container(width: 8),
-            onTap: _networkChanging ? null : () => _onSelect(i),
-          ),
+        return Column(
+          children: [
+            Container(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: AddressIcon(address, svg: i.icon),
+                title: Text(
+                  UI.accountName(context, i),
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+                subtitle: Text('$accIndex${Fmt.address(address)}',
+                    maxLines: 2,
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w300,
+                        color: Color(0xFF565554),
+                        fontFamily: "SF_Pro")),
+                trailing: Image.asset(
+                  "assets/images/${isCurrent ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
+                  fit: BoxFit.contain,
+                  width: 16.w,
+                ),
+                onTap: _networkChanging ? null : () => _onSelect(i),
+              ),
+            ),
+            Divider(
+              height: 1,
+            )
+          ],
         );
+        // return RoundedCard(
+        //   border: isCurrent
+        //       ? Border.all(color: Theme.of(context).primaryColorLight)
+        //       : Border.all(color: Theme.of(context).cardColor),
+        //   margin: EdgeInsets.only(bottom: 16),
+        //   padding: EdgeInsets.only(top: padding, bottom: padding),
+        //   child: ListTile(
+        //     leading: AddressIcon(address, svg: i.icon),
+        //     title: Text(UI.accountName(context, i)),
+        //     subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
+        //     trailing: isCurrent
+        //         ? Icon(
+        //             Icons.check_circle,
+        //             color: Theme.of(context).primaryColor,
+        //           )
+        //         : Container(width: 8),
+        //     onTap: _networkChanging ? null : () => _onSelect(i),
+        //   ),
+        // );
       }).toList());
     }
     return res;
@@ -189,7 +251,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     return [
       Text(
         _pluginDisabledSelected.name.toUpperCase(),
-        style: Theme.of(context).textTheme.headline4,
+        style: Theme.of(context).textTheme.headline3,
       ),
       _CommunityPluginNote(_pluginDisabledSelected.name, true),
     ];
@@ -242,49 +304,53 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                       ],
                     ),
                   ),
-                  SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...widget.plugins.map((e) {
-                          final isCurrent =
-                              e.basic.name == _selectedNetwork?.basic?.name;
-                          return isCurrent
-                              ? _NetworkItemActive(icon: e.basic.icon)
-                              : netWorkItem(() {
-                                  if (!isCurrent) {
-                                    setState(() {
-                                      _selectedNetwork = e;
-                                      _pluginDisabledSelected = null;
-                                    });
-                                  }
-                                },
-                                  isCurrent
-                                      ? e.basic.icon
-                                      : e.basic.iconDisabled);
-                        }).toList(),
-                        ...widget.disabledPlugins.map((e) {
-                          final isCurrent =
-                              e.name == _pluginDisabledSelected?.name;
-                          return isCurrent
-                              ? _NetworkItemActive(icon: e.icon)
-                              : netWorkItem(() {
-                                  if (_pluginDisabledSelected?.name != e.name) {
-                                    setState(() {
-                                      _pluginDisabledSelected = e;
-                                      _selectedNetwork = null;
-                                    });
-                                  }
-                                }, e.icon);
-                        }).toList()
-                      ],
-                      // children: sideBar,
-                    ),
-                  )
+                  Padding(
+                      padding: EdgeInsets.only(top: 30.h, bottom: 10.h),
+                      child: SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...widget.plugins.map((e) {
+                                final isCurrent = e.basic.name ==
+                                    _selectedNetwork?.basic?.name;
+                                return isCurrent
+                                    ? _NetworkItemActive(icon: e.basic.icon)
+                                    : netWorkItem(() {
+                                        if (!isCurrent) {
+                                          setState(() {
+                                            _selectedNetwork = e;
+                                            _pluginDisabledSelected = null;
+                                          });
+                                        }
+                                      },
+                                        isCurrent
+                                            ? e.basic.icon
+                                            : e.basic.iconDisabled);
+                              }).toList(),
+                              ...widget.disabledPlugins.map((e) {
+                                final isCurrent =
+                                    e.name == _pluginDisabledSelected?.name;
+                                return isCurrent
+                                    ? _NetworkItemActive(icon: e.icon)
+                                    : netWorkItem(() {
+                                        if (_pluginDisabledSelected?.name !=
+                                            e.name) {
+                                          setState(() {
+                                            _pluginDisabledSelected = e;
+                                            _selectedNetwork = null;
+                                          });
+                                        }
+                                      }, e.icon);
+                              }).toList()
+                            ],
+                            // children: sideBar,
+                          ))),
                 ],
               )),
           Expanded(
             child: ListView(
+              physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(16),
               children: _pluginDisabledSelected == null
                   ? _buildAccountList()

@@ -9,6 +9,7 @@ import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -133,12 +134,29 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
       appBar: AppBar(
           title: Text(dic['manage']),
           centerTitle: true,
+          elevation: 1.5,
           actions: [
-            TextButton(
-                onPressed: _onSave,
-                child: Text(
-                  dic['manage.save'],
-                  style: TextStyle(color: Theme.of(context).cardColor),
+            GestureDetector(
+                onTap: _onSave,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.h),
+                  margin: EdgeInsets.only(right: 16.w),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    image: DecorationImage(
+                        image: AssetImage("assets/images/icon_bg.png"),
+                        fit: BoxFit.contain),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    dic['manage.save'],
+                    style: TextStyle(
+                      color: Theme.of(context).cardColor,
+                      fontSize: 12,
+                      fontFamily: 'TitilliumWeb',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ))
           ],
           leading: BackBtn(
@@ -148,71 +166,66 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 0,
-                    child: GestureDetector(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: _hide0
-                                ? Theme.of(context).primaryColor
-                                : Theme.of(context).disabledColor,
-                            size: 16,
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 4, right: 16),
-                            child: Text(
-                              dic['manage.hide'],
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: _hide0
-                                      ? Theme.of(context).primaryColor
-                                      : colorGrey),
-                            ),
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _hide0 = !_hide0;
-                        });
-                      },
+                margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: CupertinoTextField(
+                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(24)),
+                    border: Border.all(
+                        width: 0.5, color: Theme.of(context).dividerColor),
+                  ),
+                  controller: _filterCtrl,
+                  placeholder: dic['manage.filter'],
+                  placeholderStyle: TextStyle(
+                      fontSize: 14, color: Theme.of(context).disabledColor),
+                  cursorHeight: 14,
+                  style: TextStyle(fontSize: 14),
+                  suffix: Container(
+                    margin: EdgeInsets.only(right: 8),
+                    child: Icon(
+                      Icons.search,
+                      color: Theme.of(context).disabledColor,
+                      size: 20,
                     ),
                   ),
-                  Expanded(
-                    child: CupertinoTextField(
-                      padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(24)),
-                        border: Border.all(
-                            width: 0.5, color: Theme.of(context).dividerColor),
-                      ),
-                      controller: _filterCtrl,
-                      placeholder: dic['manage.filter'],
-                      placeholderStyle: TextStyle(
-                          fontSize: 14, color: Theme.of(context).disabledColor),
-                      cursorHeight: 14,
-                      style: TextStyle(fontSize: 14),
-                      suffix: Container(
-                        margin: EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.search,
-                          color: Theme.of(context).disabledColor,
-                          size: 20,
-                        ),
-                      ),
-                      onChanged: (v) {
-                        setState(() {
-                          _filter = _filterCtrl.text.trim().toUpperCase();
-                        });
-                      },
+                  onChanged: (v) {
+                    setState(() {
+                      _filter = _filterCtrl.text.trim().toUpperCase();
+                    });
+                  },
+                )),
+            Container(
+              margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: GestureDetector(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: _hide0
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).disabledColor,
+                      size: 10,
                     ),
-                  )
-                ],
+                    Container(
+                      margin: EdgeInsets.only(left: 4, right: 16),
+                      child: Text(
+                        dic['manage.hide'],
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'SF_Pro',
+                            fontWeight: FontWeight.w400,
+                            color: _hide0
+                                ? Theme.of(context).primaryColor
+                                : colorGrey),
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _hide0 = !_hide0;
+                  });
+                },
               ),
             ),
             Expanded(
@@ -223,62 +236,123 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                       itemCount: list.length,
                       itemBuilder: (_, i) {
                         final id = isStateMint ? '#${list[i].id} ' : '';
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 24),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(right: 16),
-                                child: TokenIcon(
+                        return Column(
+                          children: [
+                            Container(
+                              color: Colors.transparent,
+                              child: ListTile(
+                                leading: TokenIcon(
                                   list[i].id,
                                   widget.service.plugin.tokenIcons,
                                   symbol: list[i].symbol,
                                 ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                title: Text(
+                                  list[i].symbol,
+                                  style: Theme.of(context).textTheme.headline5,
+                                ),
+                                subtitle: Visibility(
+                                    visible: list[i].name != null,
+                                    child: Text('$id${list[i].name}',
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w300,
+                                            color: Color(0xFF565554),
+                                            fontFamily: "SF_Pro"))),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      list[i].symbol,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: colorGrey),
-                                    ),
-                                    Visibility(
-                                        visible: list[i].name != null,
+                                    Padding(
+                                        padding: EdgeInsets.only(right: 18.w),
                                         child: Text(
-                                          '$id${list[i].name}',
+                                          Fmt.priceFloorBigInt(
+                                              Fmt.balanceInt(list[i].amount),
+                                              list[i].decimals,
+                                              lengthMax: 4),
                                           style: TextStyle(
-                                              fontSize: 12, color: colorGrey),
-                                        ))
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: -0.6),
+                                        )),
+                                    Image.asset(
+                                      "assets/images/${(_tokenVisible[list[i].id] ?? false) ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
+                                      fit: BoxFit.contain,
+                                      width: 16.w,
+                                    )
                                   ],
                                 ),
-                              ),
-                              Text(
-                                Fmt.priceFloorBigInt(
-                                    Fmt.balanceInt(list[i].amount),
-                                    list[i].decimals,
-                                    lengthMax: 4),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: -0.6),
-                              ),
-                              CupertinoSwitch(
-                                value: _tokenVisible[list[i].id] ?? false,
-                                onChanged: (v) {
+                                onTap: () {
                                   if (list[i].id !=
                                       widget.service.plugin.networkState
                                           .tokenSymbol[0]) {
                                     setState(() {
-                                      _tokenVisible[list[i].id] = v;
+                                      _tokenVisible[list[i].id] =
+                                          !(_tokenVisible[list[i].id] ?? false);
                                     });
                                   }
                                 },
-                              )
-                            ],
-                          ),
+                              ),
+                            ),
+                            Divider(
+                              height: 1,
+                            )
+                          ],
                         );
+                        // return Container(
+                        //   margin: EdgeInsets.only(bottom: 24),
+                        //   child: Row(
+                        //     children: [
+                        //       Container(
+                        //         padding: EdgeInsets.only(right: 16),
+                        //         child: TokenIcon(
+                        //           list[i].id,
+                        //           widget.service.plugin.tokenIcons,
+                        //           symbol: list[i].symbol,
+                        //         ),
+                        //       ),
+                        //       Expanded(
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           children: [
+                        //             Text(
+                        //               list[i].symbol,
+                        //               style: TextStyle(
+                        //                   fontWeight: FontWeight.bold,
+                        //                   color: colorGrey),
+                        //             ),
+                        //             Visibility(
+                        //                 visible: list[i].name != null,
+                        //                 child: Text(
+                        //                   '$id${list[i].name}',
+                        //                   style: TextStyle(
+                        //                       fontSize: 12, color: colorGrey),
+                        //                 ))
+                        //           ],
+                        //         ),
+                        //       ),
+                        //       Text(
+                        //         Fmt.priceFloorBigInt(
+                        //             Fmt.balanceInt(list[i].amount),
+                        //             list[i].decimals,
+                        //             lengthMax: 4),
+                        //         style: TextStyle(
+                        //             fontWeight: FontWeight.bold,
+                        //             letterSpacing: -0.6),
+                        //       ),
+                        //       CupertinoSwitch(
+                        //         value: _tokenVisible[list[i].id] ?? false,
+                        //         onChanged: (v) {
+                        //           if (list[i].id !=
+                        //               widget.service.plugin.networkState
+                        //                   .tokenSymbol[0]) {
+                        //             setState(() {
+                        //               _tokenVisible[list[i].id] = v;
+                        //             });
+                        //           }
+                        //         },
+                        //       )
+                        //     ],
+                        //   ),
+                        // );
                       },
                     ),
             ),

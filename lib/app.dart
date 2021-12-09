@@ -132,17 +132,27 @@ class _WalletAppState extends State<WalletApp> {
       accentColor: secondaryColor,
       textTheme: TextTheme(
           headline1: TextStyle(
-            fontSize: 24,
-          ),
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF565554),
+              fontFamily: "TitilliumWeb"),
           headline2: TextStyle(
             fontSize: 22,
           ),
           headline3: TextStyle(
-            fontSize: 20,
-          ),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF565554),
+              fontFamily: "TitilliumWeb"),
           headline4: TextStyle(
             color: Color(0xFF565554),
             fontSize: 16,
+            fontFamily: 'TitilliumWeb',
+            fontWeight: FontWeight.w400,
+          ),
+          headline5: TextStyle(
+            color: Color(0xFF565554),
+            fontSize: 14,
             fontFamily: 'TitilliumWeb',
             fontWeight: FontWeight.w400,
           ),
