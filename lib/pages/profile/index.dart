@@ -157,12 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   GestureDetector(
                                     child: Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          8.w, 2.h, 8.w, 4.h),
+                                      padding:
+                                          EdgeInsets.fromLTRB(4.w, 2.h, 8.w, 0),
                                       child: SvgPicture.asset(
                                         'assets/images/qr.svg',
                                         color: blue,
-                                        width: 16.w,
+                                        width: 24.w,
                                       ),
                                     ),
                                     onTap: () =>

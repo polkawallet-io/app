@@ -174,10 +174,10 @@ class _WalletAppState extends State<WalletApp> {
               color: Color(0xFF565554),
               fontFamily: "SF_Pro"),
           button: TextStyle(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.w600,
               color: Colors.white,
-              fontFamily: "SF_Pro")),
+              fontFamily: "TitilliumWeb")),
     );
   }
 

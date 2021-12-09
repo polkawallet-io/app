@@ -170,11 +170,11 @@ class _AccountManagePageState extends State<AccountManagePage> {
                         ),
                         GestureDetector(
                           child: Container(
-                            padding: EdgeInsets.fromLTRB(8, 2, 8, 4),
+                            padding: EdgeInsets.fromLTRB(4.w, 2.h, 8.w, 0),
                             child: SvgPicture.asset(
                               'assets/images/qr.svg',
                               color: Theme.of(context).toggleableActiveColor,
-                              width: 16.w,
+                              width: 24.w,
                             ),
                           ),
                           onTap: () => UI.copyAndNotify(context, acc.address),
