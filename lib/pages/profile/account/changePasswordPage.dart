@@ -166,8 +166,8 @@ class _ChangePassword extends State<ChangePasswordPage> {
                         v3.TextFormField(
                           decoration: v3.InputDecorationV3(
                             icon: Icon(Icons.lock),
-                            hintText: dic['pass.new'],
                             labelText: dic['pass.new'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
                           ),
                           controller: _passCtrl,
                           validator: (v) {
@@ -182,8 +182,8 @@ class _ChangePassword extends State<ChangePasswordPage> {
                           child: v3.TextFormField(
                             decoration: v3.InputDecorationV3(
                               icon: Icon(Icons.lock),
-                              hintText: dic['pass.new2'],
                               labelText: dic['pass.new2'],
+                              labelStyle: Theme.of(context).textTheme.headline4,
                             ),
                             controller: _pass2Ctrl,
                             validator: (v) {

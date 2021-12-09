@@ -364,17 +364,14 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
 
   Widget netWorkItem(Function() onTap, Widget icon) {
     return Container(
-        width: 54.w,
+        width: 56.w,
         height: 80.h,
         child: Center(
           child: GestureDetector(
               onTap: onTap,
               child: Container(
-                  padding: EdgeInsets.all(7),
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 3, bottom: 3),
-                    child: SizedBox(child: icon, height: 28, width: 28),
-                  ),
+                  padding: EdgeInsets.fromLTRB(8, 8, 12, 12),
+                  child: SizedBox(child: icon, height: 26, width: 26),
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
@@ -401,11 +398,8 @@ class _NetworkItemActive extends StatelessWidget {
               width: 52.w,
             )),
         Container(
-            padding: EdgeInsets.all(7),
-            child: Padding(
-              padding: EdgeInsets.only(right: 3, bottom: 3),
-              child: SizedBox(child: icon, height: 28, width: 28),
-            ),
+            padding: EdgeInsets.all(12),
+            child: SizedBox(child: icon, height: 26, width: 26),
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage("assets/images/selectWallet_select.png"),

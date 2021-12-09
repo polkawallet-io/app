@@ -55,8 +55,8 @@ class _ChangeName extends State<ChangeNamePage> {
                     key: _formKey,
                     child: v3.TextFormField(
                       decoration: v3.InputDecorationV3(
-                        hintText: dic['contact.name'],
                         labelText: dic['contact.name'],
+                        labelStyle: Theme.of(context).textTheme.headline4,
                       ),
                       controller: _nameCtrl,
                       validator: (v) {
@@ -76,15 +76,18 @@ class _ChangeName extends State<ChangeNamePage> {
                 ),
               ),
             ),
-            Button(
-              title: dic['contact.save'],
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  widget.service.plugin.sdk.api.keyring.changeName(
-                      widget.service.keyring, _nameCtrl.text.trim());
-                  Navigator.of(context).pop();
-                }
-              },
+            Container(
+              margin: EdgeInsets.fromLTRB(14.w, 16.h, 12.w, 16.h),
+              child: Button(
+                title: dic['contact.save'],
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    widget.service.plugin.sdk.api.keyring.changeName(
+                        widget.service.keyring, _nameCtrl.text.trim());
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
             ),
           ],
         ),

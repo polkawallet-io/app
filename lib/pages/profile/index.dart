@@ -225,6 +225,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 24.w,
                       ),
                       label: dic['setting.node'],
+                      content: widget.connectedNode == null
+                          ? CupertinoActivityIndicator(radius: 8)
+                          : null,
                       onTap: () => Navigator.of(context)
                           .pushNamed(RemoteNodeListPage.route),
                     )
