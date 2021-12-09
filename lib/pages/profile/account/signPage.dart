@@ -10,9 +10,10 @@ import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
 
 class SignMessagePage extends StatefulWidget {
   const SignMessagePage(this.service);
@@ -34,7 +35,6 @@ class _SignMessagePageState extends State<SignMessagePage>
   final TextEditingController _messageVerifyCtrl = new TextEditingController();
   final TextEditingController _signatureCtrl = new TextEditingController();
 
-  TabController _tabController;
   int _tab = 0;
   bool _submitting = false;
 
@@ -85,7 +85,6 @@ class _SignMessagePageState extends State<SignMessagePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -96,7 +95,10 @@ class _SignMessagePageState extends State<SignMessagePage>
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _signatureCtrl.dispose();
+    _messageCtrl.dispose();
+    _messageVerifyCtrl.dispose();
+    _signResCtrl.dispose();
     super.dispose();
   }
 
@@ -111,146 +113,158 @@ class _SignMessagePageState extends State<SignMessagePage>
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['sign']),
+          centerTitle: true,
           leading: BackBtn(
             onBack: () => Navigator.of(context).pop(),
           )),
       body: ListView(
         padding: EdgeInsets.only(left: 16, right: 16),
         children: [
-          TabBar(
-            labelColor: Colors.black87,
-            labelStyle: TextStyle(fontSize: 18),
-            controller: _tabController,
-            tabs: _myTabs,
+          MainTabBar(
+            tabs: [dic['sign.sign'], dic['sign.verify']],
+            activeTab: _tab,
             onTap: (i) {
               setState(() {
                 _tab = i;
               });
             },
           ),
-          _tab == 0
-              ? Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: AddressFormItem(
-                          widget.service.keyring.current,
-                          label: dicCommon['account'],
-                          svg: widget.service.keyring.current.icon,
-                        ),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.data'],
-                        ),
-                        controller: _messageCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          return null;
-                        },
-                      ),
-                      GestureDetector(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: '',
-                            labelText: dic['sign.res'],
-                          ),
-                          controller: _signResCtrl,
-                          enabled: false,
-                          minLines: 1,
-                          maxLines: 3,
-                        ),
-                        onTap: _signResCtrl.text.isEmpty
-                            ? null
-                            : () =>
-                                UI.copyAndNotify(context, _signResCtrl.text),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: RoundedButton(
-                          text: dic['sign.sign'],
-                          onPressed: _submitting ? null : _onSign,
-                          icon:
-                              _submitting ? CupertinoActivityIndicator() : null,
-                        ),
-                      ),
-                    ],
+          // TabBar(
+          //   labelColor: Colors.black87,
+          //   labelStyle: TextStyle(fontSize: 18),
+          //   controller: _tabController,
+          //   tabs: _myTabs,
+          //   onTap: (i) {
+          //     setState(() {
+          //       _tab = i;
+          //     });
+          //   },
+          // ),
+          Visibility(
+            visible: _tab == 0,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: AddressFormItem(
+                      widget.service.keyring.current,
+                      label: dicCommon['account'],
+                      svg: widget.service.keyring.current.icon,
+                    ),
                   ),
-                )
-              : Form(
-                  key: _formKey2,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: AddressInputField(
-                          widget.service.plugin.sdk.api,
-                          widget.service.keyring.allWithContacts,
-                          label: dicCommon['account'],
-                          initialValue:
-                              _verifySigner ?? widget.service.keyring.current,
-                          onChanged: (KeyPairData acc) {
-                            setState(() {
-                              _verifySigner = acc;
-                            });
-                          },
-                        ),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.data'],
-                        ),
-                        controller: _messageVerifyCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.verify'],
-                        ),
-                        controller: _signatureCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          if (v.length < 130 || v.substring(0, 2) != '0x') {
-                            return dic['input.invalid'];
-                          }
-                          return null;
-                        },
-                      ),
-                      Container(height: 16),
-                      InfoItemRow('isValid', '${_verifyResult.isValid ?? '-'}'),
-                      InfoItemRow('crypto', '${_verifyResult.crypto ?? '-'}'),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: RoundedButton(
-                          icon:
-                              _submitting ? CupertinoActivityIndicator() : null,
-                          text: dic['sign.verify'],
-                          onPressed: _submitting ? null : _onVerify,
-                        ),
-                      ),
-                    ],
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: '',
+                      labelText: dic['sign.data'],
+                    ),
+                    controller: _messageCtrl,
+                    minLines: 1,
+                    maxLines: 3,
+                    validator: (v) {
+                      if (v.isEmpty) {
+                        return dic['sign.empty'];
+                      }
+                      return null;
+                    },
                   ),
-                ),
+                  GestureDetector(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: '',
+                        labelText: dic['sign.res'],
+                      ),
+                      controller: _signResCtrl,
+                      enabled: false,
+                      minLines: 1,
+                      maxLines: 3,
+                    ),
+                    onTap: _signResCtrl.text.isEmpty
+                        ? null
+                        : () => UI.copyAndNotify(context, _signResCtrl.text),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: RoundedButton(
+                      text: dic['sign.sign'],
+                      onPressed: _submitting ? null : _onSign,
+                      icon: _submitting ? CupertinoActivityIndicator() : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _tab == 1,
+            child: Form(
+              key: _formKey2,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: AddressInputField(
+                      widget.service.plugin.sdk.api,
+                      widget.service.keyring.allWithContacts,
+                      label: dicCommon['account'],
+                      initialValue:
+                          _verifySigner ?? widget.service.keyring.current,
+                      onChanged: (KeyPairData acc) {
+                        setState(() {
+                          _verifySigner = acc;
+                        });
+                      },
+                    ),
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: '',
+                      labelText: dic['sign.data'],
+                    ),
+                    controller: _messageVerifyCtrl,
+                    minLines: 1,
+                    maxLines: 3,
+                    validator: (v) {
+                      if (v.isEmpty) {
+                        return dic['sign.empty'];
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: '',
+                      labelText: dic['sign.verify'],
+                    ),
+                    controller: _signatureCtrl,
+                    minLines: 1,
+                    maxLines: 3,
+                    validator: (v) {
+                      if (v.isEmpty) {
+                        return dic['sign.empty'];
+                      }
+                      if (v.length < 130 || v.substring(0, 2) != '0x') {
+                        return dic['input.invalid'];
+                      }
+                      return null;
+                    },
+                  ),
+                  Container(height: 16),
+                  InfoItemRow('isValid', '${_verifyResult.isValid ?? '-'}'),
+                  InfoItemRow('crypto', '${_verifyResult.crypto ?? '-'}'),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: RoundedButton(
+                      icon: _submitting ? CupertinoActivityIndicator() : null,
+                      text: dic['sign.verify'],
+                      onPressed: _submitting ? null : _onVerify,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

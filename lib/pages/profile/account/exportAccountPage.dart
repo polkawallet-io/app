@@ -1,15 +1,17 @@
 import 'dart:convert';
 
 import 'package:app/pages/profile/account/exportResultPage.dart';
+import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class ExportAccountPage extends StatelessWidget {
   ExportAccountPage(this.service);
@@ -40,54 +42,75 @@ class ExportAccountPage extends StatelessWidget {
           leading: BackBtn(
             onBack: () => Navigator.of(context).pop(),
           )),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            title: Text(dicAcc['keystore']),
-            trailing: Icon(Icons.arrow_forward_ios, size: 18),
-            onTap: () {
-              Map json = service.keyring.current.toJson();
-              json.remove('name');
-              json['meta']['name'] = service.keyring.current.name;
-              json.remove('icon');
-              final data = SeedBackupData();
-              data.seed = jsonEncode(json);
-              data.type = 'keystore';
-              Navigator.of(context)
-                  .pushNamed(ExportResultPage.route, arguments: data);
-            },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              RoundedCard(
+                margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                child: Column(
+                  children: [
+                    SettingsPageListItem(
+                      label: dicAcc['keystore'],
+                      onTap: () {
+                        Map json = service.keyring.current.toJson();
+                        json.remove('name');
+                        json['meta']['name'] = service.keyring.current.name;
+                        json.remove('icon');
+                        final data = SeedBackupData();
+                        data.seed = jsonEncode(json);
+                        data.type = 'keystore';
+                        Navigator.of(context)
+                            .pushNamed(ExportResultPage.route, arguments: data);
+                      },
+                    ),
+                    FutureBuilder(
+                      future: service.keyring.store.checkSeedExist(
+                          KeyType.mnemonic, service.keyring.current.pubKey),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        if (snapshot.hasData && snapshot.data == true) {
+                          return Column(
+                            children: [
+                              Divider(height: 24.h),
+                              SettingsPageListItem(
+                                label: dicAcc['mnemonic'],
+                                onTap: () => _onExport(context),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),
+                    FutureBuilder(
+                      future: service.keyring.store.checkSeedExist(
+                          KeyType.rawSeed, service.keyring.current.pubKey),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        if (snapshot.hasData && snapshot.data == true) {
+                          return Column(
+                            children: [
+                              Divider(height: 24.h),
+                              SettingsPageListItem(
+                                label: dicAcc['rawSeed'],
+                                onTap: () => _onExport(context),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          FutureBuilder(
-            future: service.keyring.store.checkSeedExist(
-                KeyType.mnemonic, service.keyring.current.pubKey),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.hasData && snapshot.data == true) {
-                return ListTile(
-                  title: Text(dicAcc['mnemonic']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () => _onExport(context),
-                );
-              } else {
-                return Container();
-              }
-            },
-          ),
-          FutureBuilder(
-            future: service.keyring.store.checkSeedExist(
-                KeyType.rawSeed, service.keyring.current.pubKey),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.hasData && snapshot.data == true) {
-                return ListTile(
-                  title: Text(dicAcc['rawSeed']),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () => _onExport(context),
-                );
-              } else {
-                return Container();
-              }
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

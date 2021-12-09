@@ -2,10 +2,11 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 
 class ChangeNamePage extends StatefulWidget {
   ChangeNamePage(this.service);
@@ -47,48 +48,43 @@ class _ChangeName extends State<ChangeNamePage> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: dic['contact.name'],
-                          labelText: dic['contact.name'],
-                        ),
-                        controller: _nameCtrl,
-                        validator: (v) {
-                          String name = v.trim();
-                          if (name.length == 0) {
-                            return dic['contact.name.error'];
-                          }
-                          int exist = widget.service.keyring.optionals
-                              .indexWhere((i) => i.name == name);
-                          if (exist > -1) {
-                            return dic['contact.name.exist'];
-                          }
-                          return null;
-                        },
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  child: Form(
+                    key: _formKey,
+                    child: v3.TextFormField(
+                      decoration: v3.InputDecorationV3(
+                        hintText: dic['contact.name'],
+                        labelText: dic['contact.name'],
                       ),
+                      controller: _nameCtrl,
+                      validator: (v) {
+                        String name = v.trim();
+                        if (name.length == 0) {
+                          return dic['contact.name.error'];
+                        }
+                        int exist = widget.service.keyring.optionals
+                            .indexWhere((i) => i.name == name);
+                        if (exist > -1) {
+                          return dic['contact.name.exist'];
+                        }
+                        return null;
+                      },
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(16),
-              child: RoundedButton(
-                text: dic['contact.save'],
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    widget.service.plugin.sdk.api.keyring.changeName(
-                        widget.service.keyring, _nameCtrl.text.trim());
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
+            Button(
+              title: dic['contact.save'],
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  widget.service.plugin.sdk.api.keyring.changeName(
+                      widget.service.keyring, _nameCtrl.text.trim());
+                  Navigator.of(context).pop();
+                }
+              },
             ),
           ],
         ),

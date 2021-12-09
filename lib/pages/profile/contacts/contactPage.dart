@@ -264,9 +264,11 @@ class _Contact extends State<ContactPage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+              // margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
               child: Button(
-                  title: dic['contact.save'], onPressed: () => _onSave()),
+                  submitting: _submitting,
+                  title: dic['contact.save'],
+                  onPressed: () => _onSave()),
               // child: RoundedButton(
               //   submitting: _submitting,
               //   text: dic['contact.save'],

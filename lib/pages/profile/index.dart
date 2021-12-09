@@ -131,9 +131,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(right: 8),
-                          child:
-                              AddressIcon(acc.address, svg: acc.icon, size: 60),
+                          margin: EdgeInsets.only(right: 8.w),
+                          child: AddressIcon(acc.address,
+                              svg: acc.icon, size: 60.w),
                         ),
                         Expanded(
                           child: Column(
@@ -157,11 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   GestureDetector(
                                     child: Container(
-                                      padding: EdgeInsets.fromLTRB(8, 2, 8, 4),
+                                      padding: EdgeInsets.fromLTRB(
+                                          8.w, 2.h, 8.w, 4.h),
                                       child: SvgPicture.asset(
                                         'assets/images/qr.svg',
                                         color: blue,
-                                        width: 18,
+                                        width: 16.w,
                                       ),
                                     ),
                                     onTap: () =>
@@ -174,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         GestureDetector(
                           child: Container(
-                            padding: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16.w),
                             child: Image.asset(
                                 'assets/images/icons/arrow_forward.png',
                                 width: 30.w),

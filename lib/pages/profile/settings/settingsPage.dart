@@ -155,7 +155,7 @@ class _Settings extends State<SettingsPage> {
                             widget.service.store.settings.setIsHideBalance(v),
                       ),
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: dic['setting.currency'],
                       subtitle: _getPriceCurrency(
@@ -163,7 +163,7 @@ class _Settings extends State<SettingsPage> {
                           currencyTip,
                       onTap: _onCurrencyTap,
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: dic['setting.lang'],
                       subtitle:

@@ -120,6 +120,7 @@ class _WalletAppState extends State<WalletApp> {
       cardColor: Color(0xFFF9F8F6),
       toggleableActiveColor: Color(0xFF768FE1),
       errorColor: Color(0xFFE46B41),
+      unselectedWidgetColor: Color(0xFF858380),
       textSelectionColor: Color(0xFF565554),
       appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFFF0ECE6),

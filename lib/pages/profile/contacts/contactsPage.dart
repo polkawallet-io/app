@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -33,18 +34,19 @@ class _ContactsPageState extends State<ContactsPage> {
     });
   }
 
-  void _showActions(BuildContext pageContext, KeyPairData i) {
+  Future<void> _showActions(BuildContext pageContext, KeyPairData i) async {
     final dic = I18n.of(pageContext).getDic(i18n_full_dic_ui, 'common');
-    showCupertinoModalPopup(
+    final res = await showCupertinoModalPopup(
       context: pageContext,
       builder: (BuildContext context) => CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
             child: Text(
               dic['edit'],
+              style: TextStyle(color: Colors.blueAccent),
             ),
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(0);
               await Navigator.of(context)
                   .pushNamed(ContactPage.route, arguments: i);
               _refreshData();
@@ -52,22 +54,38 @@ class _ContactsPageState extends State<ContactsPage> {
           ),
           CupertinoActionSheetAction(
             child: Text(
+              dic['copy'],
+              style: TextStyle(color: Colors.blueAccent),
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop(1);
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: Text(
               dic['delete'],
+              style: TextStyle(color: Colors.red),
             ),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(2);
               _removeItem(pageContext, i);
             },
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(dic['cancel']),
+          child: Text(
+            dic['cancel'],
+            style: TextStyle(color: Colors.blueAccent),
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
     );
+    if (res == 1) {
+      UI.copyAndNotify(context, i.address);
+    }
   }
 
   void _removeItem(BuildContext context, KeyPairData i) {
@@ -144,25 +162,25 @@ class _ContactsPageState extends State<ContactsPage> {
             onBack: () => Navigator.of(context).pop(),
           )),
       body: SafeArea(
-        child: Builder(
-          builder: (_) {
-            return ListView(
-              children: _list.map((i) {
-                return ListTile(
-                  leading: AddressIcon(i.address, svg: i.icon),
-                  title: Text(UI.accountName(context, i)),
-                  subtitle: Text(Fmt.address(i.address)),
-                  trailing: Container(
-                    width: 36,
-                    child: IconButton(
-                      icon: Icon(Icons.more_vert),
-                      onPressed: () => _showActions(context, i),
-                    ),
-                  ),
-                );
-              }).toList(),
+        child: ListView(
+          children: _list.map((i) {
+            return RoundedCard(
+              margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+              child: ListTile(
+                dense: true,
+                leading: AddressIcon(i.address, svg: i.icon, size: 36.w),
+                title: Text(
+                  UI.accountName(context, i),
+                  style: TextStyle(fontSize: 16),
+                ),
+                subtitle: Text(
+                  Fmt.address(i.address),
+                  style: TextStyle(fontSize: 12),
+                ),
+                onTap: () => _showActions(context, i),
+              ),
             );
-          },
+          }).toList(),
         ),
       ),
     );

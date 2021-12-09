@@ -101,19 +101,19 @@ class _AboutPage extends State<AboutPage> {
                       onTap: () => _jumpToLink(
                           'https://polkawallet.io/terms-conditions.html'),
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: dic['about.privacy'],
                       onTap: () => _jumpToLink(
                           'https://github.com/polkawallet-io/app/blob/master/privacy-policy.md'),
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: 'Github',
                       onTap: () => _jumpToLink(
                           'https://github.com/polkawallet-io/app/issues'),
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: dic['about.feedback'],
                       content:
@@ -145,7 +145,7 @@ class _AboutPage extends State<AboutPage> {
                       ),
                       onTap: _checkUpdate,
                     ),
-                    Divider(),
+                    Divider(height: 24.h),
                     SettingsPageListItem(
                       label: 'API',
                       content: Container(
