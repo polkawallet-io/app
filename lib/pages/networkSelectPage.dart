@@ -292,9 +292,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     // color: Theme.of(context).cardColor,
                     decoration: BoxDecoration(
                       color: Color(0xFFF3F1ED),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(23.91),
-                          topRight: Radius.circular(30)),
+                      borderRadius:
+                          BorderRadius.only(topRight: Radius.circular(24.w)),
                       boxShadow: [
                         BoxShadow(
                             color: Color(0x33000000),
@@ -305,12 +304,34 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     ),
                   ),
                   Padding(
-                      padding: EdgeInsets.only(top: 30.h, bottom: 10.h),
+                      padding: EdgeInsets.only(top: 16.h, bottom: 10.h),
                       child: SingleChildScrollView(
                           physics: BouncingScrollPhysics(),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 12.w, right: 8.w),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/logo_text_line2.png',
+                                      width: 32.w,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          top: 8.h, bottom: 8.h),
+                                      height: 4.h,
+                                      width: 34.w,
+                                      decoration: BoxDecoration(
+                                          border: Border.symmetric(
+                                              horizontal: BorderSide(
+                                                  color: Color(0xFFCCCAC6)))),
+                                    )
+                                  ],
+                                ),
+                              ),
                               ...widget.plugins.map((e) {
                                 final isCurrent = e.basic.name ==
                                     _selectedNetwork?.basic?.name;
@@ -326,7 +347,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                       },
                                         isCurrent
                                             ? e.basic.icon
-                                            : e.basic.iconDisabled);
+                                            : Image.asset(
+                                                'assets/images/plugins/logo_${e.basic.name}_grey.png'));
                               }).toList(),
                               ...widget.disabledPlugins.map((e) {
                                 final isCurrent =
@@ -364,14 +386,15 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
 
   Widget netWorkItem(Function() onTap, Widget icon) {
     return Container(
-        width: 56.w,
-        height: 80.h,
+        margin: EdgeInsets.only(left: 6.w),
+        width: 48.w,
+        height: 64.h,
         child: Center(
           child: GestureDetector(
               onTap: onTap,
               child: Container(
-                  padding: EdgeInsets.fromLTRB(8, 8, 12, 12),
-                  child: SizedBox(child: icon, height: 26, width: 26),
+                  padding: EdgeInsets.fromLTRB(6, 6, 10, 10),
+                  child: SizedBox(child: icon, height: 22, width: 22),
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
