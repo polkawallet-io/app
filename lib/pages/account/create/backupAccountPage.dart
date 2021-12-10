@@ -7,10 +7,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -124,8 +124,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                 ),
                 Container(
                   padding: EdgeInsets.all(16),
-                  child: RoundedButton(
-                    text: I18n.of(context)
+                  child: Button(
+                    title: I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['next'],
                     onPressed: () {
                       final isKeyValid = mnemonics.split(' ').length == 12;
@@ -220,8 +220,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
             ),
             Container(
               padding: EdgeInsets.all(16),
-              child: RoundedButton(
-                text:
+              child: Button(
+                title:
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
                 onPressed: _wordsSelected.join(' ') ==
                         widget.service.store.account.newAccount.key

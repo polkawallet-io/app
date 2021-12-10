@@ -8,9 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class CreateAccountPage extends StatefulWidget {
   CreateAccountPage(this.service);
@@ -88,7 +88,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 padding: EdgeInsets.only(top: 16, bottom: 24),
                 child: Text(
                   dic['create.warn9'],
-                  style: Theme.of(context).textTheme.headline4,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 18,
+                    fontFamily: 'TitilliumWeb',
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
               Text(dic['create.warn10']),
@@ -96,11 +101,18 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           ),
           actions: <Widget>[
             CupertinoButton(
-              child: Text(dicCommon['cancel']),
+              child: Text(
+                dicCommon['cancel'],
+                style:
+                    TextStyle(color: Theme.of(context).unselectedWidgetColor),
+              ),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             CupertinoButton(
-              child: Text(dicCommon['ok']),
+              child: Text(
+                dicCommon['ok'],
+                style: TextStyle(color: Colors.blueAccent),
+              ),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -168,8 +180,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ),
             Container(
               padding: EdgeInsets.all(16),
-              child: RoundedButton(
-                text:
+              child: Button(
+                title:
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
                 onPressed: () => _onNext(),
               ),
