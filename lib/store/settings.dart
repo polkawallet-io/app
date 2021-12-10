@@ -121,6 +121,6 @@ abstract class _SettingsStore with Store {
   }
 
   void setAdBannerState(Map value) {
-    adBannerState = value;
+    adBannerState = value ?? {};
   }
 }

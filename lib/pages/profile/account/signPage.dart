@@ -2,17 +2,20 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
 
 class SignMessagePage extends StatefulWidget {
   const SignMessagePage(this.service);
@@ -34,7 +37,6 @@ class _SignMessagePageState extends State<SignMessagePage>
   final TextEditingController _messageVerifyCtrl = new TextEditingController();
   final TextEditingController _signatureCtrl = new TextEditingController();
 
-  TabController _tabController;
   int _tab = 0;
   bool _submitting = false;
 
@@ -85,7 +87,6 @@ class _SignMessagePageState extends State<SignMessagePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -96,7 +97,10 @@ class _SignMessagePageState extends State<SignMessagePage>
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _signatureCtrl.dispose();
+    _messageCtrl.dispose();
+    _messageVerifyCtrl.dispose();
+    _signResCtrl.dispose();
     super.dispose();
   }
 
@@ -104,92 +108,97 @@ class _SignMessagePageState extends State<SignMessagePage>
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final List<Tab> _myTabs = <Tab>[
-      Tab(text: dic['sign.sign']),
-      Tab(text: dic['sign.verify']),
-    ];
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['sign']),
+          centerTitle: true,
           leading: BackBtn(
             onBack: () => Navigator.of(context).pop(),
           )),
-      body: ListView(
-        padding: EdgeInsets.only(left: 16, right: 16),
-        children: [
-          TabBar(
-            labelColor: Colors.black87,
-            labelStyle: TextStyle(fontSize: 18),
-            controller: _tabController,
-            tabs: _myTabs,
-            onTap: (i) {
-              setState(() {
-                _tab = i;
-              });
-            },
-          ),
-          _tab == 0
-              ? Form(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                child: MainTabBar(
+                  tabs: [dic['sign.sign'], dic['sign.verify']],
+                  activeTab: _tab,
+                  onTap: (i) {
+                    setState(() {
+                      _tab = i;
+                    });
+                  },
+                ),
+              ),
+              Visibility(
+                visible: _tab == 0,
+                child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: AddressFormItem(
                           widget.service.keyring.current,
                           label: dicCommon['account'],
                           svg: widget.service.keyring.current.icon,
                         ),
                       ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.data'],
-                        ),
-                        controller: _messageCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          return null;
-                        },
-                      ),
-                      GestureDetector(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: '',
-                            labelText: dic['sign.res'],
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        child: v3.TextFormField(
+                          decoration: v3.InputDecorationV3(
+                            labelText: dic['sign.data'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
                           ),
-                          controller: _signResCtrl,
-                          enabled: false,
-                          minLines: 1,
-                          maxLines: 3,
+                          controller: _messageCtrl,
+                          validator: (v) {
+                            if (v.isEmpty) {
+                              return dic['sign.empty'];
+                            }
+                            return null;
+                          },
                         ),
-                        onTap: _signResCtrl.text.isEmpty
-                            ? null
-                            : () =>
-                                UI.copyAndNotify(context, _signResCtrl.text),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: RoundedButton(
-                          text: dic['sign.sign'],
-                          onPressed: _submitting ? null : _onSign,
-                          icon:
-                              _submitting ? CupertinoActivityIndicator() : null,
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        child: GestureDetector(
+                          child: v3.TextFormField(
+                            decoration: v3.InputDecorationV3(
+                              labelText: dic['sign.res'],
+                              labelStyle: Theme.of(context).textTheme.headline4,
+                            ),
+                            controller: _signResCtrl,
+                            enabled: false,
+                            maxLines: 3,
+                          ),
+                          onTap: _signResCtrl.text.isEmpty
+                              ? null
+                              : () =>
+                                  UI.copyAndNotify(context, _signResCtrl.text),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(14.w, 24.h, 12.w, 24.h),
+                        child: Button(
+                          title: dic['sign.sign'],
+                          onPressed: _onSign,
+                          submitting: _submitting,
                         ),
                       ),
                     ],
                   ),
-                )
-              : Form(
+                ),
+              ),
+              Visibility(
+                visible: _tab == 1,
+                child: Form(
                   key: _formKey2,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: AddressInputField(
                           widget.service.plugin.sdk.api,
                           widget.service.keyring.allWithContacts,
@@ -203,55 +212,66 @@ class _SignMessagePageState extends State<SignMessagePage>
                           },
                         ),
                       ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.data'],
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        child: v3.TextFormField(
+                          decoration: v3.InputDecorationV3(
+                            labelText: dic['sign.data'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
+                          ),
+                          controller: _messageVerifyCtrl,
+                          validator: (v) {
+                            if (v.isEmpty) {
+                              return dic['sign.empty'];
+                            }
+                            return null;
+                          },
                         ),
-                        controller: _messageVerifyCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          return null;
-                        },
                       ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '',
-                          labelText: dic['sign.verify'],
+                      Container(
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        child: v3.TextFormField(
+                          decoration: v3.InputDecorationV3(
+                            labelText: dic['sign.verify'],
+                            labelStyle: Theme.of(context).textTheme.headline4,
+                          ),
+                          controller: _signatureCtrl,
+                          validator: (v) {
+                            if (v.isEmpty) {
+                              return dic['sign.empty'];
+                            }
+                            if (v.length < 130 || v.substring(0, 2) != '0x') {
+                              return dic['input.invalid'];
+                            }
+                            return null;
+                          },
                         ),
-                        controller: _signatureCtrl,
-                        minLines: 1,
-                        maxLines: 3,
-                        validator: (v) {
-                          if (v.isEmpty) {
-                            return dic['sign.empty'];
-                          }
-                          if (v.length < 130 || v.substring(0, 2) != '0x') {
-                            return dic['input.invalid'];
-                          }
-                          return null;
-                        },
                       ),
-                      Container(height: 16),
-                      InfoItemRow('isValid', '${_verifyResult.isValid ?? '-'}'),
-                      InfoItemRow('crypto', '${_verifyResult.crypto ?? '-'}'),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: RoundedButton(
-                          icon:
-                              _submitting ? CupertinoActivityIndicator() : null,
-                          text: dic['sign.verify'],
-                          onPressed: _submitting ? null : _onVerify,
+                      Container(
+                        margin: EdgeInsets.fromLTRB(14.w, 16.h, 12.w, 0),
+                        child: InfoItemRow(
+                            'isValid', '${_verifyResult.isValid ?? '-'}'),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(14.w, 4.h, 12.w, 0),
+                        child: InfoItemRow(
+                            'crypto', '${_verifyResult.crypto ?? '-'}'),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(14.w, 16.h, 12.w, 24.h),
+                        child: Button(
+                          submitting: _submitting,
+                          title: dic['sign.verify'],
+                          onPressed: _onVerify,
                         ),
                       ),
                     ],
                   ),
                 ),
-        ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

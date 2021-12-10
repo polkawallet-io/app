@@ -113,6 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final labelStyle = Theme.of(context).textTheme.headline4;
     final blue = Theme.of(context).toggleableActiveColor;
     final iconGrey = Color(0xFFCECECE);
+    final pagePadding = 16.w;
 
     return Scaffold(
       appBar:
@@ -122,16 +123,17 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 0, 25.h, 20.w),
-                padding: EdgeInsets.fromLTRB(20.w, 15.h, 0, 15.h),
+                margin:
+                    EdgeInsets.fromLTRB(pagePadding, 4.h, pagePadding, 16.h),
+                padding: EdgeInsets.fromLTRB(24.w, 16.h, 0, 16.h),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(right: 8),
-                          child:
-                              AddressIcon(acc.address, svg: acc.icon, size: 60),
+                          margin: EdgeInsets.only(right: 8.w),
+                          child: AddressIcon(acc.address,
+                              svg: acc.icon, size: 60.w),
                         ),
                         Expanded(
                           child: Column(
@@ -155,11 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   GestureDetector(
                                     child: Container(
-                                      padding: EdgeInsets.fromLTRB(8, 2, 8, 4),
+                                      padding:
+                                          EdgeInsets.fromLTRB(4.w, 2.h, 8.w, 0),
                                       child: SvgPicture.asset(
                                         'assets/images/qr.svg',
                                         color: blue,
-                                        width: 18,
+                                        width: 24.w,
                                       ),
                                     ),
                                     onTap: () =>
@@ -172,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         GestureDetector(
                           child: Container(
-                            padding: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16.w),
                             child: Image.asset(
                                 'assets/images/icons/arrow_forward.png',
                                 width: 30.w),
@@ -185,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 0, 25.h, 20.w),
+                margin: EdgeInsets.fromLTRB(pagePadding, 0, pagePadding, 16.h),
                 padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 6.h),
                 child: SettingsPageListItem(
                   leading: Image.asset(
@@ -202,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 0, 25.h, 20.w),
+                margin: EdgeInsets.fromLTRB(pagePadding, 0, pagePadding, 16.h),
                 padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 6.h),
                 child: Column(
                   children: [
@@ -222,6 +225,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 24.w,
                       ),
                       label: dic['setting.node'],
+                      content: widget.connectedNode == null
+                          ? CupertinoActivityIndicator(radius: 8)
+                          : null,
                       onTap: () => Navigator.of(context)
                           .pushNamed(RemoteNodeListPage.route),
                     )
@@ -229,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 0, 25.h, 20.w),
+                margin: EdgeInsets.fromLTRB(pagePadding, 0, pagePadding, 16.h),
                 padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 6.h),
                 child: Column(
                   children: [
@@ -264,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               RoundedCard(
-                margin: EdgeInsets.fromLTRB(25.w, 0, 25.h, 20.w),
+                margin: EdgeInsets.fromLTRB(pagePadding, 0, pagePadding, 16.h),
                 padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 6.h),
                 child: SettingsPageListItem(
                   leading: Image.asset(
@@ -294,45 +300,43 @@ class SettingsPageListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Container(
-        color: Colors.transparent,
-        child: Row(
-          children: [
-            Visibility(
-              visible: leading != null,
-              child: Container(
-                padding: EdgeInsets.all(4.r),
-                child: leading,
-                decoration: BoxDecoration(
-                    color: Color(0xFFCECECE),
-                    borderRadius: BorderRadius.all(Radius.circular(8.r))),
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          Visibility(
+            visible: leading != null,
+            child: Container(
+              padding: EdgeInsets.all(4.r),
+              child: leading,
+              decoration: BoxDecoration(
+                  color: Color(0xFFCECECE),
+                  borderRadius: BorderRadius.all(Radius.circular(8.r))),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(left: 8.w, right: 8.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: Theme.of(context).textTheme.headline4),
+                  subtitle != null
+                      ? Text(subtitle,
+                          style: Theme.of(context).textTheme.headline6)
+                      : Container(),
+                ],
               ),
             ),
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.only(left: 8.w, right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(label, style: Theme.of(context).textTheme.headline4),
-                    subtitle != null
-                        ? Text(subtitle,
-                            style: Theme.of(context).textTheme.headline6)
-                        : Container(),
-                  ],
-                ),
-              ),
-            ),
-            Visibility(
-              visible: content != null,
-              child: content ?? Container(),
-            ),
-            onTap != null
-                ? Image.asset('assets/images/icons/arrow_forward.png',
-                    width: 24.w)
-                : Container(width: 1),
-          ],
-        ),
+          ),
+          Visibility(
+            visible: content != null,
+            child: content ?? Container(),
+          ),
+          onTap != null
+              ? Image.asset('assets/images/icons/arrow_forward.png',
+                  width: 24.w)
+              : Container(width: 1),
+        ],
       ),
       onTap: onTap,
     );

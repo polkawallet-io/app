@@ -85,16 +85,17 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   Future<dynamic> _fetchAnnouncements() async {
-    if (_announcements == null) {
-      _announcements = await WalletApi.getAnnouncements();
-    }
+    final res = await WalletApi.getAnnouncements();
+    if (res == null) return;
+
+    _announcements = res;
     var index = _announcements.indexWhere((element) {
       return element["plugin"] == widget.service.plugin.basic.name;
     });
     if (index == -1) {
-      return _announcements.where((element) {
-        return element["plugin"] == "all";
-      }).first;
+      final i =
+          _announcements.indexWhere((element) => element["plugin"] == "all");
+      return i == -1 ? null : _announcements[i];
     } else {
       return _announcements[index];
     }
