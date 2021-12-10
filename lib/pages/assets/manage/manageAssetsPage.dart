@@ -3,13 +3,13 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -111,7 +111,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
 
     final List<TokenBalanceData> list = [
       TokenBalanceData(
-          amount: widget.service.plugin.balances.native.freeBalance.toString(),
+          amount:
+              widget.service.plugin.balances.native?.freeBalance?.toString() ??
+                  "",
           decimals: widget.service.plugin.networkState.tokenDecimals[0],
           id: widget.service.plugin.networkState.tokenSymbol[0],
           symbol: widget.service.plugin.networkState.tokenSymbol[0],
@@ -299,62 +301,6 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                             )
                           ],
                         );
-                        // return Container(
-                        //   margin: EdgeInsets.only(bottom: 24),
-                        //   child: Row(
-                        //     children: [
-                        //       Container(
-                        //         padding: EdgeInsets.only(right: 16),
-                        //         child: TokenIcon(
-                        //           list[i].id,
-                        //           widget.service.plugin.tokenIcons,
-                        //           symbol: list[i].symbol,
-                        //         ),
-                        //       ),
-                        //       Expanded(
-                        //         child: Column(
-                        //           crossAxisAlignment: CrossAxisAlignment.start,
-                        //           children: [
-                        //             Text(
-                        //               list[i].symbol,
-                        //               style: TextStyle(
-                        //                   fontWeight: FontWeight.bold,
-                        //                   color: colorGrey),
-                        //             ),
-                        //             Visibility(
-                        //                 visible: list[i].name != null,
-                        //                 child: Text(
-                        //                   '$id${list[i].name}',
-                        //                   style: TextStyle(
-                        //                       fontSize: 12, color: colorGrey),
-                        //                 ))
-                        //           ],
-                        //         ),
-                        //       ),
-                        //       Text(
-                        //         Fmt.priceFloorBigInt(
-                        //             Fmt.balanceInt(list[i].amount),
-                        //             list[i].decimals,
-                        //             lengthMax: 4),
-                        //         style: TextStyle(
-                        //             fontWeight: FontWeight.bold,
-                        //             letterSpacing: -0.6),
-                        //       ),
-                        //       CupertinoSwitch(
-                        //         value: _tokenVisible[list[i].id] ?? false,
-                        //         onChanged: (v) {
-                        //           if (list[i].id !=
-                        //               widget.service.plugin.networkState
-                        //                   .tokenSymbol[0]) {
-                        //             setState(() {
-                        //               _tokenVisible[list[i].id] = v;
-                        //             });
-                        //           }
-                        //         },
-                        //       )
-                        //     ],
-                        //   ),
-                        // );
                       },
                     ),
             ),

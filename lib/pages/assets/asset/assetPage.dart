@@ -18,7 +18,7 @@ import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
-import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -320,7 +320,7 @@ class _AssetPageState extends State<AssetPage> {
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/send.svg",
                                   color: Theme.of(context).textSelectionColor,
-                                  width: 20),
+                                  width: 24),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
                                   ? () {
@@ -342,7 +342,7 @@ class _AssetPageState extends State<AssetPage> {
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/qr.svg",
                                   color: Theme.of(context).textSelectionColor,
-                                  width: 20),
+                                  width: 24),
                               text: dic['receive'],
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -357,7 +357,7 @@ class _AssetPageState extends State<AssetPage> {
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/unlock.svg",
                                   color: Theme.of(context).textSelectionColor,
-                                  width: 20),
+                                  width: 24),
                               text: dic['unlock'],
                               onPressed: hasVesting
                                   ? () {

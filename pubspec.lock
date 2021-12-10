@@ -912,7 +912,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.3.7"
+    version: "0.3.8"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:

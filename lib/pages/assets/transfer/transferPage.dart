@@ -5,21 +5,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -507,6 +509,13 @@ class _TransferPageState extends State<TransferPage> {
             : BigInt.zero;
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
+
+        final lableStyle = TextStyle(
+          color: Theme.of(context).textSelectionColor,
+          fontSize: 16,
+          fontFamily: 'TitilliumWeb',
+          fontWeight: FontWeight.w600,
+        );
         return Scaffold(
           appBar: AppBar(
               title: Text('${dic['transfer']} $symbol'),
@@ -530,141 +539,134 @@ class _TransferPageState extends State<TransferPage> {
               children: <Widget>[
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AddressInputField(
-                          widget.service.plugin.sdk.api,
-                          _accountOptions,
-                          label: dic['cross.to'],
-                          initialValue: _accountTo,
-                          onChanged: (KeyPairData acc) async {
-                            final accValid = await _checkAccountTo(acc);
-                            setState(() {
-                              _accountTo = acc;
-                              _accountToError = accValid;
-                            });
-                          },
-                          key: ValueKey<KeyPairData>(_accountTo),
-                        ),
-                        Visibility(
-                            visible: _accountToError != null,
-                            child: Container(
-                              margin: EdgeInsets.only(top: 4),
-                              child: Text(_accountToError ?? "",
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.red)),
-                            )),
-                        Form(
-                          key: _formKey,
-                          child: TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            decoration: InputDecoration(
-                              hintText: dic['amount.hint'],
-                              labelText:
-                                  '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
-                                available,
-                                decimals,
-                                lengthMax: 6,
-                              )})',
-                              suffix: GestureDetector(
-                                child: Text(dic['amount.max'],
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor)),
-                                onTap: () =>
-                                    _setMaxAmount(available, existAmount),
-                              ),
-                            ),
-                            inputFormatters: [
-                              UI.decimalInputFormatter(decimals)
-                            ],
-                            controller: _amountCtrl,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            validator: (v) {
-                              final error = Fmt.validatePrice(v, context);
-                              if (error != null) {
-                                return error;
-                              }
-                              final input = Fmt.tokenInt(v, decimals);
-                              final feeLeft = available -
-                                  input -
-                                  (_keepAlive ? existAmount : BigInt.zero);
-                              BigInt fee = BigInt.zero;
-                              if (feeLeft < Fmt.tokenInt('0.02', decimals) &&
-                                  _fee?.partialFee != null) {
-                                fee =
-                                    Fmt.balanceInt(_fee.partialFee.toString());
-                              }
-                              if (feeLeft - fee < BigInt.zero) {
-                                return dic['amount.low'];
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        Visibility(
-                            visible: canCrossChain,
+                        Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
                             child: Column(
-                              children: [
-                                Container(
-                                  color: Theme.of(context).canvasColor,
-                                  margin: EdgeInsets.only(top: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 4),
-                                        child: Text(
-                                          dic['currency'],
-                                          style: TextStyle(
-                                              color: colorGrey, fontSize: 12),
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(dic['from'], style: lableStyle),
+                                  AddressFormItem(
+                                      widget.service.keyring.current),
+                                  Container(height: 8.h),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        AddressTextFormField(
+                                          widget.service.plugin.sdk.api,
+                                          _accountOptions,
+                                          labelText: dic['cross.to'],
+                                          labelStyle: lableStyle,
+                                          hintText:
+                                              dic['v3.searchPublicAddres'],
+                                          initialValue: _accountTo,
+                                          // formKey: _formKey,
+                                          onChanged: (KeyPairData acc) async {
+                                            final accValid =
+                                                await _checkAccountTo(acc);
+                                            setState(() {
+                                              _accountTo = acc;
+                                              _accountToError = accValid;
+                                            });
+                                          },
+                                          key:
+                                              ValueKey<KeyPairData>(_accountTo),
                                         ),
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Container(
-                                            margin: EdgeInsets.only(right: 8),
-                                            width: 32,
-                                            height: 32,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(32),
-                                              child: widget
-                                                  .service.plugin.basic.icon,
+                                        Visibility(
+                                            visible: _accountToError != null,
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 4),
+                                              child: Text(_accountToError ?? "",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.red)),
+                                            )),
+                                        Container(height: 8.h),
+                                        v3.TextFormField(
+                                          autovalidateMode: AutovalidateMode
+                                              .onUserInteraction,
+                                          decoration: v3.InputDecorationV3(
+                                            hintText: dic['amount.hint'],
+                                            labelText:
+                                                '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                                              available,
+                                              decimals,
+                                              lengthMax: 6,
+                                            )})',
+                                            labelStyle: lableStyle,
+                                            suffix: GestureDetector(
+                                              child: Text(dic['amount.max'],
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .primaryColor)),
+                                              onTap: () => _setMaxAmount(
+                                                  available, existAmount),
                                             ),
                                           ),
-                                          Text(widget.service.plugin.basic.name
-                                              .toUpperCase())
-                                        ],
-                                      ),
-                                    ],
+                                          inputFormatters: [
+                                            UI.decimalInputFormatter(decimals)
+                                          ],
+                                          controller: _amountCtrl,
+                                          keyboardType:
+                                              TextInputType.numberWithOptions(
+                                                  decimal: true),
+                                          validator: (v) {
+                                            final error =
+                                                Fmt.validatePrice(v, context);
+                                            if (error != null) {
+                                              return error;
+                                            }
+                                            final input =
+                                                Fmt.tokenInt(v, decimals);
+                                            final feeLeft = available -
+                                                input -
+                                                (_keepAlive
+                                                    ? existAmount
+                                                    : BigInt.zero);
+                                            BigInt fee = BigInt.zero;
+                                            if (feeLeft <
+                                                    Fmt.tokenInt(
+                                                        '0.02', decimals) &&
+                                                _fee?.partialFee != null) {
+                                              fee = Fmt.balanceInt(
+                                                  _fee.partialFee.toString());
+                                            }
+                                            if (feeLeft - fee < BigInt.zero) {
+                                              return dic['amount.low'];
+                                            }
+                                            return null;
+                                          },
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                GestureDetector(
-                                  child: Container(
-                                    color: Theme.of(context).canvasColor,
-                                    margin: EdgeInsets.only(top: 16),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: EdgeInsets.only(bottom: 4),
-                                          child: Text(
-                                            dic['to.chain'],
-                                            style: TextStyle(
-                                                color: colorGrey, fontSize: 12),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 20.h, bottom: 7.h),
+                                      child: Divider(height: 1)),
+                                  Visibility(
+                                      visible: canCrossChain,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(bottom: 4),
+                                            child: Text(
+                                              dic['currency'],
+                                              style: lableStyle,
+                                            ),
                                           ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Row(
+                                          RoundedCard(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 9.h,
+                                                horizontal: 16.w),
+                                            color: Color(0xFFE3DED8),
+                                            child: Row(
                                               children: <Widget>[
                                                 Container(
                                                   margin:
@@ -675,281 +677,341 @@ class _TransferPageState extends State<TransferPage> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             32),
-                                                    child:
-                                                        _chainTo?.basic?.icon,
+                                                    child: widget.service.plugin
+                                                        .basic.icon,
                                                   ),
                                                 ),
-                                                Text(
-                                                    destChainName.toUpperCase())
+                                                Text(widget
+                                                    .service.plugin.basic.name
+                                                    .toUpperCase())
                                               ],
                                             ),
-                                            Row(
-                                              children: [
-                                                Visibility(
-                                                    visible: isCrossChain,
-                                                    child: TextTag(
-                                                        dic['cross.chain'],
+                                          ),
+                                          Container(
+                                            height: 10.h,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(bottom: 4),
+                                            child: Text(
+                                              dic['to.chain'],
+                                              style: lableStyle,
+                                            ),
+                                          ),
+                                          GestureDetector(
+                                            child: RoundedCard(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 9.h,
+                                                  horizontal: 16.w),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Container(
                                                         margin: EdgeInsets.only(
                                                             right: 8),
-                                                        color: Colors.red)),
-                                                Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 18,
-                                                  color: colorGrey,
-                                                )
-                                              ],
-                                            )
-                                          ],
+                                                        width: 32,
+                                                        height: 32,
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(32),
+                                                          child: _chainTo
+                                                              ?.basic?.icon,
+                                                        ),
+                                                      ),
+                                                      Text(destChainName
+                                                          .toUpperCase())
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Visibility(
+                                                          visible: isCrossChain,
+                                                          child: TextTag(
+                                                              dic[
+                                                                  'cross.chain'],
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      right: 8),
+                                                              color:
+                                                                  Colors.red)),
+                                                      Icon(
+                                                        Icons.arrow_forward_ios,
+                                                        size: 18,
+                                                        color: colorGrey,
+                                                      )
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            onTap: _onSelectChain,
+                                          ),
+                                        ],
+                                      ))
+                                ])),
+                        RoundedCard(
+                          margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
+                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                          child: Column(
+                            children: [
+                              Visibility(
+                                  visible: isCrossChain,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                              padding:
+                                                  EdgeInsets.only(right: 40),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    dic['cross.exist'],
+                                                  ),
+                                                  Text(
+                                                    dic['amount.exist.msg'],
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w200),
+                                                  ),
+                                                ],
+                                              )),
+                                          // child: TapTooltip(
+                                          //   message: dic['amount.exist.msg'],
+                                          //   child: Row(
+                                          //     children: [
+                                          //       Padding(
+                                          //         padding: EdgeInsets.only(right: 4),
+                                          //         child: Text(dic['cross.exist']),
+                                          //       ),
+                                          //       Icon(
+                                          //         Icons.info,
+                                          //         size: 16,
+                                          //         color: Theme.of(context)
+                                          //             .unselectedWidgetColor,
+                                          //       )
+                                          //     ],
+                                          //   ),
+                                          // ),
                                         ),
+                                        Expanded(
+                                            flex: 0,
+                                            child: Text(
+                                                '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
                                       ],
                                     ),
-                                  ),
-                                  onTap: _onSelectChain,
-                                )
-                              ],
-                            )),
-                        Visibility(
-                            visible: isCrossChain,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                        padding: EdgeInsets.only(right: 40),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              dic['cross.exist'],
+                                  )),
+                              Visibility(
+                                  visible: isCrossChain,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(right: 4),
+                                            child: Text(
+                                              dic['cross.fee'],
                                             ),
-                                            Text(
-                                              dic['amount.exist.msg'],
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w200),
+                                          ),
+                                        ),
+                                        Text(
+                                            '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
+                                      ],
+                                    ),
+                                  )),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                          padding: EdgeInsets.only(right: 60),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                dic['amount.exist'],
+                                              ),
+                                              Text(
+                                                dic['amount.exist.msg'],
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w200),
+                                              ),
+                                            ],
+                                          )),
+                                      // child: TapTooltip(
+                                      //   message: dic['amount.exist.msg'],
+                                      //   child: Row(
+                                      //     children: [
+                                      //       Padding(
+                                      //         padding: EdgeInsets.only(right: 4),
+                                      //         child: Text(dic['amount.exist']),
+                                      //       ),
+                                      //       Icon(
+                                      //         Icons.info,
+                                      //         size: 16,
+                                      //         color: Theme.of(context)
+                                      //             .unselectedWidgetColor,
+                                      //       )
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                    ),
+                                    Text(
+                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
+                                  ],
+                                ),
+                              ),
+                              Visibility(
+                                  visible: _fee?.partialFee != null,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(right: 4),
+                                            child: Text(
+                                              dic['amount.fee'],
                                             ),
-                                          ],
-                                        )),
-                                    // child: TapTooltip(
-                                    //   message: dic['amount.exist.msg'],
-                                    //   child: Row(
-                                    //     children: [
-                                    //       Padding(
-                                    //         padding: EdgeInsets.only(right: 4),
-                                    //         child: Text(dic['cross.exist']),
-                                    //       ),
-                                    //       Icon(
-                                    //         Icons.info,
-                                    //         size: 16,
-                                    //         color: Theme.of(context)
-                                    //             .unselectedWidgetColor,
-                                    //       )
-                                    //     ],
+                                          ),
+                                        ),
+                                        Text(
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol'),
+                                      ],
+                                    ),
+                                  )),
+                              Container(
+                                margin: EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                          padding: EdgeInsets.only(right: 60),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                dic['transfer.alive'],
+                                              ),
+                                              Text(
+                                                dic['transfer.alive.msg'],
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w200),
+                                              ),
+                                            ],
+                                          )),
+                                    ),
+                                    // Expanded(
+                                    //   flex: 0,
+                                    //   child: Padding(
+                                    //     padding: EdgeInsets.only(right: 4),
+                                    //     child: Text(dic['transfer.alive']),
                                     //   ),
                                     // ),
-                                  ),
-                                  Expanded(
-                                      flex: 0,
-                                      child: Text(
-                                          '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
-                                ],
-                              ),
-                            )),
-                        Visibility(
-                            visible: isCrossChain,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(
-                                        dic['cross.fee'],
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                      '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
-                                ],
-                              ),
-                            )),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                    padding: EdgeInsets.only(right: 60),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          dic['amount.exist'],
-                                        ),
-                                        Text(
-                                          dic['amount.exist.msg'],
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w200),
-                                        ),
-                                      ],
-                                    )),
-                                // child: TapTooltip(
-                                //   message: dic['amount.exist.msg'],
-                                //   child: Row(
-                                //     children: [
-                                //       Padding(
-                                //         padding: EdgeInsets.only(right: 4),
-                                //         child: Text(dic['amount.exist']),
-                                //       ),
-                                //       Icon(
-                                //         Icons.info,
-                                //         size: 16,
-                                //         color: Theme.of(context)
-                                //             .unselectedWidgetColor,
-                                //       )
-                                //     ],
-                                //   ),
-                                // ),
-                              ),
-                              Text(
-                                  '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
-                            ],
-                          ),
-                        ),
-                        Visibility(
-                            visible: _fee?.partialFee != null,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(
-                                        dic['amount.fee'],
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                      '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol'),
-                                ],
-                              ),
-                            )),
-                        Container(
-                          margin: EdgeInsets.only(top: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                    padding: EdgeInsets.only(right: 60),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          dic['transfer.alive'],
-                                        ),
-                                        Text(
-                                          dic['transfer.alive.msg'],
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w200),
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                              // Expanded(
-                              //   flex: 0,
-                              //   child: Padding(
-                              //     padding: EdgeInsets.only(right: 4),
-                              //     child: Text(dic['transfer.alive']),
-                              //   ),
-                              // ),
-                              // TapTooltip(
-                              //   message: dic['transfer.alive.msg'],
-                              //   child: Icon(
-                              //     Icons.info,
-                              //     size: 16,
-                              //     color:
-                              //         Theme.of(context).unselectedWidgetColor,
-                              //   ),
-                              // ),
-                              // Expanded(child: Container(width: 2)),
-                              CupertinoSwitch(
-                                value: _keepAlive,
-                                // account is not allow_death if it has
-                                // locked/reserved balances
-                                onChanged: (res) {
-                                  if (notTransferable > BigInt.zero) {
-                                    showCupertinoDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return CupertinoAlertDialog(
-                                          title: Text(dic['note']),
-                                          content: Text(dic['note.msg1']),
-                                          actions: <Widget>[
-                                            CupertinoButton(
-                                              child: Text(I18n.of(context)
-                                                  .getDic(i18n_full_dic_ui,
-                                                      'common')['cancel']),
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
-                                            ),
-                                            CupertinoButton(
-                                              child: Text(I18n.of(context)
-                                                  .getDic(i18n_full_dic_ui,
-                                                      'common')['ok']),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                showCupertinoDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return CupertinoAlertDialog(
-                                                      title: Text(dic['note']),
-                                                      content: Text(
-                                                          dic['note.msg2']),
-                                                      actions: <Widget>[
-                                                        CupertinoButton(
-                                                          child: Text(I18n.of(
-                                                                  context)
-                                                              .getDic(
-                                                                  i18n_full_dic_ui,
-                                                                  'common')['ok']),
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop(),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        );
+                                    // TapTooltip(
+                                    //   message: dic['transfer.alive.msg'],
+                                    //   child: Icon(
+                                    //     Icons.info,
+                                    //     size: 16,
+                                    //     color:
+                                    //         Theme.of(context).unselectedWidgetColor,
+                                    //   ),
+                                    // ),
+                                    // Expanded(child: Container(width: 2)),
+                                    CupertinoSwitch(
+                                      value: _keepAlive,
+                                      // account is not allow_death if it has
+                                      // locked/reserved balances
+                                      onChanged: (res) {
+                                        if (notTransferable > BigInt.zero) {
+                                          showCupertinoDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return CupertinoAlertDialog(
+                                                title: Text(dic['note']),
+                                                content: Text(dic['note.msg1']),
+                                                actions: <Widget>[
+                                                  CupertinoButton(
+                                                    child: Text(I18n.of(context)
+                                                        .getDic(
+                                                            i18n_full_dic_ui,
+                                                            'common')['cancel']),
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                  ),
+                                                  CupertinoButton(
+                                                    child: Text(I18n.of(context)
+                                                        .getDic(
+                                                            i18n_full_dic_ui,
+                                                            'common')['ok']),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      showCupertinoDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return CupertinoAlertDialog(
+                                                            title: Text(
+                                                                dic['note']),
+                                                            content: Text(dic[
+                                                                'note.msg2']),
+                                                            actions: <Widget>[
+                                                              CupertinoButton(
+                                                                child: Text(I18n.of(
+                                                                        context)
+                                                                    .getDic(
+                                                                        i18n_full_dic_ui,
+                                                                        'common')['ok']),
+                                                                onPressed: () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          setState(() {
+                                            _keepAlive = res;
+                                          });
+                                        }
                                       },
-                                    );
-                                  } else {
-                                    setState(() {
-                                      _keepAlive = res;
-                                    });
-                                  }
-                                },
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
