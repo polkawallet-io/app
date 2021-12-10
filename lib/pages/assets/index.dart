@@ -415,7 +415,7 @@ class _AssetsState extends State<AssetsPage> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontFamily: "TitilliumWeb",
-                    color: Theme.of(context).textSelectionColor),
+                    color: Theme.of(context).textSelectionTheme.selectionColor),
               ),
               GestureDetector(
                 onTap: () async {
@@ -478,7 +478,9 @@ class _AssetsState extends State<AssetsPage> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             fontFamily: "TitilliumWeb",
-                            color: Theme.of(context).textSelectionColor),
+                            color: Theme.of(context)
+                                .textSelectionTheme
+                                .selectionColor),
                       ),
                       Container(
                         width: 14.w,
@@ -558,7 +560,9 @@ class _AssetsState extends State<AssetsPage> {
                               I18n.of(context)
                                   .getDic(i18n_full_dic_app, 'assets')['scan'],
                               style: TextStyle(
-                                  color: Theme.of(context).textSelectionColor,
+                                  color: Theme.of(context)
+                                      .textSelectionTheme
+                                      .selectionColor,
                                   fontSize: 14,
                                   fontFamily: "TitilliumWeb",
                                   fontWeight: FontWeight.w400),
@@ -583,7 +587,9 @@ class _AssetsState extends State<AssetsPage> {
                               I18n.of(context).getDic(
                                   i18n_full_dic_app, 'assets')['QRCode'],
                               style: TextStyle(
-                                  color: Theme.of(context).textSelectionColor,
+                                  color: Theme.of(context)
+                                      .textSelectionTheme
+                                      .selectionColor,
                                   fontSize: 14,
                                   fontFamily: "TitilliumWeb",
                                   fontWeight: FontWeight.w400),
@@ -698,7 +704,8 @@ class _AssetsState extends State<AssetsPage> {
                                   widget.service.store.settings.isHideBalance,
                               priceCurrency:
                                   widget.service.store.settings.priceCurrency,
-                              key: Key(widget.service.keyring.current.address),
+                              key: Key(
+                                  "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
                             )
                           : widget.service.plugin.getAggregatedAssetsWidget(
                               onSwitchBack: () {
@@ -863,7 +870,9 @@ class _AssetsState extends State<AssetsPage> {
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Theme.of(context).textSelectionColor,
+                                    color: Theme.of(context)
+                                        .textSelectionTheme
+                                        .selectionColor,
                                     fontFamily: "TitilliumWeb"),
                               ),
                               trailing: Column(
@@ -888,7 +897,8 @@ class _AssetsState extends State<AssetsPage> {
                                           color: balancesInfo?.isFromCache ==
                                                   false
                                               ? Theme.of(context)
-                                                  .textSelectionColor
+                                                  .textSelectionTheme
+                                                  .selectionColor
                                               : Theme.of(context).dividerColor,
                                           fontFamily: "TitilliumWeb")),
                                   Text(
@@ -899,7 +909,8 @@ class _AssetsState extends State<AssetsPage> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
                                         color: Theme.of(context)
-                                            .textSelectionColor,
+                                            .textSelectionTheme
+                                            .selectionColor,
                                         fontFamily: "TitilliumWeb"),
                                   ),
                                 ],
@@ -1025,7 +1036,7 @@ class TokenItem extends StatelessWidget {
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).textSelectionColor,
+                color: Theme.of(context).textSelectionTheme.selectionColor,
                 fontFamily: "TitilliumWeb"),
           ),
           trailing: Column(
@@ -1041,7 +1052,7 @@ class TokenItem extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: isFromCache == false
-                        ? Theme.of(context).textSelectionColor
+                        ? Theme.of(context).textSelectionTheme.selectionColor
                         : Theme.of(context).dividerColor,
                     fontFamily: "TitilliumWeb"),
               ),
@@ -1053,7 +1064,9 @@ class TokenItem extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
-                          color: Theme.of(context).textSelectionColor,
+                          color: Theme.of(context)
+                              .textSelectionTheme
+                              .selectionColor,
                           fontFamily: "TitilliumWeb"),
                     )
                   : Container(height: 0, width: 8),

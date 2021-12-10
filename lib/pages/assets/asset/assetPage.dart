@@ -275,10 +275,11 @@ class _AssetPageState extends State<AssetPage> {
           onBack: () => Navigator.of(context).pop(),
         ),
         actions: [
-          IconButton(
+          v3.IconButton(
+              isBlueBg: true,
               icon: Icon(
                 Icons.more_horiz,
-                color: Colors.black87,
+                color: Theme.of(context).cardColor,
               ),
               onPressed: _showAction),
         ],
@@ -319,7 +320,9 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/send.svg",
-                                  color: Theme.of(context).textSelectionColor,
+                                  color: Theme.of(context)
+                                      .textSelectionTheme
+                                      .selectionColor,
                                   width: 24),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
@@ -341,7 +344,9 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/qr.svg",
-                                  color: Theme.of(context).textSelectionColor,
+                                  color: Theme.of(context)
+                                      .textSelectionTheme
+                                      .selectionColor,
                                   width: 24),
                               text: dic['receive'],
                               onPressed: () {
@@ -356,7 +361,9 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/unlock.svg",
-                                  color: Theme.of(context).textSelectionColor,
+                                  color: Theme.of(context)
+                                      .textSelectionTheme
+                                      .selectionColor,
                                   width: 24),
                               text: dic['unlock'],
                               onPressed: hasVesting
@@ -530,7 +537,8 @@ class CarButton extends StatelessWidget {
                 Text(
                   text,
                   style: TextStyle(
-                      color: Theme.of(context).textSelectionColor,
+                      color:
+                          Theme.of(context).textSelectionTheme.selectionColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       fontFamily: "TitilliumWeb"),
@@ -773,9 +781,25 @@ class TransferListItem extends StatelessWidget {
               : TransferIcon(type: TransferIconType.failure)
         ],
       ),
-      title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
-      subtitle: Text(Fmt.dateTime(
-          DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000))),
+      title: Text(
+        '$title${crossChain != null ? ' ($crossChain)' : ''}',
+        style: TextStyle(
+          color: Theme.of(context).textSelectionTheme.selectionColor,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          fontFamily: 'SF_Pro',
+        ),
+      ),
+      subtitle: Text(
+        Fmt.dateTime(
+            DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000)),
+        style: TextStyle(
+          color: Theme.of(context).textSelectionTheme.selectionColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
+          fontFamily: 'SF_Pro',
+        ),
+      ),
       trailing: Container(
         width: 110,
         child: Row(
@@ -789,7 +813,9 @@ class TransferListItem extends StatelessWidget {
                             ? colorOut
                             : colorIn
                         : colorFailed,
-                    fontSize: 16),
+                    fontSize: 14,
+                    fontFamily: 'TitilliumWeb',
+                    fontWeight: FontWeight.w600),
                 textAlign: TextAlign.right,
               ),
             ),

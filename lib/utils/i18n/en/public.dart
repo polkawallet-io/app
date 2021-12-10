@@ -47,4 +47,5 @@ const Map<String, String> enPublic = {
       '\nWith the keep-alive option set, the account will have a minimum balance of 1.1 DOT and is protected against removal due to low balances.\n',
   'balance.insufficient': 'Insufficient balance',
   'tx.action': 'Action',
+  'v3.metahub': 'Metahub',
 };

@@ -17,6 +17,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
 import 'package:polkawallet_ui/ui.dart';
 
 class HomePage extends StatefulWidget {
@@ -43,6 +44,9 @@ class _HomePageState extends State<HomePage> {
   final _jPush = JPush();
 
   int _tabIndex = 0;
+
+  final PageController _metahubPageController = PageController();
+  int _metahubTabIndex = 0;
 
   Future<void> _handleWalletConnect(String uri) async {
     print('wallet connect uri:');
@@ -155,52 +159,99 @@ class _HomePageState extends State<HomePage> {
         // content: Container(),
       )
     ];
-    // final pluginPages =
-    //     widget.service.plugin.getNavItems(context, widget.service.keyring);
-    // if (pluginPages.length > 1) {
-    //   pluginPages[0].content = ListView.builder(
-    //       padding: EdgeInsets.all(16),
-    //       itemCount: pluginPages.length,
-    //       itemBuilder: (context, index) {
-    //         return GestureDetector(
-    //           onTap: () {
-    //             Navigator.of(context).push(new MaterialPageRoute(
-    //               builder: (context) {
-    //                 return widget.service.plugin
-    //                     .getNavItems(context, widget.service.keyring)[index]
-    //                     .content;
-    //               },
-    //             ));
-    //           },
-    //           child: RoundedCard(
-    //             margin: EdgeInsets.only(bottom: 16),
-    //             child: Row(
-    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //               children: [
-    //                 widget.service.plugin
-    //                     .getNavItems(context, widget.service.keyring)[index]
-    //                     .icon,
-    //                 Text(widget.service.plugin
-    //                     .getNavItems(context, widget.service.keyring)[index]
-    //                     .text)
-    //               ],
-    //             ),
-    //           ),
-    //         );
-    //       });
-    // }
-    // pluginPages[0].icon = Image.asset(
-    //   "assets/images/compass.png",
-    //   fit: BoxFit.contain,
-    // );
-    // pluginPages[0].iconActive = Image.asset(
-    //   "assets/images/compass.png",
-    //   fit: BoxFit.contain,
-    // );
+    final pluginPages =
+        widget.service.plugin.getNavItems(context, widget.service.keyring);
+    var pluginPage = HomeNavItem(
+        content: pluginPages[0].content,
+        icon: Image.asset(
+          "assets/images/compass.png",
+          fit: BoxFit.contain,
+        ),
+        iconActive: Image.asset(
+          "assets/images/compass.png",
+          fit: BoxFit.contain,
+        ),
+        text:
+            I18n.of(context).getDic(i18n_full_dic_app, 'public')['v3.metahub']);
+    if (pluginPages.length > 1) {
+      pluginPage = HomeNavItem(
+          content: Scaffold(
+            appBar: AppBar(
+              title: Container(
+                  child: MainTabBar(
+                tabs: [pluginPages[0].text, pluginPages[1].text],
+                activeTab: _metahubTabIndex,
+                onTap: (index) {
+                  setState(() {
+                    _metahubPageController.jumpToPage(index);
+                    _metahubTabIndex = index;
+                  });
+                },
+              )),
+              centerTitle: true,
+            ),
+            body: SafeArea(
+              child: PageView(
+                controller: _metahubPageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _metahubTabIndex = index;
+                  });
+                },
+                children: pluginPages
+                    .map((e) => PageWrapperWithBackground(
+                          e.content,
+                          height: 220,
+                          backgroundImage:
+                              widget.service.plugin.basic.backgroundImage,
+                        ))
+                    .toList(),
+              ),
+            ),
+          ),
+          icon: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          iconActive: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          text: I18n.of(context)
+              .getDic(i18n_full_dic_app, 'public')['v3.metahub']);
+      // pluginPages[0].content = ListView.builder(
+      //     padding: EdgeInsets.all(16),
+      //     itemCount: pluginPages.length,
+      //     itemBuilder: (context, index) {
+      //       return GestureDetector(
+      //         onTap: () {
+      //           Navigator.of(context).push(new MaterialPageRoute(
+      //             builder: (context) {
+      //               return widget.service.plugin
+      //                   .getNavItems(context, widget.service.keyring)[index]
+      //                   .content;
+      //             },
+      //           ));
+      //         },
+      //         child: RoundedCard(
+      //           margin: EdgeInsets.only(bottom: 16),
+      //           child: Row(
+      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //             children: [
+      //               widget.service.plugin
+      //                   .getNavItems(context, widget.service.keyring)[index]
+      //                   .icon,
+      //               Text(widget.service.plugin
+      //                   .getNavItems(context, widget.service.keyring)[index]
+      //                   .text)
+      //             ],
+      //           ),
+      //         ),
+      //       );
+      //     });
+    }
 
-    // pages.add(pluginPages[0]);
-    pages.addAll(
-        widget.service.plugin.getNavItems(context, widget.service.keyring));
+    pages.add(pluginPage);
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
@@ -226,6 +277,7 @@ class _HomePageState extends State<HomePage> {
             onPageChanged: (index) {
               setState(() {
                 _tabIndex = index;
+                _metahubTabIndex = 0;
               });
             },
             children: pages
@@ -267,6 +319,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _pageController.jumpToPage(index);
           _tabIndex = index;
+          _metahubTabIndex = 0;
         });
       },
       pages: pages,

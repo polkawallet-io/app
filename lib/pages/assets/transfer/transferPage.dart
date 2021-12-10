@@ -511,7 +511,7 @@ class _TransferPageState extends State<TransferPage> {
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
         final lableStyle = TextStyle(
-          color: Theme.of(context).textSelectionColor,
+          color: Theme.of(context).textSelectionTheme.selectionColor,
           fontSize: 16,
           fontFamily: 'TitilliumWeb',
           fontWeight: FontWeight.w600,
@@ -681,9 +681,14 @@ class _TransferPageState extends State<TransferPage> {
                                                         .basic.icon,
                                                   ),
                                                 ),
-                                                Text(widget
-                                                    .service.plugin.basic.name
-                                                    .toUpperCase())
+                                                Text(
+                                                  widget
+                                                      .service.plugin.basic.name
+                                                      .toUpperCase(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline4,
+                                                )
                                               ],
                                             ),
                                           ),
@@ -722,8 +727,13 @@ class _TransferPageState extends State<TransferPage> {
                                                               ?.basic?.icon,
                                                         ),
                                                       ),
-                                                      Text(destChainName
-                                                          .toUpperCase())
+                                                      Text(
+                                                          destChainName
+                                                              .toUpperCase(),
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .headline4)
                                                     ],
                                                   ),
                                                   Row(
@@ -774,15 +784,17 @@ class _TransferPageState extends State<TransferPage> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    dic['cross.exist'],
-                                                  ),
+                                                  Text(dic['cross.exist'],
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .headline4),
                                                   Text(
                                                     dic['amount.exist.msg'],
                                                     style: TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w200),
+                                                      color: Color(0xBF565554),
+                                                      fontSize: 12,
+                                                      fontFamily: 'SF_Pro',
+                                                    ),
                                                   ),
                                                 ],
                                               )),
@@ -807,7 +819,15 @@ class _TransferPageState extends State<TransferPage> {
                                         Expanded(
                                             flex: 0,
                                             child: Text(
-                                                '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol')),
+                                                '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Theme.of(context)
+                                                        .textSelectionTheme
+                                                        .selectionColor,
+                                                    fontFamily:
+                                                        "TitilliumWeb"))),
                                       ],
                                     ),
                                   )),
@@ -821,13 +841,21 @@ class _TransferPageState extends State<TransferPage> {
                                         Expanded(
                                           child: Padding(
                                             padding: EdgeInsets.only(right: 4),
-                                            child: Text(
-                                              dic['cross.fee'],
-                                            ),
+                                            child: Text(dic['cross.fee'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4),
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol'),
+                                            '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Theme.of(context)
+                                                    .textSelectionTheme
+                                                    .selectionColor,
+                                                fontFamily: "TitilliumWeb")),
                                       ],
                                     ),
                                   )),
@@ -844,9 +872,10 @@ class _TransferPageState extends State<TransferPage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                dic['amount.exist'],
-                                              ),
+                                              Text(dic['amount.exist'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline4),
                                               Text(
                                                 dic['amount.exist.msg'],
                                                 style: TextStyle(
@@ -875,7 +904,14 @@ class _TransferPageState extends State<TransferPage> {
                                       // ),
                                     ),
                                     Text(
-                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol'),
+                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .textSelectionTheme
+                                                .selectionColor,
+                                            fontFamily: "TitilliumWeb")),
                                   ],
                                 ),
                               ),
@@ -889,13 +925,21 @@ class _TransferPageState extends State<TransferPage> {
                                         Expanded(
                                           child: Padding(
                                             padding: EdgeInsets.only(right: 4),
-                                            child: Text(
-                                              dic['amount.fee'],
-                                            ),
+                                            child: Text(dic['amount.fee'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4),
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol'),
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Theme.of(context)
+                                                    .textSelectionTheme
+                                                    .selectionColor,
+                                                fontFamily: "TitilliumWeb")),
                                       ],
                                     ),
                                   )),
@@ -912,15 +956,17 @@ class _TransferPageState extends State<TransferPage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                dic['transfer.alive'],
-                                              ),
+                                              Text(dic['transfer.alive'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline4),
                                               Text(
                                                 dic['transfer.alive.msg'],
                                                 style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w200),
+                                                  color: Color(0xBF565554),
+                                                  fontSize: 12,
+                                                  fontFamily: 'SF_Pro',
+                                                ),
                                               ),
                                             ],
                                           )),

@@ -26,7 +26,7 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
       // title: Text(
       //   widget.title,
       //   style: TextStyle(
-      //       color: Theme.of(context).textSelectionColor,
+      //       color: Theme.of(context).textSelectionTheme.selectionColor,
       //       fontSize: 16,
       //       fontWeight: FontWeight.w600,
       //       fontFamily: "TitilliumWeb"),

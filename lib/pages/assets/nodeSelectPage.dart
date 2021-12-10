@@ -72,7 +72,9 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
                       I18n.of(context).getDic(
                           i18n_full_dic_app, 'assets')["v3.changeNetwork"],
                       style: TextStyle(
-                          color: Theme.of(context).textSelectionColor,
+                          color: Theme.of(context)
+                              .textSelectionTheme
+                              .selectionColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           fontFamily: "TitilliumWeb")),
@@ -153,7 +155,7 @@ class NodeSelectItem extends StatelessWidget {
             bgColor: Theme.of(context).cardColor,
             title: Text(plugin.basic.name,
                 style: TextStyle(
-                    color: Theme.of(context).textSelectionColor,
+                    color: Theme.of(context).textSelectionTheme.selectionColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     fontFamily: "SF_Pro")),
