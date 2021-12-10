@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -169,27 +170,20 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           children: [
             Container(
                 margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: CupertinoTextField(
-                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(24)),
-                    border: Border.all(
-                        width: 0.5, color: Theme.of(context).dividerColor),
-                  ),
-                  controller: _filterCtrl,
-                  placeholder: dic['manage.filter'],
-                  placeholderStyle: TextStyle(
-                      fontSize: 14, color: Theme.of(context).disabledColor),
-                  cursorHeight: 14,
-                  style: TextStyle(fontSize: 14),
-                  suffix: Container(
-                    margin: EdgeInsets.only(right: 8),
-                    child: Icon(
-                      Icons.search,
-                      color: Theme.of(context).disabledColor,
-                      size: 20,
+                child: v3.TextFormField(
+                  decoration: v3.InputDecorationV3(
+                    hintText: dic['manage.filter'],
+                    suffix: Container(
+                      margin: EdgeInsets.only(right: 8),
+                      child: Icon(
+                        Icons.search,
+                        color: Theme.of(context).disabledColor,
+                        size: 20,
+                      ),
                     ),
                   ),
+                  controller: _filterCtrl,
+                  style: TextStyle(fontSize: 14),
                   onChanged: (v) {
                     setState(() {
                       _filter = _filterCtrl.text.trim().toUpperCase();

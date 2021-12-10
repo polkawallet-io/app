@@ -219,36 +219,6 @@ class _HomePageState extends State<HomePage> {
           ),
           text: I18n.of(context)
               .getDic(i18n_full_dic_app, 'public')['v3.metahub']);
-      // pluginPages[0].content = ListView.builder(
-      //     padding: EdgeInsets.all(16),
-      //     itemCount: pluginPages.length,
-      //     itemBuilder: (context, index) {
-      //       return GestureDetector(
-      //         onTap: () {
-      //           Navigator.of(context).push(new MaterialPageRoute(
-      //             builder: (context) {
-      //               return widget.service.plugin
-      //                   .getNavItems(context, widget.service.keyring)[index]
-      //                   .content;
-      //             },
-      //           ));
-      //         },
-      //         child: RoundedCard(
-      //           margin: EdgeInsets.only(bottom: 16),
-      //           child: Row(
-      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //             children: [
-      //               widget.service.plugin
-      //                   .getNavItems(context, widget.service.keyring)[index]
-      //                   .icon,
-      //               Text(widget.service.plugin
-      //                   .getNavItems(context, widget.service.keyring)[index]
-      //                   .text)
-      //             ],
-      //           ),
-      //         ),
-      //       );
-      //     });
     }
 
     pages.add(pluginPage);

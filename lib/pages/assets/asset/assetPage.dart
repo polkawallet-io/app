@@ -275,13 +275,15 @@ class _AssetPageState extends State<AssetPage> {
           onBack: () => Navigator.of(context).pop(),
         ),
         actions: [
-          v3.IconButton(
-              isBlueBg: true,
-              icon: Icon(
-                Icons.more_horiz,
-                color: Theme.of(context).cardColor,
-              ),
-              onPressed: _showAction),
+          Padding(
+              padding: EdgeInsets.only(right: 16.w),
+              child: v3.IconButton(
+                  isBlueBg: true,
+                  icon: Icon(
+                    Icons.more_horiz,
+                    color: Theme.of(context).cardColor,
+                  ),
+                  onPressed: _showAction)),
         ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
