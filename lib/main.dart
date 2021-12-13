@@ -11,7 +11,6 @@ import 'package:polkawallet_plugin_chainx/polkawallet_plugin_chainx.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
-import 'package:polkawallet_plugin_laminar/polkawallet_plugin_laminar.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 
 void main() async {
@@ -29,7 +28,7 @@ void main() async {
     PluginBifrost(),
     PluginChainX(),
     PluginEdgeware(),
-    PluginLaminar(),
+    // PluginLaminar(),
   ];
 
   final pluginsConfig = await WalletApi.getPluginsConfig(BuildTargets.apk);

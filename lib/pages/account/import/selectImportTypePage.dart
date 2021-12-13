@@ -30,17 +30,14 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['import']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
           child: Column(
         children: [
           ListTile(title: Text(dic['import.type'])),
           Expanded(
               child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.all(10),
                   itemCount: _keyOptions.length,
                   itemBuilder: (context, index) {

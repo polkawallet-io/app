@@ -120,6 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
           AppBar(title: Text(dic['title']), centerTitle: true, elevation: 0.0),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: [
               RoundedCard(

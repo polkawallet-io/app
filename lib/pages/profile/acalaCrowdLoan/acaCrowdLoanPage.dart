@@ -833,6 +833,7 @@ class AcaPloPageLayout extends StatelessWidget {
       body: Stack(
         children: [
           SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
             child: child,
           ),
           Container(

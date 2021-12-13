@@ -271,9 +271,7 @@ class _AssetPageState extends State<AssetPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: BackBtn(
-          onBack: () => Navigator.of(context).pop(),
-        ),
+        leading: BackBtn(),
         actions: [
           Padding(
               padding: EdgeInsets.only(right: 16.w),
@@ -430,12 +428,13 @@ class _AssetPageState extends State<AssetPage> {
                                               : _tab == 1
                                                   ? "in"
                                                   : "out"],
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .toggleableActiveColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: "TitilliumWeb")),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .toggleableActiveColor,
+                                                  fontWeight: FontWeight.w600)),
                                     ),
                                   ),
                                   GestureDetector(
@@ -444,23 +443,22 @@ class _AssetPageState extends State<AssetPage> {
                                             context: context,
                                             builder: (context) {
                                               return ShowCustomAlterWidget(
-                                                  (value) {
-                                                setState(() {
-                                                  if (value == dic['all']) {
-                                                    _tab = 0;
-                                                  } else if (value ==
-                                                      dic['in']) {
-                                                    _tab = 1;
-                                                  } else {
-                                                    _tab = 2;
-                                                  }
-                                                });
-                                              },
-                                                  dic['history'],
-                                                  I18n.of(context).getDic(
-                                                      i18n_full_dic_ui,
-                                                      'common')['cancel'],
-                                                  [
+                                                  confirmCallback: (value) {
+                                                    setState(() {
+                                                      if (value == dic['all']) {
+                                                        _tab = 0;
+                                                      } else if (value ==
+                                                          dic['in']) {
+                                                        _tab = 1;
+                                                      } else {
+                                                        _tab = 2;
+                                                      }
+                                                    });
+                                                  },
+                                                  cancel: I18n.of(context)
+                                                      .getDic(i18n_full_dic_ui,
+                                                          'common')['cancel'],
+                                                  options: [
                                                     dic['all'],
                                                     dic['in'],
                                                     dic['out']
@@ -538,12 +536,8 @@ class CarButton extends StatelessWidget {
                 Container(padding: EdgeInsets.only(bottom: 5.h), child: icon),
                 Text(
                   text,
-                  style: TextStyle(
-                      color:
-                          Theme.of(context).textSelectionTheme.selectionColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "TitilliumWeb"),
+                  style: Theme.of(context).textTheme.headline6.copyWith(
+                      fontWeight: FontWeight.w600, fontFamily: "TitilliumWeb"),
                 ),
               ],
             ),
@@ -642,12 +636,10 @@ class BalanceCard extends StatelessWidget {
                         visible: tokenPrice != null,
                         child: Text(
                           '≈ \$ ${tokenPrice ?? '--.--'}',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.headline6.copyWith(
                               color: titleColor,
-                              fontSize: 12,
                               letterSpacing: -0.8,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: "SF_Pro"),
+                              fontWeight: FontWeight.w600),
                         ),
                       ),
                     ],
@@ -785,22 +777,17 @@ class TransferListItem extends StatelessWidget {
       ),
       title: Text(
         '$title${crossChain != null ? ' ($crossChain)' : ''}',
-        style: TextStyle(
-          color: Theme.of(context).textSelectionTheme.selectionColor,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          fontFamily: 'SF_Pro',
-        ),
+        style: Theme.of(context).textTheme.headline5.copyWith(
+              fontFamily: 'SF_Pro',
+            ),
       ),
       subtitle: Text(
         Fmt.dateTime(
             DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000)),
-        style: TextStyle(
-          color: Theme.of(context).textSelectionTheme.selectionColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w300,
-          fontFamily: 'SF_Pro',
-        ),
+        style: Theme.of(context)
+            .textTheme
+            .headline6
+            .copyWith(fontWeight: FontWeight.w300),
       ),
       trailing: Container(
         width: 110,
@@ -809,14 +796,12 @@ class TransferListItem extends StatelessWidget {
             Expanded(
               child: Text(
                 '${isOut ? '-' : '+'} $amount',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headline5.copyWith(
                     color: data.success
                         ? isOut
                             ? colorOut
                             : colorIn
                         : colorFailed,
-                    fontSize: 14,
-                    fontFamily: 'TitilliumWeb',
                     fontWeight: FontWeight.w600),
                 textAlign: TextAlign.right,
               ),

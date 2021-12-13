@@ -72,9 +72,7 @@ class _RecoveryStatePage extends State<RecoveryProofPage> {
       appBar: AppBar(
           title: Text(dic['recovery.help']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,
@@ -94,6 +92,7 @@ class _RecoveryStatePage extends State<RecoveryProofPage> {
                   child: _txs.length > 0
                       ? TxList(_txs)
                       : ListView(
+                          physics: BouncingScrollPhysics(),
                           children: [
                             Padding(
                               padding: EdgeInsets.all(16),

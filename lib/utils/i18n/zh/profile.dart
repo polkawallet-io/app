@@ -1,5 +1,5 @@
 const Map<String, String> zhProfile = {
-  'title': '设置',
+  'title': '配置',
   'account': '账户管理',
   'sign': '签名&验签',
   'sign.sign': '签名信息',

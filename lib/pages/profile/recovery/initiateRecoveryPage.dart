@@ -124,9 +124,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
       appBar: AppBar(
           title: Text(dic['recovery.init']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,
@@ -134,6 +132,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
             children: [
               Expanded(
                 child: ListView(
+                  physics: BouncingScrollPhysics(),
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 0),

@@ -37,13 +37,10 @@ class ExportAccountPage extends StatelessWidget {
     final dicAcc = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['export']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['export']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: [
               RoundedCard(

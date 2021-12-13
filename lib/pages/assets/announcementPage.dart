@@ -20,11 +20,7 @@ class AnnouncementPage extends StatelessWidget {
     final AnnouncePageParams params = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['announce']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['announce']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: WebView(
           initialUrl: params.link,

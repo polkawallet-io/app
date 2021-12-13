@@ -46,11 +46,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['import']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
           child: Observer(
               builder: (_) => Column(
@@ -59,52 +55,54 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                           child: Form(
                               key: _formKey,
                               child: SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
                                   child: Column(
-                                children: [
-                                  Visibility(
-                                      visible: _addressIcon.svg != null,
-                                      child: Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 16, right: 16, top: 16),
-                                          child: AddressFormItem(
-                                              KeyPairData()
-                                                ..icon = _addressIcon.svg
-                                                ..address =
-                                                    _addressIcon.address,
-                                              isShowSubtitle: false))),
-                                  ListTile(
-                                      title: Text(
-                                        dic['import.type'],
+                                    children: [
+                                      Visibility(
+                                          visible: _addressIcon.svg != null,
+                                          child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 16, right: 16, top: 16),
+                                              child: AddressFormItem(
+                                                  KeyPairData()
+                                                    ..icon = _addressIcon.svg
+                                                    ..address =
+                                                        _addressIcon.address,
+                                                  isShowSubtitle: false))),
+                                      ListTile(
+                                          title: Text(
+                                            dic['import.type'],
+                                          ),
+                                          trailing: Text(dic[selected])),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 16, right: 16),
+                                        child: TextFormField(
+                                          decoration: InputDecoration(
+                                            hintText: dic[selected],
+                                            labelText: dic[selected],
+                                          ),
+                                          controller: _keyCtrl,
+                                          maxLines: 2,
+                                          validator: _validateInput,
+                                          onChanged: _onKeyChange,
+                                        ),
                                       ),
-                                      trailing: Text(dic[selected])),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 16, right: 16),
-                                    child: TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: dic[selected],
-                                        labelText: dic[selected],
-                                      ),
-                                      controller: _keyCtrl,
-                                      maxLines: 2,
-                                      validator: _validateInput,
-                                      onChanged: _onKeyChange,
-                                    ),
-                                  ),
-                                  AccountAdvanceOption(
-                                    api: widget.service.plugin.sdk.api?.keyring,
-                                    seed: _keyCtrl.text.trim(),
-                                    onChange:
-                                        (AccountAdvanceOptionParams data) {
-                                      setState(() {
-                                        _advanceOptions = data;
-                                      });
+                                      AccountAdvanceOption(
+                                        api: widget
+                                            .service.plugin.sdk.api?.keyring,
+                                        seed: _keyCtrl.text.trim(),
+                                        onChange:
+                                            (AccountAdvanceOptionParams data) {
+                                          setState(() {
+                                            _advanceOptions = data;
+                                          });
 
-                                      _refreshAccountAddress(_keyCtrl.text);
-                                    },
-                                  ),
-                                ],
-                              )))),
+                                          _refreshAccountAddress(_keyCtrl.text);
+                                        },
+                                      ),
+                                    ],
+                                  )))),
                       Container(
                         padding: EdgeInsets.all(16),
                         child: RoundedButton(

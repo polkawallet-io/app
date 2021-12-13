@@ -161,9 +161,7 @@ class _Contact extends State<ContactPage> {
         title: Text(dic['contact']),
         centerTitle: true,
         // actions: _args == null ? action : null,
-        leading: BackBtn(
-          onBack: () => Navigator.of(context).pop(),
-        ),
+        leading: BackBtn(),
       ),
       body: SafeArea(
         child: Column(
@@ -172,6 +170,7 @@ class _Contact extends State<ContactPage> {
               child: Form(
                 key: _formKey,
                 child: ListView(
+                  physics: BouncingScrollPhysics(),
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),

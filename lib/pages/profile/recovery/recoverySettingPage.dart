@@ -162,11 +162,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['recovery']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['recovery']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: Observer(
           builder: (_) {
@@ -213,6 +209,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
                     key: _refreshKey,
                     onRefresh: _fetchData,
                     child: ListView(
+                      physics: BouncingScrollPhysics(),
                       children: [
                         RoundedCard(
                           margin: EdgeInsets.all(16),

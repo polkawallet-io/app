@@ -1,19 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 class ShowCustomAlterWidget extends StatefulWidget {
   final Function(String) confirmCallback;
-
-  final String title;
 
   final String cancel;
 
   final List<String> options;
 
   const ShowCustomAlterWidget(
-      this.confirmCallback, this.title, this.cancel, this.options);
+      {@required this.confirmCallback,
+      @required this.cancel,
+      @required this.options});
 
   @override
   _ShowCustomAlterWidgetState createState() => _ShowCustomAlterWidgetState();
@@ -23,14 +21,6 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
   @override
   Widget build(BuildContext context) {
     return CupertinoActionSheet(
-      // title: Text(
-      //   widget.title,
-      //   style: TextStyle(
-      //       color: Theme.of(context).textSelectionTheme.selectionColor,
-      //       fontSize: 16,
-      //       fontWeight: FontWeight.w600,
-      //       fontFamily: "TitilliumWeb"),
-      // ),
       actions: <Widget>[
         ...widget.options
             .map((e) => CupertinoActionSheetAction(

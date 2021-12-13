@@ -119,9 +119,7 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
       appBar: AppBar(
           title: Text(dic['recovery.help']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,
@@ -129,6 +127,7 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
             children: [
               Expanded(
                 child: ListView(
+                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.only(left: 16, right: 16),
                   children: [
                     TextFormField(

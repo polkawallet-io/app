@@ -139,17 +139,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['create']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['create']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
               child: ListView(
+                physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.all(16),
                 children: <Widget>[
                   Container(

@@ -133,6 +133,7 @@ class _WalletAppState extends State<WalletApp> {
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       accentColor: secondaryColor,
+      colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
               fontSize: 30,
@@ -163,6 +164,7 @@ class _WalletAppState extends State<WalletApp> {
             color: Color(0xFF565554),
             fontSize: 12,
             fontFamily: 'SF_Pro',
+            fontWeight: FontWeight.w400,
           ),
           bodyText1: TextStyle(
               fontSize: 16,

@@ -39,6 +39,7 @@ class _GuidePageState extends State<GuidePage> {
             },
             children: _pages
                 .map((e) => ListView(
+                      physics: BouncingScrollPhysics(),
                       children: [
                         Container(
                           margin:

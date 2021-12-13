@@ -41,14 +41,13 @@ class _ChangeName extends State<ChangeNamePage> {
       appBar: AppBar(
           title: Text(dic['name.change']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
               child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   child: Form(

@@ -29,11 +29,7 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
     final data = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['import']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: CreateAccountForm(
           widget.service,

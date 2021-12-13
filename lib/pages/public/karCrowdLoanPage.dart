@@ -712,6 +712,7 @@ class CrowdLoanPageLayout extends StatelessWidget {
             ],
           ),
           ListView(
+            physics: BouncingScrollPhysics(),
             padding: EdgeInsets.fromLTRB(16, 72, 16, 16),
             children: children,
           ),

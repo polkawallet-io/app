@@ -276,9 +276,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           title: Text(I18n.of(context)
               .getDic(i18n_full_dic_app, 'profile')['setting.network']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          ),
+          leading: BackBtn(),
           elevation: 2),
       body: Row(
         children: <Widget>[

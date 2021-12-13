@@ -77,6 +77,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         children: <Widget>[
           Expanded(
             child: ListView(
+              physics: BouncingScrollPhysics(),
               padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: <Widget>[
                 TextFormField(

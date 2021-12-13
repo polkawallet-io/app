@@ -179,6 +179,7 @@ class _CrowdLoanPageState extends State<CrowdLoanPage> {
                               }
                             });
                             return ListView(
+                              physics: BouncingScrollPhysics(),
                               padding: EdgeInsets.only(bottom: 40),
                               children: _tab == 0
                                   ? [

@@ -49,7 +49,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
         child: BottomAppBar(
           color: Color(0xFFE3DED8),
           shape: CustomNotchedShape(context),
-          child: SizedBox(height: 66, child: Row(children: children)),
+          child: SizedBox(height: 50, child: Row(children: children)),
         ),
         opacity: 0.7, // Default: 0.5
         color: Color(0x66000000), // Default: Black
@@ -133,6 +133,7 @@ class CentralNavItem extends StatelessWidget {
                       child: Container(
                         width: 50,
                         height: 50,
+                        padding: EdgeInsets.only(left: 2),
                         decoration: BoxDecoration(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(50.0 / 2)),

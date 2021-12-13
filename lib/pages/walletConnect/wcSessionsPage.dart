@@ -33,11 +33,10 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
             title: Image.asset('assets/images/wallet_connect_banner.png',
                 height: 24),
             centerTitle: true,
-            leading: BackBtn(
-              onBack: () => Navigator.of(context).pop(),
-            )),
+            leading: BackBtn()),
         body: SafeArea(
           child: ListView(
+            physics: BouncingScrollPhysics(),
             children: sessions.map((session) {
               final permissions =
                   List.of(session.permissions.jsonrpc['methods']);
@@ -45,35 +44,37 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                 child: Column(
                   children: <Widget>[
                     Expanded(
-                      child: ListView(children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            dic['wc.connect'],
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: WCPairingSourceInfo(session.peer),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            dic['wc.permission'],
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: permissions.map((e) {
-                              return Text('- $e');
-                            }).toList(),
-                          ),
-                        )
-                      ]),
+                      child: ListView(
+                          physics: BouncingScrollPhysics(),
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(
+                                dic['wc.connect'],
+                                style: Theme.of(context).textTheme.headline4,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 16, right: 16),
+                              child: WCPairingSourceInfo(session.peer),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(
+                                dic['wc.permission'],
+                                style: Theme.of(context).textTheme.headline4,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 24),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: permissions.map((e) {
+                                  return Text('- $e');
+                                }).toList(),
+                              ),
+                            )
+                          ]),
                     ),
                     Column(
                       children: [

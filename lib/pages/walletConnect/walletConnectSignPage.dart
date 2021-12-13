@@ -78,14 +78,13 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
               ? 'submit.sign.tx'
               : 'submit.sign.msg']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: ListView(
+                physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.all(16),
                 children: [
                   Padding(

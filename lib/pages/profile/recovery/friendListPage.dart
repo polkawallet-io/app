@@ -95,9 +95,7 @@ class _FriendListPage extends State<FriendListPage> {
               ),
             )
           ],
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: [
@@ -111,6 +109,7 @@ class _FriendListPage extends State<FriendListPage> {
                 list.addAll(contacts);
                 return Expanded(
                   child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
                     itemCount: list.length,
                     itemBuilder: (_, i) {
                       bool switchOn = i < _selected.length;

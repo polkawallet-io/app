@@ -85,9 +85,10 @@ class _AboutPage extends State<AboutPage> {
       appBar: AppBar(
           title: Text(dic['about.title']),
           centerTitle: true,
-          leading: BackBtn(onBack: () => Navigator.of(context).pop())),
+          leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: <Widget>[
               RoundedCard(

@@ -111,17 +111,14 @@ class _ContributePageState extends State<ContributePage> {
             ['logo'] as String;
         return Scaffold(
           appBar: AppBar(
-              title: Text('Contribute'),
-              centerTitle: true,
-              leading: BackBtn(
-                onBack: () => Navigator.of(context).pop(),
-              )),
+              title: Text('Contribute'), centerTitle: true, leading: BackBtn()),
           body: Column(
             children: <Widget>[
               Expanded(
                 child: Form(
                   key: _formKey,
                   child: ListView(
+                    physics: BouncingScrollPhysics(),
                     padding: EdgeInsets.all(16),
                     children: <Widget>[
                       Text('Crowdloan',

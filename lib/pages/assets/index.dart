@@ -411,11 +411,7 @@ class _AssetsState extends State<AssetsPage> {
             children: [
               Text(
                 "${Fmt.address(widget.service.keyring.current.address)}",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "TitilliumWeb",
-                    color: Theme.of(context).textSelectionTheme.selectionColor),
+                style: Theme.of(context).textTheme.headline5,
               ),
               GestureDetector(
                 onTap: () async {
@@ -474,13 +470,10 @@ class _AssetsState extends State<AssetsPage> {
                             ),
                       Text(
                         "${widget.service.plugin.basic.name.toUpperCase()}",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "TitilliumWeb",
-                            color: Theme.of(context)
-                                .textSelectionTheme
-                                .selectionColor),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .copyWith(fontWeight: FontWeight.w600),
                       ),
                       Container(
                         width: 14.w,
@@ -549,23 +542,19 @@ class _AssetsState extends State<AssetsPage> {
                     PopupMenuItem(
                       child: Row(
                         children: [
-                          SvgPicture.asset(
-                            'assets/images/scan.svg',
-                            color: Color(0xFF979797),
-                            width: 20.w,
-                          ),
+                          Padding(
+                              padding: EdgeInsets.only(left: 2),
+                              child: SvgPicture.asset(
+                                'assets/images/scan.svg',
+                                color: Color(0xFF979797),
+                                width: 20.w,
+                              )),
                           Padding(
                             padding: EdgeInsets.only(left: 5.w),
                             child: Text(
                               I18n.of(context)
                                   .getDic(i18n_full_dic_app, 'assets')['scan'],
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor,
-                                  fontSize: 14,
-                                  fontFamily: "TitilliumWeb",
-                                  fontWeight: FontWeight.w400),
+                              style: Theme.of(context).textTheme.headline5,
                             ),
                           )
                         ],
@@ -579,20 +568,14 @@ class _AssetsState extends State<AssetsPage> {
                           SvgPicture.asset(
                             'assets/images/qr.svg',
                             color: Color(0xFF979797),
-                            width: 20.w,
+                            width: 22.w,
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 5),
                             child: Text(
                               I18n.of(context).getDic(
                                   i18n_full_dic_app, 'assets')['QRCode'],
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor,
-                                  fontSize: 14,
-                                  fontFamily: "TitilliumWeb",
-                                  fontWeight: FontWeight.w400),
+                              style: Theme.of(context).textTheme.headline5,
                             ),
                           )
                         ],
@@ -733,7 +716,7 @@ class _AssetsState extends State<AssetsPage> {
                                 relay_chain_name_dot)),
                     widget.service.plugin.basic.isTestNet
                         ? Padding(
-                            padding: EdgeInsets.only(bottom: 8.h, top: 8.h),
+                            padding: EdgeInsets.only(bottom: 7.h, top: 7.h),
                             child: Row(
                               children: [
                                 Expanded(
@@ -763,7 +746,7 @@ class _AssetsState extends State<AssetsPage> {
                         final Map announce = snapshot.data[lang];
                         return GestureDetector(
                           child: Container(
-                            margin: EdgeInsets.only(bottom: 8.h),
+                            margin: EdgeInsets.only(bottom: 7.h),
                             child: Row(
                               children: <Widget>[
                                 Expanded(
@@ -802,7 +785,8 @@ class _AssetsState extends State<AssetsPage> {
                   key: _refreshKey,
                   onRefresh: _updateBalances,
                   child: ListView(
-                    padding: EdgeInsets.only(bottom: 16.h, top: 16.h),
+                    physics: BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(bottom: 6.h, top: 8.h),
                     children: [
                       Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -817,17 +801,35 @@ class _AssetsState extends State<AssetsPage> {
                                     visible: widget.service.plugin.basic.name ==
                                             'karura' &&
                                         claimKarEnabled,
-                                    child: OutlinedButtonSmall(
-                                      content: 'Claim KAR',
-                                      active: true,
-                                      margin: EdgeInsets.only(left: 8),
-                                      onPressed: () =>
-                                          Navigator.of(context).pushNamed(
-                                        DAppWrapperPage.route,
-                                        arguments:
-                                            'https://distribution.acala.network/claim',
-                                      ),
-                                    )),
+                                    child: GestureDetector(
+                                        onTap: () => Navigator.of(context)
+                                            .pushNamed(DAppWrapperPage.route,
+                                                arguments:
+                                                    'https://distribution.acala.network/claim'),
+                                        child: Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              15.w, 0, 15.w, 4),
+                                          height: 24,
+                                          margin: EdgeInsets.only(left: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/images/icon_bg_2.png"),
+                                                fit: BoxFit.contain),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            'Claim KAR',
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).cardColor,
+                                              fontSize: 12,
+                                              fontFamily: 'TitilliumWeb',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ))),
                                 Visibility(
                                     visible: (widget.service.plugin
                                                     .noneNativeTokensAll ??
@@ -856,7 +858,7 @@ class _AssetsState extends State<AssetsPage> {
                           ])),
                       RoundedCard(
                         margin:
-                            EdgeInsets.only(top: 20.h, left: 25.w, right: 25.w),
+                            EdgeInsets.only(top: 5.h, left: 25.w, right: 25.w),
                         child: Column(
                           children: [
                             ListTile(
@@ -867,13 +869,10 @@ class _AssetsState extends State<AssetsPage> {
                               ),
                               title: Text(
                                 symbol,
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Theme.of(context)
-                                        .textSelectionTheme
-                                        .selectionColor,
-                                    fontFamily: "TitilliumWeb"),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    .copyWith(fontWeight: FontWeight.w600),
                               ),
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -891,27 +890,27 @@ class _AssetsState extends State<AssetsPage> {
                                                   decimals,
                                                   lengthFixed: 4)
                                           : '--.--',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: balancesInfo?.isFromCache ==
-                                                  false
-                                              ? Theme.of(context)
-                                                  .textSelectionTheme
-                                                  .selectionColor
-                                              : Theme.of(context).dividerColor,
-                                          fontFamily: "TitilliumWeb")),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: balancesInfo
+                                                          ?.isFromCache ==
+                                                      false
+                                                  ? Theme.of(context)
+                                                      .textSelectionTheme
+                                                      .selectionColor
+                                                  : Theme.of(context)
+                                                      .dividerColor)),
                                   Text(
                                     widget.service.store.settings.isHideBalance
                                         ? "******"
                                         : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .textSelectionTheme
-                                            .selectionColor,
-                                        fontFamily: "TitilliumWeb"),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        .copyWith(fontFamily: "TitilliumWeb"),
                                   ),
                                 ],
                               ),
@@ -1033,11 +1032,10 @@ class TokenItem extends StatelessWidget {
           ),
           title: Text(
             item.symbol,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).textSelectionTheme.selectionColor,
-                fontFamily: "TitilliumWeb"),
+            style: Theme.of(context)
+                .textTheme
+                .headline5
+                .copyWith(fontWeight: FontWeight.w600),
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1048,26 +1046,21 @@ class TokenItem extends StatelessWidget {
                     ? "******"
                     : Fmt.priceFloorBigInt(balanceTotal, decimals,
                         lengthFixed: 4),
-                style: TextStyle(
-                    fontSize: 14,
+                style: Theme.of(context).textTheme.headline5.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isFromCache == false
                         ? Theme.of(context).textSelectionTheme.selectionColor
-                        : Theme.of(context).dividerColor,
-                    fontFamily: "TitilliumWeb"),
+                        : Theme.of(context).dividerColor),
               ),
               marketPrice != null
                   ? Text(
                       isHideBalance
                           ? "******"
                           : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context)
-                              .textSelectionTheme
-                              .selectionColor,
-                          fontFamily: "TitilliumWeb"),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(fontFamily: "TitilliumWeb"),
                     )
                   : Container(height: 0, width: 8),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class InstrumentItemWidget extends StatefulWidget {
   final List<InstrumentData> datas;
@@ -111,22 +112,26 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
               widget.datas[j].items[i - 1].value /
               widget.datas[j].sumValue;
         }
-        var angleValue = j == widget.initializeIndex
-            ? (angle * animationNumber + 2.35 * (1 - animationNumber))
-            : (-3.85 * animationNumber + angle * (1 - animationNumber));
-        (j == widget.initializeIndex ? currentWidgets : widgets).add(
-            angleValue < -2.45
-                ? ClipRect(
-                    child: Align(
-                        widthFactor: 0.5,
-                        alignment: Alignment.centerLeft,
-                        child: buildItem(
-                            angleValue, widget.datas[j].items[i].iconName)))
-                : buildItem(angleValue, widget.datas[j].items[i].iconName));
+        if (double.parse(Fmt.priceFloor(widget.datas[j].items[i].value,
+                lengthMax: widget.datas[j].lengthMax)) >
+            0) {
+          var angleValue = j == widget.initializeIndex
+              ? (angle * animationNumber + 2.35 * (1 - animationNumber))
+              : (-3.85 * animationNumber + angle * (1 - animationNumber));
+          (j == widget.initializeIndex ? currentWidgets : widgets).add(
+              angleValue < -2.45
+                  ? ClipRect(
+                      child: Align(
+                          widthFactor: 0.5,
+                          alignment: Alignment.centerLeft,
+                          child: buildItem(
+                              angleValue, widget.datas[j].items[i].iconName)))
+                  : buildItem(angleValue, widget.datas[j].items[i].iconName));
+        }
       }
     }
     currentWidgets.addAll(widgets);
-    return currentWidgets;
+    return currentWidgets.length > 0 ? currentWidgets : [Container()];
   }
 
   Widget buildItem(double angleValue, String iconName) {

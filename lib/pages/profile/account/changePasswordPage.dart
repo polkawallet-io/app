@@ -113,14 +113,13 @@ class _ChangePassword extends State<ChangePasswordPage> {
       appBar: AppBar(
           title: Text(dic['pass.change']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
               child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     vertical: 8.h,

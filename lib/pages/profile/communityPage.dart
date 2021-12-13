@@ -46,11 +46,10 @@ class _CommunityPage extends State<CommunityPage> {
     final pagePadding = 16.w;
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['community']),
-          centerTitle: true,
-          leading: BackBtn(onBack: () => Navigator.of(context).pop())),
+          title: Text(dic['community']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: <Widget>[
               RoundedCard(

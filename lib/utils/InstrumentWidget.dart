@@ -163,10 +163,10 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
             )),
         widget.datas.length < 2
             ? Container(
-                margin: EdgeInsets.only(bottom: 11),
+                margin: EdgeInsets.only(bottom: 8),
               )
             : Container(
-                margin: EdgeInsets.only(top: 4, bottom: 11),
+                margin: EdgeInsets.only(top: 4, bottom: 8),
                 child: Text(widget.datas[getIndex()].prompt,
                     style: TextStyle(
                         fontFamily: "SF_Pro",
@@ -183,7 +183,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                         child: RoundedCard(
                       margin: EdgeInsets.symmetric(horizontal: 4.5.w),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 11.w, vertical: 6.h),
+                          EdgeInsets.symmetric(horizontal: 11.w, vertical: 3.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

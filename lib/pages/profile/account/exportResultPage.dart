@@ -27,13 +27,10 @@ class ExportResultPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['export']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['export']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Container(
             margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
             child: Column(

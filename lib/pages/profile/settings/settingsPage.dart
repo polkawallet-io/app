@@ -124,11 +124,7 @@ class _Settings extends State<SettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['setting']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['setting']), centerTitle: true, leading: BackBtn()),
       body: Observer(
         builder: (_) {
           final hideBalanceTip = widget.service.store.settings.isHideBalance
@@ -140,6 +136,7 @@ class _Settings extends State<SettingsPage> {
                   : '';
           return SafeArea(
             child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
               child: RoundedCard(
                 margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
                 padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),

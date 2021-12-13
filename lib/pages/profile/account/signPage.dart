@@ -110,13 +110,10 @@ class _SignMessagePageState extends State<SignMessagePage>
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic['sign']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['sign']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: [
               Container(

@@ -183,9 +183,7 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
       appBar: AppBar(
           title: Text(dic['recovery.create']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Container(
           color: Theme.of(context).cardColor,
@@ -193,6 +191,7 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
             children: [
               Expanded(
                 child: ListView(
+                  physics: BouncingScrollPhysics(),
                   children: [
                     ListTile(
                       title: Text(dic['recovery.friends']),

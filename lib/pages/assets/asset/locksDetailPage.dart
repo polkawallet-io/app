@@ -160,9 +160,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
       appBar: AppBar(
           title: Text('${dic['locked']} ($symbol)'),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: [
@@ -171,6 +169,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                 key: _refreshKey,
                 onRefresh: _updateVestingInfo,
                 child: ListView(
+                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.all(16),
                   children: locks.map((e) {
                     final amt = BigInt.parse(e.amount.toString());

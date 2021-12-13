@@ -48,11 +48,10 @@ class RemoteNodeListPage extends StatelessWidget {
       appBar: AppBar(
           title: Text(dic['setting.node.list']),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: RoundedCard(
               margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
               padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),

@@ -31,14 +31,13 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
           title: Image.asset('assets/images/wallet_connect_banner.png',
               height: 24),
           centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(children: <Widget>[
+              child:
+                  ListView(physics: BouncingScrollPhysics(), children: <Widget>[
                 Padding(
                   padding: EdgeInsets.all(16),
                   child: Text(

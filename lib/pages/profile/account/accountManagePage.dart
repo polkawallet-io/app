@@ -140,11 +140,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
           title: Text(dic['account']),
           centerTitle: true,
           elevation: 0.0,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: <Widget>[
               Container(

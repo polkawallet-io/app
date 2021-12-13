@@ -158,11 +158,10 @@ class _ContactsPageState extends State<ContactsPage> {
               ),
             )
           ],
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: ListView(
+          physics: BouncingScrollPhysics(),
           children: _list.map((i) {
             return RoundedCard(
               margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),

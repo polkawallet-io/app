@@ -71,13 +71,10 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
                   child: Text(
                       I18n.of(context).getDic(
                           i18n_full_dic_app, 'assets')["v3.changeNetwork"],
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .textSelectionTheme
-                              .selectionColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "TitilliumWeb")),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          .copyWith(fontWeight: FontWeight.w600)),
                 ),
                 Align(
                     alignment: Alignment.centerLeft,
@@ -99,6 +96,7 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
           ),
           Expanded(
               child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
                   itemCount: widget.plugins.length,
                   itemBuilder: (context, index) {
                     return NodeSelectItem(
@@ -154,11 +152,8 @@ class NodeSelectItem extends StatelessWidget {
             spacing: 11.w,
             bgColor: Theme.of(context).cardColor,
             title: Text(plugin.basic.name,
-                style: TextStyle(
-                    color: Theme.of(context).textSelectionTheme.selectionColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "SF_Pro")),
+                style: Theme.of(context).textTheme.headline4.copyWith(
+                    fontWeight: FontWeight.w600, fontFamily: "SF_Pro")),
             isSelect: isExpansion,
             onTap: () {
               networkOnTap(index);
@@ -172,17 +167,17 @@ class NodeSelectItem extends StatelessWidget {
                         ...plugin.nodeList.map((e) {
                           return NodeItemWidget(
                             title: Text(e.name,
-                                style: TextStyle(
-                                    color: Color(0xFF040404),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: "TitilliumWeb")),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    .copyWith(color: Color(0xFF040404))),
                             subtitle: Text(e.endpoint,
-                                style: TextStyle(
-                                    color: Color(0xFF7E7D7B),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w300,
-                                    fontFamily: "SF_Pro")),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    .copyWith(
+                                        color: Color(0xFF7E7D7B),
+                                        fontWeight: FontWeight.w300)),
                             bgColor: Theme.of(context).cardColor,
                             isSelect: service
                                     .plugin.sdk.api.connectedNode?.endpoint ==

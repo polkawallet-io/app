@@ -18,11 +18,7 @@ class CreateAccountEntryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-          title: Text(dic['add']),
-          centerTitle: true,
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          title: Text(dic['add']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: <Widget>[

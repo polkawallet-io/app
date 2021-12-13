@@ -543,12 +543,9 @@ class _TransferPageState extends State<TransferPage> {
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
-        final lableStyle = TextStyle(
-          color: Theme.of(context).textSelectionTheme.selectionColor,
-          fontSize: 16,
-          fontFamily: 'TitilliumWeb',
-          fontWeight: FontWeight.w600,
-        );
+        final lableStyle = Theme.of(context).textTheme.headline4.copyWith(
+              fontWeight: FontWeight.w600,
+            );
         return Scaffold(
           appBar: AppBar(
               title: Text('${dic['transfer']} $symbol'),
@@ -564,14 +561,13 @@ class _TransferPageState extends State<TransferPage> {
                     onPressed: _onScan,
                     isBlueBg: true)
               ],
-              leading: BackBtn(
-                onBack: () => Navigator.of(context).pop(),
-              )),
+              leading: BackBtn()),
           body: SafeArea(
             child: Column(
               children: <Widget>[
                 Expanded(
                   child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -853,14 +849,12 @@ class _TransferPageState extends State<TransferPage> {
                                             flex: 0,
                                             child: Text(
                                                 '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Theme.of(context)
-                                                        .textSelectionTheme
-                                                        .selectionColor,
-                                                    fontFamily:
-                                                        "TitilliumWeb"))),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5
+                                                    .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w600))),
                                       ],
                                     ),
                                   )),
@@ -882,13 +876,12 @@ class _TransferPageState extends State<TransferPage> {
                                         ),
                                         Text(
                                             '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context)
-                                                    .textSelectionTheme
-                                                    .selectionColor,
-                                                fontFamily: "TitilliumWeb")),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.w600)),
                                       ],
                                     ),
                                   )),
@@ -938,13 +931,11 @@ class _TransferPageState extends State<TransferPage> {
                                     ),
                                     Text(
                                         '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Theme.of(context)
-                                                .textSelectionTheme
-                                                .selectionColor,
-                                            fontFamily: "TitilliumWeb")),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            .copyWith(
+                                                fontWeight: FontWeight.w600)),
                                   ],
                                 ),
                               ),
@@ -966,13 +957,12 @@ class _TransferPageState extends State<TransferPage> {
                                         ),
                                         Text(
                                             '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context)
-                                                    .textSelectionTheme
-                                                    .selectionColor,
-                                                fontFamily: "TitilliumWeb")),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.w600)),
                                       ],
                                     ),
                                   )),

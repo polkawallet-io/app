@@ -64,15 +64,14 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
           appBar: AppBar(
               title: Text(dic['create']),
               centerTitle: true,
-              leading: BackBtn(
-                onBack: () => Navigator.of(context).pop(),
-              )),
+              leading: BackBtn()),
           body: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
                   child: ListView(
+                    physics: BouncingScrollPhysics(),
                     padding: EdgeInsets.only(top: 16),
                     children: <Widget>[
                       Visibility(
@@ -166,6 +165,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
           children: <Widget>[
             Expanded(
               child: ListView(
+                physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.all(16),
                 children: <Widget>[
                   Text(

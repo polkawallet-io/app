@@ -142,7 +142,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
             GestureDetector(
                 onTap: _onSave,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15.h),
+                  padding: EdgeInsets.fromLTRB(15.h, 0, 15.h, 4),
                   margin: EdgeInsets.only(right: 16.w),
                   decoration: BoxDecoration(
                     color: Colors.transparent,
@@ -162,28 +162,25 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                   ),
                 ))
           ],
-          leading: BackBtn(
-            onBack: () => Navigator.of(context).pop(),
-          )),
+          leading: BackBtn()),
       body: SafeArea(
         child: Column(
           children: [
             Container(
                 margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                height: 52,
                 child: v3.TextFormField(
                   decoration: v3.InputDecorationV3(
+                    contentPadding: EdgeInsets.zero,
                     hintText: dic['manage.filter'],
-                    suffix: Container(
-                      margin: EdgeInsets.only(right: 8),
-                      child: Icon(
-                        Icons.search,
-                        color: Theme.of(context).disabledColor,
-                        size: 20,
-                      ),
+                    icon: Icon(
+                      Icons.search,
+                      color: Theme.of(context).disabledColor,
+                      size: 20,
                     ),
                   ),
                   controller: _filterCtrl,
-                  style: TextStyle(fontSize: 14),
+                  style: Theme.of(context).textTheme.headline5,
                   onChanged: (v) {
                     setState(() {
                       _filter = _filterCtrl.text.trim().toUpperCase();
@@ -206,10 +203,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                       margin: EdgeInsets.only(left: 4, right: 16),
                       child: Text(
                         dic['manage.hide'],
-                        style: TextStyle(
-                            fontSize: 14,
+                        style: Theme.of(context).textTheme.headline5.copyWith(
                             fontFamily: 'SF_Pro',
-                            fontWeight: FontWeight.w400,
                             color: _hide0
                                 ? Theme.of(context).primaryColor
                                 : colorGrey),
@@ -228,6 +223,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
               child: _tokenVisible.keys.length == 0
                   ? Center(child: CupertinoActivityIndicator())
                   : ListView.builder(
+                      physics: BouncingScrollPhysics(),
                       padding: EdgeInsets.all(16),
                       itemCount: list.length,
                       itemBuilder: (_, i) {
@@ -243,11 +239,10 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                   symbol: list[i].symbol,
                                 ),
                                 title: Text(list[i].symbol,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF565554),
-                                        fontFamily: "TitilliumWeb")),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline4
+                                        .copyWith(fontWeight: FontWeight.w600)),
                                 subtitle: Visibility(
                                     visible: list[i].name != null,
                                     child: Text('$id${list[i].name}',
