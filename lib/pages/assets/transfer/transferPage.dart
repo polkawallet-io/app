@@ -13,7 +13,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/txButton.dart' hide TxButton;
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -110,7 +111,6 @@ class _TransferPageState extends State<TransferPage> {
 
   Future<TxConfirmParams> _getTxParams() async {
     if (_accountToError == null &&
-        _amountCtrl.text.length > 0 &&
         _formKey.currentState.validate() &&
         !_submitting) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
@@ -683,47 +683,6 @@ class _TransferPageState extends State<TransferPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(bottom: 4),
-                                            child: Text(
-                                              dic['currency'],
-                                              style: lableStyle,
-                                            ),
-                                          ),
-                                          RoundedCard(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 9.h,
-                                                horizontal: 16.w),
-                                            color: Color(0xFFE3DED8),
-                                            child: Row(
-                                              children: <Widget>[
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(right: 8),
-                                                  width: 32,
-                                                  height: 32,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            32),
-                                                    child: widget.service.plugin
-                                                        .basic.icon,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  widget
-                                                      .service.plugin.basic.name
-                                                      .toUpperCase(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            height: 10.h,
-                                          ),
                                           Padding(
                                             padding: EdgeInsets.only(bottom: 4),
                                             child: Text(
