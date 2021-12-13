@@ -13,12 +13,13 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
+import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
-import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -233,10 +234,27 @@ class _TransferPageState extends State<TransferPage> {
           module: txModule,
           call: txCall,
           txDisplay: {
-            "chain": _chainTo.basic.name,
-            "destination": _accountTo.address,
-            "currency": symbol,
-            "amount": _amountCtrl.text.trim(),
+            dic['to.chain']: _chainTo.basic.name,
+          },
+          txDisplayBold: {
+            dic['amount']: Text(
+              _amountCtrl.text.trim() + ' $symbol',
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            dic['to']: Row(
+              children: [
+                AddressIcon(_accountTo.address, svg: _accountTo.icon),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                    child: Text(
+                      Fmt.address(_accountTo.address, pad: 8),
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           },
           params: paramsX,
         );
@@ -252,10 +270,25 @@ class _TransferPageState extends State<TransferPage> {
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
         call: _keepAlive ? 'transferKeepAlive' : 'transfer',
-        txDisplay: {
-          "destination": _accountTo.address,
-          "currency": symbol,
-          "amount": _amountCtrl.text.trim(),
+        txDisplayBold: {
+          dic['to']: Row(
+            children: [
+              AddressIcon(_accountTo.address, svg: _accountTo.icon),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                  child: Text(
+                    Fmt.address(_accountTo.address, pad: 8),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          dic['amount']: Text(
+            _amountCtrl.text.trim() + ' $symbol',
+            style: Theme.of(context).textTheme.headline1,
+          ),
         },
         params: params,
       );
