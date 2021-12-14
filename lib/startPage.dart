@@ -14,7 +14,6 @@ import 'store/settings.dart';
 class StartPage extends StatefulWidget {
   StartPage({Key key}) : super(key: key);
   SettingsStore settings;
-  // Function onDispose;
 
   static final String route = '/startPage';
 
@@ -24,10 +23,7 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage>
     with SingleTickerProviderStateMixin {
-  // AnimationController _con;
-  // Animation _animation;
   Function toPage;
-  // Timer _timer;
   RiveAnimationController _controller;
   bool get isPlaying => _controller.isActive;
 
@@ -41,10 +37,11 @@ class _StartPageState extends State<StartPage>
     );
 
     toPage = () {
-      _showGuide(context, GetStorage(get_storage_container));
       Navigator.of(context)
           .pushNamedAndRemoveUntil(HomePage.route, (route) => false);
     };
+
+    _showGuide(context, GetStorage(get_storage_container));
   }
 
   Future<void> _showGuide(BuildContext context, GetStorage storage) async {
@@ -61,10 +58,8 @@ class _StartPageState extends State<StartPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    // _con.dispose();
-    // _timer.cancel();
+    _controller.dispose();
   }
 
   @override
@@ -76,11 +71,6 @@ class _StartPageState extends State<StartPage>
           color: Colors.white,
           child: Container(
               margin: EdgeInsets.symmetric(horizontal: 70),
-              // child: RiveAnimation.network(
-              //   'https://cdn.rive.app/animations/vehicles.riv',
-              //   controllers: [_controller],
-              //   onInit: (_) => setState(() {}),
-              // )
               child: RiveAnimation.asset(
                 'assets/images/start_logo.riv',
                 animations: const ['Animation 1'],
