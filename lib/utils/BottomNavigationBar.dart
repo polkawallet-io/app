@@ -89,7 +89,10 @@ class NavItem extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             item.text,
-            style: style?.copyWith(color: active ? Colors.black87 : null),
+            style: style?.copyWith(
+                color: active
+                    ? Theme.of(context).textSelectionTheme.selectionColor
+                    : Color(0xFF9D9A98)),
           )
         ]),
       ),
@@ -141,9 +144,8 @@ class CentralNavItem extends StatelessWidget {
                                 color: Color(!active ? 0xFFF4F2F0 : 0xFFBFBEBD),
                                 width: 0.5),
                             gradient: LinearGradient(
-                                //渐变位置
-                                begin: Alignment.topRight, //右上
-                                end: Alignment.bottomLeft, //左下
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
                                 stops: [
                                   0.0,
                                   1.0
@@ -162,10 +164,13 @@ class CentralNavItem extends StatelessWidget {
                       ),
                     ),
                   )),
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
               Text(
                 item.text,
-                style: style?.copyWith(color: active ? Colors.black87 : null),
+                style: style?.copyWith(
+                    color: active
+                        ? Theme.of(context).textSelectionTheme.selectionColor
+                        : Color(0xFF9D9A98)),
               ),
             ]));
   }
@@ -177,11 +182,11 @@ class CustomNotchedShape extends NotchedShape {
 
   @override
   Path getOuterPath(Rect host, Rect guest) {
-    const radius = 60.0;
-    const lx = 25.0;
-    const ly = 19;
-    const bx = 12.0;
-    const by = 50.0;
+    const radius = 70.0;
+    const lx = 35.0;
+    const ly = 17;
+    const bx = 20.0;
+    const by = 57.0;
     var x = (MediaQuery.of(context).size.width - radius) / 2 - lx;
     return Path()
       ..moveTo(host.left, host.top)

@@ -450,9 +450,12 @@ class _TransferPageState extends State<TransferPage> {
 
                 _validateAccountTo(_accountTo);
 
-                // update estimated tx fee if switch ToChain
-                _getTxFee(
-                    isXCM: e.basic.name != relay_chain_name_ksm, reload: true);
+                if (_amountCtrl.text.trim().toString().length > 0) {
+                  // update estimated tx fee if switch ToChain
+                  _getTxFee(
+                      isXCM: e.basic.name != relay_chain_name_ksm,
+                      reload: true);
+                }
               }
               Navigator.of(context).pop();
             },
@@ -614,7 +617,7 @@ class _TransferPageState extends State<TransferPage> {
                                                       fontSize: 12,
                                                       color: Colors.red)),
                                             )),
-                                        Container(height: 8.h),
+                                        Container(height: 10.h),
                                         v3.TextFormField(
                                           autovalidateMode: AutovalidateMode
                                               .onUserInteraction,
@@ -728,14 +731,41 @@ class _TransferPageState extends State<TransferPage> {
                                                     children: [
                                                       Visibility(
                                                           visible: isCrossChain,
-                                                          child: TextTag(
-                                                              dic[
-                                                                  'cross.chain'],
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      right: 8),
-                                                              color:
-                                                                  Colors.red)),
+                                                          child: Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(15.w,
+                                                                    0, 15.w, 4),
+                                                            height: 24,
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    right: 8),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors
+                                                                  .transparent,
+                                                              image: DecorationImage(
+                                                                  image: AssetImage(
+                                                                      "assets/images/icon_bg_2.png"),
+                                                                  fit: BoxFit
+                                                                      .contain),
+                                                            ),
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Text(
+                                                              dic['cross.chain'],
+                                                              style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .cardColor,
+                                                                fontSize: 12,
+                                                                fontFamily:
+                                                                    'TitilliumWeb',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                            ),
+                                                          )),
                                                       Icon(
                                                         Icons.arrow_forward_ios,
                                                         size: 18,
