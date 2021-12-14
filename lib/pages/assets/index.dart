@@ -706,8 +706,7 @@ class _AssetsState extends State<AssetsPage> {
                                 false),
                         child: AdBanner(widget.service, widget.connectedNode,
                             widget.switchNetwork,
-                            canClose: widget.service.plugin.basic.name !=
-                                relay_chain_name_dot)),
+                            canClose: false)),
                     widget.service.plugin.basic.isTestNet
                         ? Padding(
                             padding: EdgeInsets.only(bottom: 7.h, top: 7.h),

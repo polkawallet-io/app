@@ -17,11 +17,8 @@ class KarCrowdLoanBanner extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      child: Image.asset(
-                          'assets/images/public/banner_kar_plo.png'),
-                    ),
+                    child:
+                        Image.asset('assets/images/public/banner_kar_plo.png'),
                   )
                 ],
               ),

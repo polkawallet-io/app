@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanBanner.dart';
+import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,7 +45,13 @@ class _AdBannerState extends State<AdBanner> {
 
   List<Widget> crowdLoanBannerList() {
     final widgets = <Widget>[];
-    if ((widget.service.store.settings.adBannerState['visibleAca'] ?? false)) {
+    if ((widget.service.store.settings.adBannerState['visibleKar'] ?? false) &&
+        widget.service.plugin.basic.name == relay_chain_name_ksm) {
+      widgets.add(KarCrowdLoanBanner());
+    }
+
+    if ((widget.service.store.settings.adBannerState['visibleAca'] ?? false) &&
+        widget.service.plugin.basic.name == relay_chain_name_dot) {
       widgets.add(ACACrowdLoanBanner(widget.service, widget.switchNetwork));
     }
 

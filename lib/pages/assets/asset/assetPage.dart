@@ -320,10 +320,7 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/send.svg",
-                                  color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor,
-                                  width: 24),
+                                  color: Color(0xFF979797), width: 24),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
                                   ? () {
@@ -344,10 +341,7 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/qr.svg",
-                                  color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor,
-                                  width: 24),
+                                  color: Color(0xFF979797), width: 24),
                               text: dic['receive'],
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -361,10 +355,7 @@ class _AssetPageState extends State<AssetPage> {
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
                               icon: SvgPicture.asset("assets/images/unlock.svg",
-                                  color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor,
-                                  width: 24),
+                                  color: Color(0xFF979797), width: 24),
                               text: dic['unlock'],
                               onPressed: hasVesting
                                   ? () {
@@ -430,7 +421,7 @@ class _AssetPageState extends State<AssetPage> {
                                                   : "out"],
                                           style: Theme.of(context)
                                               .textTheme
-                                              .headline4
+                                              .headline5
                                               .copyWith(
                                                   color: Theme.of(context)
                                                       .toggleableActiveColor,

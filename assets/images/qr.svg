@@ -10,7 +10,7 @@
             <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
         </filter>
     </defs>
-    <g id="icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="1">
+    <g id="icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.65">
         <g id="icon_receive_36" fill-rule="nonzero">
             <g id="形状结合">
                 <use fill="#979797" xlink:href="#path-1"></use>

@@ -12,7 +12,7 @@ class ACACrowdLoanBanner extends StatelessWidget {
   final AppService service;
   final Future<void> Function(String) switchNetwork;
 
-  Future<void> _goToCrowdLoan(BuildContext context, bool active) async {
+  Future<void> _goToCrowdLoan(BuildContext context) async {
     if (service.plugin.basic.name != relay_chain_name_dot) {
       final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       showCupertinoDialog(
@@ -28,14 +28,11 @@ class ACACrowdLoanBanner extends StatelessWidget {
       Navigator.of(context).pop();
     }
 
-    Navigator.of(context)
-        .pushNamed(active ? AcaCrowdLoanPage.route : CrowdLoanPage.route);
+    Navigator.of(context).pushNamed(CrowdLoanPage.route);
   }
 
   @override
   Widget build(BuildContext context) {
-    final active =
-        (service.store.settings.adBannerState['startedAca'] ?? false);
     return Stack(
       alignment: AlignmentDirectional.topEnd,
       children: [
@@ -43,7 +40,7 @@ class ACACrowdLoanBanner extends StatelessWidget {
           child: Container(
             child: Image.asset('assets/images/public/banner_aca_plo.png'),
           ),
-          onTap: () => _goToCrowdLoan(context, active),
+          onTap: () => _goToCrowdLoan(context),
         ),
       ],
     );
