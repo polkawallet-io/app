@@ -16,6 +16,7 @@ import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -368,15 +369,12 @@ class _AssetsState extends State<AssetsPage> {
             .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
         prompt: I18n.of(context)
             .getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"]);
-    totalBalance.items.add(InstrumentItemData(
-        Color(0xFFCE623C),
-        dic['available'],
-        available,
-        "assets/images/icon_instrument_orange.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952),
-        dic['reserved'], reserved, "assets/images/icon_instrument_yellow.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1), dic['locked'],
-        locked, "assets/images/icon_instrument_blue.png"));
+    totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
+        dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
+    totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],
+        locked, "assets/images/icon_instrument_yellow.png"));
+    totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1),
+        dic['available'], available, "assets/images/icon_instrument_blue.png"));
 
     datas.add(totalBalance);
 
@@ -387,6 +385,7 @@ class _AssetsState extends State<AssetsPage> {
 
   PreferredSizeWidget buildAppBar(bool transferEnabled) {
     return AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

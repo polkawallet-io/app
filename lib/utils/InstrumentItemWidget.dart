@@ -112,8 +112,8 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
               widget.datas[j].items[i - 1].value /
               widget.datas[j].sumValue;
         }
-        if (double.parse(Fmt.priceFloor(widget.datas[j].items[i].value,
-                lengthMax: widget.datas[j].lengthMax)) >
+        if (double.parse(widget.datas[j].items[i].value
+                .toStringAsFixed(widget.datas[j].lengthMax)) >
             0) {
           var angleValue = j == widget.initializeIndex
               ? (angle * animationNumber + 2.35 * (1 - animationNumber))
