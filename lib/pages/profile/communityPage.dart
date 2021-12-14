@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -37,6 +38,26 @@ class _CommunityPage extends State<CommunityPage> {
     });
   }
 
+  void _onWechatTap() {
+    showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            title: Text('Acala Wechat'),
+            content: Image.asset('assets/images/public/aca_qr_wechat.jpg'),
+            actions: [
+              CupertinoButton(
+                child: Text(
+                  I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                  style: TextStyle(color: Colors.blueAccent),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
@@ -59,28 +80,30 @@ class _CommunityPage extends State<CommunityPage> {
                 child: Column(
                   children: [
                     SettingsPageListItem(
-                      label: dic['about.terms'],
-                      onTap: () => _jumpToLink(
-                          'https://polkawallet.io/terms-conditions.html'),
+                      label: 'Wechat',
+                      onTap: _onWechatTap,
                     ),
                     Divider(),
                     SettingsPageListItem(
-                      label: dic['about.privacy'],
-                      onTap: () => _jumpToLink(
-                          'https://github.com/polkawallet-io/app/blob/master/privacy-policy.md'),
+                      label: 'Twitter',
+                      onTap: () =>
+                          _jumpToLink('https://twitter.com/AcalaNetwork'),
                     ),
                     Divider(),
                     SettingsPageListItem(
-                      label: 'Github',
-                      onTap: () => _jumpToLink(
-                          'https://github.com/polkawallet-io/app/issues'),
+                      label: 'Telegram',
+                      onTap: () => _jumpToLink('https://t.me/acalaofficial'),
                     ),
                     Divider(),
                     SettingsPageListItem(
-                      label: dic['about.feedback'],
-                      content:
-                          Text("hello@polkawallet.io", style: contentStyle),
-                      onTap: () => _jumpToLink('mailto:hello@polkawallet.io'),
+                      label: 'Discord',
+                      onTap: () => _jumpToLink('https://discord.gg/6QHVY4X'),
+                    ),
+                    Divider(),
+                    SettingsPageListItem(
+                      label: 'LinkTree',
+                      onTap: () =>
+                          _jumpToLink('https://linktr.ee/acalanetwork'),
                     ),
                   ],
                 ),
