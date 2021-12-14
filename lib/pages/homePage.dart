@@ -190,23 +190,21 @@ class _HomePageState extends State<HomePage> {
               )),
               centerTitle: true,
             ),
-            body: SafeArea(
-              child: PageView(
-                controller: _metahubPageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _metahubTabIndex = index;
-                  });
-                },
-                children: pluginPages
-                    .map((e) => PageWrapperWithBackground(
-                          e.content,
-                          height: 220,
-                          backgroundImage:
-                              widget.service.plugin.basic.backgroundImage,
-                        ))
-                    .toList(),
-              ),
+            body: PageView(
+              controller: _metahubPageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _metahubTabIndex = index;
+                });
+              },
+              children: pluginPages
+                  .map((e) => PageWrapperWithBackground(
+                        e.content,
+                        height: 220,
+                        backgroundImage:
+                            widget.service.plugin.basic.backgroundImage,
+                      ))
+                  .toList(),
             ),
           ),
           icon: Image.asset(

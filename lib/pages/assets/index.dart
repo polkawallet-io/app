@@ -25,7 +25,6 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
@@ -850,15 +849,17 @@ class _AssetsState extends State<AssetsPage> {
                           ])),
                       RoundedCard(
                         margin:
-                            EdgeInsets.only(top: 5.h, left: 16.w, right: 16.w),
+                            EdgeInsets.only(top: 5.h, left: 25.w, right: 25.w),
                         child: Column(
                           children: [
                             ListTile(
-                              minLeadingWidth: 30.w,
                               leading: Container(
-                                height: 30.w,
-                                width: 30.w,
-                                child: widget.service.plugin.tokenIcons[symbol],
+                                width: 45.w,
+                                alignment: Alignment.centerLeft,
+                                child: TokenIcon(
+                                  symbol,
+                                  widget.service.plugin.tokenIcons,
+                                ),
                               ),
                               title: Text(
                                 symbol,
