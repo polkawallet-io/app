@@ -1,8 +1,7 @@
 import 'package:app/pages/account/create/createAccountForm.dart';
 import 'package:app/service/index.dart';
-import 'package:flutter/material.dart';
-
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 
@@ -36,9 +35,9 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
           submitting: _submitting,
           onSubmit: () {
             return ImportAccountAction.onSubmit(context, widget.service, data,
-                (submiting) {
+                (submitting) {
               setState(() {
-                this._submitting = submiting;
+                this._submitting = submitting;
               });
             });
           },

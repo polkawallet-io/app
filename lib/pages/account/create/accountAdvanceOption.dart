@@ -1,8 +1,13 @@
+import 'package:app/pages/profile/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/collapsedContainer.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 
 class AccountAdvanceOption extends StatefulWidget {
   AccountAdvanceOption({this.api, this.seed, this.onChange});
@@ -25,7 +30,6 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
 
   int _typeSelection = 0;
 
-  bool _expanded = false;
   String _derivePath = '';
   String _pathError;
 
@@ -67,49 +71,16 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: GestureDetector(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8, top: 8),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    size: 30,
-                    color: Theme.of(context).unselectedWidgetColor,
-                  ),
-                  Text(dic['advanced'])
-                ],
-              ),
-            ),
-            onTap: () {
-              // clear state while advanced options closed
-              if (_expanded) {
-                setState(() {
-                  _typeSelection = 0;
-                  _pathCtrl.text = '';
-                });
-                widget.onChange(AccountAdvanceOptionParams(
-                  type: _typeOptions[0],
-                  path: '',
-                ));
-              }
-              setState(() {
-                _expanded = !_expanded;
-              });
-            },
-          ),
-        ),
-        Visibility(
-            visible: _expanded,
-            child: ListTile(
-              title: Text(dic['import.encrypt']),
-              subtitle:
-                  Text(_typeOptions[_typeSelection].toString().split('.')[1]),
-              trailing: Icon(Icons.arrow_forward_ios, size: 18),
+    return CollapsedContainer(
+      title: dic['advanced'],
+      child: Column(
+        children: [
+          RoundedCard(
+            margin: EdgeInsets.only(top: 8.h, bottom: 16.h),
+            padding: EdgeInsets.all(8.w),
+            child: SettingsPageListItem(
+              label: dic['import.encrypt'],
+              subtitle: _typeOptions[_typeSelection].toString().split('.')[1],
               onTap: () {
                 showCupertinoModalPopup(
                   context: context,
@@ -145,22 +116,32 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
                   ),
                 );
               },
-            )),
-        Visibility(
-            visible: _expanded,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  hintText: '//hard/soft///password',
-                  labelText: dic['path'],
-                ),
-                controller: _pathCtrl,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _checkDerivePath,
-              ),
-            )),
-      ],
+            ),
+          ),
+          v3.TextFormField(
+            decoration: v3.InputDecorationV3(
+              hintText: '//hard/soft///password',
+              labelText: dic['path'],
+            ),
+            controller: _pathCtrl,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: _checkDerivePath,
+          )
+        ],
+      ),
+      onCollapse: (v) {
+        // clear state while advanced options closed
+        if (v) {
+          setState(() {
+            _typeSelection = 0;
+            _pathCtrl.text = '';
+          });
+          widget.onChange(AccountAdvanceOptionParams(
+            type: _typeOptions[0],
+            path: '',
+          ));
+        }
+      },
     );
   }
 }

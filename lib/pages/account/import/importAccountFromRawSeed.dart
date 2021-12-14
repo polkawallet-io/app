@@ -3,14 +3,16 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/Button.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 import 'importAccountCreatePage.dart';
 
@@ -62,51 +64,49 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                           visible: _addressIcon.svg != null,
                                           child: Padding(
                                               padding: EdgeInsets.only(
-                                                  left: 16, right: 16, top: 16),
+                                                  left: 16.w, right: 16.w),
                                               child: AddressFormItem(
                                                   KeyPairData()
                                                     ..icon = _addressIcon.svg
                                                     ..address =
                                                         _addressIcon.address,
                                                   isShowSubtitle: false))),
-                                      ListTile(
-                                          title: Text(
-                                            dic['import.type'],
-                                          ),
-                                          trailing: Text(dic[selected])),
                                       Padding(
                                         padding: EdgeInsets.only(
-                                            left: 16, right: 16),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                            hintText: dic[selected],
+                                            left: 16.w, right: 16.w, top: 8.h),
+                                        child: v3.TextFormField(
+                                          decoration: v3.InputDecorationV3(
                                             labelText: dic[selected],
                                           ),
                                           controller: _keyCtrl,
-                                          maxLines: 2,
                                           validator: _validateInput,
                                           onChanged: _onKeyChange,
                                         ),
                                       ),
-                                      AccountAdvanceOption(
-                                        api: widget
-                                            .service.plugin.sdk.api?.keyring,
-                                        seed: _keyCtrl.text.trim(),
-                                        onChange:
-                                            (AccountAdvanceOptionParams data) {
-                                          setState(() {
-                                            _advanceOptions = data;
-                                          });
+                                      Container(
+                                        margin: EdgeInsets.fromLTRB(
+                                            16.w, 16.h, 16.w, 16.h),
+                                        child: AccountAdvanceOption(
+                                          api: widget
+                                              .service.plugin.sdk.api?.keyring,
+                                          seed: _keyCtrl.text.trim(),
+                                          onChange: (AccountAdvanceOptionParams
+                                              data) {
+                                            setState(() {
+                                              _advanceOptions = data;
+                                            });
 
-                                          _refreshAccountAddress(_keyCtrl.text);
-                                        },
+                                            _refreshAccountAddress(
+                                                _keyCtrl.text);
+                                          },
+                                        ),
                                       ),
                                     ],
                                   )))),
                       Container(
                         padding: EdgeInsets.all(16),
-                        child: RoundedButton(
-                          text: I18n.of(context)
+                        child: Button(
+                          title: I18n.of(context)
                               .getDic(i18n_full_dic_ui, 'common')['next'],
                           onPressed: () async {
                             if (_formKey.currentState.validate() &&

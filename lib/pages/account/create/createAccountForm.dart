@@ -5,8 +5,10 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
+import 'package:polkawallet_ui/components/v3/Button.dart';
+import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class CreateAccountForm extends StatefulWidget {
@@ -78,53 +80,56 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           Expanded(
             child: ListView(
               physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
               children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: dic['create.name'],
-                    labelText: dic['create.name'],
+                Container(
+                  margin: EdgeInsets.only(top: 8.h),
+                  child: v3.TextFormField(
+                    decoration: v3.InputDecorationV3(
+                      labelText: dic['create.name'],
+                    ),
+                    controller: _nameCtrl,
+                    validator: (v) {
+                      return v.trim().length > 0
+                          ? null
+                          : dic['create.name.error'];
+                    },
                   ),
-                  controller: _nameCtrl,
-                  validator: (v) {
-                    return v.trim().length > 0
-                        ? null
-                        : dic['create.name.error'];
-                  },
                 ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.lock),
-                    hintText: dic['create.password'],
-                    labelText: dic['create.password'],
+                Container(
+                  margin: EdgeInsets.only(top: 16.h),
+                  child: v3.TextFormField(
+                    decoration: v3.InputDecorationV3(
+                      labelText: dic['create.password'],
+                    ),
+                    controller: _passCtrl,
+                    validator: (v) {
+                      return AppFmt.checkPassword(v.trim())
+                          ? null
+                          : dic['create.password.error'];
+                    },
+                    obscureText: true,
                   ),
-                  controller: _passCtrl,
-                  validator: (v) {
-                    return AppFmt.checkPassword(v.trim())
-                        ? null
-                        : dic['create.password.error'];
-                  },
-                  obscureText: true,
                 ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.lock),
-                    hintText: dic['create.password2'],
-                    labelText: dic['create.password2'],
+                Container(
+                  margin: EdgeInsets.only(top: 16.h),
+                  child: v3.TextFormField(
+                    decoration: v3.InputDecorationV3(
+                      labelText: dic['create.password2'],
+                    ),
+                    controller: _pass2Ctrl,
+                    obscureText: true,
+                    validator: (v) {
+                      return _passCtrl.text != v
+                          ? dic['create.password2.error']
+                          : null;
+                    },
                   ),
-                  controller: _pass2Ctrl,
-                  obscureText: true,
-                  validator: (v) {
-                    return _passCtrl.text != v
-                        ? dic['create.password2.error']
-                        : null;
-                  },
                 ),
                 Visibility(
                     visible: _supportBiometric,
                     child: Padding(
-                      padding: EdgeInsets.only(top: 24),
+                      padding: EdgeInsets.only(top: 16.h),
                       child: Row(
                         children: [
                           SizedBox(
@@ -140,7 +145,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 16),
+                            padding: EdgeInsets.only(left: 8.w),
                             child: Text(dic['unlock.bio.enable']),
                           )
                         ],
@@ -151,9 +156,11 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           ),
           Container(
             padding: EdgeInsets.all(16),
-            child: RoundedButton(
-              text: I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
-              onPressed: widget.submitting ? null : () => _onSubmit(),
+            child: Button(
+              title:
+                  I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
+              submitting: widget.submitting,
+              onPressed: _onSubmit,
             ),
           ),
         ],

@@ -7,9 +7,9 @@ import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
-import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
@@ -135,15 +135,15 @@ class _SignMessagePageState extends State<SignMessagePage>
                   child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                         child: AddressFormItem(
                           widget.service.keyring.current,
-                          label: dicCommon['account'],
+                          label: dicCommon['submit.signer'],
                           svg: widget.service.keyring.current.icon,
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: v3.TextFormField(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.data'],
@@ -159,7 +159,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: GestureDetector(
                           child: v3.TextFormField(
                             decoration: v3.InputDecorationV3(
@@ -195,11 +195,12 @@ class _SignMessagePageState extends State<SignMessagePage>
                   child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-                        child: AddressInputField(
+                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        child: AddressTextFormField(
                           widget.service.plugin.sdk.api,
                           widget.service.keyring.allWithContacts,
-                          label: dicCommon['account'],
+                          labelText: dicCommon['submit.signer'],
+                          hintText: dicCommon['submit.signer'],
                           initialValue:
                               _verifySigner ?? widget.service.keyring.current,
                           onChanged: (KeyPairData acc) {
@@ -210,7 +211,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: v3.TextFormField(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.data'],
@@ -226,7 +227,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                        margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: v3.TextFormField(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.verify'],

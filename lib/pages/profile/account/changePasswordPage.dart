@@ -164,7 +164,6 @@ class _ChangePassword extends State<ChangePasswordPage> {
                         ),
                         v3.TextFormField(
                           decoration: v3.InputDecorationV3(
-                            icon: Icon(Icons.lock),
                             labelText: dic['pass.new'],
                             labelStyle: Theme.of(context).textTheme.headline4,
                           ),
@@ -180,7 +179,6 @@ class _ChangePassword extends State<ChangePasswordPage> {
                           margin: EdgeInsets.only(top: 24.h),
                           child: v3.TextFormField(
                             decoration: v3.InputDecorationV3(
-                              icon: Icon(Icons.lock),
                               labelText: dic['pass.new2'],
                               labelStyle: Theme.of(context).textTheme.headline4,
                             ),

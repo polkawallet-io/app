@@ -1,12 +1,15 @@
+import 'package:app/pages/account/import/importAccountFormKeyStore.dart';
+import 'package:app/pages/account/import/importAccountFromRawSeed.dart';
+import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-
-import 'importAccountFormKeyStore.dart';
-import 'importAccountFormMnemonic.dart';
-import 'importAccountFromRawSeed.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+
+import 'importAccountFormMnemonic.dart';
 
 class SelectImportTypePage extends StatefulWidget {
   static final String route = '/account/selectImportType';
@@ -32,41 +35,47 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
       body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
-        children: [
-          ListTile(title: Text(dic['import.type'])),
-          Expanded(
-              child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.all(10),
-                  itemCount: _keyOptions.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(dic[_keyOptions[index]]),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                      onTap: () {
-                        switch (index) {
-                          case 0:
-                            Navigator.pushNamed(
-                                context, ImportAccountFormMnemonic.route,
-                                arguments: {"type": _keyOptions[index]});
-                            break;
-                          case 1:
-                            Navigator.pushNamed(
-                                context, ImportAccountFromRawSeed.route,
-                                arguments: {"type": _keyOptions[index]});
-                            break;
-                          case 2:
-                            Navigator.pushNamed(
-                                context, ImportAccountFormKeyStore.route,
-                                arguments: {"type": _keyOptions[index]});
-                            break;
-                        }
-                      },
+            children: [
+              ListTile(title: Text(dic['import.type'])),
+              RoundedCard(
+                margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  children: _keyOptions.map((e) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 12.h, bottom: 12.h),
+                      child: SettingsPageListItem(
+                        label: dic[e],
+                        onTap: () {
+                          switch (e) {
+                            case 'mnemonic':
+                              Navigator.pushNamed(
+                                  context, ImportAccountFormMnemonic.route,
+                                  arguments: {"type": e});
+                              break;
+                            case 'rawSeed':
+                              Navigator.pushNamed(
+                                  context, ImportAccountFromRawSeed.route,
+                                  arguments: {"type": e});
+                              break;
+                            case 'keystore':
+                              Navigator.pushNamed(
+                                  context, ImportAccountFormKeyStore.route,
+                                  arguments: {"type": e});
+                              break;
+                          }
+                        },
+                      ),
                     );
-                  }))
-        ],
-      )),
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

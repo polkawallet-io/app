@@ -4,12 +4,14 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class BackupAccountPage extends StatefulWidget {
@@ -71,52 +73,55 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
               children: <Widget>[
                 Expanded(
                   child: ListView(
+                    padding: EdgeInsets.only(left: 16.w, right: 16.w),
                     physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(top: 16),
                     children: <Widget>[
                       Visibility(
                           visible: _addressIcon.svg != null,
-                          child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 16, right: 16, bottom: 16),
-                              child: AddressFormItem(
-                                  KeyPairData()
-                                    ..icon = _addressIcon.svg
-                                    ..address = _addressIcon.address,
-                                  isShowSubtitle: false))),
-                      Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16),
+                          child: AddressFormItem(
+                              KeyPairData()
+                                ..icon = _addressIcon.svg
+                                ..address = _addressIcon.address,
+                              isShowSubtitle: false)),
+                      Container(
+                        margin: EdgeInsets.only(top: 16.h),
                         child: Text(
                           dic['create.warn3'],
                           style: Theme.of(context).textTheme.headline4,
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.all(16),
+                        margin: EdgeInsets.only(top: 16.h, bottom: 12.h),
                         child: Text(dic['create.warn4']),
                       ),
+                      InnerShadowTop(),
                       Container(
-                        margin: EdgeInsets.all(16),
-                        padding: EdgeInsets.all(16),
+                        padding: EdgeInsets.only(left: 16.w, right: 16.w),
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.black12, width: 1),
-                            borderRadius: BorderRadius.all(Radius.circular(4))),
+                            image: DecorationImage(
+                          image: AssetImage(
+                              'packages/polkawallet_ui/assets/images/bg_input_mid.png'),
+                          fit: BoxFit.fill,
+                        )),
                         child: Text(
                           mnemonics,
                           style: Theme.of(context).textTheme.headline4,
                         ),
                       ),
-                      AccountAdvanceOption(
-                        api: widget.service.plugin.sdk.api.keyring,
-                        seed: mnemonics,
-                        onChange: (data) {
-                          setState(() {
-                            _advanceOptions = data;
-                          });
+                      InnerShadowBottom(),
+                      Container(
+                        margin: EdgeInsets.only(top: 16.h),
+                        child: AccountAdvanceOption(
+                          api: widget.service.plugin.sdk.api.keyring,
+                          seed: mnemonics,
+                          onChange: (data) {
+                            setState(() {
+                              _advanceOptions = data;
+                            });
 
-                          _generateAccount(key: mnemonics);
-                        },
+                            _generateAccount(key: mnemonics);
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -186,7 +191,9 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                           padding: EdgeInsets.all(8),
                           child: Text(
                             dic['backup.reset'],
-                            style: TextStyle(fontSize: 14, color: Colors.pink),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).errorColor),
                           ),
                         ),
                         onTap: () {
@@ -200,20 +207,21 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       )
                     ],
                   ),
+                  InnerShadowTop(),
                   Container(
                     decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.black12,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(4))),
-                    padding: EdgeInsets.all(16),
+                        image: DecorationImage(
+                      image: AssetImage(
+                          'packages/polkawallet_ui/assets/images/bg_input_mid.png'),
+                      fit: BoxFit.fill,
+                    )),
+                    padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
                     child: Text(
                       _wordsSelected.join(' ') ?? '',
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
+                  InnerShadowBottom(),
                   _buildWordsButtons(),
                 ],
               ),
@@ -239,37 +247,6 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
     if (_wordsLeft.length > 0) {
       _wordsLeft.sort();
     }
-
-    // List<Widget> rows = <Widget>[];
-    // for (var r = 0; r * 3 < _wordsLeft.length; r++) {
-    //   if (_wordsLeft.length > r * 3) {
-    //     rows.add(Row(
-    //       children: _wordsLeft
-    //           .getRange(
-    //               r * 3,
-    //               _wordsLeft.length > (r + 1) * 3
-    //                   ? (r + 1) * 3
-    //                   : _wordsLeft.length)
-    //           .map(
-    //             (i) => Container(
-    //               padding: EdgeInsets.only(left: 4, right: 4),
-    //               child: RaisedButton(
-    //                 child: Text(
-    //                   i,
-    //                 ),
-    //                 onPressed: () {
-    //                   setState(() {
-    //                     _wordsLeft.remove(i);
-    //                     _wordsSelected.add(i);
-    //                   });
-    //                 },
-    //               ),
-    //             ),
-    //           )
-    //           .toList(),
-    //     ));
-    //   }
-    // }
     return Container(
       padding: EdgeInsets.only(top: 16),
       child: Wrap(
@@ -279,9 +256,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
             .map((e) => Container(
                   padding: EdgeInsets.only(left: 4, right: 4),
                   child: ElevatedButton(
-                    child: Text(
-                      e,
-                    ),
+                    child: Text(e),
                     onPressed: () {
                       setState(() {
                         _wordsLeft.remove(e);
