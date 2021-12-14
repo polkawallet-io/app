@@ -15,7 +15,8 @@ class InstrumentWidget extends StatefulWidget {
       @required this.onSwitchHideBalance,
       this.hideBalance = false,
       this.enabled = false,
-      this.priceCurrency = 'USD'})
+      this.priceCurrency = 'USD',
+      this.switchDefi = false})
       : super(key: key);
   final List<InstrumentData> datas;
   final Function onSwitchChange;
@@ -23,6 +24,7 @@ class InstrumentWidget extends StatefulWidget {
   final bool hideBalance;
   final bool enabled;
   final String priceCurrency;
+  final bool switchDefi;
   @override
   _InstrumentWidgetState createState() => _InstrumentWidgetState();
 }
@@ -104,11 +106,11 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                       Container(
                         margin: EdgeInsets.only(top: 15.h),
                         child: GestureDetector(
-                            onTap: widget.datas.length < 2 || !widget.enabled
-                                ? null
-                                : () {
+                            onTap: widget.switchDefi && widget.enabled
+                                ? () {
                                     controller.switchAction();
-                                  },
+                                  }
+                                : null,
                             child: Container(
                               width: 46.w,
                               height: 46.w,
@@ -161,7 +163,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                 )
               ],
             )),
-        widget.datas.length < 2
+        !widget.switchDefi
             ? Container(
                 margin: EdgeInsets.only(bottom: 8),
               )

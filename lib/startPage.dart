@@ -27,35 +27,24 @@ class _StartPageState extends State<StartPage>
   // AnimationController _con;
   // Animation _animation;
   Function toPage;
-  Timer _timer;
+  // Timer _timer;
+  RiveAnimationController _controller;
+  bool get isPlaying => _controller.isActive;
 
   @override
   void initState() {
     super.initState();
 
+    _controller = OneShotAnimation(
+      'Animation 1',
+      onStop: () => toPage(),
+    );
+
     toPage = () {
+      _showGuide(context, GetStorage(get_storage_container));
       Navigator.of(context)
           .pushNamedAndRemoveUntil(HomePage.route, (route) => false);
     };
-
-    _showGuide(context, GetStorage(get_storage_container));
-
-    _timer = Timer(Duration(milliseconds: 5000), () {
-      toPage();
-    });
-
-    // _con = AnimationController(
-    //     vsync: this, duration: Duration(milliseconds: 2000));
-    // _animation = Tween(begin: 0.0, end: 1.0).animate(_con);
-    //
-    // _animation.addStatusListener((status) async {
-    //   if (status == AnimationStatus.completed) {
-    //     // widget.onDispose();
-    //     toPage();
-    //   }
-    // });
-    //
-    // _con.forward(); //播放动画
   }
 
   Future<void> _showGuide(BuildContext context, GetStorage storage) async {
@@ -75,26 +64,28 @@ class _StartPageState extends State<StartPage>
     // TODO: implement dispose
     super.dispose();
     // _con.dispose();
-    _timer.cancel();
+    // _timer.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.white,
-      // child: Center(
-      //     child: RiveAnimation.asset(
-      //   'assets/images/connecting.riv',
-      // ))
-      child: Center(
-          child: Image.asset(
-        "assets/images/logo_about.png",
-        // "assets/images/opening.gif",
-        fit: BoxFit.contain,
-        width: 180,
-      )),
+    return Scaffold(
+      body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.white,
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 70),
+              // child: RiveAnimation.network(
+              //   'https://cdn.rive.app/animations/vehicles.riv',
+              //   controllers: [_controller],
+              //   onInit: (_) => setState(() {}),
+              // )
+              child: RiveAnimation.asset(
+                'assets/images/start_logo.riv',
+                animations: const ['Animation 1'],
+                controllers: [_controller],
+              ))),
     );
   }
 }

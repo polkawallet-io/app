@@ -331,14 +331,8 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   List<InstrumentData> instrumentDatas() {
-    final List<InstrumentData> datas = [];
-    if (widget.service.plugin.getAggregatedAssetsWidget(
-            onSwitchBack: null, onSwitchHideBalance: null) !=
-        null) {
-      InstrumentData totalBalance1 = InstrumentData(0, []);
+    final List<InstrumentData> datas = [InstrumentData(0, [])];
 
-      datas.add(totalBalance1);
-    }
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
     final decimals =
@@ -386,13 +380,8 @@ class _AssetsState extends State<AssetsPage> {
 
     datas.add(totalBalance);
 
-    if (widget.service.plugin.getAggregatedAssetsWidget(
-            onSwitchBack: null, onSwitchHideBalance: null) !=
-        null) {
-      InstrumentData totalBalance1 = InstrumentData(0, []);
+    datas.add(InstrumentData(0, []));
 
-      datas.add(totalBalance1);
-    }
     return datas;
   }
 
@@ -672,6 +661,11 @@ class _AssetsState extends State<AssetsPage> {
                                   null
                           ? InstrumentWidget(
                               instrumentDatas(),
+                              switchDefi: widget.service.plugin
+                                      .getAggregatedAssetsWidget(
+                                          onSwitchBack: null,
+                                          onSwitchHideBalance: null) !=
+                                  null,
                               onSwitchChange: () {
                                 setState(() {
                                   instrumentIndex = 1;
