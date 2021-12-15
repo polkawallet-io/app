@@ -197,7 +197,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                       color: _hide0
                           ? Theme.of(context).primaryColor
                           : Theme.of(context).disabledColor,
-                      size: 10,
+                      size: 14,
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 4, right: 16),

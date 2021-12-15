@@ -483,7 +483,6 @@ class _AssetsState extends State<AssetsPage> {
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       leading: v3.IconButton(
-        margin: EdgeInsets.only(left: 16.w),
         isBlueBg: true,
         icon: SvgPicture.asset(
           "assets/images/icon_car.svg",
@@ -504,7 +503,6 @@ class _AssetsState extends State<AssetsPage> {
       ),
       actions: <Widget>[
         Container(
-            margin: EdgeInsets.only(right: 16.w),
             child: PopupMenuButton(
                 offset: Offset(-12.w, 50.h),
                 color: Theme.of(context).cardColor,
@@ -1016,8 +1014,9 @@ class TokenItem extends StatelessWidget {
       children: [
         Divider(height: 1),
         ListTile(
+          minLeadingWidth: 30.w,
           leading: Container(
-            height: 30.h,
+            height: 30.w,
             width: 30.w,
             alignment: Alignment.centerLeft,
             child: icon ??

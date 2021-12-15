@@ -108,21 +108,6 @@ class _HomePageState extends State<HomePage> {
     // }
   }
 
-  List<BottomNavigationBarItem> _buildNavItems(List<HomeNavItem> items) {
-    return items.map((e) {
-      final active = items[_tabIndex].text == e.text;
-      return BottomNavigationBarItem(
-        icon: Container(
-          padding: EdgeInsets.all(active ? 0 : 2),
-          child: active ? e.iconActive : e.icon,
-          width: 32,
-          height: 32,
-        ),
-        label: e.text,
-      );
-    }).toList();
-  }
-
   @override
   void initState() {
     super.initState();
