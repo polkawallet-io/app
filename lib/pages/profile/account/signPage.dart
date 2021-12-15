@@ -144,7 +144,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-                        child: v3.TextFormField(
+                        child: v3.TextInputWidget(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.data'],
                             labelStyle: Theme.of(context).textTheme.headline4,
@@ -161,7 +161,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                       Container(
                         margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
                         child: GestureDetector(
-                          child: v3.TextFormField(
+                          child: v3.TextInputWidget(
                             decoration: v3.InputDecorationV3(
                               labelText: dic['sign.res'],
                               labelStyle: Theme.of(context).textTheme.headline4,
@@ -212,7 +212,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-                        child: v3.TextFormField(
+                        child: v3.TextInputWidget(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.data'],
                             labelStyle: Theme.of(context).textTheme.headline4,
@@ -228,7 +228,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-                        child: v3.TextFormField(
+                        child: v3.TextInputWidget(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['sign.verify'],
                             labelStyle: Theme.of(context).textTheme.headline4,

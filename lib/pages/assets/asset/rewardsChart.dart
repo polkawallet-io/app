@@ -1,71 +1,80 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class RewardsChart extends StatelessWidget {
   final List<FlSpot> seriesList;
   final double maxY, minY;
   final DateTime maxX, minX;
-  static int xBase = 10, yBase = 1;
+  static int xBase = 10;
   RewardsChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY);
 
   factory RewardsChart.withData(List<TimeSeriesAmount> data) {
     double maxY = 0, minY;
     DateTime maxX, minX;
-    Map<DateTime, double> datas = Map();
     data.forEach((element) {
-      var dateString = DateFormat.yMd().format(element.time.toLocal());
-      if (datas[DateFormat.yMd().parse(dateString)] == null) {
-        datas[DateFormat.yMd().parse(dateString)] = element.amount * yBase;
-      } else {
-        datas[DateFormat.yMd().parse(dateString)] =
-            datas[DateFormat.yMd().parse(dateString)] + element.amount * yBase;
+      if (element.amount > maxY) {
+        maxY = element.amount;
       }
-    });
-    datas.forEach((key, value) {
-      if (value > maxY) {
-        maxY = value;
-      }
-      if (minY == null || value < minY) {
-        minY = value;
+      if (minY == null || element.amount < minY) {
+        minY = element.amount;
       }
       if (maxX == null ||
-          key.millisecondsSinceEpoch > maxX.millisecondsSinceEpoch) {
-        maxX = key;
+          element.time.millisecondsSinceEpoch > maxX.millisecondsSinceEpoch) {
+        maxX = element.time;
       }
       if (minX == null ||
-          key.millisecondsSinceEpoch < minX.millisecondsSinceEpoch) {
-        minX = key;
+          element.time.millisecondsSinceEpoch < minX.millisecondsSinceEpoch) {
+        minX = element.time;
       }
     });
 
     List<FlSpot> flSpotDatas = [];
-    datas.forEach((key, value) {
+    data.forEach((element) {
       flSpotDatas.add(FlSpot(
-          (key.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) /
+          (element.time.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) /
               (maxX.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) *
               xBase,
-          value));
+          element.amount));
     });
-    return new RewardsChart(flSpotDatas, maxX, maxY, minX, minY);
+    return RewardsChart(flSpotDatas, maxX, maxY, minX, minY);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0x4DF0ECE6),
-              Color(0x4DF0ECE6),
-            ],
-          ),
-        ),
-        child: LineChart(
-          mainData(),
-        ));
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Padding(
+            padding: EdgeInsets.only(right: 2.2, bottom: 1),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Container(
+                    width: 91,
+                    height: 50,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFF918F8C),
+                              Color(0xFF5E5C59),
+                            ],
+                          ),
+                        ),
+                        child: LineChart(
+                          mainData(),
+                        ))))),
+        Container(
+          width: 107,
+          height: 66,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/rewards_bg.png"),
+                  fit: BoxFit.contain)),
+        )
+      ],
+    );
   }
 
   LineChartData mainData() {
@@ -82,44 +91,11 @@ class RewardsChart extends StatelessWidget {
           );
         },
       ),
-      lineTouchData: LineTouchData(
-          enabled: false,
-          getTouchedSpotIndicator: (data, ints) {
-            return ints
-                .map((e) => TouchedSpotIndicatorData(
-                    FlLine(color: Colors.black, strokeWidth: 2),
-                    FlDotData(
-                      show: true,
-                      getDotPainter: (p0, p1, p2, p3) {
-                        return FlDotCirclePainter(
-                            radius: 3, color: Colors.black);
-                      },
-                    )))
-                .toList();
-          },
-          touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Color(0x50000000),
-              getTooltipItems: (datas) {
-                return datas.map((e) {
-                  var time = DateTime.fromMillisecondsSinceEpoch((e.x /
-                              xBase *
-                              (maxX.millisecondsSinceEpoch -
-                                  minX.millisecondsSinceEpoch) +
-                          minX.millisecondsSinceEpoch)
-                      .toInt());
-                  return LineTooltipItem("", TextStyle(), children: [
-                    TextSpan(
-                        text: "${DateFormat.yMd().format(time.toLocal())}\n"),
-                    TextSpan(text: "${(e.y / yBase).toStringAsFixed(6)}"),
-                  ]);
-                }).toList();
-              })),
+      lineTouchData: LineTouchData(enabled: false),
       titlesData: FlTitlesData(
         show: false,
       ),
-      borderData: FlBorderData(
-          show: false,
-          border: Border.all(color: const Color(0xff37434d), width: 1)),
+      borderData: FlBorderData(show: false),
       minX: 0,
       maxX: xBase * 1.0,
       minY: minY * (1 - 0.15),
@@ -137,27 +113,14 @@ class RewardsChart extends StatelessWidget {
         isStrokeCapRound: true,
         dotData: FlDotData(
           show: false,
-          getDotPainter: (flSpot, p1, lineChartBarData, p3) {
-            return FlDotCirclePainter(
-                radius: 1.5, color: flSpot.y < 0 ? Colors.red : Colors.black);
-          },
         ),
         belowBarData: BarAreaData(
           show: true,
           gradientFrom: Offset(0, 0),
           gradientTo: Offset(0, 1),
           colors: [
-            Color(0xFFBFFFD6).withOpacity(0.7),
+            Color(0xFFBFFFD6).withOpacity(1),
             Color(0xFFBFFFD6).withOpacity(0)
-          ],
-        ),
-        aboveBarData: BarAreaData(
-          show: true,
-          gradientFrom: Offset(0, 1),
-          gradientTo: Offset(0, 0),
-          colors: [
-            Color(0xFFff0000).withOpacity(0.7),
-            Color(0xFFcccc00).withOpacity(0)
           ],
         ));
     return [lineChartBarData1];

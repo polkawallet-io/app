@@ -97,7 +97,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                       Padding(
                                         padding: EdgeInsets.only(
                                             left: 16.w, right: 16.w, top: 8.h),
-                                        child: v3.TextFormField(
+                                        child: v3.TextInputWidget(
                                           decoration: v3.InputDecorationV3(
                                             labelText: dic[selected],
                                           ),
@@ -162,7 +162,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h),
-          child: v3.TextFormField(
+          child: v3.TextInputWidget(
             decoration: v3.InputDecorationV3(
               labelText: dic['create.name'],
             ),
@@ -174,7 +174,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
         ),
         Padding(
           padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h),
-          child: v3.TextFormField(
+          child: v3.TextInputWidget(
             decoration: v3.InputDecorationV3(
               labelText: dic['create.password'],
               // suffixIcon: IconButton(

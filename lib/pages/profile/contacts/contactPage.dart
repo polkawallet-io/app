@@ -174,7 +174,7 @@ class _Contact extends State<ContactPage> {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
-                      child: v3.TextFormField(
+                      child: v3.TextInputWidget(
                         decoration: v3.InputDecorationV3(
                           labelText: dic['contact.address'],
                           labelStyle: Theme.of(context).textTheme.headline4,
@@ -208,7 +208,7 @@ class _Contact extends State<ContactPage> {
                     ),
                     Padding(
                         padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
-                        child: v3.TextFormField(
+                        child: v3.TextInputWidget(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['contact.name'],
                             labelStyle: Theme.of(context).textTheme.headline4,
@@ -222,7 +222,7 @@ class _Contact extends State<ContactPage> {
                         )),
                     Padding(
                         padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-                        child: v3.TextFormField(
+                        child: v3.TextInputWidget(
                           decoration: v3.InputDecorationV3(
                             labelText: dic['contact.memo'],
                             labelStyle: Theme.of(context).textTheme.headline4,

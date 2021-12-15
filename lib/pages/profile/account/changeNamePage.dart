@@ -52,7 +52,7 @@ class _ChangeName extends State<ChangeNamePage> {
                   margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   child: Form(
                     key: _formKey,
-                    child: v3.TextFormField(
+                    child: v3.TextInputWidget(
                       decoration: v3.InputDecorationV3(
                         labelText: dic['contact.name'],
                         labelStyle: Theme.of(context).textTheme.headline4,

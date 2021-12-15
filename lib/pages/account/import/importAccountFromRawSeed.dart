@@ -74,7 +74,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                       Padding(
                                         padding: EdgeInsets.only(
                                             left: 16.w, right: 16.w, top: 8.h),
-                                        child: v3.TextFormField(
+                                        child: v3.TextInputWidget(
                                           decoration: v3.InputDecorationV3(
                                             labelText: dic[selected],
                                           ),

@@ -84,7 +84,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
               children: <Widget>[
                 Container(
                   margin: EdgeInsets.only(top: 8.h),
-                  child: v3.TextFormField(
+                  child: v3.TextInputWidget(
                     decoration: v3.InputDecorationV3(
                       labelText: dic['create.name'],
                     ),
@@ -98,7 +98,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: v3.TextFormField(
+                  child: v3.TextInputWidget(
                     decoration: v3.InputDecorationV3(
                       labelText: dic['create.password'],
                     ),
@@ -113,7 +113,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: v3.TextFormField(
+                  child: v3.TextInputWidget(
                     decoration: v3.InputDecorationV3(
                       labelText: dic['create.password2'],
                     ),

@@ -118,7 +118,7 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
               },
             ),
           ),
-          v3.TextFormField(
+          v3.TextInputWidget(
             decoration: v3.InputDecorationV3(
               hintText: '//hard/soft///password',
               labelText: dic['path'],

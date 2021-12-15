@@ -169,7 +169,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
             Container(
                 margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
                 height: 52,
-                child: v3.TextFormField(
+                child: v3.TextInputWidget(
                   decoration: v3.InputDecorationV3(
                     contentPadding: EdgeInsets.zero,
                     hintText: dic['manage.filter'],

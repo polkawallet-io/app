@@ -712,18 +712,10 @@ class BalanceCard extends StatelessWidget {
               ),
               Expanded(
                 child: marketPriceList != null
-                    ? RoundedCard(
-                        color: Color(0x4DF0ECE6),
-                        padding: EdgeInsets.all(6),
-                        margin: EdgeInsets.only(right: 5.w, left: 46.w),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              height: 51,
-                              child: RewardsChart.withData(
-                                  getTimeSeriesAmounts(marketPriceList)),
-                            )),
-                      )
+                    ? Container(
+                        alignment: Alignment.centerRight,
+                        child: RewardsChart.withData(
+                            getTimeSeriesAmounts(marketPriceList)))
                     : Container(),
                 flex: 1,
               )

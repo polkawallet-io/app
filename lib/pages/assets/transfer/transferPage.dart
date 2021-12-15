@@ -546,9 +546,7 @@ class _TransferPageState extends State<TransferPage> {
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
-        final lableStyle = Theme.of(context).textTheme.headline4.copyWith(
-              fontWeight: FontWeight.w600,
-            );
+        final lableStyle = Theme.of(context).textTheme.headline4;
         return Scaffold(
           appBar: AppBar(
               title: Text('${dic['transfer']} $symbol'),
@@ -618,7 +616,7 @@ class _TransferPageState extends State<TransferPage> {
                                                       color: Colors.red)),
                                             )),
                                         Container(height: 10.h),
-                                        v3.TextFormField(
+                                        v3.TextInputWidget(
                                           autovalidateMode: AutovalidateMode
                                               .onUserInteraction,
                                           decoration: v3.InputDecorationV3(
