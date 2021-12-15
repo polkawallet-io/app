@@ -1,7 +1,9 @@
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/asset/rewardsChart.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:app/utils/ShowCustomAlterWidget.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -19,6 +21,7 @@ import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -51,6 +54,8 @@ class _AssetPageState extends State<AssetPage> {
   ScrollController _scrollController;
 
   List _unlocks = [];
+
+  List<dynamic> _marketPriceList;
 
   Future<void> _queryDemocracyUnlocks() async {
     final List unlocks = await widget.service.plugin.sdk.api.gov
@@ -188,6 +193,14 @@ class _AssetPageState extends State<AssetPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshData();
     });
+
+    WalletApi.getMarketPriceList(
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
+        .then((value) {
+      setState(() {
+        _marketPriceList = value['data']['price'] as List;
+      });
+    });
   }
 
   @override
@@ -232,6 +245,15 @@ class _AssetPageState extends State<AssetPage> {
     ));
 
     return res;
+  }
+
+  List<TimeSeriesAmount> getTimeSeriesAmounts(List<dynamic> marketPriceList) {
+    List<TimeSeriesAmount> datas = [];
+    for (int i = 0; i < marketPriceList.length; i++) {
+      datas.add(TimeSeriesAmount(
+          DateTime.now().add(Duration(days: -1 * i)), i * 1.0));
+    }
+    return datas;
   }
 
   @override
@@ -310,6 +332,7 @@ class _AssetPageState extends State<AssetPage> {
                   unlocks: _unlocks,
                   onUnlock: _onUnlock,
                   icon: widget.service.plugin.tokenIcons[symbol],
+                  marketPriceList: _marketPriceList,
                 ),
                 Padding(
                     padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 18.h),
@@ -545,7 +568,8 @@ class BalanceCard extends StatelessWidget {
       this.backgroundImage,
       this.unlocks,
       this.onUnlock,
-      this.icon});
+      this.icon,
+      this.marketPriceList});
 
   final String symbol;
   final int decimals;
@@ -555,6 +579,7 @@ class BalanceCard extends StatelessWidget {
   final List unlocks;
   final Function onUnlock;
   final Widget icon;
+  final List<dynamic> marketPriceList;
 
   @override
   Widget build(BuildContext context) {
@@ -686,7 +711,20 @@ class BalanceCard extends StatelessWidget {
                 flex: 1,
               ),
               Expanded(
-                child: Container(),
+                child: marketPriceList != null
+                    ? RoundedCard(
+                        color: Color(0x4DF0ECE6),
+                        padding: EdgeInsets.all(6),
+                        margin: EdgeInsets.only(right: 5.w, left: 46.w),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Container(
+                              height: 51,
+                              child: RewardsChart.withData(
+                                  getTimeSeriesAmounts(marketPriceList)),
+                            )),
+                      )
+                    : Container(),
                 flex: 1,
               )
             ],
@@ -694,6 +732,15 @@ class BalanceCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<TimeSeriesAmount> getTimeSeriesAmounts(List<dynamic> marketPriceList) {
+    List<TimeSeriesAmount> datas = [];
+    for (int i = 0; i < marketPriceList.length; i++) {
+      datas.add(TimeSeriesAmount(DateTime.now().add(Duration(days: -1 * i)),
+          marketPriceList[i] * 1.0));
+    }
+    return datas;
   }
 
   Widget priceItemBuild(Widget icon, String title, String price, Color color) {

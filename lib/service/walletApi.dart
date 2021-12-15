@@ -31,6 +31,22 @@ class WalletApi {
     return 'https://$relayChainName.api.subscan.io/api/scan';
   }
 
+  static Future<Map> getMarketPriceList(String token, int totalCount) async {
+    final url =
+        '$_endpoint/price-server/?token=$token&from=market&totalCount=$totalCount&intervalUnit=D';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return {};
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return {};
+    }
+  }
+
   static Future<Map> getXcmEnabledConfig() async {
     try {
       Response res =

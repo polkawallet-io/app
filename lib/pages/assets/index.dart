@@ -849,12 +849,13 @@ class _AssetsState extends State<AssetsPage> {
                           ])),
                       RoundedCard(
                         margin:
-                            EdgeInsets.only(top: 5.h, left: 25.w, right: 25.w),
+                            EdgeInsets.only(top: 5.h, left: 16.w, right: 16.w),
                         child: Column(
                           children: [
                             ListTile(
+                              minLeadingWidth: 30.w,
                               leading: Container(
-                                width: 45.w,
+                                width: 30.w,
                                 alignment: Alignment.centerLeft,
                                 child: TokenIcon(
                                   symbol,
