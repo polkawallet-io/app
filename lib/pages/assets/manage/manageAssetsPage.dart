@@ -8,9 +8,9 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -34,7 +34,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
     if (_hide0) {
       widget.service.plugin.noneNativeTokensAll.forEach((e) {
         if (Fmt.balanceInt(e.amount) == BigInt.zero) {
-          config[e.id] = false;
+          config[e.symbol] = false;
         }
       });
     }
@@ -72,20 +72,20 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
 
       if (widget.service.store.assets.customAssets.keys.length == 0) {
         final defaultList =
-            widget.service.plugin.balances.tokens.map((e) => e.id).toList();
+            widget.service.plugin.balances.tokens.map((e) => e.symbol).toList();
         defaultList.forEach((token) {
           defaultVisibleMap[token] = true;
         });
 
         widget.service.plugin.noneNativeTokensAll.forEach((token) {
-          if (defaultVisibleMap[token.id] == null) {
-            defaultVisibleMap[token.id] = false;
+          if (defaultVisibleMap[token.symbol] == null) {
+            defaultVisibleMap[token.symbol] = false;
           }
         });
       } else {
         widget.service.plugin.noneNativeTokensAll.forEach((token) {
-          defaultVisibleMap[token.id] =
-              widget.service.store.assets.customAssets[token.id];
+          defaultVisibleMap[token.symbol] =
+              widget.service.store.assets.customAssets[token.symbol];
         });
       }
 
@@ -234,11 +234,19 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                               color: Colors.transparent,
                               child: ListTile(
                                 leading: TokenIcon(
-                                  list[i].id,
+                                  list[i].symbol,
                                   widget.service.plugin.tokenIcons,
                                   symbol: list[i].symbol,
                                 ),
-                                title: Text(list[i].symbol,
+                                // todo: fix me
+                                // we should use token name here,
+                                // for old cache data, it use token symbol as token name.
+                                title: Text(
+                                    (list[i].name ?? '').toUpperCase() ==
+                                                list[i].symbol.toUpperCase() ||
+                                            (list[i].name ?? '').contains('-')
+                                        ? list[i].name
+                                        : list[i].symbol,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
@@ -274,12 +282,13 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (list[i].id !=
+                                  if (list[i].symbol !=
                                       widget.service.plugin.networkState
                                           .tokenSymbol[0]) {
                                     setState(() {
-                                      _tokenVisible[list[i].id] =
-                                          !(_tokenVisible[list[i].id] ?? false);
+                                      _tokenVisible[list[i].symbol] =
+                                          !(_tokenVisible[list[i].symbol] ??
+                                              false);
                                     });
                                   }
                                 },
