@@ -17,8 +17,7 @@ class CreateAccountEntryPage extends StatelessWidget {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      appBar: AppBar(
-          title: Text(dic['add']), centerTitle: true, leading: BackBtn()),
+      appBar: AppBar(title: Text(dic['add']), centerTitle: true),
       body: SafeArea(
         child: Column(
           children: <Widget>[

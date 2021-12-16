@@ -4,6 +4,8 @@ import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/public/guidePage.dart';
+import 'package:app/service/walletApi.dart';
+import 'package:app/utils/UI.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -33,7 +35,10 @@ class _StartPageState extends State<StartPage>
 
     _controller = OneShotAnimation(
       'Animation 1',
-      onStop: () => toPage(),
+      onStop: () {
+        toPage();
+        _checkUpdate(context);
+      },
     );
 
     toPage = () {
@@ -54,6 +59,12 @@ class _StartPageState extends State<StartPage>
             arguments: {"storeKey": storeKey, "storage": storage});
       };
     }
+  }
+
+  Future<void> _checkUpdate(BuildContext context) async {
+    final versions = await WalletApi.getLatestVersion();
+    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+        autoCheck: true);
   }
 
   @override

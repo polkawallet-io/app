@@ -367,11 +367,11 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _checkUpdate(BuildContext context) async {
-    final versions = await WalletApi.getLatestVersion();
-    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
-        autoCheck: true);
-  }
+  // Future<void> _checkUpdate(BuildContext context) async {
+  //   final versions = await WalletApi.getLatestVersion();
+  //   AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+  //       autoCheck: true);
+  // }
 
   Future<void> _checkJSCodeUpdate(
       BuildContext context, PolkawalletPlugin plugin,
@@ -451,7 +451,7 @@ class _WalletAppState extends State<WalletApp> {
         _changeLang(Localizations.localeOf(context).toString());
       }
 
-      _checkUpdate(context);
+      // _checkUpdate(context);
       await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
       final useLocalJS = WalletApi.getPolkadotJSVersion(
