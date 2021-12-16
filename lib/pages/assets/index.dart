@@ -612,11 +612,11 @@ class _AssetsState extends State<AssetsPage> {
         // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
         if (customTokensConfig.keys.length > 0) {
-          tokens.retainWhere((e) => customTokensConfig[e.id]);
+          tokens.retainWhere((e) => customTokensConfig[e.symbol]);
 
-          tokensAll.retainWhere((e) => customTokensConfig[e.id]);
+          tokensAll.retainWhere((e) => customTokensConfig[e.symbol]);
           tokensAll.forEach((e) {
-            if (tokens.indexWhere((token) => token.id == e.id) < 0) {
+            if (tokens.indexWhere((token) => token.symbol == e.symbol) < 0) {
               tokens.add(e);
             }
           });
@@ -1024,8 +1024,15 @@ class TokenItem extends StatelessWidget {
                   child: Text(item.symbol.substring(0, 2)),
                 ),
           ),
+          // todo: fix me
+          // we should use token name here,
+          // for old cache data, it use token symbol as token name.
+          // title: Text(item.name),
           title: Text(
-            item.symbol,
+            (item.name ?? '').toUpperCase() == item.symbol.toUpperCase() ||
+                    (item.name ?? '').contains('-')
+                ? item.name
+                : item.symbol,
             style: Theme.of(context)
                 .textTheme
                 .headline5
