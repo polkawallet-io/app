@@ -94,21 +94,12 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                         margin: EdgeInsets.only(top: 16.h, bottom: 12.h),
                         child: Text(dic['create.warn4']),
                       ),
-                      InnerShadowTop(),
-                      Container(
-                        padding: EdgeInsets.only(left: 16.w, right: 16.w),
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: AssetImage(
-                              'packages/polkawallet_ui/assets/images/bg_input_mid.png'),
-                          fit: BoxFit.fill,
-                        )),
+                      InnerShadowBGCar(
                         child: Text(
                           mnemonics,
                           style: Theme.of(context).textTheme.headline4,
                         ),
                       ),
-                      InnerShadowBottom(),
                       Container(
                         margin: EdgeInsets.only(top: 16.h),
                         child: AccountAdvanceOption(
@@ -207,21 +198,13 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                       )
                     ],
                   ),
-                  InnerShadowTop(),
-                  Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage(
-                          'packages/polkawallet_ui/assets/images/bg_input_mid.png'),
-                      fit: BoxFit.fill,
-                    )),
+                  InnerShadowBGCar(
                     padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
                     child: Text(
                       _wordsSelected.join(' ') ?? '',
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
-                  InnerShadowBottom(),
                   _buildWordsButtons(),
                 ],
               ),

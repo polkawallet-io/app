@@ -425,6 +425,8 @@ class _WalletAppState extends State<WalletApp> {
       await _keyring
           .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
 
+      await GetStorage.init(get_storage_container);
+
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
       await store.init();
