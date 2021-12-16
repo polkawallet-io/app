@@ -36,8 +36,8 @@ class _StartPageState extends State<StartPage>
     _controller = OneShotAnimation(
       'Animation 1',
       onStop: () {
+        WalletApp.isInitial = true;
         toPage();
-        _checkUpdate(context);
       },
     );
 
@@ -59,12 +59,6 @@ class _StartPageState extends State<StartPage>
             arguments: {"storeKey": storeKey, "storage": storage});
       };
     }
-  }
-
-  Future<void> _checkUpdate(BuildContext context) async {
-    final versions = await WalletApi.getLatestVersion();
-    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
-        autoCheck: true);
   }
 
   @override

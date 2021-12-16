@@ -94,6 +94,17 @@ class WalletApp extends StatefulWidget {
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
   static BuildTargets buildTarget;
+  static bool isInitial = false;
+
+  static Future<void> checkUpdate(BuildContext context) async {
+    if (isInitial) {
+      isInitial = false;
+      final versions = await WalletApi.getLatestVersion();
+      AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+          autoCheck: true);
+    }
+  }
+
   @override
   _WalletAppState createState() => _WalletAppState();
 }
@@ -367,12 +378,6 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  // Future<void> _checkUpdate(BuildContext context) async {
-  //   final versions = await WalletApi.getLatestVersion();
-  //   AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
-  //       autoCheck: true);
-  // }
-
   Future<void> _checkJSCodeUpdate(
       BuildContext context, PolkawalletPlugin plugin,
       {bool needReload = true}) async {
@@ -424,8 +429,6 @@ class _WalletAppState extends State<WalletApp> {
       _keyring = Keyring();
       await _keyring
           .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
-
-      await GetStorage.init(get_storage_container);
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
@@ -504,6 +507,7 @@ class _WalletAppState extends State<WalletApp> {
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
+                      WalletApp.checkUpdate(context);
                       return snapshot.data > 0
                           ? HomePage(_service, widget.plugins, _connectedNode,
                               _checkJSCodeUpdate, _switchNetwork, _changeNode)
