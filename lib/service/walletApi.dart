@@ -31,6 +31,22 @@ class WalletApi {
     return 'https://$relayChainName.api.subscan.io/api/scan';
   }
 
+  //$=>￥
+  static Future<Map> getRate() async {
+    final url = '$_endpoint/price-server/rate';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return {};
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return {};
+    }
+  }
+
   static Future<Map> getUnlockDatas(String account) async {
     final url = '$_endpoint/acala-distribution-v2/crowdloan?account=$account';
     try {

@@ -655,6 +655,12 @@ class _WalletAppState extends State<WalletApp> {
           designSize: Size(390, 844),
           builder: () => MaterialApp(
                 title: 'Polkawallet',
+                builder: (context, widget) {
+                  return MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: widget);
+                },
                 theme: _theme ??
                     _getAppTheme(
                       widget.plugins[0].basic.primaryColor,

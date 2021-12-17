@@ -74,6 +74,8 @@ class _AssetsState extends State<AssetsPage> {
 
   int instrumentIndex = 0;
 
+  double _rate = 1.0;
+
   Future<void> _updateBalances() async {
     setState(() {
       _refreshing = true;
@@ -320,6 +322,14 @@ class _AssetsState extends State<AssetsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateMarketPrices();
+      getRate();
+    });
+  }
+
+  Future<void> getRate() async {
+    var rate = await widget.service.store.settings.getRate();
+    setState(() {
+      this._rate = rate;
     });
   }
 
@@ -337,7 +347,10 @@ class _AssetsState extends State<AssetsPage> {
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-    final marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 1;
+    var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 1;
+    if (widget.service.store.settings.priceCurrency == "CNY") {
+      marketPrice *= _rate;
+    }
     final available = marketPrice *
         Fmt.bigIntToDouble(
           Fmt.balanceInt(
@@ -460,15 +473,14 @@ class _AssetsState extends State<AssetsPage> {
                         style: Theme.of(context)
                             .textTheme
                             .headline4
-                            .copyWith(fontWeight: FontWeight.w600),
+                            .copyWith(fontWeight: FontWeight.w600, height: 0.9),
                       ),
                       Container(
                         width: 14.w,
-                        height: 8.h,
                         margin: EdgeInsets.only(left: 9.w),
                         child: SvgPicture.asset(
                           'assets/images/icon_changenetwork.svg',
-                          width: 20.w,
+                          width: 14.w,
                         ),
                       )
                     ],
@@ -503,9 +515,10 @@ class _AssetsState extends State<AssetsPage> {
       ),
       actions: <Widget>[
         Container(
-            child: PopupMenuButton(
-                offset: Offset(-12.w, 50.h),
+            child: v3.PopupMenuButton(
+                offset: Offset(-12.w, 58.h),
                 color: Theme.of(context).cardColor,
+                padding: EdgeInsets.zero,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -523,9 +536,11 @@ class _AssetsState extends State<AssetsPage> {
                   }
                 },
                 itemBuilder: (BuildContext context) {
-                  return <PopupMenuEntry<String>>[
-                    PopupMenuItem(
+                  return <v3.PopupMenuEntry<String>>[
+                    v3.PopupMenuItem(
+                      height: 34,
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
                               padding: EdgeInsets.only(left: 2),
@@ -546,9 +561,11 @@ class _AssetsState extends State<AssetsPage> {
                       ),
                       value: '0',
                     ),
-                    PopupMenuDivider(height: 1.0),
-                    PopupMenuItem(
+                    v3.PopupMenuDivider(height: 1.0),
+                    v3.PopupMenuItem(
+                      height: 34,
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           SvgPicture.asset(
                             'assets/images/qr.svg',
@@ -631,6 +648,9 @@ class _AssetsState extends State<AssetsPage> {
             balancesInfo != null) {
           tokenPrice = Fmt.priceCeil(
               widget.service.store.assets.marketPrices[symbol] *
+                  (widget.service.store.settings.priceCurrency == "CNY"
+                      ? _rate
+                      : 1.0) *
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
         }
 
@@ -705,7 +725,7 @@ class _AssetsState extends State<AssetsPage> {
                             canClose: false)),
                     widget.service.plugin.basic.isTestNet
                         ? Padding(
-                            padding: EdgeInsets.only(bottom: 7.h, top: 7.h),
+                            padding: EdgeInsets.only(top: 5.h),
                             child: Row(
                               children: [
                                 Expanded(
@@ -735,7 +755,7 @@ class _AssetsState extends State<AssetsPage> {
                         final Map announce = snapshot.data[lang];
                         return GestureDetector(
                           child: Container(
-                            margin: EdgeInsets.only(bottom: 7.h),
+                            margin: EdgeInsets.only(top: 5.h),
                             child: Row(
                               children: <Widget>[
                                 Expanded(
@@ -765,7 +785,9 @@ class _AssetsState extends State<AssetsPage> {
                         );
                       },
                     ),
-                    Divider(height: 1),
+                    Container(
+                        margin: EdgeInsets.only(top: 5.h),
+                        child: Divider(height: 1)),
                   ])),
               Expanded(
                   child: Container(
@@ -922,11 +944,17 @@ class _AssetsState extends State<AssetsPage> {
                                     // we can use token price form plugin or from market
                                     final price = i.price ??
                                         widget.service.store.assets
-                                            .marketPrices[i.symbol];
+                                            .marketPrices[i.symbol] ??
+                                        1.0;
                                     return TokenItem(i, i.decimals,
                                         isFromCache: isTokensFromCache,
                                         detailPageRoute: i.detailPageRoute,
-                                        marketPrice: price,
+                                        marketPrice: price *
+                                            (widget.service.store.settings
+                                                        .priceCurrency ==
+                                                    "CNY"
+                                                ? _rate
+                                                : 1.0),
                                         icon: TokenIcon(
                                           i.id ?? i.symbol,
                                           widget.service.plugin.tokenIcons,

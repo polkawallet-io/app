@@ -150,8 +150,8 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                     margin: EdgeInsets.only(bottom: 5),
                                     width: 22.w,
                                     height: 15.w,
-                                    child: SvgPicture.asset(
-                                        'assets/images/icon_instrument_1.svg'),
+                                    child: Image.asset(
+                                        'assets/images/icon_instrument_1.png'),
                                   ),
                                 ),
                               )),

@@ -179,9 +179,12 @@ class _Contact extends State<ContactPage> {
                           labelText: dic['contact.address'],
                           labelStyle: Theme.of(context).textTheme.headline4,
                           suffix: GestureDetector(
-                            child: SvgPicture.asset('assets/images/scan.svg',
-                                color: Theme.of(context).disabledColor,
-                                width: 24.w),
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 16.w),
+                              child: SvgPicture.asset('assets/images/scan.svg',
+                                  color: Theme.of(context).disabledColor,
+                                  width: 24.w),
+                            ),
                             onTap: () async {
                               final to = await Navigator.of(context)
                                   .pushNamed(ScanPage.route);

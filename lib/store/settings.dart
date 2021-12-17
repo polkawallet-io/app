@@ -39,6 +39,20 @@ abstract class _SettingsStore with Store {
 
   Map _xcmEnabledChains;
 
+  double _rate = -1;
+
+  Future<double> getRate() async {
+    if (_rate < 0) {
+      final data = await WalletApi.getRate();
+      if (data != null && data['code'] == 1) {
+        _rate = data['data']['rate'];
+      } else {
+        _rate = 1;
+      }
+    }
+    return _rate;
+  }
+
   Future<Map> getDisabledCalls(String pluginName) async {
     if (_disabledCalls == null) {
       _disabledCalls = await WalletApi.getDisabledCalls();

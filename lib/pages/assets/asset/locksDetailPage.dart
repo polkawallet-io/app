@@ -241,43 +241,23 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                               "${maxLockAmount + maxUnlockAmount}"),
                           InfoItemRow(
                               dic['lock.vest.unlocking'], "$maxLockAmount"),
-                          InfoItemRow(
-                            dic['lock.vest.claimable'],
-                            "${maxUnlockAmount - maxLockAmount}",
-                            labelStyle: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                .copyWith(fontSize: 18),
-                            contentStyle: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                .copyWith(
-                                    fontSize: 18,
-                                    color: Color(0xFFE46B41),
-                                    fontWeight: FontWeight.w600),
-                          ),
-                          // Visibility(
-                          //     visible: maxUnlockAmount - maxLockAmount > 0,
-                          //     child: Column(
-                          //       children: [
-                          //         Divider(height: 24),
-                          //         Row(
-                          //           mainAxisAlignment:
-                          //               MainAxisAlignment.spaceBetween,
-                          //           children: [
-                          //             Text(
-                          //                 '${dic['democracy.unlock']}:${maxUnlockAmount - maxLockAmount} $symbol'),
-                          //             OutlinedButtonSmall(
-                          //                 margin: EdgeInsets.only(left: 8),
-                          //                 content: dic['lock.unlock'],
-                          //                 active: true,
-                          //                 onPressed: () {
-                          //                   _onUnlock(unLockIds);
-                          //                 })
-                          //           ],
-                          //         )
-                          //       ],
-                          //     ))
+                          maxUnlockAmount - maxLockAmount > 0
+                              ? InfoItemRow(
+                                  dic['lock.vest.claimable'],
+                                  "${maxUnlockAmount - maxLockAmount}",
+                                  labelStyle: Theme.of(context)
+                                      .textTheme
+                                      .headline5
+                                      .copyWith(fontSize: 18),
+                                  contentStyle: Theme.of(context)
+                                      .textTheme
+                                      .headline5
+                                      .copyWith(
+                                          fontSize: 18,
+                                          color: Color(0xFFE46B41),
+                                          fontWeight: FontWeight.w600),
+                                )
+                              : Container(),
                         ],
                       );
                     }
@@ -298,21 +278,23 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                   ? InfoItemRow(dic['lock.vest.claimed'],
                                       '${Fmt.priceFloorBigInt(_originalLocked - amt, decimals)}')
                                   : Container(),
-                              InfoItemRow(
-                                dic['lock.vest.claimable'],
-                                claimableAmount,
-                                labelStyle: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    .copyWith(fontSize: 18),
-                                contentStyle: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    .copyWith(
-                                        fontSize: 18,
-                                        color: Color(0xFFE46B41),
-                                        fontWeight: FontWeight.w600),
-                              )
+                              hasClaim
+                                  ? InfoItemRow(
+                                      dic['lock.vest.claimable'],
+                                      claimableAmount,
+                                      labelStyle: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          .copyWith(fontSize: 18),
+                                      contentStyle: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          .copyWith(
+                                              fontSize: 18,
+                                              color: Color(0xFFE46B41),
+                                              fontWeight: FontWeight.w600),
+                                    )
+                                  : Container()
                             ],
                           ),
                           hasClaim: hasClaim,

@@ -6,6 +6,7 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:app/utils/ShowCustomAlterWidget.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,10 @@ import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
-import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -55,6 +56,8 @@ class _AssetPageState extends State<AssetPage> {
   List _unlocks = [];
 
   List<dynamic> _marketPriceList;
+
+  double _rate = 1.0;
 
   Future<void> _queryDemocracyUnlocks() async {
     final List unlocks = await widget.service.plugin.sdk.api.gov
@@ -191,14 +194,24 @@ class _AssetPageState extends State<AssetPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshData();
+      getRate();
     });
 
     WalletApi.getMarketPriceList(
             (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
         .then((value) {
       setState(() {
-        _marketPriceList = value['data']['price'] as List;
+        if (value['data'] != null) {
+          _marketPriceList = value['data']['price'] as List;
+        }
       });
+    });
+  }
+
+  Future<void> getRate() async {
+    var rate = await widget.service.store.settings.getRate();
+    setState(() {
+      this._rate = rate;
     });
   }
 
@@ -326,12 +339,17 @@ class _AssetPageState extends State<AssetPage> {
                   balancesInfo,
                   symbol: symbol,
                   decimals: decimals,
-                  marketPrices: widget.service.store.assets.marketPrices,
+                  marketPrices:
+                      widget.service.store.assets.marketPrices[symbol] *
+                          (widget.service.store.settings.priceCurrency == "CNY"
+                              ? _rate
+                              : 1.0),
                   backgroundImage: widget.service.plugin.basic.backgroundImage,
                   unlocks: _unlocks,
                   onUnlock: _onUnlock,
                   icon: widget.service.plugin.tokenIcons[symbol],
                   marketPriceList: _marketPriceList,
+                  priceCurrency: widget.service.store.settings.priceCurrency,
                 ),
                 Padding(
                     padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 18.h),
@@ -341,8 +359,8 @@ class _AssetPageState extends State<AssetPage> {
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
-                              icon: SvgPicture.asset("assets/images/send.svg",
-                                  color: Color(0xFF979797), width: 24),
+                              icon: Image.asset("assets/images/send.png",
+                                  width: 27),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
                                   ? () {
@@ -362,8 +380,8 @@ class _AssetPageState extends State<AssetPage> {
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: CarButton(
-                              icon: SvgPicture.asset("assets/images/qr.svg",
-                                  color: Color(0xFF979797), width: 24),
+                              icon: Image.asset("assets/images/qr.png",
+                                  width: 27),
                               text: dic['receive'],
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -380,10 +398,9 @@ class _AssetPageState extends State<AssetPage> {
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 8.w),
                                   child: CarButton(
-                                    icon: SvgPicture.asset(
-                                        "assets/images/unlock.svg",
-                                        color: Color(0xFF979797),
-                                        width: 24),
+                                    icon: Image.asset(
+                                        "assets/images/unlock.png",
+                                        width: 27),
                                     text: dic['unlock'],
                                     onPressed: Fmt.balanceInt(
                                                 (balancesInfo?.lockedBalance ??
@@ -579,17 +596,19 @@ class BalanceCard extends StatelessWidget {
       this.unlocks,
       this.onUnlock,
       this.icon,
-      this.marketPriceList});
+      this.marketPriceList,
+      this.priceCurrency});
 
   final String symbol;
   final int decimals;
   final BalanceData balancesInfo;
-  final Map marketPrices;
+  final double marketPrices;
   final ImageProvider backgroundImage;
   final List unlocks;
   final Function onUnlock;
   final Widget icon;
   final List<dynamic> marketPriceList;
+  final String priceCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -598,9 +617,9 @@ class BalanceCard extends StatelessWidget {
     final balance = Fmt.balanceTotal(balancesInfo);
 
     String tokenPrice;
-    if (marketPrices[symbol] != null && balancesInfo != null) {
-      tokenPrice = Fmt.priceFloor(
-          marketPrices[symbol] * Fmt.bigIntToDouble(balance, decimals));
+    if (marketPrices != null && balancesInfo != null) {
+      tokenPrice =
+          Fmt.priceFloor(marketPrices * Fmt.bigIntToDouble(balance, decimals));
     }
 
     final primaryColor = Theme.of(context).primaryColor;
@@ -661,7 +680,7 @@ class BalanceCard extends StatelessWidget {
                       Visibility(
                         visible: tokenPrice != null,
                         child: Text(
-                          '≈ \$ ${tokenPrice ?? '--.--'}',
+                          '≈ ${Utils.currencySymbol(priceCurrency)} ${tokenPrice ?? '--.--'}',
                           style: Theme.of(context).textTheme.headline6.copyWith(
                               color: titleColor,
                               letterSpacing: -0.8,
@@ -794,9 +813,6 @@ class TransferListItem extends StatelessWidget {
   final bool isOut;
   final bool hasDetail;
 
-  final colorIn = Color(0xFF62CFE4);
-  final colorOut = Color(0xFF3394FF);
-
   @override
   Widget build(BuildContext context) {
     final address = isOut ? data.to : data.from;
@@ -827,7 +843,7 @@ class TransferListItem extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .headline6
-            .copyWith(fontWeight: FontWeight.w300),
+            .copyWith(fontWeight: FontWeight.w300, color: Color(0xBF565554)),
       ),
       trailing: Container(
         width: 110,
@@ -837,11 +853,7 @@ class TransferListItem extends StatelessWidget {
               child: Text(
                 '${isOut ? '-' : '+'} $amount',
                 style: Theme.of(context).textTheme.headline5.copyWith(
-                    color: data.success
-                        ? isOut
-                            ? colorOut
-                            : colorIn
-                        : colorFailed,
+                    color: Theme.of(context).toggleableActiveColor,
                     fontWeight: FontWeight.w600),
                 textAlign: TextAlign.right,
               ),

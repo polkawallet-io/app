@@ -583,6 +583,8 @@ class _TransferPageState extends State<TransferPage> {
                                   Form(
                                     key: _formKey,
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         AddressTextFormField(
                                           widget.service.plugin.sdk.api,
@@ -609,9 +611,13 @@ class _TransferPageState extends State<TransferPage> {
                                             child: Container(
                                               margin: EdgeInsets.only(top: 4),
                                               child: Text(_accountToError ?? "",
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.red)),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .caption
+                                                      .copyWith(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .errorColor)),
                                             )),
                                         Container(height: 10.h),
                                         v3.TextInputWidget(
