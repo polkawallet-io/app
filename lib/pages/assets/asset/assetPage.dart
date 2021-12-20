@@ -772,7 +772,8 @@ class BalanceCard extends StatelessWidget {
                     ? Container(
                         alignment: Alignment.centerRight,
                         child: RewardsChart.withData(
-                            getTimeSeriesAmounts(marketPriceList)))
+                            getTimeSeriesAmounts(marketPriceList),
+                            103 / 390 * MediaQuery.of(context).size.width))
                     : Container(),
                 flex: 1,
               )

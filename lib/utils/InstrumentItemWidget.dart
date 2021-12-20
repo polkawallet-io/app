@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 
 class InstrumentItemWidget extends StatefulWidget {
   final List<InstrumentData> datas;
@@ -142,8 +140,15 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
             child: Transform.rotate(
               angle: angleValue,
               alignment: Alignment.bottomCenter,
-              origin: Offset(0, -(52.h / 167.h) * widget.size.height),
-              child: Image.asset(iconName),
+              origin: Offset(0, -(44 / 167) * widget.size.height),
+              child: Container(
+                child: Image.asset(
+                  iconName,
+                  fit: BoxFit.fill,
+                ),
+                width: widget.size.width,
+                height: widget.size.height,
+              ),
             )));
   }
 }

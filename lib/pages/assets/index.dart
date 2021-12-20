@@ -463,16 +463,16 @@ class _AssetsState extends State<AssetsPage> {
                     children: [
                       widget.connectedNode == null
                           ? Container(
-                              width: 11.w,
-                              height: 11.w,
-                              margin: EdgeInsets.only(right: 4.w),
+                              width: 11,
+                              height: 11,
+                              margin: EdgeInsets.only(right: 4),
                               child: Center(
                                   child: RiveAnimation.asset(
                                 'assets/images/connecting.riv',
                               )))
                           : Container(
-                              width: 11.w,
-                              height: 11.w,
+                              width: 11,
+                              height: 11,
                               margin: EdgeInsets.only(right: 4),
                               decoration: BoxDecoration(
                                   color:
@@ -488,11 +488,11 @@ class _AssetsState extends State<AssetsPage> {
                             .copyWith(fontWeight: FontWeight.w600, height: 0.9),
                       ),
                       Container(
-                        width: 14.w,
-                        margin: EdgeInsets.only(left: 9.w),
+                        width: 14,
+                        margin: EdgeInsets.only(left: 9),
                         child: SvgPicture.asset(
                           'assets/images/icon_changenetwork.svg',
-                          width: 14.w,
+                          width: 14,
                         ),
                       )
                     ],
@@ -511,7 +511,7 @@ class _AssetsState extends State<AssetsPage> {
         icon: SvgPicture.asset(
           "assets/images/icon_car.svg",
           color: Colors.white,
-          height: 24.h,
+          height: 24,
         ),
         onPressed: widget.service.keyring.allAccounts.length > 0
             ? () async {
@@ -528,15 +528,15 @@ class _AssetsState extends State<AssetsPage> {
       actions: <Widget>[
         Container(
             child: v3.PopupMenuButton(
-                offset: Offset(-12.w, 52),
+                offset: Offset(-12, 52),
                 color: Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.w),
-                      bottomLeft: Radius.circular(10.w),
-                      bottomRight: Radius.circular(10.w)),
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10)),
                 ),
                 onSelected: (value) {
                   if (widget.service.keyring.current.address != '') {
@@ -559,10 +559,10 @@ class _AssetsState extends State<AssetsPage> {
                               child: SvgPicture.asset(
                                 'assets/images/scan.svg',
                                 color: Color(0xFF979797),
-                                width: 20.w,
+                                width: 20,
                               )),
                           Padding(
-                            padding: EdgeInsets.only(left: 5.w),
+                            padding: EdgeInsets.only(left: 5),
                             child: Text(
                               I18n.of(context)
                                   .getDic(i18n_full_dic_app, 'assets')['scan'],
@@ -582,7 +582,7 @@ class _AssetsState extends State<AssetsPage> {
                           SvgPicture.asset(
                             'assets/images/qr.svg',
                             color: Color(0xFF979797),
-                            width: 22.w,
+                            width: 22,
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 5),
@@ -602,7 +602,7 @@ class _AssetsState extends State<AssetsPage> {
                   icon: Icon(
                     Icons.add,
                     color: Theme.of(context).disabledColor,
-                    size: 20.w,
+                    size: 20,
                   ),
                 ))),
       ],

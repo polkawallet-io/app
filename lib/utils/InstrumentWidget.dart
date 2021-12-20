@@ -2,7 +2,6 @@ import 'package:app/utils/InstrumentItemWidget.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -50,6 +49,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width - (16.w + 11.w + 34.w) * 2;
     return Column(
       children: [
         Container(
@@ -71,10 +71,15 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                   },
                   datas: widget.datas,
                   initializeIndex: getIndex(),
-                  size: Size(MediaQuery.of(context).size.width - 122.w,
-                      (MediaQuery.of(context).size.width - 122.w) / 294 * 168),
+                  size: Size(width, width / 249 * 168),
                 ),
-                Image.asset("assets/images/icon_instrument.png"),
+                Container(
+                    width: width,
+                    height: width / 249 * 168,
+                    child: Image.asset(
+                      "assets/images/icon_instrument.png",
+                      fit: BoxFit.fill,
+                    )),
                 Container(
                   child: Column(
                     children: [
@@ -201,13 +206,13 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                           Row(
                             children: [
                               Container(
-                                width: 10.w,
-                                height: 10.w,
-                                margin: EdgeInsets.only(right: 3.w),
+                                width: 10,
+                                height: 10,
+                                margin: EdgeInsets.only(right: 3),
                                 decoration: BoxDecoration(
                                     color: e.color,
                                     borderRadius: BorderRadius.all(
-                                        Radius.circular(10.w / 2))),
+                                        Radius.circular(10 / 2))),
                               ),
                               Text(
                                 e.name,

@@ -5,10 +5,12 @@ class RewardsChart extends StatelessWidget {
   final List<FlSpot> seriesList;
   final double maxY, minY;
   final DateTime maxX, minX;
+  final double width;
   static int xBase = 10;
-  RewardsChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY);
+  RewardsChart(
+      this.seriesList, this.maxX, this.maxY, this.minX, this.minY, this.width);
 
-  factory RewardsChart.withData(List<TimeSeriesAmount> data) {
+  factory RewardsChart.withData(List<TimeSeriesAmount> data, double width) {
     double maxY = 0, minY;
     DateTime maxX, minX;
     data.forEach((element) {
@@ -36,21 +38,23 @@ class RewardsChart extends StatelessWidget {
               xBase,
           element.amount));
     });
-    return RewardsChart(flSpotDatas, maxX, maxY, minX, minY);
+    return RewardsChart(flSpotDatas, maxX, maxY, minX, minY, width);
   }
 
   @override
   Widget build(BuildContext context) {
+    final chartWidth = this.width / 107 * 91;
     return Stack(
       alignment: Alignment.center,
       children: [
         Padding(
-            padding: EdgeInsets.only(right: 2.2, bottom: 1),
+            padding: EdgeInsets.only(
+                right: 2.2 / 91 * chartWidth, bottom: 1 / 91.0 * chartWidth),
             child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(5.0 / 91 * chartWidth),
                 child: Container(
-                    width: 91,
-                    height: 50,
+                    width: chartWidth,
+                    height: chartWidth / 91.0 * 50,
                     child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -66,8 +70,8 @@ class RewardsChart extends StatelessWidget {
                           mainData(),
                         ))))),
         Container(
-          width: 107,
-          height: 66,
+          width: this.width,
+          height: this.width / 107 * 66,
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage("assets/images/rewards_bg.png"),
