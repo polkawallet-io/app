@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
-import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -197,17 +197,13 @@ class _ChangePassword extends State<ChangePasswordPage> {
                               padding: EdgeInsets.only(top: 16.h),
                               child: Row(
                                 children: [
-                                  SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: Checkbox(
-                                      value: _enableBiometric,
-                                      onChanged: (v) {
-                                        setState(() {
-                                          _enableBiometric = v;
-                                        });
-                                      },
-                                    ),
+                                  v3.Checkbox(
+                                    value: _enableBiometric,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _enableBiometric = v;
+                                      });
+                                    },
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 8.w),

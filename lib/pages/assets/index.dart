@@ -340,7 +340,19 @@ class _AssetsState extends State<AssetsPage> {
     super.dispose();
   }
 
-  List<InstrumentData> instrumentDatas() {
+  List<Color> _gradienColors() {
+    switch (widget.service.plugin.basic.name) {
+      case para_chain_name_karura:
+        return [Color(0xFFFF4646), Color(0xFFFF5D4D), Color(0xFF323133)];
+      case para_chain_name_acala:
+        return [Color(0xFFFF5D3A), Color(0xFFFF3F3F), Color(0xFF4528FF)];
+      case para_chain_name_bifrost:
+      default:
+        return [Theme.of(context).primaryColor, Theme.of(context).hoverColor];
+    }
+  }
+
+  List<InstrumentData> _instrumentDatas() {
     final List<InstrumentData> datas = [InstrumentData(0, [])];
 
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
@@ -516,7 +528,7 @@ class _AssetsState extends State<AssetsPage> {
       actions: <Widget>[
         Container(
             child: v3.PopupMenuButton(
-                offset: Offset(-12.w, 58.h),
+                offset: Offset(-12.w, 52),
                 color: Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
@@ -603,7 +615,7 @@ class _AssetsState extends State<AssetsPage> {
       builder: (_) {
         bool transferEnabled = true;
         // // todo: fix this after new acala online
-        if (widget.service.plugin.basic.name == 'acala') {
+        if (widget.service.plugin.basic.name == para_chain_name_acala) {
           transferEnabled = false;
           if (widget.service.store.settings.liveModules['assets'] != null) {
             transferEnabled =
@@ -611,7 +623,7 @@ class _AssetsState extends State<AssetsPage> {
           }
         }
         bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == 'karura') {
+        if (widget.service.plugin.basic.name == para_chain_name_karura) {
           if (widget.service.store.settings.liveModules['claim'] != null) {
             claimKarEnabled =
                 widget.service.store.settings.liveModules['claim']['enabled'];
@@ -676,7 +688,8 @@ class _AssetsState extends State<AssetsPage> {
                                       onSwitchHideBalance: null) ==
                                   null
                           ? InstrumentWidget(
-                              instrumentDatas(),
+                              _instrumentDatas(),
+                              gradienColors: _gradienColors(),
                               switchDefi: widget.service.plugin
                                       .getAggregatedAssetsWidget(
                                           onSwitchBack: null,
@@ -810,7 +823,7 @@ class _AssetsState extends State<AssetsPage> {
                                 ),
                                 Visibility(
                                     visible: widget.service.plugin.basic.name ==
-                                            'karura' &&
+                                            para_chain_name_karura &&
                                         claimKarEnabled,
                                     child: GestureDetector(
                                         onTap: () => Navigator.of(context)

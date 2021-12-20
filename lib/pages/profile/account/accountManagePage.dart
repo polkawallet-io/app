@@ -17,6 +17,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class AccountManagePage extends StatefulWidget {
   AccountManagePage(this.service);
@@ -225,7 +226,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     SettingsPageListItem(
                       label: I18n.of(context).getDic(
                           i18n_full_dic_app, 'account')['unlock.bio.enable'],
-                      content: CupertinoSwitch(
+                      content: v3.CupertinoSwitch(
                         value: _isBiometricAuthorized,
                         onChanged: (v) {
                           if (v != _isBiometricAuthorized) {

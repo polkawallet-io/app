@@ -16,7 +16,8 @@ class InstrumentWidget extends StatefulWidget {
       this.hideBalance = false,
       this.enabled = false,
       this.priceCurrency = 'USD',
-      this.switchDefi = false})
+      this.switchDefi = false,
+      this.gradienColors})
       : super(key: key);
   final List<InstrumentData> datas;
   final Function onSwitchChange;
@@ -25,6 +26,7 @@ class InstrumentWidget extends StatefulWidget {
   final bool enabled;
   final String priceCurrency;
   final bool switchDefi;
+  final List<Color> gradienColors;
   @override
   _InstrumentWidgetState createState() => _InstrumentWidgetState();
 }
@@ -115,7 +117,14 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               width: 46.w,
                               height: 46.w,
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
+                                gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: widget.gradienColors ??
+                                        [
+                                          Theme.of(context).primaryColor,
+                                          Theme.of(context).hoverColor
+                                        ]),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(46.w / 2)),
                               ),

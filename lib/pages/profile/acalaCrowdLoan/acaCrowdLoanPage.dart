@@ -19,6 +19,7 @@ import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 const acaThemeColor = MaterialColor(
   0xFF7E74FA,
@@ -611,7 +612,7 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                         width: 32,
                                         child: Padding(
                                           padding: EdgeInsets.only(right: 8),
-                                          child: Checkbox(
+                                          child: v3.Checkbox(
                                             value: isProxy
                                                 ? _accepted
                                                 : _acceptedDirect,

@@ -13,6 +13,7 @@ import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class FriendListPage extends StatefulWidget {
   FriendListPage(this.service);
@@ -118,7 +119,7 @@ class _FriendListPage extends State<FriendListPage> {
                             svg: list[i].icon, size: 32),
                         title: Text(list[i].name),
                         subtitle: Text(Fmt.address(list[i].address)),
-                        trailing: CupertinoSwitch(
+                        trailing: v3.CupertinoSwitch(
                           value: switchOn,
                           onChanged: (res) => _onSwitch(list[i], res),
                         ),

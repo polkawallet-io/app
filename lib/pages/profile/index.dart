@@ -123,71 +123,72 @@ class _ProfilePageState extends State<ProfilePage> {
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              RoundedCard(
-                margin:
-                    EdgeInsets.fromLTRB(pagePadding, 4.h, pagePadding, 16.h),
-                padding: EdgeInsets.fromLTRB(24.w, 16.h, 0, 16.h),
-                child: Column(
-                  children: [
-                    Row(
+              GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: RoundedCard(
+                    margin: EdgeInsets.fromLTRB(
+                        pagePadding, 4.h, pagePadding, 16.h),
+                    padding: EdgeInsets.fromLTRB(24.w, 16.h, 0, 16.h),
+                    child: Column(
                       children: [
-                        Container(
-                          margin: EdgeInsets.only(right: 8.w),
-                          child: AddressIcon(acc.address,
-                              svg: acc.icon, size: 60.w),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                child: Text(UI.accountName(context, acc),
-                                    style: TextStyle(
-                                        color: Color(0xFF565554),
-                                        fontSize: 20,
-                                        fontFamily: 'TitilliumWeb',
-                                        fontWeight: FontWeight.w600)),
-                                onTap: _manageAccount,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: 8.w),
+                              child: AddressIcon(acc.address,
+                                  svg: acc.icon, size: 60.w),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    Fmt.address(acc.address) ?? '',
-                                    style: TextStyle(fontSize: 16, color: grey),
-                                  ),
                                   GestureDetector(
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.fromLTRB(4.w, 2.h, 8.w, 0),
-                                      child: SvgPicture.asset(
-                                        'assets/images/qr.svg',
-                                        color: blue,
-                                        width: 24.w,
+                                    child: Text(UI.accountName(context, acc),
+                                        style: TextStyle(
+                                            color: Color(0xFF565554),
+                                            fontSize: 20,
+                                            fontFamily: 'TitilliumWeb',
+                                            fontWeight: FontWeight.w600)),
+                                    onTap: _manageAccount,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        Fmt.address(acc.address) ?? '',
+                                        style: TextStyle(
+                                            fontSize: 16, color: grey),
                                       ),
-                                    ),
-                                    onTap: () =>
-                                        UI.copyAndNotify(context, acc.address),
+                                      GestureDetector(
+                                        child: Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              4.w, 2.h, 8.w, 0),
+                                          child: SvgPicture.asset(
+                                            'assets/images/qr.svg',
+                                            color: blue,
+                                            width: 24.w,
+                                          ),
+                                        ),
+                                        onTap: () => UI.copyAndNotify(
+                                            context, acc.address),
+                                      )
+                                    ],
                                   )
                                 ],
-                              )
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          child: Container(
-                            padding: EdgeInsets.all(16.w),
-                            child: Image.asset(
-                                'assets/images/icons/arrow_forward.png',
-                                width: 30.w),
-                          ),
-                          onTap: _manageAccount,
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(16.w),
+                              child: Image.asset(
+                                  'assets/images/icons/arrow_forward.png',
+                                  width: 30.w),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                  onTap: _manageAccount),
               RoundedCard(
                 margin: EdgeInsets.fromLTRB(pagePadding, 0, pagePadding, 16.h),
                 padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 6.h),

@@ -234,7 +234,7 @@ class _Contact extends State<ContactPage> {
                         )),
                     Row(
                       children: <Widget>[
-                        Checkbox(
+                        v3.Checkbox(
                           value: _isObservation,
                           onChanged: (v) {
                             setState(() {
@@ -266,7 +266,7 @@ class _Contact extends State<ContactPage> {
               ),
             ),
             Container(
-              // margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+              margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
               child: Button(
                   submitting: _submitting,
                   title: dic['contact.save'],

@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.service, this.changeLang, this.changeNode);
@@ -145,8 +146,7 @@ class _Settings extends State<SettingsPage> {
                     SettingsPageListItem(
                       label: dic['setting.balance.hide'],
                       subtitle: hideBalanceTip.isEmpty ? null : hideBalanceTip,
-                      content: CupertinoSwitch(
-                        activeColor: Theme.of(context).errorColor,
+                      content: v3.CupertinoSwitch(
                         value: widget.service.store.settings.isHideBalance,
                         onChanged: (v) =>
                             widget.service.store.settings.setIsHideBalance(v),

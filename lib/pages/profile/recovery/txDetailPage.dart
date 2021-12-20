@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,8 +18,8 @@ class TxDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    final isKSMOrDOT = service.plugin.basic.name == 'kusama' ||
-        service.plugin.basic.name == 'polkadot';
+    final isKSMOrDOT = service.plugin.basic.name == relay_chain_name_ksm ||
+        service.plugin.basic.name == relay_chain_name_dot;
     final symbol = isKSMOrDOT
         ? service.plugin.networkState.tokenSymbol[0]
         : service.plugin.networkState.tokenSymbol ?? '';

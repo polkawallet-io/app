@@ -1002,7 +1002,7 @@ class _TransferPageState extends State<TransferPage> {
                                     //   ),
                                     // ),
                                     // Expanded(child: Container(width: 2)),
-                                    CupertinoSwitch(
+                                    v3.CupertinoSwitch(
                                       value: _keepAlive,
                                       // account is not allow_death if it has
                                       // locked/reserved balances

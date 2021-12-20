@@ -13,7 +13,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/Button.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 import 'importAccountAction.dart';
@@ -207,7 +207,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                   SizedBox(
                     height: 24,
                     width: 24,
-                    child: Checkbox(
+                    child: v3.Checkbox(
                       value: _enableBiometric,
                       onChanged: (v) {
                         setState(() {

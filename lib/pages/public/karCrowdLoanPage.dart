@@ -18,6 +18,7 @@ import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/pages/accountListPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 const kar_statement_store_key = 'kar_statement_store_key';
 
@@ -485,7 +486,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                             width: 32,
                             child: Padding(
                               padding: EdgeInsets.only(right: 8),
-                              child: Checkbox(
+                              child: v3.Checkbox(
                                 value: _accepted0,
                                 onChanged: (v) {
                                   setState(() {
@@ -633,7 +634,7 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                             width: 32,
                             child: Padding(
                               padding: EdgeInsets.only(right: 8),
-                              child: Checkbox(
+                              child: v3.Checkbox(
                                 value: _accepted2,
                                 onChanged: (v) {
                                   setState(() {

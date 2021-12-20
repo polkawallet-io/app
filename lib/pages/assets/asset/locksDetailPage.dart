@@ -106,8 +106,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final res = await Future.wait([
       WalletApi.fetchBlocksFromSn(
           widget.service.plugin.basic.name == para_chain_name_karura
-              ? 'kusama'
-              : 'polkadot'),
+              ? relay_chain_name_ksm
+              : relay_chain_name_dot),
       widget.service.plugin.sdk.webView.evalJavascript(
           'api.query.vesting.vestingSchedules("${widget.service.keyring.current.address}")')
     ]);

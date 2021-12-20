@@ -16,6 +16,7 @@ import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class KarCrowdLoanPageParams {
   KarCrowdLoanPageParams(
@@ -449,7 +450,7 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                           width: 32,
                           child: Padding(
                             padding: EdgeInsets.only(right: 8),
-                            child: Checkbox(
+                            child: v3.Checkbox(
                               value: _emailAccept,
                               onChanged: (v) {
                                 setState(() {

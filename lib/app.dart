@@ -143,7 +143,7 @@ class _WalletAppState extends State<WalletApp> {
               fontFamily: 'TitilliumWeb',
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
-      accentColor: secondaryColor,
+      hoverColor: secondaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
@@ -291,8 +291,8 @@ class _WalletAppState extends State<WalletApp> {
       _connectedNode = connected;
     });
 
-    if (_service.plugin.basic.name == 'karura' ||
-        _service.plugin.basic.name == 'acala') {
+    if (_service.plugin.basic.name == para_chain_name_karura ||
+        _service.plugin.basic.name == para_chain_name_acala) {
       _getAcalaModulesConfig(_service.plugin.basic.name);
     }
   }
@@ -513,7 +513,7 @@ class _WalletAppState extends State<WalletApp> {
                               _checkJSCodeUpdate, _switchNetwork, _changeNode)
                           : CreateAccountEntryPage();
                     } else {
-                      return Container(color: Theme.of(context).canvasColor);
+                      return Container(color: Theme.of(context).hoverColor);
                     }
                   },
                 );

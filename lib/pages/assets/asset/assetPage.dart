@@ -1,3 +1,4 @@
+import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/asset/rewardsChart.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
@@ -119,8 +120,8 @@ class _AssetPageState extends State<AssetPage> {
   Future<void> _refreshData() async {
     if (widget.service.plugin.sdk.api.connectedNode == null) return;
 
-    if (widget.service.plugin.basic.name == 'polkadot' ||
-        widget.service.plugin.basic.name == 'kusama') {
+    if (widget.service.plugin.basic.name == relay_chain_name_dot ||
+        widget.service.plugin.basic.name == relay_chain_name_ksm) {
       _queryDemocracyUnlocks();
     }
 
@@ -268,6 +269,31 @@ class _AssetPageState extends State<AssetPage> {
     return datas;
   }
 
+  List<Color> getBgColors() {
+    switch (widget.service.plugin.basic.name) {
+      case relay_chain_name_ksm:
+      case para_chain_name_statemine:
+        return [Color(0xFF767575), Color(0xFF2A2A2B)];
+      case para_chain_name_karura:
+        return [Color(0xFF2B292A), Color(0xFFCD4337)];
+      case para_chain_name_acala:
+        return [Color(0xFFFD4732), Color(0xFF645AFF)];
+      case para_chain_name_bifrost:
+        return [
+          Color(0xFF5AAFE1),
+          Color(0xFF596ED2),
+          Color(0xFFB358BD),
+          Color(0xFFFFAE5E)
+        ];
+      case relay_chain_name_dot:
+        return [Color(0xFFDD1878), Color(0xFF72AEFF)];
+      case "edgeware":
+        return [Color(0xFF21C1D5), Color(0xFF057AA9)];
+      default:
+        return [Theme.of(context).primaryColor, Theme.of(context).hoverColor];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
@@ -323,8 +349,8 @@ class _AssetPageState extends State<AssetPage> {
         child: Observer(
           builder: (_) {
             bool transferEnabled = true;
-            if (widget.service.plugin.basic.name == 'karura' ||
-                widget.service.plugin.basic.name == 'acala') {
+            if (widget.service.plugin.basic.name == para_chain_name_karura ||
+                widget.service.plugin.basic.name == para_chain_name_acala) {
               transferEnabled = false;
               if (widget.service.store.settings.liveModules['assets'] != null) {
                 transferEnabled = widget
@@ -344,7 +370,8 @@ class _AssetPageState extends State<AssetPage> {
                           (widget.service.store.settings.priceCurrency == "CNY"
                               ? _rate
                               : 1.0),
-                  backgroundImage: widget.service.plugin.basic.backgroundImage,
+                  // backgroundImage: widget.service.plugin.basic.backgroundImage,
+                  bgColors: getBgColors(),
                   unlocks: _unlocks,
                   onUnlock: _onUnlock,
                   icon: widget.service.plugin.tokenIcons[symbol],
@@ -592,7 +619,8 @@ class BalanceCard extends StatelessWidget {
       {this.marketPrices,
       this.symbol,
       this.decimals,
-      this.backgroundImage,
+      // this.backgroundImage,
+      this.bgColors,
       this.unlocks,
       this.onUnlock,
       this.icon,
@@ -603,7 +631,8 @@ class BalanceCard extends StatelessWidget {
   final int decimals;
   final BalanceData balancesInfo;
   final double marketPrices;
-  final ImageProvider backgroundImage;
+  // final ImageProvider backgroundImage;
+  final List<Color> bgColors;
   final List unlocks;
   final Function onUnlock;
   final Widget icon;
@@ -622,7 +651,6 @@ class BalanceCard extends StatelessWidget {
           Fmt.priceFloor(marketPrices * Fmt.bigIntToDouble(balance, decimals));
     }
 
-    final primaryColor = Theme.of(context).primaryColor;
     final titleColor = Theme.of(context).cardColor;
     return Container(
       margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
@@ -630,17 +658,17 @@ class BalanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(const Radius.circular(16)),
         gradient: LinearGradient(
-          colors: [primaryColor, Theme.of(context).accentColor],
+          colors: bgColors ??
+              [Theme.of(context).primaryColor, Theme.of(context).hoverColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          stops: [0.1, 0.9],
         ),
-        image: backgroundImage != null
-            ? DecorationImage(
-                image: backgroundImage,
-                fit: BoxFit.cover,
-              )
-            : null,
+        // image: backgroundImage != null
+        //     ? DecorationImage(
+        //         image: backgroundImage,
+        //         fit: BoxFit.cover,
+        //       )
+        //     : null,
         boxShadow: [
           BoxShadow(
             // color: primaryColor.withAlpha(100),

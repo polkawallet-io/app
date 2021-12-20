@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/service/index.dart';
@@ -166,8 +167,9 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final isKSMOrDOT = widget.service.plugin.basic.name == 'kusama' ||
-                widget.service.plugin.basic.name == 'polkadot';
+            final isKSMOrDOT =
+                widget.service.plugin.basic.name == relay_chain_name_ksm ||
+                    widget.service.plugin.basic.name == relay_chain_name_dot;
             final symbol = isKSMOrDOT
                 ? widget.service.plugin.networkState.tokenSymbol[0]
                 : widget.service.plugin.networkState.tokenSymbol ?? '';

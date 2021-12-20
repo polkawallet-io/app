@@ -81,27 +81,47 @@ class _CommunityPage extends State<CommunityPage> {
                   children: [
                     SettingsPageListItem(
                       label: 'Wechat',
+                      leading: Image.asset(
+                        'assets/images/icons/wechat_icon.png',
+                        width: 24.w,
+                      ),
                       onTap: _onWechatTap,
                     ),
                     Divider(),
                     SettingsPageListItem(
                       label: 'Twitter',
+                      leading: Image.asset(
+                        'assets/images/icons/twitter_icon.png',
+                        width: 24.w,
+                      ),
                       onTap: () =>
                           _jumpToLink('https://twitter.com/AcalaNetwork'),
                     ),
                     Divider(),
                     SettingsPageListItem(
                       label: 'Telegram',
+                      leading: Image.asset(
+                        'assets/images/icons/telegram_icon.png',
+                        width: 24.w,
+                      ),
                       onTap: () => _jumpToLink('https://t.me/acalaofficial'),
                     ),
                     Divider(),
                     SettingsPageListItem(
                       label: 'Discord',
+                      leading: Image.asset(
+                        'assets/images/icons/discord_icon.png',
+                        width: 24.w,
+                      ),
                       onTap: () => _jumpToLink('https://discord.gg/6QHVY4X'),
                     ),
                     Divider(),
                     SettingsPageListItem(
                       label: 'LinkTree',
+                      leading: Image.asset(
+                        'assets/images/icons/linktree_icon.png',
+                        width: 24.w,
+                      ),
                       onTap: () =>
                           _jumpToLink('https://linktr.ee/acalanetwork'),
                     ),

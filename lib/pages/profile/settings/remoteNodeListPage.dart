@@ -29,8 +29,10 @@ class RemoteNodeListPage extends StatelessWidget {
         subtitle: i.endpoint,
         content: Visibility(
             visible: isCurrent,
-            child:
-                Icon(Icons.check_circle, color: Colors.lightGreen, size: 18)),
+            child: Image.asset(
+              "assets/images/icon_circle_select.png",
+              width: 16,
+            )),
         onTap: () {
           if (isCurrent) {
             Navigator.of(context).pop();
