@@ -114,8 +114,8 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
                 .toStringAsFixed(widget.datas[j].lengthMax)) >
             0) {
           var angleValue = j == widget.initializeIndex
-              ? (angle * animationNumber + 2.35 * (1 - animationNumber))
-              : (-3.85 * animationNumber + angle * (1 - animationNumber));
+              ? (angle * animationNumber + 2.4 * (1 - animationNumber))
+              : (-3.9 * animationNumber + angle * (1 - animationNumber));
           (j == widget.initializeIndex ? currentWidgets : widgets).add(
               angleValue < -2.45
                   ? ClipRect(

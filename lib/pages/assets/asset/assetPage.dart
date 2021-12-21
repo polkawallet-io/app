@@ -379,15 +379,15 @@ class _AssetPageState extends State<AssetPage> {
                   priceCurrency: widget.service.store.settings.priceCurrency,
                 ),
                 Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 18.h),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Row(
                       children: <Widget>[
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            padding: EdgeInsets.symmetric(horizontal: 3.w),
                             child: CarButton(
                               icon: Image.asset("assets/images/send.png",
-                                  width: 27),
+                                  width: 37),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
                                   ? () {
@@ -405,10 +405,10 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            padding: EdgeInsets.symmetric(horizontal: 3.w),
                             child: CarButton(
                               icon: Image.asset("assets/images/qr.png",
-                                  width: 27),
+                                  width: 37),
                               text: dic['receive'],
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -427,7 +427,7 @@ class _AssetPageState extends State<AssetPage> {
                                   child: CarButton(
                                     icon: Image.asset(
                                         "assets/images/unlock.png",
-                                        width: 27),
+                                        width: 37),
                                     text: dic['unlock'],
                                     onPressed: Fmt.balanceInt(
                                                 (balancesInfo?.lockedBalance ??
@@ -450,113 +450,93 @@ class _AssetPageState extends State<AssetPage> {
                             : Container(),
                       ],
                     )),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 10.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BorderedTitle(title: dic['history']),
+                        Row(
+                          children: [
+                            Container(
+                              width: 36.w,
+                              height: 28.h,
+                              margin: EdgeInsets.only(right: 8.w),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                image: DecorationImage(
+                                    image:
+                                        AssetImage("assets/images/bg_tag.png"),
+                                    fit: BoxFit.fill),
+                              ),
+                              child: Center(
+                                child: Text(
+                                    dic[_tab == 0
+                                        ? 'all'
+                                        : _tab == 1
+                                            ? "in"
+                                            : "out"],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline5
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .toggleableActiveColor,
+                                            fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                            GestureDetector(
+                                onTap: () {
+                                  showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) {
+                                        return ShowCustomAlterWidget(
+                                            confirmCallback: (value) {
+                                              setState(() {
+                                                if (value == dic['all']) {
+                                                  _tab = 0;
+                                                } else if (value == dic['in']) {
+                                                  _tab = 1;
+                                                } else {
+                                                  _tab = 2;
+                                                }
+                                              });
+                                            },
+                                            cancel: I18n.of(context).getDic(
+                                                i18n_full_dic_ui,
+                                                'common')['cancel'],
+                                            options: [
+                                              dic['all'],
+                                              dic['in'],
+                                              dic['out']
+                                            ]);
+                                      });
+                                },
+                                child: v3.IconButton(
+                                  icon: SvgPicture.asset(
+                                    'assets/images/icon_screening.svg',
+                                    color: Color(0xFF979797),
+                                    width: 22.h,
+                                  ),
+                                ))
+                          ],
+                        )
+                      ],
+                    )),
+                Divider(
+                  height: 1,
+                ),
                 Expanded(
                   child: Container(
                     color: Theme.of(context).cardColor,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 22.h),
-                          margin: EdgeInsets.only(bottom: 10.h, top: 0),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x33000000),
-                                blurRadius: 2.0,
-                                spreadRadius: 0.0,
-                                offset: Offset(
-                                  0.0,
-                                  3.0,
-                                ),
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              BorderedTitle(title: dic['history']),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 36.w,
-                                    height: 28.h,
-                                    margin: EdgeInsets.only(right: 8.w),
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/bg_tag.png"),
-                                          fit: BoxFit.fill),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                          dic[_tab == 0
-                                              ? 'all'
-                                              : _tab == 1
-                                                  ? "in"
-                                                  : "out"],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline5
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .toggleableActiveColor,
-                                                  fontWeight: FontWeight.w600)),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                      onTap: () {
-                                        showCupertinoModalPopup(
-                                            context: context,
-                                            builder: (context) {
-                                              return ShowCustomAlterWidget(
-                                                  confirmCallback: (value) {
-                                                    setState(() {
-                                                      if (value == dic['all']) {
-                                                        _tab = 0;
-                                                      } else if (value ==
-                                                          dic['in']) {
-                                                        _tab = 1;
-                                                      } else {
-                                                        _tab = 2;
-                                                      }
-                                                    });
-                                                  },
-                                                  cancel: I18n.of(context)
-                                                      .getDic(i18n_full_dic_ui,
-                                                          'common')['cancel'],
-                                                  options: [
-                                                    dic['all'],
-                                                    dic['in'],
-                                                    dic['out']
-                                                  ]);
-                                            });
-                                      },
-                                      child: v3.IconButton(
-                                        icon: SvgPicture.asset(
-                                          'assets/images/icon_screening.svg',
-                                          color: Color(0xFF979797),
-                                          width: 22.h,
-                                        ),
-                                      ))
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: RefreshIndicator(
-                            key: _refreshKey,
-                            onRefresh: _refreshData,
-                            child: ListView(
-                              physics: BouncingScrollPhysics(),
-                              controller: _scrollController,
-                              children: [..._buildTxList()],
-                            ),
-                          ),
-                        )
-                      ],
+                    child: RefreshIndicator(
+                      key: _refreshKey,
+                      onRefresh: _refreshData,
+                      child: ListView(
+                        physics: BouncingScrollPhysics(),
+                        controller: _scrollController,
+                        children: [..._buildTxList()],
+                      ),
                     ),
                   ),
                 )
@@ -589,7 +569,7 @@ class CarButton extends StatelessWidget {
           }
         },
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12.h),
+          padding: EdgeInsets.only(top: 5.h, bottom: 10.h),
           decoration: BoxDecoration(
             color: Colors.transparent,
             image: DecorationImage(
@@ -601,7 +581,7 @@ class CarButton extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(padding: EdgeInsets.only(bottom: 5.h), child: icon),
+                icon,
                 Text(
                   text,
                   style: Theme.of(context).textTheme.headline6.copyWith(

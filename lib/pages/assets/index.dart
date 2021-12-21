@@ -681,7 +681,7 @@ class _AssetsState extends State<AssetsPage> {
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Column(children: [
                     Padding(
-                      padding: EdgeInsets.only(bottom: 14.h, top: 15.h),
+                      padding: EdgeInsets.only(bottom: 10.h, top: 15.h),
                       child: instrumentIndex == 0 ||
                               widget.service.plugin.getAggregatedAssetsWidget(
                                       onSwitchBack: null,
@@ -963,8 +963,8 @@ class _AssetsState extends State<AssetsPage> {
                                         isFromCache: isTokensFromCache,
                                         detailPageRoute: i.detailPageRoute,
                                         marketPrice: price *
-                                            (widget.service.store.settings
-                                                        .priceCurrency ==
+                                            (widget.service.store
+                                                        .settings.priceCurrency ==
                                                     "CNY"
                                                 ? _rate
                                                 : 1.0),
@@ -973,10 +973,13 @@ class _AssetsState extends State<AssetsPage> {
                                           widget.service.plugin.tokenIcons,
                                           symbol: i.symbol,
                                         ),
-                                        isHideBalance: widget.service.store
-                                            .settings.isHideBalance,
+                                        isHideBalance:
+                                            widget.service.store.settings
+                                                .isHideBalance,
                                         priceCurrency: widget.service.store
-                                            .settings.priceCurrency);
+                                            .settings.priceCurrency,
+                                        isClickable:
+                                            widget.connectedNode != null);
                                   }).toList(),
                                 )),
                             Visibility(
@@ -1004,11 +1007,10 @@ class _AssetsState extends State<AssetsPage> {
                                                   .tokenIcons[e.symbol],
                                               isHideBalance: widget.service
                                                   .store.settings.isHideBalance,
-                                              priceCurrency: widget
-                                                  .service
-                                                  .store
-                                                  .settings
-                                                  .priceCurrency))
+                                              priceCurrency: widget.service
+                                                  .store.settings.priceCurrency,
+                                              isClickable:
+                                                  widget.connectedNode != null))
                                           .toList(),
                                     )
                                   ],
@@ -1037,11 +1039,13 @@ class TokenItem extends StatelessWidget {
       this.icon,
       this.isFromCache = false,
       this.isHideBalance,
-      this.priceCurrency});
+      this.priceCurrency,
+      this.isClickable = false});
   final TokenBalanceData item;
   final int decimals;
   final double marketPrice;
   final String detailPageRoute;
+  final bool isClickable;
   final Widget icon;
   final bool isFromCache;
   final bool isHideBalance;
@@ -1107,7 +1111,7 @@ class TokenItem extends StatelessWidget {
                   : Container(height: 0, width: 8),
             ],
           ),
-          onTap: detailPageRoute == null
+          onTap: detailPageRoute == null || isClickable
               ? null
               : () {
                   Navigator.of(context)

@@ -139,7 +139,7 @@ class _WalletAppState extends State<WalletApp> {
           elevation: 0,
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),
-              fontSize: 20,
+              fontSize: 18,
               fontFamily: 'TitilliumWeb',
               fontWeight: FontWeight.w600)),
       primarySwatch: color,

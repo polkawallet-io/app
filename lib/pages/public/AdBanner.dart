@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanBanner.dart';
 import 'package:app/pages/profile/crowdLoan/crowdLoanBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AdBanner extends StatefulWidget {
   AdBanner(this.service, this.connectedNode, this.switchNetwork,
@@ -52,15 +51,15 @@ class _AdBannerState extends State<AdBanner> {
 
     if ((widget.service.store.settings.adBannerState['visibleAca'] ?? false) &&
         widget.service.plugin.basic.name == relay_chain_name_dot) {
-      widgets.add(ACACrowdLoanBanner(widget.service, widget.switchNetwork));
+      widgets.add(ACACrowdLoanBanner());
     }
 
-    if ((widget.service.store.settings.adBannerState['visibleQuests'] ??
-        false)) {
-      widgets.add(GeneralCrowdLoanBanner(
-          'assets/images/public/banner_aca_quests.png',
-          'https://acala.network/acala/quests#quests'));
-    }
+    // if ((widget.service.store.settings.adBannerState['visibleQuests'] ??
+    //     false)) {
+    //   widgets.add(GeneralCrowdLoanBanner(
+    //       'assets/images/public/banner_aca_quests.png',
+    //       'https://acala.network/acala/quests#quests'));
+    // }
 
     if ((widget.service.store.settings.adBannerState['visibleClaim'] ??
             false) &&
@@ -70,7 +69,7 @@ class _AdBannerState extends State<AdBanner> {
                     false) ||
             WalletApp.buildTarget == BuildTargets.dev)) {
       widgets.add(GeneralCrowdLoanBanner(
-          'assets/images/public/banner_aca_claim.gif',
+          'assets/images/public/banner_aca_claim.png',
           'https://distribution.acala.network/claim'));
     }
 
@@ -94,7 +93,7 @@ class _AdBannerState extends State<AdBanner> {
         widgets.length == 1
             ? widgets[0]
             : Container(
-                height: MediaQuery.of(context).size.width / 340.0 * 80,
+                height: (MediaQuery.of(context).size.width - 32.w) / 340.0 * 55,
                 width: double.infinity,
                 padding: EdgeInsets.zero,
                 child: Swiper(
@@ -104,7 +103,7 @@ class _AdBannerState extends State<AdBanner> {
                   itemBuilder: (BuildContext context, int index) {
                     return widgets[index];
                   },
-                  pagination: SwiperPagination(),
+                  pagination: SwiperPagination(margin: EdgeInsets.zero),
                 ),
               ),
         Visibility(
@@ -128,34 +127,5 @@ class _AdBannerState extends State<AdBanner> {
       ],
     );
     // });
-  }
-}
-
-class GeneralCrowdLoanBanner extends StatelessWidget {
-  const GeneralCrowdLoanBanner(this.image, this.url, {Key key})
-      : super(key: key);
-
-  final String image;
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.topEnd,
-      children: [
-        GestureDetector(
-          child: Container(
-            color: Colors.transparent,
-            child: Image.asset(
-              image,
-            ),
-          ),
-          onTap: () => Navigator.of(context).pushNamed(
-            DAppWrapperPage.route,
-            arguments: url,
-          ),
-        ),
-      ],
-    );
   }
 }

@@ -4,8 +4,6 @@ import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/public/guidePage.dart';
-import 'package:app/service/walletApi.dart';
-import 'package:app/utils/UI.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -34,7 +32,7 @@ class _StartPageState extends State<StartPage>
     super.initState();
 
     _controller = OneShotAnimation(
-      'Animation 1',
+      'Animation1',
       onStop: () {
         WalletApp.isInitial = true;
         toPage();
@@ -78,7 +76,7 @@ class _StartPageState extends State<StartPage>
               margin: EdgeInsets.symmetric(horizontal: 70),
               child: RiveAnimation.asset(
                 'assets/images/start_logo.riv',
-                animations: const ['Animation 1'],
+                animations: const ['Animation1'],
                 controllers: [_controller],
               ))),
     );
