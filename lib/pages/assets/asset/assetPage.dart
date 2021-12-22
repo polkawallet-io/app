@@ -366,7 +366,7 @@ class _AssetPageState extends State<AssetPage> {
                   symbol: symbol,
                   decimals: decimals,
                   marketPrices:
-                      widget.service.store.assets.marketPrices[symbol] *
+                      (widget.service.store.assets.marketPrices[symbol] ?? 0) *
                           (widget.service.store.settings.priceCurrency == "CNY"
                               ? _rate
                               : 1.0),

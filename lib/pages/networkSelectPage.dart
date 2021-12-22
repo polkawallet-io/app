@@ -198,6 +198,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
             Container(
               color: Colors.transparent,
               child: ListTile(
+                dense: true,
                 leading: AddressIcon(address, svg: i.icon),
                 title: Text(
                   UI.accountName(context, i),

@@ -143,7 +143,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                 onTap: _onSave,
                 child: Container(
                   padding: EdgeInsets.fromLTRB(15.h, 0, 15.h, 4),
-                  margin: EdgeInsets.only(right: 16.w),
+                  margin: EdgeInsets.only(right: 14.w),
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     image: DecorationImage(
@@ -167,7 +167,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
         child: Column(
           children: [
             Container(
-                margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
                 height: 52,
                 child: v3.TextInputWidget(
                   decoration: v3.InputDecorationV3(
@@ -188,7 +188,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                   },
                 )),
             Container(
-              margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
               child: GestureDetector(
                 child: Row(
                   children: [
@@ -224,7 +224,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                   ? Center(child: CupertinoActivityIndicator())
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.all(16),
+                      padding: EdgeInsets.only(bottom: 16),
                       itemCount: list.length,
                       itemBuilder: (_, i) {
                         final id = isStateMint ? '#${list[i].id} ' : '';
@@ -233,6 +233,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                             Container(
                               color: Colors.transparent,
                               child: ListTile(
+                                dense: true,
                                 leading: TokenIcon(
                                   list[i].symbol,
                                   widget.service.plugin.tokenIcons,

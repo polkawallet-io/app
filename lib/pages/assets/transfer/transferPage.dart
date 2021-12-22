@@ -18,10 +18,10 @@ import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/txButton.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -591,8 +591,7 @@ class _TransferPageState extends State<TransferPage> {
                                           _accountOptions,
                                           labelText: dic['cross.to'],
                                           labelStyle: lableStyle,
-                                          hintText:
-                                              dic['v3.searchPublicAddres'],
+                                          hintText: dic['address'],
                                           initialValue: _accountTo,
                                           // formKey: _formKey,
                                           onChanged: (KeyPairData acc) async {

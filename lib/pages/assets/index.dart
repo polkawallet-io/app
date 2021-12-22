@@ -886,9 +886,8 @@ class _AssetsState extends State<AssetsPage> {
                         child: Column(
                           children: [
                             ListTile(
-                              minLeadingWidth: 30.w,
                               leading: Container(
-                                width: 30.w,
+                                width: 45.w,
                                 alignment: Alignment.centerLeft,
                                 child: TokenIcon(
                                   symbol,
@@ -1059,10 +1058,8 @@ class TokenItem extends StatelessWidget {
       children: [
         Divider(height: 1),
         ListTile(
-          minLeadingWidth: 30.w,
           leading: Container(
-            height: 30.w,
-            width: 30.w,
+            width: 45.w,
             alignment: Alignment.centerLeft,
             child: icon ??
                 CircleAvatar(
