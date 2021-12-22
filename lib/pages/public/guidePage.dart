@@ -1,6 +1,4 @@
-import 'package:app/common/consts.dart';
 import 'package:app/pages/homePage.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

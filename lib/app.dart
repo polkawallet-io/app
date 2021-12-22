@@ -126,7 +126,7 @@ class _WalletAppState extends State<WalletApp> {
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFF0ECE6),
+      scaffoldBackgroundColor: Color(0xFFEAE7E2),
       dividerColor: Color(0xFFBAB7B2),
       cardColor: Color(0xFFF9F8F6),
       toggleableActiveColor: Color(0xFF768FE1),
@@ -135,7 +135,7 @@ class _WalletAppState extends State<WalletApp> {
       textSelectionTheme:
           TextSelectionThemeData(selectionColor: Color(0xFF565554)),
       appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFF0ECE6),
+          backgroundColor: Color(0xFFEAE7E2),
           elevation: 0,
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),

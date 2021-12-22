@@ -47,7 +47,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
       body: widget.body,
       bottomNavigationBar: SimpleShadow(
         child: BottomAppBar(
-          color: Color(0xFFE3DED8),
+          color: Color(0xFFDAD6D0),
           shape: CustomNotchedShape(context),
           child: SizedBox(height: 50, child: Row(children: children)),
         ),
@@ -86,7 +86,6 @@ class NavItem extends StatelessWidget {
             height: 26,
             child: active ? item.iconActive : item.icon,
           ),
-          const SizedBox(height: 2),
           Text(
             item.text,
             style: style?.copyWith(
