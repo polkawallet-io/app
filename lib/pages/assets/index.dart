@@ -969,7 +969,7 @@ class _AssetsState extends State<AssetsPage> {
                                                 ? _rate
                                                 : 1.0),
                                         icon: TokenIcon(
-                                          i.id ?? i.symbol,
+                                          i.symbol.toUpperCase(),
                                           widget.service.plugin.tokenIcons,
                                           symbol: i.symbol,
                                         ),
