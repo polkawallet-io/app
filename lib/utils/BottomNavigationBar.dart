@@ -184,9 +184,9 @@ class CustomNotchedShape extends NotchedShape {
   Path getOuterPath(Rect host, Rect guest) {
     const radius = 70.0;
     const lx = 35.0;
-    const ly = 17;
-    const bx = 20.0;
-    const by = 57.0;
+    const ly = 15;
+    const bx = 25.0;
+    const by = 35.0;
     var x = (MediaQuery.of(context).size.width - radius) / 2 - lx;
     return Path()
       ..moveTo(host.left, host.top)
@@ -195,7 +195,9 @@ class CustomNotchedShape extends NotchedShape {
       ..quadraticBezierTo(x + bx, host.top, x += lx, host.top - ly)
       // ..lineTo(x += radius, host.top - ly)
       ..quadraticBezierTo(
-          x + radius / 2, host.top - by, x += radius, host.top - ly)
+          x + radius / 5, host.top - by, x += radius / 2, host.top - by)
+      ..quadraticBezierTo(
+          x + radius / 3.5, host.top - by, x += radius / 2, host.top - ly)
       // ..lineTo(x += lx, host.top)
       ..quadraticBezierTo((x += lx) - bx, host.top, x, host.top)
       ..lineTo(host.right, host.top)

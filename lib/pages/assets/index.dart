@@ -1111,7 +1111,7 @@ class TokenItem extends StatelessWidget {
                   : Container(height: 0, width: 8),
             ],
           ),
-          onTap: detailPageRoute == null || isClickable
+          onTap: detailPageRoute == null || !isClickable
               ? null
               : () {
                   Navigator.of(context)
