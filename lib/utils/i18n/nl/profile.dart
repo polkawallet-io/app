@@ -1,5 +1,5 @@
 const Map<String, String> enProfile = {
-  'title': 'Profile',
+  'title': 'Setting',
   'account': 'Manage Account',
   'sign': 'Sign and Verify',
   'sign.sign': 'Sign Message',
