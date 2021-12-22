@@ -2,6 +2,7 @@ import 'package:app/utils/InstrumentItemWidget.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_ui/components/SkaletonList.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -192,44 +193,35 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                             .textSelectionTheme
                             .selectionColor)),
               ),
-        Row(
-          children: [
-            ...widget.datas[getIndex()].items.reversed
-                .map((e) => Expanded(
-                        child: RoundedCard(
-                      margin: EdgeInsets.symmetric(horizontal: 4.5.w),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 11.w, vertical: 3.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+        getRoundedCardItem(),
+      ],
+    );
+  }
+
+  Widget getRoundedCardItem() {
+    if (widget.datas[getIndex()].items.length > 0) {
+      return Row(children: [
+        ...widget.datas[getIndex()].items.reversed
+            .map((e) => Expanded(
+                    child: RoundedCard(
+                  margin: EdgeInsets.symmetric(horizontal: 3.w),
+                  padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin: EdgeInsets.only(right: 3),
-                                decoration: BoxDecoration(
-                                    color: e.color,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10 / 2))),
-                              ),
-                              Text(
-                                e.name,
-                                style: TextStyle(
-                                    fontFamily: "TitilliumWeb",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: Theme.of(context)
-                                        .textSelectionTheme
-                                        .selectionColor),
-                              )
-                            ],
+                          Container(
+                            width: 10,
+                            height: 10,
+                            margin: EdgeInsets.only(right: 3),
+                            decoration: BoxDecoration(
+                                color: e.color,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10 / 2))),
                           ),
                           Text(
-                            widget.hideBalance
-                                ? "******"
-                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                            e.name,
                             style: TextStyle(
                                 fontFamily: "TitilliumWeb",
                                 fontSize: 12,
@@ -240,11 +232,25 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                           )
                         ],
                       ),
-                    )))
-                .toList(),
-          ],
-        )
-      ],
-    );
+                      Text(
+                        widget.hideBalance
+                            ? "******"
+                            : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                        style: TextStyle(
+                            fontFamily: "TitilliumWeb",
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context)
+                                .textSelectionTheme
+                                .selectionColor),
+                      )
+                    ],
+                  ),
+                )))
+            .toList()
+      ]);
+    } else {
+      return SkaletionRow(items: 3);
+    }
   }
 }

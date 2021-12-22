@@ -192,7 +192,7 @@ class _WalletAppState extends State<WalletApp> {
               fontWeight: FontWeight.w600,
               fontFamily: "TitilliumWeb"),
           button: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.w600,
               color: Colors.white,
               fontFamily: "TitilliumWeb")),

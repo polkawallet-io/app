@@ -353,7 +353,12 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   List<InstrumentData> _instrumentDatas() {
-    final List<InstrumentData> datas = [InstrumentData(0, [])];
+    final List<InstrumentData> datas = [];
+
+    final instrument1 = InstrumentData(0, [],
+        title: (widget.service.plugin.networkState.tokenSymbol ?? [''])[0],
+        prompt: I18n.of(context)
+            .getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"]);
 
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
@@ -389,8 +394,9 @@ class _AssetsState extends State<AssetsPage> {
 
     InstrumentData totalBalance = InstrumentData(
         available + reserved + locked, [],
-        title: I18n.of(context)
-            .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
+        title: (widget.service.plugin.networkState.tokenSymbol ?? [''])[0],
+        // title: I18n.of(context)
+        //     .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
         prompt: I18n.of(context)
             .getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"]);
     totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
@@ -400,9 +406,9 @@ class _AssetsState extends State<AssetsPage> {
     totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1),
         dic['available'], available, "assets/images/icon_instrument_blue.png"));
 
+    datas.add(instrument1);
     datas.add(totalBalance);
-
-    datas.add(InstrumentData(0, []));
+    datas.add(instrument1);
 
     return datas;
   }
