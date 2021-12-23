@@ -164,13 +164,15 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: Text(dic['import.warn']),
-            content: Text('${dic['import.invalid']} ${dic['mnemonic']}'),
+            content: Text(dic['mnemonic.msg']),
             actions: [
               CupertinoButton(
-                child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                child: Text(dic['mnemonic.btn']),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  setState(() {
+                    _keyCtrl.text = "";
+                  });
                 },
               ),
             ],

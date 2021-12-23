@@ -204,17 +204,14 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
               padding: EdgeInsets.only(left: 16.w, top: 16.h),
               child: Row(
                 children: [
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: v3.Checkbox(
-                      value: _enableBiometric,
-                      onChanged: (v) {
-                        setState(() {
-                          _enableBiometric = v;
-                        });
-                      },
-                    ),
+                  v3.Checkbox(
+                    padding: EdgeInsets.only(right: 10),
+                    value: _enableBiometric,
+                    onChanged: (v) {
+                      setState(() {
+                        _enableBiometric = v;
+                      });
+                    },
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 8.w),

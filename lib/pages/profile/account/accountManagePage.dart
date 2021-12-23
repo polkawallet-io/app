@@ -18,6 +18,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 
 class AccountManagePage extends StatefulWidget {
   AccountManagePage(this.service);
@@ -177,7 +178,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
                               width: 24.w,
                             ),
                           ),
-                          onTap: () => UI.copyAndNotify(context, acc.address),
+                          onTap: () => Navigator.pushNamed(
+                              context, AccountQrCodePage.route),
                         )
                       ],
                     )

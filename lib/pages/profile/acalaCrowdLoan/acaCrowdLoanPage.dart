@@ -607,26 +607,20 @@ class _AcaCrowdLoanPageState extends State<AcaCrowdLoanPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Theme(
-                                      child: SizedBox(
-                                        height: 48,
-                                        width: 32,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(right: 8),
-                                          child: v3.Checkbox(
-                                            value: isProxy
-                                                ? _accepted
-                                                : _acceptedDirect,
-                                            onChanged: (v) {
-                                              setState(() {
-                                                if (isProxy) {
-                                                  _accepted = v;
-                                                } else {
-                                                  _acceptedDirect = v;
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ),
+                                      child: v3.Checkbox(
+                                        padding: EdgeInsets.only(right: 8),
+                                        value: isProxy
+                                            ? _accepted
+                                            : _acceptedDirect,
+                                        onChanged: (v) {
+                                          setState(() {
+                                            if (isProxy) {
+                                              _accepted = v;
+                                            } else {
+                                              _acceptedDirect = v;
+                                            }
+                                          });
+                                        },
                                       ),
                                       data: ThemeData(
                                         primarySwatch: acaThemeColor,

@@ -46,9 +46,13 @@ class _ChangePassword extends State<ChangePasswordPage> {
     if (_enableBiometric) {
       final storeFile = await widget.service.account
           .getBiometricPassStoreFile(context, pubKey);
-      storeFile.write(passNew);
 
-      widget.service.account.setBiometricEnabled(pubKey);
+      try {
+        await storeFile.write(passNew);
+        widget.service.account.setBiometricEnabled(pubKey);
+      } catch (err) {
+        widget.service.account.closeBiometricDisabled(pubKey);
+      }
     } else {
       widget.service.account.closeBiometricDisabled(pubKey);
     }
@@ -198,6 +202,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
                               child: Row(
                                 children: [
                                   v3.Checkbox(
+                                    padding: EdgeInsets.only(right: 10),
                                     value: _enableBiometric,
                                     onChanged: (v) {
                                       setState(() {

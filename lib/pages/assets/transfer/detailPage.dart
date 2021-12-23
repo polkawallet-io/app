@@ -3,9 +3,9 @@ import 'package:app/store/types/transferData.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/txDetail.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class TransferDetailPage extends StatelessWidget {
   TransferDetailPage(this.service);
@@ -21,7 +21,7 @@ class TransferDetailPage extends StatelessWidget {
     final decimals = (service.plugin.networkState.tokenDecimals ?? [12])[0];
 
     final TransferData tx = ModalRoute.of(context).settings.arguments;
-    final amount = Fmt.priceFloor(double.parse(tx.amount), lengthFixed: 4);
+    final amount = Fmt.priceFloor(double.parse(tx.amount), lengthMax: 6);
 
     final String txType = tx.from == service.keyring.current.address
         ? dic['transfer']

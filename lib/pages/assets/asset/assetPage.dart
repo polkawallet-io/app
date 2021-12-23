@@ -670,6 +670,10 @@ class BalanceCard extends StatelessWidget {
                       height: 45.w,
                       width: 45.w,
                       margin: EdgeInsets.only(right: 8.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(22.5.w)),
+                      ),
                       child: icon),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -774,36 +778,38 @@ class BalanceCard extends StatelessWidget {
   }
 
   Widget priceItemBuild(Widget icon, String title, String price, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 3),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-                height: 16.w,
-                width: 16.w,
-                margin: EdgeInsets.only(right: 8.w),
-                child: icon),
+            Row(
+              children: [
+                Container(
+                    height: 16.w,
+                    width: 16.w,
+                    margin: EdgeInsets.only(right: 8.w),
+                    child: icon),
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "TitilliumWeb"),
+                )
+              ],
+            ),
             Text(
-              title,
+              price,
               style: TextStyle(
                   color: color,
                   fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                   fontFamily: "TitilliumWeb"),
             )
           ],
-        ),
-        Text(
-          price,
-          style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              fontFamily: "TitilliumWeb"),
-        )
-      ],
-    );
+        ));
   }
 }
 

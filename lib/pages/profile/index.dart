@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage(this.service, this.connectedNode, this.changeToKusama);
@@ -160,18 +161,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                             fontSize: 16, color: grey),
                                       ),
                                       GestureDetector(
-                                        child: Container(
-                                          padding: EdgeInsets.fromLTRB(
-                                              4.w, 2.h, 8.w, 0),
-                                          child: SvgPicture.asset(
-                                            'assets/images/qr.svg',
-                                            color: blue,
-                                            width: 24.w,
+                                          child: Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                4.w, 2.h, 8.w, 0),
+                                            child: SvgPicture.asset(
+                                              'assets/images/qr.svg',
+                                              color: blue,
+                                              width: 24.w,
+                                            ),
                                           ),
-                                        ),
-                                        onTap: () => UI.copyAndNotify(
-                                            context, acc.address),
-                                      )
+                                          onTap: () => Navigator.pushNamed(
+                                              context, AccountQrCodePage.route))
                                     ],
                                   )
                                 ],

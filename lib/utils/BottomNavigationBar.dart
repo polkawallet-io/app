@@ -45,6 +45,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
     }
     return Scaffold(
       body: widget.body,
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: SimpleShadow(
         child: BottomAppBar(
           color: Color(0xFFDAD6D0),

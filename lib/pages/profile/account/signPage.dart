@@ -198,7 +198,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                         margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                         child: AddressTextFormField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.allWithContacts,
+                          widget.service.keyring.keyPairs,
                           labelText: dicCommon['submit.signer'],
                           hintText: dicCommon['submit.signer'],
                           initialValue:

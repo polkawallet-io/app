@@ -55,7 +55,7 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
       }
       return;
     }
-    if (isSwitching) return;
+    if (isSwitching || !mounted) return;
     controller = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     final CurvedAnimation curve =

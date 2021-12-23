@@ -355,13 +355,14 @@ class _AssetsState extends State<AssetsPage> {
   List<InstrumentData> _instrumentDatas() {
     final List<InstrumentData> datas = [];
 
-    final instrument1 = InstrumentData(0, [],
-        title: (widget.service.plugin.networkState.tokenSymbol ?? [''])[0],
-        prompt: I18n.of(context)
-            .getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"]);
-
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+    final title = "${dic['v3.my']} $symbol";
+    final prompt =
+        I18n.of(context).getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"];
+
+    final instrument1 = InstrumentData(0, [], title: title, prompt: prompt);
+
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 1;
@@ -392,13 +393,12 @@ class _AssetsState extends State<AssetsPage> {
           decimals,
         );
 
-    InstrumentData totalBalance = InstrumentData(
-        available + reserved + locked, [],
-        title: (widget.service.plugin.networkState.tokenSymbol ?? [''])[0],
-        // title: I18n.of(context)
-        //     .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
-        prompt: I18n.of(context)
-            .getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"]);
+    InstrumentData totalBalance =
+        InstrumentData(available + reserved + locked, [],
+            title: title,
+            // title: I18n.of(context)
+            //     .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
+            prompt: prompt);
     totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
         dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
     totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],

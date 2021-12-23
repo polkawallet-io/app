@@ -481,20 +481,14 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Theme(
-                          child: SizedBox(
-                            height: 48,
-                            width: 32,
-                            child: Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: v3.Checkbox(
-                                value: _accepted0,
-                                onChanged: (v) {
-                                  setState(() {
-                                    _accepted0 = v;
-                                  });
-                                },
-                              ),
-                            ),
+                          child: v3.Checkbox(
+                            padding: EdgeInsets.only(right: 8),
+                            value: _accepted0,
+                            onChanged: (v) {
+                              setState(() {
+                                _accepted0 = v;
+                              });
+                            },
                           ),
                           data: ThemeData(
                             primarySwatch: karColor,
@@ -629,20 +623,14 @@ class _KarCrowdLoanPageState extends State<KarCrowdLoanPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Theme(
-                          child: SizedBox(
-                            height: 48,
-                            width: 32,
-                            child: Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: v3.Checkbox(
-                                value: _accepted2,
-                                onChanged: (v) {
-                                  setState(() {
-                                    _accepted2 = v;
-                                  });
-                                },
-                              ),
-                            ),
+                          child: v3.Checkbox(
+                            padding: EdgeInsets.only(right: 8),
+                            value: _accepted2,
+                            onChanged: (v) {
+                              setState(() {
+                                _accepted2 = v;
+                              });
+                            },
                           ),
                           data: ThemeData(
                             primarySwatch: karColor,

@@ -214,10 +214,36 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
               child: Button(
                 title:
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['next'],
-                onPressed: _wordsSelected.join(' ') ==
-                        widget.service.store.account.newAccount.key
-                    ? () => Navigator.of(context).pop(_advanceOptions)
-                    : null,
+                onPressed: () {
+                  if (_wordsSelected.join(' ') ==
+                      widget.service.store.account.newAccount.key) {
+                    Navigator.of(context).pop(_advanceOptions);
+                  } else {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CupertinoAlertDialog(
+                          title: Text(dic['import.warn']),
+                          content: Text(dic['mnemonic.msg']),
+                          actions: [
+                            CupertinoButton(
+                              child: Text(dic['mnemonic.btn']),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  _wordsLeft = widget
+                                      .service.store.account.newAccount.key
+                                      .split(' ');
+                                  _wordsSelected = [];
+                                });
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
               ),
             ),
           ],

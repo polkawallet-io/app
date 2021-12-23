@@ -20,7 +20,7 @@ class ImportAccountAction {
       await storeFile.write(service.store.account.newAccount.password);
       service.account.setBiometricEnabled(service.keyring.current.pubKey);
     } catch (err) {
-      // ignore
+      service.account.closeBiometricDisabled(service.keyring.current.pubKey);
     }
   }
 

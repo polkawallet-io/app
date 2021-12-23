@@ -234,12 +234,18 @@ class _HomePageState extends State<HomePage> {
               });
             },
             children: pages
-                .map((e) => PageWrapperWithBackground(
-                      e.content,
-                      height: 220,
-                      backgroundImage:
-                          widget.service.plugin.basic.backgroundImage,
-                    ))
+                .map((e) =>
+                    widget.service.plugin.basic.name == para_chain_name_acala &&
+                            e.text ==
+                                I18n.of(context).getDic(
+                                    i18n_full_dic_app, 'public')['v3.metahub']
+                        ? e.content
+                        : PageWrapperWithBackground(
+                            e.content,
+                            height: 220,
+                            backgroundImage:
+                                widget.service.plugin.basic.backgroundImage,
+                          ))
                 .toList(),
           ),
           Observer(builder: (_) {

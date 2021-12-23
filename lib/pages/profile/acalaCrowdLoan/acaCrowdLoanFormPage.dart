@@ -519,22 +519,16 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                 child: Row(
                   children: [
                     Theme(
-                      child: SizedBox(
-                        height: 32,
-                        width: 32,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 8),
-                          child: v3.Checkbox(
-                            value: _keepAlive,
-                            onChanged: (v) {
-                              setState(() {
-                                _keepAlive = v;
-                              });
-                              _onAmountChange(_amount.toString(), balanceInt,
-                                  params.promotion);
-                            },
-                          ),
-                        ),
+                      child: v3.Checkbox(
+                        padding: EdgeInsets.only(right: 8),
+                        value: _keepAlive,
+                        onChanged: (v) {
+                          setState(() {
+                            _keepAlive = v;
+                          });
+                          _onAmountChange(
+                              _amount.toString(), balanceInt, params.promotion);
+                        },
                       ),
                       data: ThemeData(
                         primarySwatch: acaThemeColor,
@@ -707,20 +701,14 @@ class _AcaCrowdLoanFormPageState extends State<AcaCrowdLoanFormPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Theme(
-                            child: SizedBox(
-                              height: 32,
-                              width: 32,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: v3.Checkbox(
-                                  value: _emailAccept,
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _emailAccept = v;
-                                    });
-                                  },
-                                ),
-                              ),
+                            child: v3.Checkbox(
+                              padding: EdgeInsets.only(right: 10),
+                              value: _emailAccept,
+                              onChanged: (v) {
+                                setState(() {
+                                  _emailAccept = v;
+                                });
+                              },
                             ),
                             data: ThemeData(
                               primarySwatch: acaThemeColor,

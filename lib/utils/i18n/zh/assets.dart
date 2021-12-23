@@ -95,4 +95,5 @@ const Map<String, String> zhAssets = {
   'v3.myDefi': '我的Defi',
   'v3.send': '发送',
   'v3.changeNetwork': '切换网络',
+  'v3.my': '我的',
 };

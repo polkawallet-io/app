@@ -445,20 +445,14 @@ class _KarCrowdLoanFormPageState extends State<KarCrowdLoanFormPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Theme(
-                        child: SizedBox(
-                          height: 48,
-                          width: 32,
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: v3.Checkbox(
-                              value: _emailAccept,
-                              onChanged: (v) {
-                                setState(() {
-                                  _emailAccept = v;
-                                });
-                              },
-                            ),
-                          ),
+                        child: v3.Checkbox(
+                          padding: EdgeInsets.only(right: 8),
+                          value: _emailAccept,
+                          onChanged: (v) {
+                            setState(() {
+                              _emailAccept = v;
+                            });
+                          },
                         ),
                         data: ThemeData(
                           primarySwatch: karColor,

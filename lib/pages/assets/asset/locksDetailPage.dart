@@ -4,15 +4,16 @@ import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
-import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/innerShadow.dart';
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/v3/innerShadow.dart';
-import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -81,28 +82,6 @@ class LocksDetailPageState extends State<LocksDetailPage> {
   }
 
   Future<void> _updateVestingInfo() async {
-    final unlockdatas =
-        await WalletApi.getUnlockDatas(widget.service.keyring.current.address);
-    BigInt originalLocked;
-    if (unlockdatas != null) {
-      if (widget.service.plugin.basic.name == para_chain_name_karura) {
-        originalLocked = BigInt.from(double.parse((unlockdatas['data']
-                [widget.service.plugin.basic.name][0]['vested'])
-            .toString()
-            .splitMapJoin(",", onMatch: (Match match) {
-          return "";
-        })));
-      } else {
-        originalLocked = BigInt.from(double.parse((unlockdatas['data']
-                    [widget.service.plugin.basic.name][0]['totalReward'])
-                .toString()
-                .splitMapJoin(",", onMatch: (Match match) {
-              return "";
-            })) *
-            0.8);
-      }
-    }
-
     final res = await Future.wait([
       WalletApi.fetchBlocksFromSn(
           widget.service.plugin.basic.name == para_chain_name_karura
@@ -113,12 +92,26 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     ]);
     if (res[0] != null && res[1] != null) {
       final blockNow = BigInt.from(res[0]['count']);
-      final vestInfo = res[1][0];
-      final periodBlocks = BigInt.parse(vestInfo['period'].toString());
-      final periodCount = BigInt.parse(vestInfo['periodCount'].toString());
-      final perPeriod = BigInt.parse(vestInfo['perPeriod'].toString());
-      final startBlock = BigInt.parse(vestInfo['start'].toString());
-      final endBlock = startBlock + periodCount * periodBlocks;
+      BigInt vestOriginal = BigInt.zero;
+      BigInt unlocking = BigInt.zero;
+      print(res[1]);
+      List.from(res[1]).forEach((e) {
+        final periodBlocks = BigInt.parse(e['period'].toString());
+        final periodCount = BigInt.parse(e['periodCount'].toString());
+        final perPeriod = BigInt.parse(e['perPeriod'].toString());
+        final startBlock = BigInt.parse(e['start'].toString());
+
+        final endBlock = startBlock + periodCount * periodBlocks;
+
+        final blockNowOrStart = startBlock > blockNow ? startBlock : blockNow;
+        final unlockingPeriod = endBlock - blockNowOrStart > BigInt.zero
+            ? (endBlock - blockNowOrStart) ~/ periodBlocks +
+                (startBlock > blockNow ? BigInt.zero : BigInt.one)
+            : BigInt.zero;
+
+        vestOriginal += perPeriod * periodCount;
+        unlocking += unlockingPeriod * perPeriod;
+      });
       var vestLeft = BigInt.zero;
       // final vestLeft = BigInt.parse(
       //     widget.service.plugin.balances.native.lockedBalance.toString());
@@ -130,14 +123,11 @@ class LocksDetailPageState extends State<LocksDetailPage> {
           vestLeft = BigInt.parse(element.amount.toString());
         }
       });
-      final unlockingPeriod = endBlock - blockNow > BigInt.zero
-          ? (endBlock - blockNow) ~/ periodBlocks + BigInt.one
-          : BigInt.zero;
-      final unlocking = unlockingPeriod * perPeriod;
+
       setState(() {
         _claimable = vestLeft - unlocking;
         _unlocking = unlocking;
-        _originalLocked = originalLocked;
+        _originalLocked = vestOriginal;
       });
     }
   }
@@ -180,9 +170,17 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final decimals = widget.service.plugin.networkState.tokenDecimals[0];
     final symbol = widget.service.plugin.networkState.tokenSymbol[0];
 
+    final l = widget.service.plugin.balances.native.lockedBreakdown.toList();
+    l.retainWhere((e) => BigInt.parse(e.amount.toString()) > BigInt.zero);
     final locks =
-        widget.service.plugin.balances.native.lockedBreakdown.toList();
-    locks.retainWhere((e) => BigInt.parse(e.amount.toString()) > BigInt.zero);
+        l.where((element) => element.use.contains('ormlvest')).toList();
+    locks.addAll(
+        l.where((element) => element.use.contains('democrac')).toList());
+    l.retainWhere(
+        (e) => !e.use.contains('ormlvest') && !e.use.contains('democrac'));
+    if (l.length > 0) {
+      locks.add(BalanceBreakdownData.fromJson({"amount": 0, "use": ""}));
+    }
 
     final hasClaim =
         _claimable != null && _claimable > BigInt.zero && !_submitting;
@@ -210,10 +208,10 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                     if (e.use.contains('democrac') && _locks.length > 0) {
                       for (int index = 0; index < _locks.length; index++) {
                         var unlockAt = _locks[index]['unlockAt'];
-                        final amount = double.parse(Fmt.balance(
+                        final amount = Fmt.balanceDouble(
                           _locks[index]['balance'].toString(),
                           decimals,
-                        ));
+                        );
                         if (unlockAt != "0") {
                           BigInt endLeft;
                           try {
@@ -268,15 +266,17 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                             children: [
                               _originalLocked != null
                                   ? InfoItemRow(dic['lock.vest.original'],
-                                      '${Fmt.priceFloorBigInt(_originalLocked, decimals)}')
+                                      '${Fmt.priceFloorBigInt(_originalLocked, decimals, lengthMax: 4)}')
                                   : Container(),
                               InfoItemRow(dic['lock.vest'],
-                                  '${Fmt.priceFloorBigInt(amt, decimals)}'),
-                              InfoItemRow(dic['lock.vest.unlocking'],
-                                  Fmt.priceFloorBigInt(_unlocking, decimals)),
+                                  '${Fmt.priceFloorBigInt(amt, decimals, lengthMax: 4)}'),
+                              InfoItemRow(
+                                  dic['lock.vest.unlocking'],
+                                  Fmt.priceFloorBigInt(_unlocking, decimals,
+                                      lengthMax: 4)),
                               _originalLocked != null
                                   ? InfoItemRow(dic['lock.vest.claimed'],
-                                      '${Fmt.priceFloorBigInt(_originalLocked - amt, decimals)}')
+                                      '${Fmt.priceFloorBigInt(_originalLocked - amt, decimals, lengthMax: 4)}')
                                   : Container(),
                               hasClaim
                                   ? InfoItemRow(
@@ -302,17 +302,29 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                               _claimVest(claimableAmount, decimals, symbol));
                     } else if (Democracchild != null) {
                       return buildItem(
-                          title: 'Locked',
+                          title: 'Democracy',
                           child: Democracchild,
                           hasClaim: maxUnlockAmount - maxLockAmount > 0,
                           onRedeem: () => _onUnlock(unLockIds));
-                    } else {
+                    } else if (e.use.length == 0) {
                       return buildItem(
-                          title: 'Locked',
-                          child: InfoItemRow(dic['lock.${e.use.trim()}'],
-                              Fmt.priceFloorBigInt(amt, decimals)),
+                          title: 'Others',
+                          child: Column(
+                            children: [
+                              ...l
+                                  .map((e) => InfoItemRow(
+                                      dic['lock.${e.use.trim()}'],
+                                      Fmt.priceFloorBigInt(
+                                          BigInt.parse(e.amount.toString()),
+                                          decimals,
+                                          lengthMax: 4)))
+                                  .toList()
+                            ],
+                          ),
                           hasClaim: false,
                           onRedeem: null);
+                    } else {
+                      return Container();
                     }
                   }).toList(),
                 ),
@@ -349,8 +361,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                         GestureDetector(
                             onTap: () => onRedeem(),
                             child: Container(
-                              padding: EdgeInsets.fromLTRB(15.w, 0, 15.w, 4),
-                              height: 24,
+                              padding: EdgeInsets.fromLTRB(17.w, 0, 17.w, 4),
+                              height: 28,
                               decoration: BoxDecoration(
                                 color: Colors.transparent,
                                 image: DecorationImage(

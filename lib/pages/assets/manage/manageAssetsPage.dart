@@ -276,7 +276,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                               letterSpacing: -0.6),
                                         )),
                                     Image.asset(
-                                      "assets/images/${(_tokenVisible[list[i].id] ?? false) ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
+                                      "assets/images/${(_tokenVisible[list[i].symbol] ?? false) ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
                                       fit: BoxFit.contain,
                                       width: 16.w,
                                     )

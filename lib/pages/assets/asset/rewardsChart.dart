@@ -6,9 +6,10 @@ class RewardsChart extends StatelessWidget {
   final double maxY, minY;
   final DateTime maxX, minX;
   final double width;
+  final bool isRose;
   static int xBase = 10;
-  RewardsChart(
-      this.seriesList, this.maxX, this.maxY, this.minX, this.minY, this.width);
+  RewardsChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY,
+      this.width, this.isRose);
 
   factory RewardsChart.withData(List<TimeSeriesAmount> data, double width) {
     double maxY = 0, minY;
@@ -38,7 +39,8 @@ class RewardsChart extends StatelessWidget {
               xBase,
           element.amount));
     });
-    return RewardsChart(flSpotDatas, maxX, maxY, minX, minY, width);
+    return RewardsChart(flSpotDatas, maxX, maxY, minX, minY, width,
+        data[data.length - 1].amount - data[0].amount < 0);
   }
 
   @override
@@ -112,7 +114,7 @@ class RewardsChart extends StatelessWidget {
     final LineChartBarData lineChartBarData1 = LineChartBarData(
         spots: this.seriesList,
         isCurved: false,
-        colors: [Color(0xff22BC5A)],
+        colors: chartLineColors(),
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -122,12 +124,31 @@ class RewardsChart extends StatelessWidget {
           show: true,
           gradientFrom: Offset(0, 0),
           gradientTo: Offset(0, 1),
-          colors: [
-            Color(0xFFBFFFD6).withOpacity(1),
-            Color(0xFFBFFFD6).withOpacity(0)
-          ],
+          colors: chartBelowBarColors(),
         ));
     return [lineChartBarData1];
+  }
+
+  List<Color> chartLineColors() {
+    if (isRose) {
+      return [Color(0xff22BC5A)];
+    } else {
+      return [Colors.red];
+    }
+  }
+
+  List<Color> chartBelowBarColors() {
+    if (isRose) {
+      return [
+        Color(0xFFBFFFD6).withOpacity(1),
+        Color(0xFFBFFFD6).withOpacity(0)
+      ];
+    } else {
+      return [
+        Color(0xFFCD4337).withOpacity(1),
+        Color(0xFFCD4337).withOpacity(0)
+      ];
+    }
   }
 }
 
