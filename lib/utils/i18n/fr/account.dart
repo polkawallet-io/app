@@ -88,5 +88,7 @@ const Map<String, String> enAccount = {
   'bad.warn.info':
       'is a public account which is derived by Mnemonic 【null】, please delete it and create a new one.',
   'biometric.msg':
-      "Enter the password to activate fingerprint/face ID due to the biometrics has expired."
+      "Enter the password to activate fingerprint/face ID due to the biometrics has expired.",
+  'mnemonic.msg': "Invalid mnemonic, please enter again.",
+  'mnemonic.btn': 'Got it',
 };
