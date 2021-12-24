@@ -547,6 +547,7 @@ class _TransferPageState extends State<TransferPage> {
         final lableStyle = Theme.of(context).textTheme.headline4;
         return Scaffold(
           appBar: AppBar(
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
               actions: <Widget>[

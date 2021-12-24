@@ -1,3 +1,7 @@
+# [3.0.0-beta] - 20211224
+- v3 ui 
+- add acala plugin
+
 # [2.4.0-beta] - 20211019
 - update Karura plugin.
 
