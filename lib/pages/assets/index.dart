@@ -43,7 +43,6 @@ class AssetsPage extends StatefulWidget {
   AssetsPage(
     this.service,
     this.plugins,
-    this.changeNode,
     this.connectedNode,
     this.checkJSCodeUpdate,
     this.switchNetwork,
@@ -53,11 +52,10 @@ class AssetsPage extends StatefulWidget {
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Future<void> Function(String) switchNetwork;
+  final Future<void> Function(String, {NetworkParams node}) switchNetwork;
   final Future<void> Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
-  final Future<void> Function(NetworkParams) changeNode;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -450,12 +448,8 @@ class _AssetsState extends State<AssetsPage> {
                             kToolbarHeight -
                             20.h,
                         width: double.infinity,
-                        child: NodeSelectPage(
-                            widget.service,
-                            widget.plugins,
-                            widget.switchNetwork,
-                            widget.changeNode,
-                            widget.checkJSCodeUpdate),
+                        child: NodeSelectPage(widget.service, widget.plugins,
+                            widget.switchNetwork),
                       );
                     },
                     context: context,
@@ -517,7 +511,7 @@ class _AssetsState extends State<AssetsPage> {
         icon: SvgPicture.asset(
           "assets/images/icon_car.svg",
           color: Colors.white,
-          height: 24,
+          height: 22,
         ),
         onPressed: widget.service.keyring.allAccounts.length > 0
             ? () async {
@@ -732,6 +726,11 @@ class _AssetsState extends State<AssetsPage> {
                               },
                               priceCurrency:
                                   widget.service.store.settings.priceCurrency,
+                              rate:
+                                  widget.service.store.settings.priceCurrency ==
+                                          "CNY"
+                                      ? _rate
+                                      : 1.0,
                               hideBalance:
                                   widget.service.store.settings.isHideBalance),
                     ),

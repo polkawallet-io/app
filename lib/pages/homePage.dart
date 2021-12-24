@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
-  final Future<void> Function(String) switchNetwork;
+  final Future<void> Function(String, {NetworkParams node}) switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
@@ -135,11 +135,11 @@ class _HomePageState extends State<HomePage> {
         content: AssetsPage(
             widget.service,
             widget.plugins,
-            widget.changeNode,
             widget.connectedNode,
             (PolkawalletPlugin plugin) =>
                 widget.checkJSCodeUpdate(context, plugin),
-            (String name) async => widget.switchNetwork(name),
+            (String name, {NetworkParams node}) async =>
+                widget.switchNetwork(name, node: node),
             _handleWalletConnect),
         // content: Container(),
       )

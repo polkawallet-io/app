@@ -302,26 +302,6 @@ class _AssetPageState extends State<AssetPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
-    // BalanceData balancesInfo = widget.service.plugin.balances.native;
-
-    // String lockedInfo = '\n';
-    // bool hasVesting = false;
-    // if (balancesInfo != null && balancesInfo.lockedBreakdown != null) {
-    //   balancesInfo.lockedBreakdown.forEach((i) {
-    //     final amt = Fmt.balanceInt(i.amount.toString());
-    //     if (amt > BigInt.zero) {
-    //       // lockedInfo += '${Fmt.priceFloorBigInt(
-    //       //   amt,
-    //       //   decimals,
-    //       //   lengthMax: 4,
-    //       // )} $symbol ${dic['lock.${i.use.trim()}']}\n';
-    //       if (i.use.contains('ormlvest')) {
-    //         hasVesting = true;
-    //       }
-    //     }
-    //   });
-    // }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -340,6 +320,7 @@ class _AssetPageState extends State<AssetPage> {
                   icon: Icon(
                     Icons.more_horiz,
                     color: Theme.of(context).cardColor,
+                    size: 22,
                   ),
                   onPressed: _showAction)),
         ],
@@ -423,7 +404,7 @@ class _AssetPageState extends State<AssetPage> {
                             ? Expanded(
                                 child: Container(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 8.w),
+                                      EdgeInsets.symmetric(horizontal: 3.w),
                                   child: CarButton(
                                     icon: Image.asset(
                                         "assets/images/unlock.png",

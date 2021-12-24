@@ -555,7 +555,7 @@ class _TransferPageState extends State<TransferPage> {
                     icon: SvgPicture.asset(
                       'assets/images/scan.svg',
                       color: Theme.of(context).cardColor,
-                      width: 22.h,
+                      width: 20,
                     ),
                     onPressed: _onScan,
                     isBlueBg: true)

@@ -21,7 +21,7 @@ class TransferDetailPage extends StatelessWidget {
     final decimals = (service.plugin.networkState.tokenDecimals ?? [12])[0];
 
     final TransferData tx = ModalRoute.of(context).settings.arguments;
-    final amount = Fmt.priceFloor(double.parse(tx.amount), lengthMax: 6);
+    final amount = Fmt.priceFloor(double.parse(tx.amount), lengthMax: 4);
 
     final String txType = tx.from == service.keyring.current.address
         ? dic['transfer']

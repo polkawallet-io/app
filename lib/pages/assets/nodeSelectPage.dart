@@ -8,16 +8,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class NodeSelectPage extends StatefulWidget {
-  NodeSelectPage(this.service, this.plugins, this.changeNetwork,
-      this.changeNode, this.checkJSCodeUpdate,
-      {Key key})
+  NodeSelectPage(this.service, this.plugins, this.changeNetwork, {Key key})
       : super(key: key);
 
   final List<PolkawalletPlugin> plugins;
   final AppService service;
-  final Future<void> Function(NetworkParams) changeNode;
-  final Future<void> Function(String) changeNetwork;
-  final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
+  final Future<void> Function(String, {NetworkParams node}) changeNetwork;
 
   static final String route = '/nodeSelect';
 
@@ -103,9 +99,7 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
                         widget.service,
                         widget.plugins[index],
                         index == expansionIndex,
-                        widget.changeNetwork,
-                        widget.changeNode,
-                        widget.checkJSCodeUpdate, (itemIndex) {
+                        widget.changeNetwork, (itemIndex) {
                       if (itemIndex != expansionIndex) {
                         setState(() {
                           expansionIndex = itemIndex;
@@ -120,24 +114,15 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
 }
 
 class NodeSelectItem extends StatelessWidget {
-  NodeSelectItem(
-      this.service,
-      this.plugin,
-      this.isExpansion,
-      this.changeNetwork,
-      this.changeNode,
-      this.checkJSCodeUpdate,
-      this.networkOnTap,
-      this.index,
+  NodeSelectItem(this.service, this.plugin, this.isExpansion,
+      this.changeNetwork, this.networkOnTap, this.index,
       {Key key})
       : super(key: key);
   PolkawalletPlugin plugin;
   bool isExpansion = false;
   int index = 0;
   final AppService service;
-  final Future<void> Function(NetworkParams) changeNode;
-  final Future<void> Function(String) changeNetwork;
-  final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
+  final Future<void> Function(String, {NetworkParams node}) changeNetwork;
   final Function(int) networkOnTap;
 
   @override
@@ -189,12 +174,7 @@ class NodeSelectItem extends StatelessWidget {
                                 Navigator.of(context).pop();
                                 return;
                               }
-                              if (service.plugin.basic.name !=
-                                  plugin.basic.name) {
-                                changeNetwork(plugin.basic.name);
-                                checkJSCodeUpdate(plugin);
-                              }
-                              changeNode(e);
+                              changeNetwork(plugin.basic.name, node: e);
                               Navigator.of(context).pop();
                             },
                           );

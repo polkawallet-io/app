@@ -70,8 +70,8 @@ import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
-import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
+import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -277,7 +277,7 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _startPlugin(AppService service) async {
+  Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
     _service.assets.fetchMarketPriceFromSubScan();
@@ -286,7 +286,9 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _connectedNode = null;
     });
-    final connected = await service.plugin.start(_keyring);
+
+    final connected = await service.plugin.start(_keyring,
+        nodes: node != null ? [node] : service.plugin.nodeList);
     setState(() {
       _connectedNode = connected;
     });
@@ -297,7 +299,8 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
-  Future<void> _changeNetwork(PolkawalletPlugin network) async {
+  Future<void> _changeNetwork(PolkawalletPlugin network,
+      {NetworkParams node}) async {
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
@@ -331,12 +334,13 @@ class _WalletAppState extends State<WalletApp> {
       _service = service;
     });
 
-    _startPlugin(service);
+    _startPlugin(service, node: node);
   }
 
-  Future<void> _switchNetwork(String networkName) async {
+  Future<void> _switchNetwork(String networkName, {NetworkParams node}) async {
     await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == networkName));
+        widget.plugins.firstWhere((e) => e.basic.name == networkName),
+        node: node);
     _service.store.assets.loadCache(_keyring.current, networkName);
   }
 
