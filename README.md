@@ -11,13 +11,11 @@
 
 Polkawallet built with Flutter, https://polkawallet.io
 
-![](https://github.com/jiangfuyao/polkawallet-flutter-images/raw/master/cover-eb14f464e002642772ffad6d4c9debd5.png)
+![Welcome to Polkawallet](./polkawallet-cover.png)
 
 ## Introduction
 
 [Polkawallet](http://polkawallet.io) provide one-stop management for cross-chain assets, convenient staking and governance operations, and the private key is self-owned.
-
-![Polkawallet-overview](./polkawallet-overview.png)
 
 Polkawallet is aiming to provide a more convenient entrance of the polkadot network for all the users of Polkadot/Kusama/Substrate-based-blockchains.
 
@@ -36,7 +34,7 @@ Polkawallet is aiming to provide a more convenient entrance of the polkadot netw
 ## Getting Started
 
 Dependencies
- - Flutter 1.22.x statble
+ - Flutter 2.5.x statble
  - Dart 2.10.x
 
 To get started
