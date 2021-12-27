@@ -25,7 +25,6 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPage extends State<AboutPage> {
-  bool _loading = false;
   bool _updateLoading = false;
   String _appVersion;
 
@@ -40,20 +39,6 @@ class _AboutPage extends State<AboutPage> {
       _updateLoading = false;
     });
     AppUI.checkUpdate(context, versions, WalletApp.buildTarget);
-  }
-
-  Future<void> _jumpToLink(String uri) async {
-    if (_loading) return;
-
-    setState(() {
-      _loading = true;
-    });
-
-    await UI.launchURL(uri);
-
-    setState(() {
-      _loading = false;
-    });
   }
 
   @override
@@ -99,19 +84,19 @@ class _AboutPage extends State<AboutPage> {
                   children: [
                     SettingsPageListItem(
                       label: dic['about.terms'],
-                      onTap: () => _jumpToLink(
+                      onTap: () => UI.launchURL(
                           'https://polkawallet.io/terms-conditions.html'),
                     ),
                     Divider(height: 24.h),
                     SettingsPageListItem(
                       label: dic['about.privacy'],
-                      onTap: () => _jumpToLink(
+                      onTap: () => UI.launchURL(
                           'https://github.com/polkawallet-io/app/blob/master/privacy-policy.md'),
                     ),
                     Divider(height: 24.h),
                     SettingsPageListItem(
                       label: 'Github',
-                      onTap: () => _jumpToLink(
+                      onTap: () => UI.launchURL(
                           'https://github.com/polkawallet-io/app/issues'),
                     ),
                     Divider(height: 24.h),
@@ -119,7 +104,7 @@ class _AboutPage extends State<AboutPage> {
                       label: dic['about.feedback'],
                       content:
                           Text("hello@polkawallet.io", style: contentStyle),
-                      onTap: () => _jumpToLink('mailto:hello@polkawallet.io'),
+                      onTap: () => UI.launchURL('mailto:hello@polkawallet.io'),
                     ),
                   ],
                 ),

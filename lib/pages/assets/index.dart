@@ -363,7 +363,7 @@ class _AssetsState extends State<AssetsPage> {
 
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-    var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 1;
+    var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 0;
     if (widget.service.store.settings.priceCurrency == "CNY") {
       marketPrice *= _rate;
     }
@@ -674,6 +674,7 @@ class _AssetsState extends State<AssetsPage> {
                 widget.service.store.account.showBanner;
 
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: buildAppBar(transferEnabled),
           body: Column(
             children: <Widget>[

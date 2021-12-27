@@ -22,22 +22,6 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPage extends State<CommunityPage> {
-  bool _loading = false;
-
-  Future<void> _jumpToLink(String uri) async {
-    if (_loading) return;
-
-    setState(() {
-      _loading = true;
-    });
-
-    await UI.launchURL(uri);
-
-    setState(() {
-      _loading = false;
-    });
-  }
-
   void _onWechatTap() {
     showCupertinoDialog(
         context: context,
@@ -95,7 +79,7 @@ class _CommunityPage extends State<CommunityPage> {
                         width: 24.w,
                       ),
                       onTap: () =>
-                          _jumpToLink('https://twitter.com/AcalaNetwork'),
+                          UI.launchURL('https://twitter.com/AcalaNetwork'),
                     ),
                     Divider(),
                     SettingsPageListItem(
@@ -104,7 +88,7 @@ class _CommunityPage extends State<CommunityPage> {
                         'assets/images/icons/telegram_icon.png',
                         width: 24.w,
                       ),
-                      onTap: () => _jumpToLink('https://t.me/acalaofficial'),
+                      onTap: () => UI.launchURL('https://t.me/acalaofficial'),
                     ),
                     Divider(),
                     SettingsPageListItem(
@@ -113,7 +97,7 @@ class _CommunityPage extends State<CommunityPage> {
                         'assets/images/icons/discord_icon.png',
                         width: 24.w,
                       ),
-                      onTap: () => _jumpToLink('https://discord.gg/6QHVY4X'),
+                      onTap: () => UI.launchURL('https://discord.gg/6QHVY4X'),
                     ),
                     Divider(),
                     SettingsPageListItem(
@@ -123,7 +107,7 @@ class _CommunityPage extends State<CommunityPage> {
                         width: 24.w,
                       ),
                       onTap: () =>
-                          _jumpToLink('https://linktr.ee/acalanetwork'),
+                          UI.launchURL('https://linktr.ee/acalanetwork'),
                     ),
                   ],
                 ),

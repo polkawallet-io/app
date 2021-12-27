@@ -20,10 +20,10 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage(this.service, this.connectedNode, this.changeToKusama);
@@ -37,7 +37,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _loading = false;
   KeyPairData _currentAccount;
 
   Future<void> _manageAccount() async {
@@ -49,20 +48,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     setState(() {
       _currentAccount = widget.service.keyring.current;
-    });
-  }
-
-  Future<void> _jumpToLink(String uri) async {
-    if (_loading) return;
-
-    setState(() {
-      _loading = true;
-    });
-
-    await UI.launchURL(uri);
-
-    setState(() {
-      _loading = false;
     });
   }
 
@@ -266,7 +251,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 24.w,
                       ),
                       label: dic['guide'],
-                      onTap: () => _jumpToLink('https://wiki.polkawallet.app/'),
+                      onTap: () =>
+                          UI.launchURL('https://wiki.polkawallet.app/'),
                     )
                   ],
                 ),

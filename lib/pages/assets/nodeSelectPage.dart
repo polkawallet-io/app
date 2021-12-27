@@ -136,7 +136,8 @@ class NodeSelectItem extends StatelessWidget {
                 SizedBox(child: plugin.basic.icon, height: 42.w, width: 42.w),
             spacing: 11.w,
             bgColor: Theme.of(context).cardColor,
-            title: Text(plugin.basic.name,
+            title: Text(
+                "${plugin.basic.name[0].toUpperCase()}${plugin.basic.name.substring(1)}",
                 style: Theme.of(context).textTheme.headline4.copyWith(
                     fontWeight: FontWeight.w600, fontFamily: "SF_Pro")),
             isSelect: isExpansion,

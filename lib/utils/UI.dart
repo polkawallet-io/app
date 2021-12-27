@@ -14,21 +14,8 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:update_app/update_app.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AppUI {
-  static Future<void> launchURL(String url) async {
-    if (await canLaunch(url)) {
-      try {
-        await launch(url);
-      } catch (err) {
-        print(err);
-      }
-    } else {
-      print('Could not launch $url');
-    }
-  }
-
   static Future<void> alertWASM(
     BuildContext context,
     Function onCancel, {

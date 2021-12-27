@@ -40,38 +40,40 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
             children: [
               ListTile(title: Text(dic['import.type'])),
               RoundedCard(
-                margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  children: _keyOptions.map((e) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 12.h, bottom: 12.h),
-                      child: SettingsPageListItem(
-                        label: dic[e],
-                        onTap: () {
-                          switch (e) {
-                            case 'mnemonic':
-                              Navigator.pushNamed(
-                                  context, ImportAccountFormMnemonic.route,
-                                  arguments: {"type": e});
-                              break;
-                            case 'rawSeed':
-                              Navigator.pushNamed(
-                                  context, ImportAccountFromRawSeed.route,
-                                  arguments: {"type": e});
-                              break;
-                            case 'keystore':
-                              Navigator.pushNamed(
-                                  context, ImportAccountFormKeyStore.route,
-                                  arguments: {"type": e});
-                              break;
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
+                  margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                  padding: EdgeInsets.all(8),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 12.h, bottom: 12.h),
+                          child: SettingsPageListItem(
+                            label: dic[_keyOptions[index]],
+                            onTap: () {
+                              switch (_keyOptions[index]) {
+                                case 'mnemonic':
+                                  Navigator.pushNamed(
+                                      context, ImportAccountFormMnemonic.route,
+                                      arguments: {"type": _keyOptions[index]});
+                                  break;
+                                case 'rawSeed':
+                                  Navigator.pushNamed(
+                                      context, ImportAccountFromRawSeed.route,
+                                      arguments: {"type": _keyOptions[index]});
+                                  break;
+                                case 'keystore':
+                                  Navigator.pushNamed(
+                                      context, ImportAccountFormKeyStore.route,
+                                      arguments: {"type": _keyOptions[index]});
+                                  break;
+                              }
+                            },
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => Divider(height: 1),
+                      itemCount: _keyOptions.length)),
             ],
           ),
         ),

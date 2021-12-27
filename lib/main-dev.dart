@@ -26,9 +26,9 @@ void main() async {
   final plugins = [
     PluginKusama(name: 'polkadot'),
     PluginKusama(),
+    PluginAcala(),
     PluginKarura(),
     PluginStatemine(),
-    PluginAcala(),
     PluginBifrost(),
     // PluginChainX(),
     PluginEdgeware(),

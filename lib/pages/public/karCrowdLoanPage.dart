@@ -742,20 +742,6 @@ class JumpToLink extends StatefulWidget {
 class _JumpToLinkState extends State<JumpToLink> {
   bool _loading = false;
 
-  Future<void> _launchUrl() async {
-    if (_loading) return;
-
-    setState(() {
-      _loading = true;
-    });
-
-    await UI.launchURL(widget.url);
-
-    setState(() {
-      _loading = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -774,7 +760,7 @@ class _JumpToLinkState extends State<JumpToLink> {
               size: 16, color: widget.color ?? Theme.of(context).primaryColor)
         ],
       ),
-      onTap: _launchUrl,
+      onTap: UI.launchURL(widget.url),
     );
   }
 }
