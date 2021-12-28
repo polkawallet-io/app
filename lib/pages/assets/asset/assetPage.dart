@@ -367,8 +367,13 @@ class _AssetPageState extends State<AssetPage> {
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 3.w),
                             child: CarButton(
-                              icon: Image.asset("assets/images/send.png",
-                                  width: 37),
+                              icon: Padding(
+                                padding: EdgeInsets.only(left: 3),
+                                child: Image.asset(
+                                  "assets/images/send.png",
+                                  width: 37,
+                                ),
+                              ),
                               text: dic['v3.send'],
                               onPressed: transferEnabled
                                   ? () {
@@ -550,7 +555,7 @@ class CarButton extends StatelessWidget {
           }
         },
         child: Container(
-          padding: EdgeInsets.only(top: 5.h, bottom: 10.h),
+          padding: EdgeInsets.only(top: 3.h, bottom: 10.h, right: 3.w),
           decoration: BoxDecoration(
             color: Colors.transparent,
             image: DecorationImage(
