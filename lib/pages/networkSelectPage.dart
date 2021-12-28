@@ -1,8 +1,8 @@
+import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
-import 'package:app/pages/public/karCrowdLoanPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';

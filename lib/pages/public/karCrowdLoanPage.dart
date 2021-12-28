@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/app.dart';
+import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/public/karCrowdLoanFormPage.dart';
@@ -724,43 +725,6 @@ class CrowdLoanPageLayout extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
-}
-
-class JumpToLink extends StatefulWidget {
-  JumpToLink(this.url, {this.text, this.color});
-
-  final String text;
-  final String url;
-  final Color color;
-
-  @override
-  _JumpToLinkState createState() => _JumpToLinkState();
-}
-
-class _JumpToLinkState extends State<JumpToLink> {
-  bool _loading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 4),
-            child: Text(
-              widget.text ?? widget.url,
-              style: TextStyle(
-                  color: widget.color ?? Theme.of(context).primaryColor),
-            ),
-          ),
-          Icon(Icons.open_in_new,
-              size: 16, color: widget.color ?? Theme.of(context).primaryColor)
-        ],
-      ),
-      onTap: UI.launchURL(widget.url),
     );
   }
 }

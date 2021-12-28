@@ -33,7 +33,9 @@ class _JumpToLinkState extends State<JumpToLink> {
               size: 14, color: widget.color ?? Theme.of(context).primaryColor)
         ],
       ),
-      onTap: UI.launchURL(widget.url),
+      onTap: () {
+        UI.launchURL(widget.url);
+      },
     );
   }
 }

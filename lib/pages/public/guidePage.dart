@@ -37,31 +37,23 @@ class _GuidePageState extends State<GuidePage> {
                 },
                 children: _pages
                     .map(
-                      (e) => Container(
-                        width: size.width,
-                        height: size.height,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/public/guide_$e.png'),
-                                fit: BoxFit.fill)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                                width: double.infinity,
-                                margin: EdgeInsets.only(
-                                    bottom: 163, left: 27, right: 27),
-                                child: Text(
-                                  dic['guide.$e'],
-                                  textAlign: TextAlign.start,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline1
-                                      .copyWith(fontSize: 36),
-                                )),
-                          ],
-                        ),
+                      (e) => Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset('assets/images/public/guide_$e.png'),
+                          Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(
+                                  bottom: 194, left: 27, right: 27),
+                              child: Text(
+                                dic['guide.$e'],
+                                textAlign: TextAlign.start,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline1
+                                    .copyWith(fontSize: 36),
+                              )),
+                        ],
                       ),
                     )
                     .toList(),
@@ -91,7 +83,7 @@ class _GuidePageState extends State<GuidePage> {
                           .toList(),
                     )),
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 27, vertical: 32),
+                    padding: EdgeInsets.fromLTRB(27, 32, 27, 63),
                     child: Button(
                       title: _pageIndex + 1 >= _pages.length
                           ? dic['guide.enter']

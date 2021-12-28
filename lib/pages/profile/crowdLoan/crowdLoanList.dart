@@ -1,4 +1,4 @@
-import 'package:app/pages/public/karCrowdLoanPage.dart';
+import 'package:app/common/components/jumpToLink.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
