@@ -159,7 +159,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshUnlockDatas();
+      // _refreshUnlockDatas();
       _refreshKey.currentState.show();
     });
   }

@@ -54,44 +54,9 @@ class _AssetPageState extends State<AssetPage> {
   bool _isLastPage = false;
   ScrollController _scrollController;
 
-  List _unlocks = [];
-
   List<dynamic> _marketPriceList;
 
   double _rate = 1.0;
-
-  Future<void> _queryDemocracyUnlocks() async {
-    final List unlocks = await widget.service.plugin.sdk.api.gov
-        .getDemocracyUnlocks(widget.service.keyring.current.address);
-    if (mounted && unlocks != null) {
-      setState(() {
-        _unlocks = unlocks;
-      });
-    }
-  }
-
-  void _onUnlock() async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final txs = _unlocks
-        .map(
-            (e) => 'api.tx.democracy.removeVote(${BigInt.parse(e.toString())})')
-        .toList();
-    txs.add(
-        'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
-    final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
-        arguments: TxConfirmParams(
-            txTitle: dic['lock.unlock'],
-            module: 'utility',
-            call: 'batch',
-            txDisplay: {
-              "actions": ['democracy.removeVote', 'democracy.unlock'],
-            },
-            params: [],
-            rawParams: '[[${txs.join(',')}]]'));
-    if (res != null) {
-      _refreshKey.currentState.show();
-    }
-  }
 
   Future<void> _updateData() async {
     if (_loading) return;
@@ -119,11 +84,6 @@ class _AssetPageState extends State<AssetPage> {
 
   Future<void> _refreshData() async {
     if (widget.service.plugin.sdk.api.connectedNode == null) return;
-
-    if (widget.service.plugin.basic.name == relay_chain_name_dot ||
-        widget.service.plugin.basic.name == relay_chain_name_ksm) {
-      _queryDemocracyUnlocks();
-    }
 
     setState(() {
       _txsPage = 0;
@@ -353,8 +313,6 @@ class _AssetPageState extends State<AssetPage> {
                               : 1.0),
                   // backgroundImage: widget.service.plugin.basic.backgroundImage,
                   bgColors: getBgColors(),
-                  unlocks: _unlocks,
-                  onUnlock: _onUnlock,
                   icon: widget.service.plugin.tokenIcons[symbol],
                   marketPriceList: _marketPriceList,
                   priceCurrency: widget.service.store.settings.priceCurrency,
@@ -555,7 +513,7 @@ class CarButton extends StatelessWidget {
           }
         },
         child: Container(
-          padding: EdgeInsets.only(top: 3.h, bottom: 10.h, right: 3.w),
+          padding: EdgeInsets.only(top: 3.h, bottom: 10, right: 3),
           decoration: BoxDecoration(
             color: Colors.transparent,
             image: DecorationImage(
@@ -587,8 +545,6 @@ class BalanceCard extends StatelessWidget {
       this.decimals,
       // this.backgroundImage,
       this.bgColors,
-      this.unlocks,
-      this.onUnlock,
       this.icon,
       this.marketPriceList,
       this.priceCurrency});
@@ -599,8 +555,6 @@ class BalanceCard extends StatelessWidget {
   final double marketPrices;
   // final ImageProvider backgroundImage;
   final List<Color> bgColors;
-  final List unlocks;
-  final Function onUnlock;
   final Widget icon;
   final List<dynamic> marketPriceList;
   final String priceCurrency;

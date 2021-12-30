@@ -51,7 +51,7 @@ class _GuidePageState extends State<GuidePage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline1
-                                    .copyWith(fontSize: 36),
+                                    .copyWith(fontSize: 28, height: 1.15),
                               )),
                         ],
                       ),
@@ -65,9 +65,9 @@ class _GuidePageState extends State<GuidePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: _pages
                           .map((i) => Container(
-                                margin: EdgeInsets.only(right: 24),
-                                height: 23,
-                                width: 23,
+                                margin: EdgeInsets.only(right: 19),
+                                height: 19,
+                                width: 19,
                                 // child: Text("$_pageIndex"),
                                 decoration: BoxDecoration(
                                     color: i == _pageIndex
@@ -78,7 +78,7 @@ class _GuidePageState extends State<GuidePage> {
                                                 : Color(0xFF768FE1)
                                         : Color(0xFFD5D2CD),
                                     borderRadius: BorderRadius.all(
-                                        Radius.circular(23 / 2.0))),
+                                        Radius.circular(19 / 2.0))),
                               ))
                           .toList(),
                     )),

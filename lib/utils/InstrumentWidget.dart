@@ -102,7 +102,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                         child: Text(
                             widget.hideBalance
                                 ? "******"
-                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
                             style: TextStyle(
                                 fontFamily: "SF_Pro",
                                 fontSize: 18,
@@ -235,7 +235,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                       Text(
                         widget.hideBalance
                             ? "******"
-                            : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloor(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                            : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
                         style: TextStyle(
                             fontFamily: "TitilliumWeb",
                             fontSize: 12,

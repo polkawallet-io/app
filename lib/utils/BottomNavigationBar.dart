@@ -186,15 +186,17 @@ class _CentraNavBtnState extends State<CentraNavBtn>
   Widget build(BuildContext context) {
     return GestureDetector(
         onTapUp: (tapUpDetails) {
-          this.controller = AnimationController(
-              duration: const Duration(milliseconds: 800), vsync: this);
-          animation = Tween(begin: 0.0, end: 1.0).animate(controller);
-          animation.addListener(() {
-            setState(() {
-              animationNumber = animation.value;
+          if (!widget.active) {
+            this.controller = AnimationController(
+                duration: const Duration(milliseconds: 800), vsync: this);
+            animation = Tween(begin: 0.0, end: 1.0).animate(controller);
+            animation.addListener(() {
+              setState(() {
+                animationNumber = animation.value;
+              });
             });
-          });
-          controller.forward();
+            controller.forward();
+          }
         },
         onTap: () => widget.onPressed(),
         child: FloatingActionButton(
