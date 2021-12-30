@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
@@ -277,6 +279,8 @@ class _WalletAppState extends State<WalletApp> {
     }
   }
 
+  Timer _webViewDropsTimer;
+
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
@@ -293,14 +297,45 @@ class _WalletAppState extends State<WalletApp> {
       _connectedNode = connected;
     });
 
+    dropsService(service, node: node);
+
     if (_service.plugin.basic.name == para_chain_name_karura ||
         _service.plugin.basic.name == para_chain_name_acala) {
       _getAcalaModulesConfig(_service.plugin.basic.name);
     }
   }
 
+  dropsService(AppService service, {NetworkParams node}) {
+    var isReady = true;
+    _webViewDropsTimer = Timer.periodic(Duration(seconds: 4), (timer) async {
+      if (_service?.plugin?.sdk?.webView != null && isReady) {
+        isReady = false;
+        var res;
+        _service.plugin.sdk.webView
+            .evalJavascript('api.rpc.system.chain()')
+            .then((value) => res = value);
+        Future.delayed(const Duration(seconds: 4), () async {
+          isReady = true;
+          if ((res == null || res.toString().isEmpty) &&
+              _webViewDropsTimer.isActive) {
+            setState(() {
+              _connectedNode = null;
+            });
+            final connected = await service.plugin.start(_keyring,
+                nodes: node != null ? [node] : service.plugin.nodeList);
+            setState(() {
+              _connectedNode = connected;
+            });
+          }
+        });
+      }
+    });
+  }
+
   Future<void> _changeNetwork(PolkawalletPlugin network,
       {NetworkParams node}) async {
+    _webViewDropsTimer?.cancel();
+
     _keyring.setSS58(network.basic.ss58);
 
     setState(() {
