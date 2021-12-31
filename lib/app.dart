@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:isolate';
 
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
@@ -55,6 +57,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -285,17 +288,6 @@ class _WalletAppState extends State<WalletApp> {
     _service.assets.fetchMarketPriceFromSubScan();
     // _store.settings.getXcmEnabledChains(service.plugin.basic.name);
 
-    await _connect(service, node: node);
-
-    _dropsService(service, node: node);
-
-    if (_service.plugin.basic.name == para_chain_name_karura ||
-        _service.plugin.basic.name == para_chain_name_acala) {
-      _getAcalaModulesConfig(_service.plugin.basic.name);
-    }
-  }
-
-  Future<void> _connect(AppService service, {NetworkParams node}) async {
     setState(() {
       _connectedNode = null;
     });
@@ -305,31 +297,71 @@ class _WalletAppState extends State<WalletApp> {
     setState(() {
       _connectedNode = connected;
     });
+
+    _dropsService(service, node: node);
+
+    if (_service.plugin.basic.name == para_chain_name_karura ||
+        _service.plugin.basic.name == para_chain_name_acala) {
+      _getAcalaModulesConfig(_service.plugin.basic.name);
+    }
+  }
+
+  Future<void> _restartWebConnect(AppService service,
+      {NetworkParams node}) async {
+    setState(() {
+      _connectedNode = null;
+    });
+
+    final useLocalJS = WalletApi.getPolkadotJSVersion(
+          _store.storage,
+          service.plugin.basic.name,
+          service.plugin.basic.jsCodeVersion,
+        ) >
+        service.plugin.basic.jsCodeVersion;
+
+    await service.plugin.beforeStart(
+      _keyring,
+      webView: _service?.plugin?.sdk?.webView,
+      jsCode: useLocalJS
+          ? WalletApi.getPolkadotJSCode(
+              _store.storage, service.plugin.basic.name)
+          : null,
+    );
+
+    final connected = await service.plugin.start(_keyring,
+        nodes: node != null ? [node] : service.plugin.nodeList);
+    setState(() {
+      _connectedNode = connected;
+    });
+
+    _dropsService(service, node: node);
   }
 
   Timer _webViewDropsTimer;
   Timer _chainTimer;
   _dropsService(AppService service, {NetworkParams node}) {
-    _webViewDropsTimer?.cancel();
-    _chainTimer?.cancel();
-    _webViewDropsTimer = Timer(Duration(seconds: 4), () async {
-      var res;
+    _dropsServiceCancel();
+    Future.delayed(Duration(seconds: 4), () async {
+      _chainTimer = Timer(Duration(seconds: 3), () async {
+        _restartWebConnect(service, node: node);
+        _webViewDropsTimer = Timer(Duration(seconds: 60), () {
+          _dropsService(service, node: node);
+        });
+      });
       _service.plugin.sdk.webView
           .evalJavascript('api.rpc.system.chain()')
-          .then((value) => res = value);
-      _chainTimer = Timer(Duration(seconds: 5), () async {
-        if (res == null || res.toString().isEmpty) {
-          _connect(service, node: node);
-        }
-        _dropsService(service, node: node);
-      });
+          .then((value) => _dropsService(service, node: node));
     });
+  }
+
+  _dropsServiceCancel() {
+    _chainTimer?.cancel();
+    _webViewDropsTimer?.cancel();
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network,
       {NetworkParams node}) async {
-    _webViewDropsTimer?.cancel();
-    _chainTimer?.cancel();
+    _dropsServiceCancel();
 
     _keyring.setSS58(network.basic.ss58);
 
@@ -680,8 +712,7 @@ class _WalletAppState extends State<WalletApp> {
 
   @override
   void dispose() {
-    _webViewDropsTimer?.cancel();
-    _chainTimer?.cancel();
+    _dropsServiceCancel();
     super.dispose();
   }
 
