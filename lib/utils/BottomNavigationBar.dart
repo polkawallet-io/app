@@ -224,9 +224,9 @@ class _CentraNavBtnState extends State<CentraNavBtn>
                       painter: CircularProgressBar(
                           width: 3,
                           lineColor: [
-                            Color(0xFF768FE1),
-                            Color(0xFFE46B41),
-                            Color(0xFF768FE1)
+                            Color(0xFFFF6732),
+                            Color(0xFFFF9F7E),
+                            Color(0xFFFF6732)
                           ],
                           progress: widget.active ? animationNumber : 0),
                     ),

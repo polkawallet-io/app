@@ -338,13 +338,14 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   Timer _webViewDropsTimer;
+  Timer _dropsServiceTimer;
   Timer _chainTimer;
   _dropsService(AppService service, {NetworkParams node}) {
     _dropsServiceCancel();
-    Future.delayed(Duration(seconds: 4), () async {
+    _dropsServiceTimer = Timer(Duration(seconds: 4), () async {
       _chainTimer = Timer(Duration(seconds: 3), () async {
         _restartWebConnect(service, node: node);
-        _webViewDropsTimer = Timer(Duration(seconds: 60), () {
+        _webViewDropsTimer = Timer(Duration(seconds: 40), () {
           _dropsService(service, node: node);
         });
       });
@@ -355,6 +356,7 @@ class _WalletAppState extends State<WalletApp> {
   }
 
   _dropsServiceCancel() {
+    _dropsServiceTimer?.cancel();
     _chainTimer?.cancel();
     _webViewDropsTimer?.cancel();
   }
@@ -362,6 +364,9 @@ class _WalletAppState extends State<WalletApp> {
   Future<void> _changeNetwork(PolkawalletPlugin network,
       {NetworkParams node}) async {
     _dropsServiceCancel();
+    setState(() {
+      _connectedNode = null;
+    });
 
     _keyring.setSS58(network.basic.ss58);
 
