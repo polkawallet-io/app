@@ -878,7 +878,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.8"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:

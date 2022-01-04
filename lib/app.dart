@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:isolate';
 
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
@@ -57,7 +55,6 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -114,7 +111,7 @@ class WalletApp extends StatefulWidget {
   _WalletAppState createState() => _WalletAppState();
 }
 
-class _WalletAppState extends State<WalletApp> {
+class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   final _analytics = FirebaseAnalytics();
 
   Keyring _keyring;
@@ -342,8 +339,8 @@ class _WalletAppState extends State<WalletApp> {
   Timer _chainTimer;
   _dropsService(AppService service, {NetworkParams node}) {
     _dropsServiceCancel();
-    _dropsServiceTimer = Timer(Duration(seconds: 4), () async {
-      _chainTimer = Timer(Duration(seconds: 3), () async {
+    _dropsServiceTimer = Timer(Duration(seconds: 12), () async {
+      _chainTimer = Timer(Duration(seconds: 4), () async {
         _restartWebConnect(service, node: node);
         _webViewDropsTimer = Timer(Duration(seconds: 40), () {
           _dropsService(service, node: node);
@@ -713,12 +710,29 @@ class _WalletAppState extends State<WalletApp> {
     super.initState();
     _handleIncomingAppLinks();
     _handleInitialAppLinks();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _dropsServiceCancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.resumed:
+        _dropsService(_service);
+        break;
+      case AppLifecycleState.paused:
+        _dropsServiceCancel();
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
