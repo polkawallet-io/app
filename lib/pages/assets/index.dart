@@ -963,7 +963,7 @@ class _AssetsState extends State<AssetsPage> {
                                     final price = i.price ??
                                         widget.service.store.assets
                                             .marketPrices[i.symbol] ??
-                                        1.0;
+                                        0.0;
                                     return TokenItem(i, i.decimals,
                                         isFromCache: isTokensFromCache,
                                         detailPageRoute: i.detailPageRoute,
