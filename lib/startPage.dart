@@ -25,7 +25,6 @@ class _StartPageState extends State<StartPage>
     with SingleTickerProviderStateMixin {
   Function toPage;
   RiveAnimationController _controller;
-  bool get isPlaying => _controller.isActive;
 
   @override
   void initState() {

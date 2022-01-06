@@ -309,21 +309,22 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = null;
     });
 
-    final useLocalJS = WalletApi.getPolkadotJSVersion(
-          _store.storage,
-          service.plugin.basic.name,
-          service.plugin.basic.jsCodeVersion,
-        ) >
-        service.plugin.basic.jsCodeVersion;
+    // Offline JS interaction will be affected (import and export accounts)
+    // final useLocalJS = WalletApi.getPolkadotJSVersion(
+    //       _store.storage,
+    //       service.plugin.basic.name,
+    //       service.plugin.basic.jsCodeVersion,
+    //     ) >
+    //     service.plugin.basic.jsCodeVersion;
 
-    await service.plugin.beforeStart(
-      _keyring,
-      webView: _service?.plugin?.sdk?.webView,
-      jsCode: useLocalJS
-          ? WalletApi.getPolkadotJSCode(
-              _store.storage, service.plugin.basic.name)
-          : null,
-    );
+    // await service.plugin.beforeStart(
+    //   _keyring,
+    //   webView: _service?.plugin?.sdk?.webView,
+    //   jsCode: useLocalJS
+    //       ? WalletApi.getPolkadotJSCode(
+    //           _store.storage, service.plugin.basic.name)
+    //       : null,
+    // );
 
     final connected = await service.plugin.start(_keyring,
         nodes: node != null ? [node] : service.plugin.nodeList);
