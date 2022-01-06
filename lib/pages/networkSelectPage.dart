@@ -451,9 +451,12 @@ class _CommunityPluginNote extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                  child: Text(dic['plugin.note'] +
-                      pluginName.toUpperCase() +
-                      dic['plugin.team'])),
+                  child: Text(
+                dic['plugin.note'] +
+                    pluginName.toUpperCase() +
+                    dic['plugin.team'],
+                style: TextStyle(fontSize: 12),
+              )),
               SvgPicture.asset('assets/images/public/github_logo.svg',
                   width: 16),
               JumpToLink(

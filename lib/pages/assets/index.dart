@@ -23,7 +23,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
@@ -169,84 +168,133 @@ class _AssetsState extends State<AssetsPage> {
         },
       );
 
-      String errorMsg;
-      KeyPairData sender;
+      List<Widget> errorMsg = [];
       try {
-        final senderPubKey = await widget.service.plugin.sdk.api.uos
-            .parseQrCode(
-                widget.service.keyring, data.rawData.toString().trim());
+        final qrData = await widget.service.plugin.sdk.api.uos.parseQrCode(
+            widget.service.keyring, data.rawData.toString().trim());
         Navigator.of(context).pop();
 
-        if (senderPubKey == widget.service.keyring.current.pubKey) {
-          final password = await widget.service.account
-              .getPassword(context, widget.service.keyring.current);
-          if (password != null) {
-            print('pass ok: $password');
-            _signAsync(password);
+        final networkIndex = widget.plugins
+            .indexWhere((e) => e.basic.genesisHash == qrData.genesisHash);
+        // we can do the signing if we have this plugin support
+        if (qrData.genesisHash != null && networkIndex < 0) {
+          errorMsg.add(Text(dic['uos.qr.invalid']));
+        } else {
+          final sender = widget.service.keyring.keyPairs
+              .firstWhere((e) => e.pubKey == qrData.signer);
+          final confirmMsg = <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 8, bottom: 8),
+              child: Text(dic['uos.network']),
+            ),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Theme.of(context).dividerColor, width: 0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              child: Row(
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(right: 8),
+                      width: 32,
+                      child: widget.plugins[networkIndex].basic.icon),
+                  Text(
+                    widget.plugins[networkIndex].basic.name.toUpperCase(),
+                    style: Theme.of(context).textTheme.headline4,
+                  )
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 12, bottom: 8),
+              child: Text(dic['uos.signer']),
+            ),
+            Container(
+              padding: EdgeInsets.all(8),
+              margin: EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Theme.of(context).dividerColor, width: 0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              child: Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 8),
+                    width: 32,
+                    child: AddressIcon(sender.address, svg: sender.icon),
+                  ),
+                  Text(
+                    Fmt.address(sender.address),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ],
+              ),
+            ),
+          ];
+
+          bool needSwitchAccount = false;
+          if (qrData.signer == widget.service.keyring.current.pubKey) {
+            confirmMsg.add(Text(dic['uos.continue']));
+          } else {
+            confirmMsg.add(Text(dic['uos.continue.switch']));
+            needSwitchAccount = true;
+          }
+
+          final confirmed = await showCupertinoDialog(
+            context: context,
+            builder: (_) {
+              return CupertinoAlertDialog(
+                title: Text(dic['uos.title']),
+                content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: confirmMsg),
+                actions: <Widget>[
+                  CupertinoButton(
+                    child: Text(I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['cancel']),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  CupertinoButton(
+                    child: Text(I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['ok']),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+
+          if (confirmed) {
+            if (needSwitchAccount) {
+              widget.service.keyring.setCurrent(sender);
+              widget.service.plugin.changeAccount(sender);
+              widget.service.store.assets
+                  .loadCache(sender, widget.service.plugin.basic.name);
+            }
+
+            final password = await widget.service.account
+                .getPassword(context, widget.service.keyring.current);
+            if (password != null) {
+              print('pass ok: $password');
+              _signAsync(password);
+            }
           }
           return;
-        } else {
-          if (senderPubKey != null) {
-            final senderAccIndex = widget.service.keyring.optionals
-                .indexWhere((e) => e.pubKey == senderPubKey);
-            if (senderAccIndex >= 0) {
-              sender = widget.service.keyring.optionals[senderAccIndex];
-              errorMsg = dic['uos.acc.mismatch.switch'] +
-                  ' ${Fmt.address(sender.address)} ?';
-              final needSwitch = await showCupertinoDialog(
-                context: context,
-                builder: (_) {
-                  return CupertinoAlertDialog(
-                    title: Text(dic['uos.title']),
-                    content: Text(errorMsg),
-                    actions: <Widget>[
-                      CupertinoButton(
-                        child: Text(I18n.of(context)
-                            .getDic(i18n_full_dic_ui, 'common')['cancel']),
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                      CupertinoButton(
-                        child: Text(I18n.of(context)
-                            .getDic(i18n_full_dic_ui, 'common')['ok']),
-                        onPressed: () {
-                          Navigator.of(context).pop(true);
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-              if (needSwitch) {
-                widget.service.keyring.setCurrent(sender);
-                widget.service.plugin.changeAccount(sender);
-                widget.service.store.assets
-                    .loadCache(sender, widget.service.plugin.basic.name);
-
-                final password = await widget.service.account
-                    .getPassword(context, widget.service.keyring.current);
-                if (password != null) {
-                  print('pass ok: $password');
-                  _signAsync(password);
-                }
-              }
-              return;
-            } else {
-              errorMsg = dic['uos.acc.mismatch'];
-            }
-          } else {
-            errorMsg = dic['uos.qr.invalid'];
-          }
         }
       } catch (err) {
-        errorMsg = err.toString();
+        errorMsg.add(Text(err.toString()));
         Navigator.of(context).pop();
       }
+
       showCupertinoDialog(
         context: context,
         builder: (_) {
           return CupertinoAlertDialog(
             title: Text(dic['uos.title']),
-            content: Text(errorMsg),
+            content: Column(children: errorMsg),
             actions: <Widget>[
               CupertinoButton(
                 child: Text(
