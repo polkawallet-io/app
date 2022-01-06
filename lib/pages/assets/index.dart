@@ -183,29 +183,33 @@ class _AssetsState extends State<AssetsPage> {
           final sender = widget.service.keyring.keyPairs
               .firstWhere((e) => e.pubKey == qrData.signer);
           final confirmMsg = <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 8, bottom: 8),
-              child: Text(dic['uos.network']),
-            ),
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      color: Theme.of(context).dividerColor, width: 0.5),
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Row(
-                children: [
-                  Container(
-                      margin: EdgeInsets.only(right: 8),
-                      width: 32,
-                      child: widget.plugins[networkIndex].basic.icon),
-                  Text(
-                    widget.plugins[networkIndex].basic.name.toUpperCase(),
-                    style: Theme.of(context).textTheme.headline4,
-                  )
-                ],
-              ),
-            ),
+            networkIndex < 0
+                ? Container()
+                : Container(
+                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                    child: Text(dic['uos.network']),
+                  ),
+            networkIndex < 0
+                ? Container()
+                : Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Theme.of(context).dividerColor, width: 0.5),
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                    child: Row(
+                      children: [
+                        Container(
+                            margin: EdgeInsets.only(right: 8),
+                            width: 32,
+                            child: widget.plugins[networkIndex].basic.icon),
+                        Text(
+                          widget.plugins[networkIndex].basic.name.toUpperCase(),
+                          style: Theme.of(context).textTheme.headline4,
+                        )
+                      ],
+                    ),
+                  ),
             Container(
               margin: EdgeInsets.only(top: 12, bottom: 8),
               child: Text(dic['uos.signer']),
