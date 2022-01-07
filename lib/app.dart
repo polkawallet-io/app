@@ -14,6 +14,7 @@ import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
+import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanFormPage.dart';
 import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanPage.dart';
@@ -671,6 +672,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AcaCrowdLoanPage.route: (_) => AcaCrowdLoanPage(_service, _connectedNode),
       AcaCrowdLoanFormPage.route: (_) =>
           AcaCrowdLoanFormPage(_service, _connectedNode),
+
+      PluginPage.route: (_) => PluginPage(_service),
     };
   }
 

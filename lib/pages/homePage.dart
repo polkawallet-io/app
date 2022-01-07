@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
+import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
@@ -19,6 +20,9 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
 import 'package:polkawallet_ui/ui.dart';
+
+import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.plugins, this.connectedNode,
@@ -146,8 +150,39 @@ class _HomePageState extends State<HomePage> {
     ];
     final pluginPages =
         widget.service.plugin.getNavItems(context, widget.service.keyring);
-    var pluginPage = HomeNavItem(
-        content: pluginPages[0].content,
+    final List<MetaHubItem> items = [];
+    pluginPages.forEach((element) {
+      if (element.isAdapter) {
+        items.add(MetaHubItem(element.text, element.content));
+      } else {
+        items.add(MetaHubItem(
+            element.text,
+            Column(
+              children: [
+                GestureDetector(
+                  child: PluginItemCard(
+                    margin: EdgeInsets.only(bottom: 16),
+                    title: element.text,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      PluginPage.route,
+                      arguments: {
+                        "title": element.text,
+                        'body': element.content
+                      },
+                    );
+                  },
+                )
+              ],
+            )));
+      }
+    });
+    pages.add(HomeNavItem(
+        content: MetaHubPage(
+          pluginName: widget.service.plugin.basic.name,
+          metaItems: items,
+        ),
         icon: Image.asset(
           "assets/images/compass.png",
           fit: BoxFit.contain,
@@ -156,55 +191,68 @@ class _HomePageState extends State<HomePage> {
           "assets/images/compass.png",
           fit: BoxFit.contain,
         ),
-        text:
-            I18n.of(context).getDic(i18n_full_dic_app, 'public')['v3.metahub']);
-    if (pluginPages.length > 1) {
-      pluginPage = HomeNavItem(
-          content: Scaffold(
-            appBar: AppBar(
-              title: Container(
-                  child: MainTabBar(
-                tabs: [pluginPages[0].text, pluginPages[1].text],
-                activeTab: _metahubTabIndex,
-                onTap: (index) {
-                  setState(() {
-                    _metahubPageController.jumpToPage(index);
-                    _metahubTabIndex = index;
-                  });
-                },
-              )),
-              centerTitle: true,
-            ),
-            body: PageView(
-              controller: _metahubPageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _metahubTabIndex = index;
-                });
-              },
-              children: pluginPages
-                  .map((e) => PageWrapperWithBackground(
-                        e.content,
-                        height: 220,
-                        backgroundImage:
-                            widget.service.plugin.basic.backgroundImage,
-                      ))
-                  .toList(),
-            ),
-          ),
-          icon: Image.asset(
-            "assets/images/compass.png",
-            fit: BoxFit.contain,
-          ),
-          iconActive: Image.asset(
-            "assets/images/compass.png",
-            fit: BoxFit.contain,
-          ),
-          text: I18n.of(context)
-              .getDic(i18n_full_dic_app, 'public')['v3.metahub']);
-    }
+        text: I18n.of(context)
+            .getDic(i18n_full_dic_app, 'public')['v3.metahub']));
 
-    pages.add(pluginPage);
+    // var pluginPage = HomeNavItem(
+    //     content: pluginPages[0].content,
+    //     icon: Image.asset(
+    //       "assets/images/compass.png",
+    //       fit: BoxFit.contain,
+    //     ),
+    //     iconActive: Image.asset(
+    //       "assets/images/compass.png",
+    //       fit: BoxFit.contain,
+    //     ),
+    //     text:
+    //         I18n.of(context).getDic(i18n_full_dic_app, 'public')['v3.metahub']);
+    // if (pluginPages.length > 1) {
+    //   pluginPage = HomeNavItem(
+    //       content: Scaffold(
+    //         appBar: AppBar(
+    //           title: Container(
+    //               child: MainTabBar(
+    //             tabs: [pluginPages[0].text, pluginPages[1].text],
+    //             activeTab: _metahubTabIndex,
+    //             onTap: (index) {
+    //               setState(() {
+    //                 _metahubPageController.jumpToPage(index);
+    //                 _metahubTabIndex = index;
+    //               });
+    //             },
+    //           )),
+    //           centerTitle: true,
+    //         ),
+    //         body: PageView(
+    //           controller: _metahubPageController,
+    //           onPageChanged: (index) {
+    //             setState(() {
+    //               _metahubTabIndex = index;
+    //             });
+    //           },
+    //           children: pluginPages
+    //               .map((e) => PageWrapperWithBackground(
+    //                     e.content,
+    //                     height: 220,
+    //                     backgroundImage:
+    //                         widget.service.plugin.basic.backgroundImage,
+    //                   ))
+    //               .toList(),
+    //         ),
+    //       ),
+    //       icon: Image.asset(
+    //         "assets/images/compass.png",
+    //         fit: BoxFit.contain,
+    //       ),
+    //       iconActive: Image.asset(
+    //         "assets/images/compass.png",
+    //         fit: BoxFit.contain,
+    //       ),
+    //       text: I18n.of(context)
+    //           .getDic(i18n_full_dic_app, 'public')['v3.metahub']);
+    // }
+
+    // pages.add(pluginPage);
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
