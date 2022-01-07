@@ -51,8 +51,9 @@ class ApiAssets {
       'AUSD': 1.0,
     };
     res.forEach((e) {
-      if (e != null && e['price'] != null) {
-        prices[e['token']] = double.parse(e['price']);
+      if (e != null && e['code'] == 1) {
+        prices[e['token']] =
+            double.tryParse(e['data']['price'][0].toString()) ?? 0;
       }
     });
     apiRoot.store.assets.setMarketPrices(prices);
