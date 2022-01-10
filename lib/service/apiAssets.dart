@@ -28,31 +28,16 @@ class ApiAssets {
     return res;
   }
 
-  Future<void> fetchMarketPriceFromSubScan() async {
-    if (apiRoot.plugin.basic.isTestNet) return;
-
-    final res =
-        await WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name);
-    if (res == null || res['data'] == null) {
-      print('fetch market price failed');
-      return;
-    }
-    final symbol = res['data']['token'][0];
-    apiRoot.store.assets.setMarketPrices(
-        {symbol: double.parse(res['data']['detail'][symbol]['price'])});
-  }
-
   Future<void> fetchMarketPrices(List<String> tokens) async {
     final List res = await Future.wait(
         tokens.map((e) => WalletApi.getTokenPrice(e)).toList());
-
     final Map<String, double> prices = {
       'KUSD': 1.0,
       'AUSD': 1.0,
     };
-    res.forEach((e) {
+    res.asMap().forEach((k, e) {
       if (e != null && e['code'] == 1) {
-        prices[e['token']] =
+        prices[tokens[k]] =
             double.tryParse(e['data']['price'][0].toString()) ?? 0;
       }
     });

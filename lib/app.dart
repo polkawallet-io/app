@@ -283,7 +283,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
-    _service.assets.fetchMarketPriceFromSubScan();
     // _store.settings.getXcmEnabledChains(service.plugin.basic.name);
 
     setState(() {

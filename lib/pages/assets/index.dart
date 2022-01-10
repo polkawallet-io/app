@@ -101,12 +101,19 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   Future<void> _updateMarketPrices() async {
-    if (widget.service.plugin.balances.tokens.length > 0) {
-      widget.service.assets.fetchMarketPrices(
-          widget.service.plugin.balances.tokens.map((e) => e.symbol).toList());
+    if (widget.service.plugin.networkState.tokenSymbol != null) {
+      final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
+      final tokens = [nativeToken];
+      if (widget.service.plugin.balances.tokens.length > 0) {
+        tokens
+            .addAll(widget.service.plugin.balances.tokens.map((e) => e.symbol));
+      }
+      widget.service.assets.fetchMarketPrices(tokens);
     }
 
-    _priceUpdateTimer = Timer(Duration(seconds: 60), _updateMarketPrices);
+    final duration =
+        widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
+    _priceUpdateTimer = Timer(Duration(seconds: duration), _updateMarketPrices);
   }
 
   Future<void> _handleScan(bool transferEnabled) async {

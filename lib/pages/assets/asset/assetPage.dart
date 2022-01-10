@@ -88,7 +88,8 @@ class _AssetPageState extends State<AssetPage> {
       _isLastPage = false;
     });
 
-    widget.service.assets.fetchMarketPriceFromSubScan();
+    widget.service.assets
+        .fetchMarketPrices([widget.service.plugin.networkState.tokenSymbol[0]]);
 
     await _updateData();
   }
