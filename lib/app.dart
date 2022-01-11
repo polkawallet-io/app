@@ -100,12 +100,9 @@ class WalletApp extends StatefulWidget {
   static bool isInitial = false;
 
   static Future<void> checkUpdate(BuildContext context) async {
-    if (isInitial) {
-      isInitial = false;
-      final versions = await WalletApi.getLatestVersion();
-      AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
-          autoCheck: true);
-    }
+    final versions = await WalletApi.getLatestVersion();
+    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+        autoCheck: true);
   }
 
   @override
@@ -526,7 +523,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
 
       // _checkUpdate(context);
-      await _checkJSCodeUpdate(context, service.plugin, needReload: false);
+      // await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
       final useLocalJS = WalletApi.getPolkadotJSVersion(
             _store.storage,
@@ -576,7 +573,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
-                      WalletApp.checkUpdate(context);
+                      if (WalletApp.isInitial) {
+                        WalletApp.isInitial = false;
+                        _checkJSCodeUpdate(context, _service.plugin,
+                            needReload: false);
+                        WalletApp.checkUpdate(context);
+                      }
                       return snapshot.data > 0
                           ? HomePage(_service, widget.plugins, _connectedNode,
                               _checkJSCodeUpdate, _switchNetwork, _changeNode)
