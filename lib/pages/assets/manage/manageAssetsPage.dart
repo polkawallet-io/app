@@ -235,7 +235,10 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                               child: ListTile(
                                 dense: true,
                                 leading: TokenIcon(
-                                  list[i].symbol,
+                                  widget.service.plugin.basic.name ==
+                                          para_chain_name_statemine
+                                      ? list[i].id
+                                      : list[i].symbol,
                                   widget.service.plugin.tokenIcons,
                                   symbol: list[i].symbol,
                                 ),
@@ -253,8 +256,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                         .headline4
                                         .copyWith(fontWeight: FontWeight.w600)),
                                 subtitle: Visibility(
-                                    visible: list[i].name != null,
-                                    child: Text('$id${list[i].name}',
+                                    visible: list[i].fullName != null,
+                                    child: Text('$id${list[i].fullName}',
                                         maxLines: 2,
                                         style: TextStyle(
                                             fontSize: 10,

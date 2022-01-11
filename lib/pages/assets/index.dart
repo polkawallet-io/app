@@ -1033,7 +1033,10 @@ class _AssetsState extends State<AssetsPage> {
                                                 ? _rate
                                                 : 1.0),
                                         icon: TokenIcon(
-                                          i.symbol.toUpperCase(),
+                                          widget.service.plugin.basic.name ==
+                                                  para_chain_name_statemine
+                                              ? i.id
+                                              : i.symbol.toUpperCase(),
                                           widget.service.plugin.tokenIcons,
                                           symbol: i.symbol,
                                         ),
