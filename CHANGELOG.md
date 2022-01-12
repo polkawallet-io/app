@@ -1,3 +1,7 @@
+# [3.0.7-beta] - 20210111
+- update karura plugin
+- update statemine plugin: RMRK xcm
+
 # [3.0.0-beta] - 20211224
 - v3 ui 
 - add acala plugin
