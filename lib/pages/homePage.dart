@@ -150,62 +150,64 @@ class _HomePageState extends State<HomePage> {
     ];
     final pluginPages =
         widget.service.plugin.getNavItems(context, widget.service.keyring);
-    final List<MetaHubItem> items = [];
-    pluginPages.forEach((element) {
-      if (element.isAdapter) {
-        items.add(MetaHubItem(element.text, element.content));
-      } else {
-        items.add(MetaHubItem(
-            element.text,
-            Column(
-              children: [
-                GestureDetector(
-                  child: PluginItemCard(
-                    margin: EdgeInsets.only(bottom: 16),
-                    title: element.text,
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      PluginPage.route,
-                      arguments: {
-                        "title": element.text,
-                        'body': element.content
-                      },
-                    );
-                  },
-                )
-              ],
-            )));
-      }
-    });
-    pages.add(HomeNavItem(
-        content: MetaHubPage(
-          pluginName: widget.service.plugin.basic.name,
-          metaItems: items,
-        ),
-        icon: Image.asset(
-          "assets/images/compass.png",
-          fit: BoxFit.contain,
-        ),
-        iconActive: Image.asset(
-          "assets/images/compass.png",
-          fit: BoxFit.contain,
-        ),
-        text: I18n.of(context)
-            .getDic(i18n_full_dic_app, 'public')['v3.metahub']));
-
-    // var pluginPage = HomeNavItem(
-    //     content: pluginPages[0].content,
-    //     icon: Image.asset(
-    //       "assets/images/compass.png",
-    //       fit: BoxFit.contain,
-    //     ),
-    //     iconActive: Image.asset(
-    //       "assets/images/compass.png",
-    //       fit: BoxFit.contain,
-    //     ),
-    //     text:
-    //         I18n.of(context).getDic(i18n_full_dic_app, 'public')['v3.metahub']);
+    if (pluginPages.length > 1) {
+      final List<MetaHubItem> items = [];
+      pluginPages.forEach((element) {
+        if (element.isAdapter) {
+          items.add(MetaHubItem(element.text, element.content));
+        } else {
+          items.add(MetaHubItem(
+              element.text,
+              Column(
+                children: [
+                  GestureDetector(
+                    child: PluginItemCard(
+                      margin: EdgeInsets.only(bottom: 16),
+                      title: element.text,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        PluginPage.route,
+                        arguments: {
+                          "title": element.text,
+                          'body': element.content
+                        },
+                      );
+                    },
+                  )
+                ],
+              )));
+        }
+      });
+      pages.add(HomeNavItem(
+          content: MetaHubPage(
+            pluginName: widget.service.plugin.basic.name,
+            metaItems: items,
+          ),
+          icon: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          iconActive: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          text: I18n.of(context)
+              .getDic(i18n_full_dic_app, 'public')['v3.metahub']));
+    } else {
+      pages.add(HomeNavItem(
+          content: pluginPages[0].content,
+          icon: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          iconActive: Image.asset(
+            "assets/images/compass.png",
+            fit: BoxFit.contain,
+          ),
+          text: I18n.of(context)
+              .getDic(i18n_full_dic_app, 'public')['v3.metahub']));
+    }
     // if (pluginPages.length > 1) {
     //   pluginPage = HomeNavItem(
     //       content: Scaffold(
@@ -275,6 +277,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           PageView(
             controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
             onPageChanged: (index) {
               setState(() {
                 _tabIndex = index;
