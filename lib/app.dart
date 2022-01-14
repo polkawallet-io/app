@@ -67,6 +67,7 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
@@ -124,7 +125,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   NetworkParams _connectedNode;
 
   BuildContext _homePageContext;
-  String _autoRoutingPath;
+  PageRouteParams _autoRoutingParams;
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
@@ -403,7 +404,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _switchNetwork(String networkName,
-      {NetworkParams node, String pageRoute}) async {
+      {NetworkParams node, PageRouteParams pageRoute}) async {
     // display a dialog while changing network
     showCupertinoDialog(
         context: _homePageContext,
@@ -437,7 +438,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     Navigator.of(_homePageContext).pop();
 
     // set auto routing path so we can route to the page after network changed
-    _autoRoutingPath = pageRoute;
+    _autoRoutingParams = pageRoute;
   }
 
   Future<void> _changeNode(NetworkParams node) async {
@@ -750,7 +751,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   void _setupPluginsNetworkSwitch() {
     widget.plugins.forEach((e) {
       if (e.appUtils.switchNetwork == null) {
-        e.appUtils.switchNetwork = (String network, {String pageRoute}) async {
+        e.appUtils.switchNetwork =
+            (String network, {PageRouteParams pageRoute}) async {
           _switchNetwork(network, pageRoute: pageRoute);
         };
       }
@@ -758,10 +760,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _doAutoRouting() {
-    if (_autoRoutingPath != null) {
+    if (_autoRoutingParams != null) {
       print('page auto routing...');
-      Navigator.of(_homePageContext).pushNamed(_autoRoutingPath);
-      _autoRoutingPath = null;
+      Navigator.of(_homePageContext).pushNamed(_autoRoutingParams.path,
+          arguments: _autoRoutingParams.args);
+      _autoRoutingParams = null;
     }
   }
 

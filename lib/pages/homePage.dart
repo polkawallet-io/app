@@ -16,6 +16,7 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
@@ -29,8 +30,8 @@ class HomePage extends StatefulWidget {
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
-  final Future<void> Function(String, {NetworkParams node, String pageRoute})
-      switchNetwork;
+  final Future<void> Function(String,
+      {NetworkParams node, PageRouteParams pageRoute}) switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
