@@ -121,6 +121,23 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  List<Color> getMetaHubColors() {
+    switch (widget.service.plugin.basic.name) {
+      case para_chain_name_karura:
+        return [Color(0xFFE40C5B), Color(0xFFFF4C3B)];
+      case para_chain_name_acala:
+        return [Color(0xFFBA4F8C), Color(0xFF675AFC)];
+      case relay_chain_name_dot:
+        return [Color(0xFFE91384), Color(0xFFB6238C)];
+      case relay_chain_name_ksm:
+        return [Color(0xFFFFFFFF), Color(0x9EFFFFFF)];
+      case 'edgeware':
+        return [Color(0xFF21C1D5), Color(0xFF057AA9)];
+      default:
+        return [Color(0xFFE40C5B), Color(0xFFFF4C3B)];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<HomeNavItem> pages = [
@@ -181,6 +198,7 @@ class _HomePageState extends State<HomePage> {
           content: MetaHubPage(
             pluginName: widget.service.plugin.basic.name,
             metaItems: items,
+            colors: getMetaHubColors(),
           ),
           icon: Image.asset(
             "assets/images/compass.png",
