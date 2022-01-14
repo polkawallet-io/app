@@ -26,11 +26,10 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage(this.service, this.connectedNode, this.changeToKusama);
+  ProfilePage(this.service, this.connectedNode);
 
   final AppService service;
   final NetworkParams connectedNode;
-  final Future<void> Function() changeToKusama;
 
   @override
   _ProfilePageState createState() => _ProfilePageState();

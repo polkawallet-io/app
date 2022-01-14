@@ -13,16 +13,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
-import 'package:polkawallet_plugin_kusama/common/constants.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
-import 'package:polkawallet_ui/ui.dart';
-
 import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
+import 'package:polkawallet_ui/ui.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.plugins, this.connectedNode,
@@ -32,7 +29,8 @@ class HomePage extends StatefulWidget {
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
-  final Future<void> Function(String, {NetworkParams node}) switchNetwork;
+  final Future<void> Function(String, {NetworkParams node, String pageRoute})
+      switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
@@ -265,11 +263,7 @@ class _HomePageState extends State<HomePage> {
         "assets/images/icon_settings_30_sel.png",
         fit: BoxFit.contain,
       ),
-      content: ProfilePage(
-        widget.service,
-        widget.connectedNode,
-        () async => widget.switchNetwork(network_name_kusama),
-      ),
+      content: ProfilePage(widget.service, widget.connectedNode),
     ));
     return BottomBarScaffold(
       body: Stack(

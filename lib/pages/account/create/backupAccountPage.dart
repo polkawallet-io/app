@@ -259,22 +259,43 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
     return Container(
       padding: EdgeInsets.only(top: 16),
       child: Wrap(
-        spacing: 2,
-        runSpacing: 3,
-        children: _wordsLeft
-            .map((e) => Container(
-                  padding: EdgeInsets.only(left: 4, right: 4),
-                  child: ElevatedButton(
-                    child: Text(e),
-                    onPressed: () {
-                      setState(() {
-                        _wordsLeft.remove(e);
-                        _wordsSelected.add(e);
-                      });
-                    },
+        // spacing: 2,
+        runSpacing: 8,
+        children: _wordsLeft.map((e) {
+          return Container(
+            padding: EdgeInsets.only(left: 4, right: 4),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _wordsLeft.remove(e);
+                  _wordsSelected.add(e);
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(15.w, 0, 15.w, 4),
+                width: 90,
+                height: 36,
+                margin: EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  image: DecorationImage(
+                      image: AssetImage("assets/images/button_bg_red.png"),
+                      fit: BoxFit.contain),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  e,
+                  style: TextStyle(
+                    color: Theme.of(context).cardColor,
+                    fontSize: 16,
+                    fontFamily: 'TitilliumWeb',
+                    fontWeight: FontWeight.w600,
                   ),
-                ))
-            .toList(),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

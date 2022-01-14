@@ -123,6 +123,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
   NetworkParams _connectedNode;
 
+  BuildContext _homePageContext;
+  String _autoRoutingPath;
+
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
@@ -399,11 +402,42 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     _startPlugin(service, node: node);
   }
 
-  Future<void> _switchNetwork(String networkName, {NetworkParams node}) async {
+  Future<void> _switchNetwork(String networkName,
+      {NetworkParams node, String pageRoute}) async {
+    // display a dialog while changing network
+    showCupertinoDialog(
+        context: _homePageContext,
+        builder: (_) {
+          final dic =
+              I18n.of(_homePageContext).getDic(i18n_full_dic_app, 'assets');
+          return CupertinoAlertDialog(
+            title: Text(dic['v3.changeNetwork']),
+            content: Container(
+              margin: EdgeInsets.only(top: 24, bottom: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 8),
+                    child: CupertinoActivityIndicator(),
+                  ),
+                  Text(
+                      '${dic['v3.changeNetwork.ing']} ${networkName.toUpperCase()}...')
+                ],
+              ),
+            ),
+          );
+        });
+
     await _changeNetwork(
         widget.plugins.firstWhere((e) => e.basic.name == networkName),
         node: node);
-    _service.store.assets.loadCache(_keyring.current, networkName);
+    await _service.store.assets.loadCache(_keyring.current, networkName);
+
+    Navigator.of(_homePageContext).pop();
+
+    // set auto routing path so we can route to the page after network changed
+    _autoRoutingPath = pageRoute;
   }
 
   Future<void> _changeNode(NetworkParams node) async {
@@ -569,6 +603,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               builder: (BuildContext context) {
                 final accountCreated =
                     _service?.store?.account?.accountCreated ?? false;
+
+                _homePageContext = context;
+
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
@@ -710,12 +747,32 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
   }
 
+  void _setupPluginsNetworkSwitch() {
+    widget.plugins.forEach((e) {
+      if (e.appUtils.switchNetwork == null) {
+        e.appUtils.switchNetwork = (String network, {String pageRoute}) async {
+          _switchNetwork(network, pageRoute: pageRoute);
+        };
+      }
+    });
+  }
+
+  void _doAutoRouting() {
+    if (_autoRoutingPath != null) {
+      print('page auto routing...');
+      Navigator.of(_homePageContext).pushNamed(_autoRoutingPath);
+      _autoRoutingPath = null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _handleIncomingAppLinks();
     _handleInitialAppLinks();
     WidgetsBinding.instance.addObserver(this);
+
+    _setupPluginsNetworkSwitch();
   }
 
   @override
@@ -743,6 +800,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   @override
   Widget build(_) {
     final routes = _getRoutes();
+
+    /// we will do auto routing after plugin changed & app rebuild
+    WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
+
     return GestureDetector(
       onTapUp: (_) {
         FocusScope.of(context).focusedChild?.unfocus();
