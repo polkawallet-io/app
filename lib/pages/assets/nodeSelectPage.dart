@@ -1,10 +1,9 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/plugin/index.dart';
-
-import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class NodeSelectPage extends StatefulWidget {
@@ -169,14 +168,11 @@ class NodeSelectItem extends StatelessWidget {
                                     .plugin.sdk.api.connectedNode?.endpoint ==
                                 e.endpoint,
                             onTap: () {
+                              Navigator.of(context).pop();
                               if (service
                                       .plugin.sdk.api.connectedNode?.endpoint ==
-                                  e.endpoint) {
-                                Navigator.of(context).pop();
-                                return;
-                              }
+                                  e.endpoint) return;
                               changeNetwork(plugin.basic.name, node: e);
-                              Navigator.of(context).pop();
                             },
                           );
                         }).toList()

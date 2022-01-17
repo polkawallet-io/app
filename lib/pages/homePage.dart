@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
     ];
     final pluginPages =
         widget.service.plugin.getNavItems(context, widget.service.keyring);
-    if (pluginPages.length > 1) {
+    if (pluginPages.length > 1 || pluginPages[0].isAdapter) {
       final List<MetaHubItem> items = [];
       pluginPages.forEach((element) {
         if (element.isAdapter) {
