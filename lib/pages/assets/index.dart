@@ -738,135 +738,194 @@ class _AssetsState extends State<AssetsPage> {
           body: Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Column(children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 10.h, top: 15.h),
-                      child: instrumentIndex == 0 ||
-                              widget.service.plugin.getAggregatedAssetsWidget(
-                                      onSwitchBack: null,
-                                      onSwitchHideBalance: null) ==
-                                  null
-                          ? InstrumentWidget(
-                              _instrumentDatas(),
-                              gradienColors: _gradienColors(),
-                              switchDefi: widget.service.plugin
-                                      .getAggregatedAssetsWidget(
-                                          onSwitchBack: null,
-                                          onSwitchHideBalance: null) !=
-                                  null,
-                              onSwitchChange: () {
-                                setState(() {
-                                  instrumentIndex = 1;
-                                });
-                              },
-                              onSwitchHideBalance: () {
-                                widget.service.store.settings.setIsHideBalance(
-                                    !widget
-                                        .service.store.settings.isHideBalance);
-                              },
-                              enabled: widget.connectedNode != null,
-                              hideBalance:
-                                  widget.service.store.settings.isHideBalance,
-                              priceCurrency:
-                                  widget.service.store.settings.priceCurrency,
-                              key: Key(
-                                  "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
-                            )
-                          : widget.service.plugin.getAggregatedAssetsWidget(
-                              onSwitchBack: () {
-                                setState(() {
-                                  instrumentIndex = 0;
-                                });
-                              },
-                              onSwitchHideBalance: () {
-                                widget.service.store.settings.setIsHideBalance(
-                                    !widget
-                                        .service.store.settings.isHideBalance);
-                              },
-                              priceCurrency:
-                                  widget.service.store.settings.priceCurrency,
-                              rate:
-                                  widget.service.store.settings.priceCurrency ==
-                                          "CNY"
-                                      ? _rate
-                                      : 1.0,
-                              hideBalance:
-                                  widget.service.store.settings.isHideBalance),
-                    ),
-                    Visibility(
-                        visible: bannerVisible &&
-                            !(widget.service.keyring.current.observation ??
-                                false),
-                        child: AdBanner(widget.service, widget.connectedNode,
-                            widget.switchNetwork,
-                            canClose: false)),
-                    widget.service.plugin.basic.isTestNet
-                        ? Padding(
-                            padding: EdgeInsets.only(top: 5.h),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    child: TextTag(
-                                  I18n.of(context).getDic(i18n_full_dic_app,
-                                      'assets')['assets.warn'],
-                                  color: Colors.deepOrange,
-                                  fontSize: 12,
-                                  margin: EdgeInsets.all(0),
-                                  padding: EdgeInsets.all(8),
-                                ))
-                              ],
+                padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
+                child: instrumentIndex == 0 ||
+                        widget.service.plugin.getAggregatedAssetsWidget(
+                                onSwitchBack: null,
+                                onSwitchHideBalance: null) ==
+                            null
+                    ? InstrumentWidget(
+                        _instrumentDatas(),
+                        gradienColors: _gradienColors(),
+                        switchDefi: widget.service.plugin
+                                .getAggregatedAssetsWidget(
+                                    onSwitchBack: null,
+                                    onSwitchHideBalance: null) !=
+                            null,
+                        onSwitchChange: () {
+                          setState(() {
+                            instrumentIndex = 1;
+                          });
+                        },
+                        onSwitchHideBalance: () {
+                          widget.service.store.settings.setIsHideBalance(
+                              !widget.service.store.settings.isHideBalance);
+                        },
+                        enabled: widget.connectedNode != null,
+                        hideBalance:
+                            widget.service.store.settings.isHideBalance,
+                        priceCurrency:
+                            widget.service.store.settings.priceCurrency,
+                        key: Key(
+                            "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
+                      )
+                    : widget.service.plugin.getAggregatedAssetsWidget(
+                        onSwitchBack: () {
+                          setState(() {
+                            instrumentIndex = 0;
+                          });
+                        },
+                        onSwitchHideBalance: () {
+                          widget.service.store.settings.setIsHideBalance(
+                              !widget.service.store.settings.isHideBalance);
+                        },
+                        priceCurrency:
+                            widget.service.store.settings.priceCurrency,
+                        rate:
+                            widget.service.store.settings.priceCurrency == "CNY"
+                                ? _rate
+                                : 1.0,
+                        hideBalance:
+                            widget.service.store.settings.isHideBalance),
+              ),
+              Visibility(
+                visible: bannerVisible &&
+                    !(widget.service.keyring.current.observation ?? false),
+                child: Container(
+                  margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                  child: AdBanner(widget.service, widget.connectedNode,
+                      widget.switchNetwork,
+                      canClose: false),
+                ),
+              ),
+              widget.service.plugin.basic.isTestNet
+                  ? Padding(
+                      padding: EdgeInsets.only(top: 5.h),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: TextTag(
+                            I18n.of(context).getDic(
+                                i18n_full_dic_app, 'assets')['assets.warn'],
+                            color: Colors.deepOrange,
+                            fontSize: 12,
+                            margin: EdgeInsets.all(0),
+                            padding: EdgeInsets.all(8),
+                          ))
+                        ],
+                      ),
+                    )
+                  : Container(height: 0.h),
+              FutureBuilder(
+                future: _fetchAnnouncements(),
+                builder: (_, AsyncSnapshot<dynamic> snapshot) {
+                  final String lang =
+                      I18n.of(context).locale.toString().contains('zh')
+                          ? 'zh'
+                          : 'en';
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return Container();
+                  }
+                  int level = snapshot.data['level'];
+                  final Map announce = snapshot.data[lang];
+                  return GestureDetector(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: TextTag(
+                              announce['title'],
+                              padding:
+                                  EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
+                              color: level == 0
+                                  ? Colors.blue
+                                  : level == 1
+                                      ? Colors.yellow
+                                      : Colors.red,
                             ),
                           )
-                        : Container(height: 0.h),
-                    FutureBuilder(
-                      future: _fetchAnnouncements(),
-                      builder: (_, AsyncSnapshot<dynamic> snapshot) {
-                        final String lang =
-                            I18n.of(context).locale.toString().contains('zh')
-                                ? 'zh'
-                                : 'en';
-                        if (!snapshot.hasData || snapshot.data == null) {
-                          return Container();
-                        }
-                        int level = snapshot.data['level'];
-                        final Map announce = snapshot.data[lang];
-                        return GestureDetector(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 5.h),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: TextTag(
-                                    announce['title'],
-                                    padding: EdgeInsets.fromLTRB(
-                                        16.w, 12.h, 16.w, 12.h),
-                                    color: level == 0
-                                        ? Colors.blue
-                                        : level == 1
-                                            ? Colors.yellow
-                                            : Colors.red,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              AnnouncementPage.route,
-                              arguments: AnnouncePageParams(
-                                title: announce['title'],
-                                link: announce['link'],
-                              ),
-                            );
-                          },
-                        );
-                      },
+                        ],
+                      ),
                     ),
-                    Container(
-                        margin: EdgeInsets.only(top: 5.h),
-                        child: Divider(height: 1)),
-                  ])),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        AnnouncementPage.route,
+                        arguments: AnnouncePageParams(
+                          title: announce['title'],
+                          link: announce['link'],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
+                child: Divider(height: 1),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                child: Row(
+                  children: [
+                    BorderedTitle(
+                      title: I18n.of(context)
+                          .getDic(i18n_full_dic_app, 'assets')['assets'],
+                    ),
+                    Visibility(
+                        visible: widget.service.plugin.basic.name ==
+                                para_chain_name_karura &&
+                            claimKarEnabled,
+                        child: GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(
+                                DAppWrapperPage.route,
+                                arguments:
+                                    'https://distribution.acala.network/claim'),
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(15.w, 0, 15.w, 4),
+                              height: 24,
+                              margin: EdgeInsets.only(left: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        "assets/images/icon_bg_2.png"),
+                                    fit: BoxFit.contain),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Claim KAR',
+                                style: TextStyle(
+                                  color: Theme.of(context).cardColor,
+                                  fontSize: 12,
+                                  fontFamily: 'TitilliumWeb',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ))),
+                    Visibility(
+                        visible:
+                            (widget.service.plugin.noneNativeTokensAll ?? [])
+                                    .length >
+                                0,
+                        child: Expanded(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            v3.IconButton(
+                              onPressed: () => Navigator.of(context)
+                                  .pushNamed(ManageAssetsPage.route),
+                              icon: Icon(
+                                Icons.menu,
+                                color: Theme.of(context).disabledColor,
+                                size: 20,
+                              ),
+                            )
+                          ],
+                        )))
+                  ],
+                ),
+              ),
               Expanded(
                   child: Container(
                 child: CustomRefreshIndicator(
@@ -877,74 +936,6 @@ class _AssetsState extends State<AssetsPage> {
                     physics: BouncingScrollPhysics(),
                     padding: EdgeInsets.only(bottom: 6.h, top: 8.h),
                     children: [
-                      Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Column(children: [
-                            Row(
-                              children: [
-                                BorderedTitle(
-                                  title: I18n.of(context).getDic(
-                                      i18n_full_dic_app, 'assets')['assets'],
-                                ),
-                                Visibility(
-                                    visible: widget.service.plugin.basic.name ==
-                                            para_chain_name_karura &&
-                                        claimKarEnabled,
-                                    child: GestureDetector(
-                                        onTap: () => Navigator.of(context)
-                                            .pushNamed(DAppWrapperPage.route,
-                                                arguments:
-                                                    'https://distribution.acala.network/claim'),
-                                        child: Container(
-                                          padding: EdgeInsets.fromLTRB(
-                                              15.w, 0, 15.w, 4),
-                                          height: 24,
-                                          margin: EdgeInsets.only(left: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "assets/images/icon_bg_2.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            'Claim KAR',
-                                            style: TextStyle(
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              fontSize: 12,
-                                              fontFamily: 'TitilliumWeb',
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ))),
-                                Visibility(
-                                    visible: (widget.service.plugin
-                                                    .noneNativeTokensAll ??
-                                                [])
-                                            .length >
-                                        0,
-                                    child: Expanded(
-                                        child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        v3.IconButton(
-                                          onPressed: () => Navigator.of(context)
-                                              .pushNamed(
-                                                  ManageAssetsPage.route),
-                                          icon: Icon(
-                                            Icons.menu,
-                                            color:
-                                                Theme.of(context).disabledColor,
-                                            size: 20,
-                                          ),
-                                        )
-                                      ],
-                                    )))
-                              ],
-                            )
-                          ])),
                       RoundedCard(
                         margin:
                             EdgeInsets.only(top: 5.h, left: 16.w, right: 16.w),
