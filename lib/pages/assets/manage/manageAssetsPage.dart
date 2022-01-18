@@ -233,7 +233,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                             Container(
                               color: Colors.transparent,
                               child: ListTile(
-                                dense: true,
+                                dense: list[i].fullName != null,
                                 leading: TokenIcon(
                                   widget.service.plugin.basic.name ==
                                           para_chain_name_statemine
@@ -255,15 +255,15 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                         .textTheme
                                         .headline4
                                         .copyWith(fontWeight: FontWeight.w600)),
-                                subtitle: Visibility(
-                                    visible: list[i].fullName != null,
-                                    child: Text('$id${list[i].fullName}',
+                                subtitle: list[i].fullName != null
+                                    ? Text('$id${list[i].fullName}',
                                         maxLines: 2,
                                         style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w300,
                                             color: Color(0xFF565554),
-                                            fontFamily: "SF_Pro"))),
+                                            fontFamily: "SF_Pro"))
+                                    : null,
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

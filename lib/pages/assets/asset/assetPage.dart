@@ -21,6 +21,7 @@ import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/cardButton.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -285,255 +286,204 @@ class _AssetPageState extends State<AssetPage> {
         ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Observer(
-          builder: (_) {
-            bool transferEnabled = true;
-            if (widget.service.plugin.basic.name == para_chain_name_karura ||
-                widget.service.plugin.basic.name == para_chain_name_acala) {
-              transferEnabled = false;
-              if (widget.service.store.settings.liveModules['assets'] != null) {
-                transferEnabled = widget
-                    .service.store.settings.liveModules['assets']['enabled'];
-              }
+      body: Observer(
+        builder: (_) {
+          bool transferEnabled = true;
+          if (widget.service.plugin.basic.name == para_chain_name_karura ||
+              widget.service.plugin.basic.name == para_chain_name_acala) {
+            transferEnabled = false;
+            if (widget.service.store.settings.liveModules['assets'] != null) {
+              transferEnabled = widget
+                  .service.store.settings.liveModules['assets']['enabled'];
             }
+          }
 
-            BalanceData balancesInfo = widget.service.plugin.balances.native;
-            return Column(
-              children: <Widget>[
-                BalanceCard(
-                  balancesInfo,
-                  symbol: symbol,
-                  decimals: decimals,
-                  marketPrices:
-                      (widget.service.store.assets.marketPrices[symbol] ?? 0) *
-                          (widget.service.store.settings.priceCurrency == "CNY"
-                              ? _rate
-                              : 1.0),
-                  // backgroundImage: widget.service.plugin.basic.backgroundImage,
-                  bgColors: getBgColors(),
-                  icon: widget.service.plugin.tokenIcons[symbol],
-                  marketPriceList: _marketPriceList,
-                  priceCurrency: widget.service.store.settings.priceCurrency,
-                ),
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 3.w),
-                            child: CarButton(
-                              icon: Padding(
-                                padding: EdgeInsets.only(left: 3),
-                                child: Image.asset(
-                                  "assets/images/send.png",
-                                  width: 37,
-                                ),
+          BalanceData balancesInfo = widget.service.plugin.balances.native;
+          return Column(
+            children: <Widget>[
+              BalanceCard(
+                balancesInfo,
+                symbol: symbol,
+                decimals: decimals,
+                marketPrices:
+                    (widget.service.store.assets.marketPrices[symbol] ?? 0) *
+                        (widget.service.store.settings.priceCurrency == "CNY"
+                            ? _rate
+                            : 1.0),
+                // backgroundImage: widget.service.plugin.basic.backgroundImage,
+                bgColors: getBgColors(),
+                icon: widget.service.plugin.tokenIcons[symbol],
+                marketPriceList: _marketPriceList,
+                priceCurrency: widget.service.store.settings.priceCurrency,
+              ),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          child: CardButton(
+                            icon: Padding(
+                              padding: EdgeInsets.only(left: 3),
+                              child: Image.asset(
+                                "assets/images/send.png",
+                                width: 37,
                               ),
-                              text: dic['v3.send'],
-                              onPressed: transferEnabled
-                                  ? () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        TransferPage.route,
-                                        arguments: TransferPageParams(
-                                          redirect: AssetPage.route,
-                                        ),
-                                      );
-                                    }
-                                  : null,
                             ),
+                            text: dic['v3.send'],
+                            onPressed: transferEnabled
+                                ? () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      TransferPage.route,
+                                      arguments: TransferPageParams(
+                                        redirect: AssetPage.route,
+                                      ),
+                                    );
+                                  }
+                                : null,
                           ),
                         ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 3.w),
-                            child: CarButton(
-                              icon: Image.asset("assets/images/qr.png",
-                                  width: 37),
-                              text: dic['receive'],
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, AccountQrCodePage.route);
-                              },
-                            ),
-                          ),
-                        ),
-                        Fmt.balanceInt((balancesInfo?.lockedBalance ?? 0)
-                                    .toString()) >
-                                BigInt.one
-                            ? Expanded(
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 3.w),
-                                  child: CarButton(
-                                    icon: Image.asset(
-                                        "assets/images/unlock.png",
-                                        width: 37),
-                                    text: dic['unlock'],
-                                    onPressed: Fmt.balanceInt(
-                                                (balancesInfo?.lockedBalance ??
-                                                        0)
-                                                    .toString()) >
-                                            BigInt.one
-                                        ? () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              LocksDetailPage.route,
-                                              arguments: TransferPageParams(
-                                                redirect: LocksDetailPage.route,
-                                              ),
-                                            );
-                                          }
-                                        : null,
-                                  ),
-                                ),
-                              )
-                            : Container(),
-                      ],
-                    )),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 10.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BorderedTitle(title: dic['history']),
-                        Row(
-                          children: [
-                            Container(
-                              width: 36.w,
-                              height: 28.h,
-                              margin: EdgeInsets.only(right: 8.w),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                image: DecorationImage(
-                                    image:
-                                        AssetImage("assets/images/bg_tag.png"),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Center(
-                                child: Text(
-                                    dic[_tab == 0
-                                        ? 'all'
-                                        : _tab == 1
-                                            ? "in"
-                                            : "out"],
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline5
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .toggleableActiveColor,
-                                            fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                            GestureDetector(
-                                onTap: () {
-                                  showCupertinoModalPopup(
-                                      context: context,
-                                      builder: (context) {
-                                        return ShowCustomAlterWidget(
-                                            confirmCallback: (value) {
-                                              setState(() {
-                                                if (value == dic['all']) {
-                                                  _tab = 0;
-                                                } else if (value == dic['in']) {
-                                                  _tab = 1;
-                                                } else {
-                                                  _tab = 2;
-                                                }
-                                              });
-                                            },
-                                            cancel: I18n.of(context).getDic(
-                                                i18n_full_dic_ui,
-                                                'common')['cancel'],
-                                            options: [
-                                              dic['all'],
-                                              dic['in'],
-                                              dic['out']
-                                            ]);
-                                      });
-                                },
-                                child: v3.IconButton(
-                                  icon: SvgPicture.asset(
-                                    'assets/images/icon_screening.svg',
-                                    color: Color(0xFF979797),
-                                    width: 22.h,
-                                  ),
-                                ))
-                          ],
-                        )
-                      ],
-                    )),
-                Divider(
-                  height: 1,
-                ),
-                Expanded(
-                  child: Container(
-                    color: Theme.of(context).cardColor,
-                    child: RefreshIndicator(
-                      key: _refreshKey,
-                      onRefresh: _refreshData,
-                      child: ListView(
-                        physics: BouncingScrollPhysics(),
-                        controller: _scrollController,
-                        children: [..._buildTxList()],
                       ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          child: CardButton(
+                            icon:
+                                Image.asset("assets/images/qr.png", width: 37),
+                            text: dic['receive'],
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, AccountQrCodePage.route);
+                            },
+                          ),
+                        ),
+                      ),
+                      Fmt.balanceInt((balancesInfo?.lockedBalance ?? 0)
+                                  .toString()) >
+                              BigInt.one
+                          ? Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                                child: CardButton(
+                                  icon: Image.asset("assets/images/unlock.png",
+                                      width: 37),
+                                  text: dic['unlock'],
+                                  onPressed: Fmt.balanceInt(
+                                              (balancesInfo?.lockedBalance ?? 0)
+                                                  .toString()) >
+                                          BigInt.one
+                                      ? () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            LocksDetailPage.route,
+                                            arguments: TransferPageParams(
+                                              redirect: LocksDetailPage.route,
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  )),
+              Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 10.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BorderedTitle(title: dic['history']),
+                      Row(
+                        children: [
+                          Container(
+                            width: 36.w,
+                            height: 28.h,
+                            margin: EdgeInsets.only(right: 8.w),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              image: DecorationImage(
+                                  image: AssetImage("assets/images/bg_tag.png"),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              child: Text(
+                                  dic[_tab == 0
+                                      ? 'all'
+                                      : _tab == 1
+                                          ? "in"
+                                          : "out"],
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline5
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .toggleableActiveColor,
+                                          fontWeight: FontWeight.w600)),
+                            ),
+                          ),
+                          GestureDetector(
+                              onTap: () {
+                                showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (context) {
+                                      return ShowCustomAlterWidget(
+                                          confirmCallback: (value) {
+                                            setState(() {
+                                              if (value == dic['all']) {
+                                                _tab = 0;
+                                              } else if (value == dic['in']) {
+                                                _tab = 1;
+                                              } else {
+                                                _tab = 2;
+                                              }
+                                            });
+                                          },
+                                          cancel: I18n.of(context).getDic(
+                                              i18n_full_dic_ui,
+                                              'common')['cancel'],
+                                          options: [
+                                            dic['all'],
+                                            dic['in'],
+                                            dic['out']
+                                          ]);
+                                    });
+                              },
+                              child: v3.IconButton(
+                                icon: SvgPicture.asset(
+                                  'assets/images/icon_screening.svg',
+                                  color: Color(0xFF979797),
+                                  width: 22.h,
+                                ),
+                              ))
+                        ],
+                      )
+                    ],
+                  )),
+              Divider(
+                height: 1,
+              ),
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).cardColor,
+                  child: RefreshIndicator(
+                    key: _refreshKey,
+                    onRefresh: _refreshData,
+                    child: ListView(
+                      physics: BouncingScrollPhysics(),
+                      controller: _scrollController,
+                      children: [..._buildTxList()],
                     ),
                   ),
-                )
-              ],
-            );
-          },
-        ),
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
-  }
-}
-
-class CarButton extends StatelessWidget {
-  CarButton(
-      {@required this.onPressed,
-      @required this.text,
-      @required this.icon,
-      Key key})
-      : super(key: key);
-  Function() onPressed;
-  String text;
-  Widget icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          if (onPressed != null) {
-            onPressed();
-          }
-        },
-        child: Container(
-          padding: EdgeInsets.only(top: 3.h, bottom: 10, right: 3),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            image: DecorationImage(
-                image: AssetImage("assets/images/btn_bg.png"),
-                fit: BoxFit.fill),
-          ),
-          alignment: Alignment.center,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                Text(
-                  text,
-                  style: Theme.of(context).textTheme.headline6.copyWith(
-                      fontWeight: FontWeight.w600, fontFamily: "TitilliumWeb"),
-                ),
-              ],
-            ),
-          ),
-        ));
   }
 }
 
