@@ -16,8 +16,6 @@ import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
-import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanFormPage.dart';
-import 'package:app/pages/profile/acalaCrowdLoan/acaCrowdLoanPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
@@ -27,8 +25,6 @@ import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/communityPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
-import 'package:app/pages/profile/crowdLoan/contributePage.dart';
-import 'package:app/pages/profile/crowdLoan/crowdLoanPage.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/friendListPage.dart';
 import 'package:app/pages/profile/recovery/initiateRecoveryPage.dart';
@@ -39,11 +35,7 @@ import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
-import 'package:app/pages/public/adPage.dart';
 import 'package:app/pages/public/guidePage.dart';
-import 'package:app/pages/public/karCrowdLoanFormPage.dart';
-import 'package:app/pages/public/karCrowdLoanPage.dart';
-import 'package:app/pages/public/karCrowdLoanWaitPage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -657,11 +649,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
-      AdPage.route: (_) => AdPage(),
-      KarCrowdLoanPage.route: (_) => KarCrowdLoanPage(_service, _connectedNode),
-      KarCrowdLoanWaitPage.route: (_) => KarCrowdLoanWaitPage(),
-      KarCrowdLoanFormPage.route: (_) =>
-          KarCrowdLoanFormPage(_service, _connectedNode),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
@@ -710,13 +697,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       InitiateRecoveryPage.route: (_) => InitiateRecoveryPage(_service),
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
       TxDetailPage.route: (_) => TxDetailPage(_service),
-
-      /// crowd loan
-      CrowdLoanPage.route: (_) => CrowdLoanPage(_service, _connectedNode),
-      ContributePage.route: (_) => ContributePage(_service),
-      AcaCrowdLoanPage.route: (_) => AcaCrowdLoanPage(_service, _connectedNode),
-      AcaCrowdLoanFormPage.route: (_) =>
-          AcaCrowdLoanFormPage(_service, _connectedNode),
 
       PluginPage.route: (_) => PluginPage(_service),
     };

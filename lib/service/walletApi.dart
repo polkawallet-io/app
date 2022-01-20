@@ -216,9 +216,9 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getAdBannerStatus() async {
+  static Future<Map> getAdBannerList() async {
     try {
-      final res = await get(getUrl(_endpoint, '/crowdloan/health'));
+      final res = await get(getUrl(_endpoint, '/config/banners.json'));
       if (res == null) {
         return null;
       } else {

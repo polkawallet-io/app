@@ -62,12 +62,12 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
-  Map<dynamic, dynamic> get adBannerState {
-    return super.adBannerState;
+  Map<dynamic, dynamic> get adBanners {
+    return super.adBanners;
   }
 
-  set adBannerState(Map<dynamic, dynamic> value) {
-    super.adBannerState = value;
+  set adBanners(Map<dynamic, dynamic> value) {
+    super.adBanners = value;
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
@@ -143,7 +143,7 @@ network: ${network},
 priceCurrency: ${priceCurrency},
 isHideBalance: ${isHideBalance},
 liveModules: ${liveModules},
-adBannerState: ${adBannerState}
+adBannerState: ${adBanners}
     ''';
   }
 }

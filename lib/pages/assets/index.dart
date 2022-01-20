@@ -725,13 +725,6 @@ class _AssetsState extends State<AssetsPage> {
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
         }
 
-        /// Banner visible:
-        /// 1. Polkadot always shows banner.
-        /// 2. Other plugins can be closed.
-        final bannerVisible =
-            widget.service.plugin.basic.name == relay_chain_name_dot ||
-                widget.service.store.account.showBanner;
-
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: buildAppBar(transferEnabled),
@@ -788,15 +781,9 @@ class _AssetsState extends State<AssetsPage> {
                         hideBalance:
                             widget.service.store.settings.isHideBalance),
               ),
-              Visibility(
-                visible: bannerVisible &&
-                    !(widget.service.keyring.current.observation ?? false),
-                child: Container(
-                  margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                  child: AdBanner(widget.service, widget.connectedNode,
-                      widget.switchNetwork,
-                      canClose: false),
-                ),
+              Container(
+                margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                child: AdBanner(widget.service, widget.connectedNode),
               ),
               widget.service.plugin.basic.isTestNet
                   ? Padding(
