@@ -174,25 +174,29 @@ class _HomePageState extends State<HomePage> {
           items.add(MetaHubItem(element.text, element.content));
         } else {
           var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-          final metaHubCovers = ['staking', 'governance', 'nft', 'parachains'];
-          final hasCover =
-              metaHubCovers.indexOf(element.text.toLowerCase()) > -1;
+          final metaHubCovers = ['staking', 'governance', 'parachains', 'nft'];
+          final coversZh = ['质押', '治理', '平行链'];
+          metaHubCovers.addAll(coversZh);
+          final coverIndex = metaHubCovers.indexOf(element.text.toLowerCase());
+          final coverName = coverIndex > 3
+              ? metaHubCovers[coverIndex - 4]
+              : element.text.toLowerCase();
           items.add(MetaHubItem(
               element.text,
               GestureDetector(
                 child: Column(
-                  children: hasCover
+                  children: coverIndex > -1
                       ? [
                           Expanded(
                               child: SingleChildScrollView(
                             child: Column(
                               children: [
                                 Image.asset(
-                                    'assets/images/public/hub_${element.text.toLowerCase()}.png'),
+                                    'assets/images/public/hub_$coverName.png'),
                                 Container(
                                   padding: EdgeInsets.only(top: 16),
                                   child: Text(
-                                    dic['hub.cover.${element.text.toLowerCase()}'],
+                                    dic['hub.cover.$coverName'],
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
