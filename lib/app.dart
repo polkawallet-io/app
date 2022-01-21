@@ -333,10 +333,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Timer _chainTimer;
   _dropsService(AppService service, {NetworkParams node}) {
     _dropsServiceCancel();
-    _dropsServiceTimer = Timer(Duration(seconds: 12), () async {
-      _chainTimer = Timer(Duration(seconds: 4), () async {
+    _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
+      _chainTimer = Timer(Duration(seconds: 18), () async {
         _restartWebConnect(service, node: node);
-        _webViewDropsTimer = Timer(Duration(seconds: 40), () {
+        _webViewDropsTimer = Timer(Duration(seconds: 60), () {
           _dropsService(service, node: node);
         });
       });

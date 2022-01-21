@@ -218,7 +218,7 @@ class WalletApi {
 
   static Future<Map> getAdBannerList() async {
     try {
-      final res = await get(getUrl(_endpoint, '/config/banners.json'));
+      final res = await get(getUrl(_configEndpoint, '/wallet/banners.json'));
       if (res == null) {
         return null;
       } else {
