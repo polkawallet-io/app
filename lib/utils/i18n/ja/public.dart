@@ -48,4 +48,13 @@ const Map<String, String> enPublic = {
   'balance.insufficient': 'Insufficient balance',
   'tx.action': 'Action',
   'v3.metahub': 'Metahub',
+  'hub.cover.nft':
+      'A gallery where you can easily store, display and manage your non-fungible tokens by category. Grow and showcase your collection, be recognized as a pioneer within the ecosystem. Transferring NFTs is available now.',
+  'hub.cover.governance':
+      'Taking a phased approach to employ various governance mechanisms that will allow it to progressively decentralize and ultimately be commanded by the majority of network stakeholders. The framework employs a Referenda chamber, a General Council, and a Technical Committee.',
+  'hub.cover.staking':
+      'Staking uses NPoS as its consensus mechanism. The system encourages certain token holders to participate as nominators. You can nominate validator that you trust to help you earn rewards in the chain’s native token.',
+  'hub.cover.parachains':
+      'Provide users with an aggregated module of Crowdloan and Auction. Users can participate in different events in this module, and track the follow-up of the crowdloan.',
+  'hub.enter': 'Enter',
 };
