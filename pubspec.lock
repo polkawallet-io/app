@@ -1158,6 +1158,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  toast:
+    dependency: transitive
+    description:
+      name: toast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   transformer_page_view:
     dependency: transitive
     description:
