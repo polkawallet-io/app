@@ -31,6 +31,8 @@ abstract class _SettingsStore with Store {
   @observable
   Map liveModules = Map();
 
+  Map pluginsConfig = Map();
+
   Map adBanners = Map();
 
   Map claimState = Map();
@@ -136,5 +138,9 @@ abstract class _SettingsStore with Store {
 
   void setAdBannerState(Map value) {
     adBanners = value ?? {};
+  }
+
+  void setPluginsConfig(Map value) {
+    pluginsConfig = value ?? {};
   }
 }

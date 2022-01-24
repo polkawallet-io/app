@@ -4,6 +4,7 @@ import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   PluginDisabled _pluginDisabledSelected;
   PolkawalletPlugin _selectedNetwork;
   bool _networkChanging = false;
+
+  int _appVersionCode = 0;
 
   Future<void> _reloadNetwork() async {
     setState(() {
@@ -262,15 +265,28 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var appVersionCode = await Utils.getBuildNumber();
       setState(() {
         _selectedNetwork = widget.service.plugin;
+        _appVersionCode = appVersionCode;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final plugins = widget.plugins.toList();
+    final config = widget.service.store.settings.pluginsConfig;
+    if (config != null) {
+      plugins.removeWhere((i) {
+        final List disabled = (config[i.basic.name] ?? {})['disabled'];
+        if (disabled != null) {
+          return disabled.contains(_appVersionCode) || disabled.contains(0);
+        }
+        return false;
+      });
+    }
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(

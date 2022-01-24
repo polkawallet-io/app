@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
       case para_chain_name_karura:
         return [Color(0xFFE40C5B), Color(0xFFFF4C3B)];
       case para_chain_name_acala:
-        return [Color(0xFFBA4F8C), Color(0xFF675AFC)];
+        return [Color(0xFFFF2B1B), Color(0xFF665AFF)];
       case relay_chain_name_dot:
         return [Color(0xFFE91384), Color(0xFFB6238C)];
       case relay_chain_name_ksm:

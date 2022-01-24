@@ -614,6 +614,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                         _checkJSCodeUpdate(context, _service.plugin,
                             needReload: false);
                         WalletApp.checkUpdate(context);
+                        _queryPluginsConfig();
                       }
                       return snapshot.data > 0
                           ? HomePage(_service, widget.plugins, _connectedNode,
@@ -752,6 +753,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           arguments: _autoRoutingParams.args);
       _autoRoutingParams = null;
     }
+  }
+
+  void _queryPluginsConfig() {
+    WalletApi.getPluginsConfig(WalletApp.buildTarget).then((value) {
+      _store.settings.setPluginsConfig(value);
+    });
   }
 
   @override
