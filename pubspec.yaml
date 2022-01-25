@@ -26,8 +26,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_mobx: ^2.0.0
-  flutter_svg: ^0.23.0+1
   json_annotation: ^4.0.1
 #  json_annotation: ^3.1.1
   get_storage: ^2.0.2
@@ -81,7 +79,15 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   flutter_bugly: ^0.4.3
-  flutter_bugly_play: ^0.1.1+1
+  flutter_bugly_play:
+    git:
+      url: https://github.com/polkawallet-io/flutter_bugly.git
+      ref: 61ae67b70fa68d3f9e04c002ab15d720821165b4
+  flutter_mobx: ^2.0.0
+  flutter_svg: ^0.23.0+1
+  flutter_swiper: ^1.1.6
+  simple_shadow: ^0.2.0
+  liquid_progress_indicator: ^0.4.0
 
 dependency_overrides:
   polkawallet_plugin_kusama:
@@ -114,11 +120,6 @@ dependency_overrides:
      git:
        url: https://github.com/google/charts
        path: charts_flutter
-  flutter_mobx: ^2.0.0
-  flutter_svg: ^0.23.0+1
-  flutter_swiper: ^1.1.6
-  simple_shadow: ^0.2.0
-  liquid_progress_indicator: ^0.4.0
 
 dev_dependencies:
   flutter_test:

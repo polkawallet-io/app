@@ -3,6 +3,7 @@ PODS:
     - Flutter
   - biometric_storage (0.0.1):
     - Flutter
+  - Bugly (2.5.91)
   - connectivity_plus (0.0.1):
     - Flutter
     - Reachability
@@ -63,6 +64,12 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.7)
     - PromisesObjC (< 3.0, >= 1.2)
   - Flutter (1.0.0)
+  - flutter_bugly (0.0.1):
+    - Bugly
+    - Flutter
+  - flutter_bugly_play (0.0.1):
+    - Bugly
+    - Flutter
   - flutter_inappwebview (0.0.1):
     - Flutter
     - flutter_inappwebview/Core (= 0.0.1)
@@ -153,6 +160,8 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `8.5.0`)
   - Flutter (from `Flutter`)
+  - flutter_bugly (from `.symlinks/plugins/flutter_bugly/ios`)
+  - flutter_bugly_play (from `.symlinks/plugins/flutter_bugly_play/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_qr_scan (from `.symlinks/plugins/flutter_qr_scan/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -168,6 +177,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Bugly
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -201,6 +211,10 @@ EXTERNAL SOURCES:
     :tag: 8.5.0
   Flutter:
     :path: Flutter
+  flutter_bugly:
+    :path: ".symlinks/plugins/flutter_bugly/ios"
+  flutter_bugly_play:
+    :path: ".symlinks/plugins/flutter_bugly_play/ios"
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
   flutter_qr_scan:
@@ -234,6 +248,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   aes_ecb_pkcs5_flutter: a82e6ecc47654000805ad9d094a8cd29e4bf9667
   biometric_storage: 1400f1382af3a4cc2bf05340e13c3d8de873ceb9
+  Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
   connectivity_plus: 5f0eb61093bec56935f21a1699dd2758bc895587
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   Firebase: ff8c73105b90e33e1dc6c8e5445d7adc2ccdc7c1
@@ -245,6 +260,8 @@ SPEC CHECKSUMS:
   FirebaseFirestore: 69e4f06a375080a56ffd390fb034467b58ddeda0
   FirebaseInstallations: 044eede8a049bce71c4541ee68d6e4364fcbe774
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_bugly: c9800f4d5bc5bdc27ffdde3417a26ba44266e0c3
+  flutter_bugly_play: 155b89f7ebcc24a404f545fdd4effe57fdad2cce
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_qr_scan: f7c8c497584bbf395efd56ffcc3a60d27ec9de82
   GoogleAppMeasurement: 8d10c1c470fcb0e5143ed74fddd164f0a0384800
