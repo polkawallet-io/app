@@ -188,7 +188,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontWeight: FontWeight.w600,
               fontFamily: "TitilliumWeb"),
           button: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.white,
               fontFamily: "TitilliumWeb")),

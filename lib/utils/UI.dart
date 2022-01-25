@@ -121,7 +121,8 @@ class AppUI {
                 }
                 if (Platform.isIOS) {
                   // go to ios download page
-                  UI.launchURL('https://polkawallet.io/#download');
+                  UI.launchURL(
+                      'https://apps.apple.com/hk/app/polkawallet/id1520301768');
                 } else if (Platform.isAndroid) {
                   if (buildTarget == BuildTargets.playStore) {
                     // go to google play page

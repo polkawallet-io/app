@@ -386,6 +386,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bugly:
+    dependency: "direct main"
+    description:
+      name: flutter_bugly
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.3"
+  flutter_bugly_play:
+    dependency: "direct main"
+    description:
+      name: flutter_bugly_play
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1+1"
   flutter_inappwebview:
     dependency: transitive
     description:
