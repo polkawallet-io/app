@@ -197,6 +197,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.only(top: 16),
                                   child: Text(
                                     dic['hub.cover.$coverName'],
+                                    textAlign: TextAlign.justify,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
