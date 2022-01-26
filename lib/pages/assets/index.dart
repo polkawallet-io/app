@@ -101,15 +101,7 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   Future<void> _updateMarketPrices() async {
-    if (widget.service.plugin.networkState.tokenSymbol != null) {
-      final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
-      final tokens = [nativeToken];
-      if (widget.service.plugin.balances.tokens.length > 0) {
-        tokens
-            .addAll(widget.service.plugin.balances.tokens.map((e) => e.symbol));
-      }
-      widget.service.assets.fetchMarketPrices(tokens);
-    }
+    widget.service.assets.fetchMarketPrices();
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
@@ -1141,7 +1133,7 @@ class TokenItem extends StatelessWidget {
                         ? Theme.of(context).textSelectionTheme.selectionColor
                         : Theme.of(context).dividerColor),
               ),
-              marketPrice != null
+              marketPrice != null && marketPrice > 0
                   ? Text(
                       isHideBalance
                           ? "******"

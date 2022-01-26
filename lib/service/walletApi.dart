@@ -11,6 +11,7 @@ const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
   static const String _configEndpoint = 'https://acala.subdao.com';
+  static const String _cdnEndpoint = 'https://cdn.subdao.com';
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
@@ -29,22 +30,6 @@ class WalletApi {
 
   static String getSnEndpoint(String relayChainName) {
     return 'https://$relayChainName.api.subscan.io/api/scan';
-  }
-
-  //$=>￥
-  static Future<Map> getRate() async {
-    final url = '$_endpoint/price-server/rate';
-    try {
-      Response res = await get(Uri.parse(url));
-      if (res == null) {
-        return {};
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
-      }
-    } catch (err) {
-      print(err);
-      return {};
-    }
   }
 
   static Future<Map> getMarketPriceList(String token, int totalCount) async {
@@ -186,8 +171,8 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getTokenPrice(String token) async {
-    final url = '$_endpoint/price-server/?token=$token';
+  static Future<Map> getTokenPrices() async {
+    final url = '$_cdnEndpoint/lastPrice.json';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {

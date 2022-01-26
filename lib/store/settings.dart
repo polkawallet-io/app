@@ -45,9 +45,9 @@ abstract class _SettingsStore with Store {
 
   Future<double> getRate() async {
     if (_rate < 0) {
-      final data = await WalletApi.getRate();
-      if (data != null && data['code'] == 1) {
-        _rate = data['data']['rate'];
+      final data = await WalletApi.getTokenPrices();
+      if (data != null && data['rate'] != null) {
+        _rate = (data['rate'] as num).toDouble();
       } else {
         _rate = 1;
       }

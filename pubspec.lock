@@ -396,9 +396,11 @@ packages:
   flutter_bugly_play:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/flutter_bugly"
-      relative: true
-    source: path
+      path: "."
+      ref: "61ae67b70fa68d3f9e04c002ab15d720821165b4"
+      resolved-ref: "61ae67b70fa68d3f9e04c002ab15d720821165b4"
+      url: "https://github.com/polkawallet-io/flutter_bugly.git"
+    source: git
     version: "0.4.3"
   flutter_inappwebview:
     dependency: transitive
@@ -462,7 +464,7 @@ packages:
     source: hosted
     version: "0.23.0+1"
   flutter_swiper:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: flutter_swiper
       url: "https://pub.dartlang.org"
@@ -705,7 +707,7 @@ packages:
     source: hosted
     version: "4.1.4"
   liquid_progress_indicator:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: liquid_progress_indicator
       url: "https://pub.dartlang.org"
@@ -897,11 +899,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "87c54fe160c88992d04c8ce30ef23fe09e9732af"
-      resolved-ref: "87c54fe160c88992d04c8ce30ef23fe09e9732af"
+      ref: b5677954c17432ca6b32da4dd31929b0fa0c3171
+      resolved-ref: b5677954c17432ca6b32da4dd31929b0fa0c3171
       url: "https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git"
     source: git
-    version: "0.3.2"
+    version: "0.3.5"
   polkawallet_plugin_chainx:
     dependency: "direct main"
     description:
@@ -1091,7 +1093,7 @@ packages:
     source: hosted
     version: "2.0.0"
   simple_shadow:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: simple_shadow
       url: "https://pub.dartlang.org"

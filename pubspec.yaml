@@ -65,7 +65,7 @@ dependencies:
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
-      ref: 87c54fe160c88992d04c8ce30ef23fe09e9732af
+      ref: b5677954c17432ca6b32da4dd31929b0fa0c3171
   polkawallet_plugin_chainx:
     git:
       url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
@@ -120,6 +120,8 @@ dependency_overrides:
      git:
        url: https://github.com/google/charts
        path: charts_flutter
+  flutter_svg: ^0.23.0+1
+  liquid_progress_indicator: ^0.4.0
 
 dev_dependencies:
   flutter_test:
