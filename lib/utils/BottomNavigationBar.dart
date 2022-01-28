@@ -32,8 +32,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
         children.insert(
             i,
             Container(
-              width: 70,
-              height: 70,
+              width: (MediaQuery.of(context).size.width - 32) / 3,
             ));
       } else {
         children.add(NavItem(widget.pages[i], i == widget.tabIndex, (item) {
@@ -52,7 +51,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
         child: BottomAppBar(
           color: Color(0xFFDAD6D0),
           shape: CustomNotchedShape(context),
-          child: SizedBox(height: 50, child: Row(children: children)),
+          child: SizedBox(height: 64, child: Row(children: children)),
         ),
         opacity: 0.7, // Default: 0.5
         color: Color(0x66000000), // Default: Black
@@ -80,13 +79,12 @@ class NavItem extends StatelessWidget {
     final style = Theme.of(context).textTheme.caption;
     return Expanded(
       child: CupertinoButton(
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(top: 4, bottom: 4),
         onPressed: () => onPressed(item),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           // Icon(item.icon, color: active ? Color(0xfffed802) : style?.color),
           Container(
-            width: 24,
-            height: 26,
+            width: 32,
             child: active ? item.iconActive : item.icon,
           ),
           Text(
@@ -123,12 +121,10 @@ class CentralNavItem extends StatelessWidget {
                 active: active,
                 child: Center(
                   child: Container(
-                    width: 50,
-                    height: 50,
+                    margin: EdgeInsets.all(3),
                     padding: EdgeInsets.only(left: 2),
                     decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(50.0 / 2)),
+                        borderRadius: BorderRadius.all(Radius.circular(56 / 2)),
                         border: Border.all(
                             color: Color(!active ? 0xFFF4F2F0 : 0xFFBFBEBD),
                             width: 0.5),
@@ -184,6 +180,7 @@ class _CentraNavBtnState extends State<CentraNavBtn>
 
   @override
   Widget build(BuildContext context) {
+    final buttonSize = 69.0;
     return GestureDetector(
         onTapUp: (tapUpDetails) {
           if (!widget.active) {
@@ -199,42 +196,49 @@ class _CentraNavBtnState extends State<CentraNavBtn>
           }
         },
         onTap: () => widget.onPressed(),
-        child: FloatingActionButton(
-            onPressed: null,
-            child: Container(
-              width: 69,
-              height: 69,
-              decoration: BoxDecoration(
-                color: Color(0xFF706C6A),
-                borderRadius: BorderRadius.all(Radius.circular(69.0 / 2)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Color(0x61000000),
-                      offset: Offset(1, 1),
-                      blurRadius: 2,
-                      spreadRadius: 1),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  Container(
-                    width: 69,
-                    height: 69,
-                    child: CustomPaint(
-                      painter: CircularProgressBar(
-                          width: 3,
-                          lineColor: [
-                            Color(0xFFFF6732),
-                            Color(0xFFFF9F7E),
-                            Color(0xFFFF6732)
-                          ],
-                          progress: widget.active ? animationNumber : 0),
-                    ),
+        child: Container(
+          width: buttonSize,
+          height: buttonSize,
+          child: FittedBox(
+            child: FloatingActionButton(
+                onPressed: null,
+                child: Container(
+                  width: buttonSize,
+                  height: buttonSize,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF706C6A),
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(buttonSize / 2)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Color(0x61000000),
+                          offset: Offset(1, 1),
+                          blurRadius: 2,
+                          spreadRadius: 1),
+                    ],
                   ),
-                  widget.child
-                ],
-              ),
-            )));
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: buttonSize,
+                        height: buttonSize,
+                        child: CustomPaint(
+                          painter: CircularProgressBar(
+                              width: 3,
+                              lineColor: [
+                                Color(0xFFFF6732),
+                                Color(0xFFFF9F7E),
+                                Color(0xFFFF6732)
+                              ],
+                              progress: widget.active ? animationNumber : 0),
+                        ),
+                      ),
+                      widget.child
+                    ],
+                  ),
+                )),
+          ),
+        ));
   }
 }
 
@@ -285,10 +289,10 @@ class CustomNotchedShape extends NotchedShape {
   @override
   Path getOuterPath(Rect host, Rect guest) {
     const radius = 70.0;
-    const lx = 35.0;
-    const ly = 15;
+    const lx = 40.0;
+    const ly = 22;
     const bx = 25.0;
-    const by = 35.0;
+    const by = 40.0;
     var x = (MediaQuery.of(context).size.width - radius) / 2 - lx;
     return Path()
       ..moveTo(host.left, host.top)

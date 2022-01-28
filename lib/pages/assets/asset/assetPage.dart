@@ -642,12 +642,13 @@ class BalanceCard extends StatelessWidget {
               Expanded(
                 child: marketPriceList != null
                     ? Container(
+                        width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.centerRight,
                         child: RewardsChart.withData(
                             getTimeSeriesAmounts(marketPriceList),
-                            103 / 390 * MediaQuery.of(context).size.width))
-                    : Container(),
-                flex: 1,
+                            MediaQuery.of(context).size.width / 4))
+                    : Container(width: MediaQuery.of(context).size.width / 3),
+                flex: 0,
               )
             ],
           ),
@@ -671,30 +672,29 @@ class BalanceCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                    height: 16.w,
-                    width: 16.w,
-                    margin: EdgeInsets.only(right: 8.w),
-                    child: icon),
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "TitilliumWeb"),
-                )
-              ],
-            ),
+            Container(
+                height: 16.w,
+                width: 16.w,
+                margin: EdgeInsets.only(right: 8.w),
+                child: icon),
             Text(
-              price,
+              title,
               style: TextStyle(
                   color: color,
                   fontSize: 12,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                   fontFamily: "TitilliumWeb"),
+            ),
+            Expanded(
+              child: Text(
+                price,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                    color: color,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "TitilliumWeb"),
+              ),
             )
           ],
         ));

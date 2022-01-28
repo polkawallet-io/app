@@ -50,7 +50,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width - (16.w + 11.w + 34.w) * 2;
+    final width = MediaQuery.of(context).size.width - (24.w + 11.w + 34.w) * 2;
     return Column(
       children: [
         Container(
@@ -180,7 +180,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
             )),
         !widget.switchDefi
             ? Container(
-                margin: EdgeInsets.only(bottom: 8),
+                margin: EdgeInsets.only(bottom: 16),
               )
             : Container(
                 margin: EdgeInsets.only(top: 4, bottom: 8),

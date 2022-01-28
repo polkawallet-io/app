@@ -578,6 +578,7 @@ class _AssetsState extends State<AssetsPage> {
       ),
       actions: <Widget>[
         Container(
+            margin: EdgeInsets.only(right: 4.w),
             child: v3.PopupMenuButton(
                 offset: Offset(-12, 52),
                 color: Theme.of(context).cardColor,
@@ -840,7 +841,7 @@ class _AssetsState extends State<AssetsPage> {
                 },
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
+                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                 child: Divider(height: 1),
               ),
               Container(
