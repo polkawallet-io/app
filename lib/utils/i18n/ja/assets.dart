@@ -97,6 +97,11 @@ const Map<String, String> enAssets = {
   'QRCode': 'my QR code',
   'unlock': 'Unlock',
   'history': 'History',
+  'dot.bridge': 'Bridging DOT',
+  'dot.bridge.info':
+      'You can bridge DOT from Polkadot via Acala’s non-custodial one-way bridge. Once Polkadot completes XCM upgrade, we can enable bridging DOT back to Polkadot seamlessly.',
+  'dot.bridge.ok': 'I have read the above message.',
+  'dot.bridge.min': 'Min amount 1 DOT',
   'v3.switchDefi': 'Switch to DeFi',
   'v3.switchBack': 'Switch Back',
   'v3.totalBalance': 'Total Balance',
