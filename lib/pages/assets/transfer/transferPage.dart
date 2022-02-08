@@ -1,3 +1,5 @@
+import 'package:app/common/components/cupertinoAlertDialogWithCheckbox.dart';
+import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -107,6 +109,46 @@ class _TransferPageState extends State<TransferPage> {
         _chainTo.basic.name != para_chain_name_statemint;
   }
 
+  TxConfirmParams _getDotAcalaBridgeTxParams() {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+    final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+    final decimals =
+        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+
+    return TxConfirmParams(
+      txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
+      module: 'balances',
+      call: 'transfer',
+      txDisplay: {
+        dic['to.chain']: _chainTo.basic.name,
+      },
+      txDisplayBold: {
+        dic['amount']: Text(
+          _amountCtrl.text.trim() + ' $symbol',
+          style: Theme.of(context).textTheme.headline1,
+        ),
+        dic['to']: Row(
+          children: [
+            AddressIcon(_accountTo.address, svg: _accountTo.icon),
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                child: Text(
+                  Fmt.address(_accountTo.address, pad: 8),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      },
+      params: [
+        bridge_account[_chainTo.basic.name],
+        Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
+      ],
+    );
+  }
+
   Future<TxConfirmParams> _getTxParams() async {
     if (_accountToError == null &&
         _formKey.currentState.validate() &&
@@ -119,6 +161,11 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
+        // todo: remove this after polkadot xcm alive
+        if (_chainTo.basic.name == para_chain_name_acala) {
+          return _getDotAcalaBridgeTxParams();
+        }
+
         final isFromXTokensParaChain = _isFromXTokensParaChain();
         final isToParaChain = _isToParaChain();
 
@@ -392,6 +439,8 @@ class _TransferPageState extends State<TransferPage> {
   /// Kusama -> Karura
   /// Kusama -> Statemine
   /// Statemine -> Kusama
+  ///
+  /// DOT from polkadot to acala with acala bridge
   void _onSelectChain() {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
@@ -427,6 +476,12 @@ class _TransferPageState extends State<TransferPage> {
             ),
             onPressed: () async {
               if (e.basic.name != _chainTo.basic.name) {
+                // todo: remove this after polkadot xcm alive
+                final isAcalaBridge = e.basic.name == para_chain_name_acala;
+                if (isAcalaBridge) {
+                  await showAcalaBridgeAlert();
+                }
+
                 // set ss58 of _chainTo so we can get according address
                 // from AddressInputField
                 widget.service.keyring.setSS58(e.basic.ss58);
@@ -437,12 +492,11 @@ class _TransferPageState extends State<TransferPage> {
                   _chainTo = e;
                   _accountOptions = options;
 
-                  final isInAccountList = options
-                          .indexWhere((e) => e.pubKey == _accountTo.pubKey) >=
-                      0;
-                  if (isInAccountList) {
-                    _accountTo = options
-                        .firstWhere((e) => e.pubKey == _accountTo.pubKey);
+                  if (e.basic.name != widget.service.plugin.basic.name) {
+                    _accountTo = widget.service.keyring.current;
+                  }
+                  if (isAcalaBridge) {
+                    _keepAlive = true;
                   }
                 });
 
@@ -468,6 +522,86 @@ class _TransferPageState extends State<TransferPage> {
         ),
       ),
     );
+  }
+
+  Future<void> showAcalaBridgeAlert() async {
+    await showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+          return CupertinoAlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(dic['dot.bridge']),
+                JumpToLink(
+                  'https://wiki.acala.network/acala/get-started/acalas-dot-bridge',
+                  text: '',
+                )
+              ],
+            ),
+            content: CupertinoAlertDialogContentWithCheckbox(
+              content: Text(dic['dot.bridge.info']),
+            ),
+          );
+        });
+  }
+
+  void _onSwitchCheckAlive(bool res, BigInt notTransferable) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+
+    if (!res) {
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(dic['note']),
+            content: Text(dic['note.msg1']),
+            actions: <Widget>[
+              CupertinoButton(
+                child: Text(I18n.of(context)
+                    .getDic(i18n_full_dic_ui, 'common')['cancel']),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              CupertinoButton(
+                child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                onPressed: () {
+                  Navigator.of(context).pop();
+
+                  if (notTransferable > BigInt.zero) {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CupertinoAlertDialog(
+                          title: Text(dic['note']),
+                          content: Text(dic['note.msg2']),
+                          actions: <Widget>[
+                            CupertinoButton(
+                              child: Text(I18n.of(context)
+                                  .getDic(i18n_full_dic_ui, 'common')['ok']),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    setState(() {
+                      _keepAlive = res;
+                    });
+                  }
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        _keepAlive = res;
+      });
+    }
   }
 
   @override
@@ -530,6 +664,9 @@ class _TransferPageState extends State<TransferPage> {
         final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
+        // todo: remove this after polkadot xcm alive
+        final isAcalaBridge = _chainTo?.basic?.name == para_chain_name_acala;
+
         final existDeposit = Fmt.balanceInt(widget
             .service.plugin.networkConst['balances']['existentialDeposit']
             .toString());
@@ -544,23 +681,25 @@ class _TransferPageState extends State<TransferPage> {
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
-        final lableStyle = Theme.of(context).textTheme.headline4;
+        final labelStyle = Theme.of(context).textTheme.headline4;
         return Scaffold(
           appBar: AppBar(
               systemOverlayStyle: SystemUiOverlayStyle.dark,
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
-              actions: <Widget>[
-                v3.IconButton(
-                    margin: EdgeInsets.only(right: 8),
-                    icon: SvgPicture.asset(
-                      'assets/images/scan.svg',
-                      color: Theme.of(context).cardColor,
-                      width: 20,
-                    ),
-                    onPressed: _onScan,
-                    isBlueBg: true)
-              ],
+              actions: isAcalaBridge
+                  ? null
+                  : <Widget>[
+                      v3.IconButton(
+                          margin: EdgeInsets.only(right: 8),
+                          icon: SvgPicture.asset(
+                            'assets/images/scan.svg',
+                            color: Theme.of(context).cardColor,
+                            width: 20,
+                          ),
+                          onPressed: _onScan,
+                          isBlueBg: true)
+                    ],
               leading: BackBtn()),
           body: SafeArea(
             child: Column(
@@ -577,34 +716,45 @@ class _TransferPageState extends State<TransferPage> {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(dic['from'], style: lableStyle),
+                                  Text(dic['from'], style: labelStyle),
                                   AddressFormItem(
                                       widget.service.keyring.current),
                                   Container(height: 8.h),
+                                  Visibility(
+                                      visible: isAcalaBridge,
+                                      child: Text(dic['address'] ?? '',
+                                          style: labelStyle)),
+                                  Visibility(
+                                      visible: isAcalaBridge,
+                                      child: AddressFormItem(
+                                          widget.service.keyring.current)),
                                   Form(
                                     key: _formKey,
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        AddressTextFormField(
-                                          widget.service.plugin.sdk.api,
-                                          _accountOptions,
-                                          labelText: dic['cross.to'],
-                                          labelStyle: lableStyle,
-                                          hintText: dic['address'],
-                                          initialValue: _accountTo,
-                                          // formKey: _formKey,
-                                          onChanged: (KeyPairData acc) async {
-                                            final accValid =
-                                                await _checkAccountTo(acc);
-                                            setState(() {
-                                              _accountTo = acc;
-                                              _accountToError = accValid;
-                                            });
-                                          },
-                                          key:
-                                              ValueKey<KeyPairData>(_accountTo),
+                                        Visibility(
+                                          visible: !isAcalaBridge,
+                                          child: AddressTextFormField(
+                                            widget.service.plugin.sdk.api,
+                                            _accountOptions,
+                                            labelText: dic['cross.to'],
+                                            labelStyle: labelStyle,
+                                            hintText: dic['address'],
+                                            initialValue: _accountTo,
+                                            // formKey: _formKey,
+                                            onChanged: (KeyPairData acc) async {
+                                              final accValid =
+                                                  await _checkAccountTo(acc);
+                                              setState(() {
+                                                _accountTo = acc;
+                                                _accountToError = accValid;
+                                              });
+                                            },
+                                            key: ValueKey<KeyPairData>(
+                                                _accountTo),
+                                          ),
                                         ),
                                         Visibility(
                                             visible: _accountToError != null,
@@ -631,7 +781,7 @@ class _TransferPageState extends State<TransferPage> {
                                               decimals,
                                               lengthMax: 6,
                                             )})',
-                                            labelStyle: lableStyle,
+                                            labelStyle: labelStyle,
                                             suffix: GestureDetector(
                                               child: Text(dic['amount.max'],
                                                   style: TextStyle(
@@ -656,6 +806,10 @@ class _TransferPageState extends State<TransferPage> {
                                             }
                                             final input =
                                                 Fmt.tokenInt(v, decimals);
+                                            if (isAcalaBridge &&
+                                                input < destExistDeposit) {
+                                              return dic['dot.bridge.min'];
+                                            }
                                             final feeLeft = available -
                                                 input -
                                                 (_keepAlive
@@ -692,7 +846,7 @@ class _TransferPageState extends State<TransferPage> {
                                             padding: EdgeInsets.only(bottom: 4),
                                             child: Text(
                                               dic['to.chain'],
-                                              style: lableStyle,
+                                              style: labelStyle,
                                             ),
                                           ),
                                           GestureDetector(
@@ -818,23 +972,6 @@ class _TransferPageState extends State<TransferPage> {
                                                   ),
                                                 ],
                                               )),
-                                          // child: TapTooltip(
-                                          //   message: dic['amount.exist.msg'],
-                                          //   child: Row(
-                                          //     children: [
-                                          //       Padding(
-                                          //         padding: EdgeInsets.only(right: 4),
-                                          //         child: Text(dic['cross.exist']),
-                                          //       ),
-                                          //       Icon(
-                                          //         Icons.info,
-                                          //         size: 16,
-                                          //         color: Theme.of(context)
-                                          //             .unselectedWidgetColor,
-                                          //       )
-                                          //     ],
-                                          //   ),
-                                          // ),
                                         ),
                                         Expanded(
                                             flex: 0,
@@ -902,23 +1039,6 @@ class _TransferPageState extends State<TransferPage> {
                                               ),
                                             ],
                                           )),
-                                      // child: TapTooltip(
-                                      //   message: dic['amount.exist.msg'],
-                                      //   child: Row(
-                                      //     children: [
-                                      //       Padding(
-                                      //         padding: EdgeInsets.only(right: 4),
-                                      //         child: Text(dic['amount.exist']),
-                                      //       ),
-                                      //       Icon(
-                                      //         Icons.info,
-                                      //         size: 16,
-                                      //         color: Theme.of(context)
-                                      //             .unselectedWidgetColor,
-                                      //       )
-                                      //     ],
-                                      //   ),
-                                      // ),
                                     ),
                                     Text(
                                         '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
@@ -985,90 +1105,12 @@ class _TransferPageState extends State<TransferPage> {
                                             ],
                                           )),
                                     ),
-                                    // Expanded(
-                                    //   flex: 0,
-                                    //   child: Padding(
-                                    //     padding: EdgeInsets.only(right: 4),
-                                    //     child: Text(dic['transfer.alive']),
-                                    //   ),
-                                    // ),
-                                    // TapTooltip(
-                                    //   message: dic['transfer.alive.msg'],
-                                    //   child: Icon(
-                                    //     Icons.info,
-                                    //     size: 16,
-                                    //     color:
-                                    //         Theme.of(context).unselectedWidgetColor,
-                                    //   ),
-                                    // ),
-                                    // Expanded(child: Container(width: 2)),
                                     v3.CupertinoSwitch(
                                       value: _keepAlive,
                                       // account is not allow_death if it has
                                       // locked/reserved balances
-                                      onChanged: (res) {
-                                        if (notTransferable > BigInt.zero) {
-                                          showCupertinoDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return CupertinoAlertDialog(
-                                                title: Text(dic['note']),
-                                                content: Text(dic['note.msg1']),
-                                                actions: <Widget>[
-                                                  CupertinoButton(
-                                                    child: Text(I18n.of(context)
-                                                        .getDic(
-                                                            i18n_full_dic_ui,
-                                                            'common')['cancel']),
-                                                    onPressed: () =>
-                                                        Navigator.of(context)
-                                                            .pop(),
-                                                  ),
-                                                  CupertinoButton(
-                                                    child: Text(I18n.of(context)
-                                                        .getDic(
-                                                            i18n_full_dic_ui,
-                                                            'common')['ok']),
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      showCupertinoDialog(
-                                                        context: context,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          return CupertinoAlertDialog(
-                                                            title: Text(
-                                                                dic['note']),
-                                                            content: Text(dic[
-                                                                'note.msg2']),
-                                                            actions: <Widget>[
-                                                              CupertinoButton(
-                                                                child: Text(I18n.of(
-                                                                        context)
-                                                                    .getDic(
-                                                                        i18n_full_dic_ui,
-                                                                        'common')['ok']),
-                                                                onPressed: () =>
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop(),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        } else {
-                                          setState(() {
-                                            _keepAlive = res;
-                                          });
-                                        }
-                                      },
+                                      onChanged: (v) => _onSwitchCheckAlive(
+                                          v, notTransferable),
                                     )
                                   ],
                                 ),

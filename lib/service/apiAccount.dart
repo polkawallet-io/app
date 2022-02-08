@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
-import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -213,37 +212,5 @@ class ApiAccount {
       queryAddressIcons(res.friends);
     }
     return res;
-  }
-
-  Future<void> checkBannerStatus(String pubKey) async {
-    final adClosed =
-        apiRoot.store.storage.read('${show_banner_status_key}_$pubKey');
-    // check if banner was closed by user.
-    if (adClosed != null) {
-      apiRoot.store.account.setBannerVisible(false);
-    } else {
-      apiRoot.store.account.setBannerVisible(true);
-    }
-  }
-
-  Future<Map> postKarCrowdLoan(
-      String address,
-      BigInt amount,
-      String email,
-      bool receiveEmail,
-      String referral,
-      String signature,
-      String endpoint,
-      String authToken,
-      {bool isProxy = false}) async {
-    final submitted = await WalletApi.postKarCrowdLoan(address, amount, email,
-        receiveEmail, referral, signature, endpoint, authToken,
-        isProxy: isProxy);
-    // note: do not hide banner after contribute
-    // print(submitted);
-    // if (submitted != null && (submitted['result'] ?? false)) {
-    //   apiRoot.store.account.setBannerVisible(false);
-    // }
-    return submitted;
   }
 }

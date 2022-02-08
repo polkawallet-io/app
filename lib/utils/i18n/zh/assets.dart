@@ -89,6 +89,11 @@ const Map<String, String> zhAssets = {
   'QRCode': '我的二维码',
   'unlock': '解锁',
   'history': '操作记录',
+  'dot.bridge': 'DOT 跨链桥',
+  'dot.bridge.info':
+      '现在你可以使用 Acala 提供的 DOT 单向跨链桥跨链转账至 Acala 网络。当 Polkadot 网络升级并支持 XCM 跨链之后，Acala 网络也会同时支持 DOT 转回 Polkadot 网络。',
+  'dot.bridge.ok': '我已阅读以上信息',
+  'dot.bridge.min': '最小值 1 DOT',
   'v3.switchDefi': '切换至DeFi',
   'v3.switchBack': '切换回来',
   'v3.totalBalance': '总资产',

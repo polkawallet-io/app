@@ -84,21 +84,6 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
-  final _$showBannerAtom = Atom(name: '_AccountStore.showBanner');
-
-  @override
-  bool get showBanner {
-    _$showBannerAtom.reportRead();
-    return super.showBanner;
-  }
-
-  @override
-  set showBanner(bool value) {
-    _$showBannerAtom.reportWrite(value, super.showBanner, () {
-      super.showBanner = value;
-    });
-  }
-
   final _$walletConnectPairingAtom =
       Atom(name: '_AccountStore.walletConnectPairing');
 
@@ -256,17 +241,6 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setBannerVisible(bool visible) {
-    final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.setBannerVisible');
-    try {
-      return super.setBannerVisible(visible);
-    } finally {
-      _$_AccountStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 newAccount: ${newAccount},
@@ -274,7 +248,6 @@ accountCreated: ${accountCreated},
 pubKeyAddressMap: ${pubKeyAddressMap},
 addressIconsMap: ${addressIconsMap},
 recoveryInfo: ${recoveryInfo},
-showBanner: ${showBanner},
 walletConnectPairing: ${walletConnectPairing},
 wcSessions: ${wcSessions}
     ''';

@@ -29,9 +29,6 @@ abstract class _AccountStore with Store {
   RecoveryInfo recoveryInfo = RecoveryInfo();
 
   @observable
-  bool showBanner = false;
-
-  @observable
   bool walletConnectPairing = false;
 
   @observable
@@ -103,11 +100,6 @@ abstract class _AccountStore with Store {
   @action
   void deleteWCSession(WCPairedData session) {
     wcSessions.removeWhere((e) => e.topic == session.topic);
-  }
-
-  @action
-  void setBannerVisible(bool visible) {
-    showBanner = visible;
   }
 }
 

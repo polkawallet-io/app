@@ -28,8 +28,8 @@ class _AdBannerState extends State<AdBanner> {
     var res = await WalletApi.getAdBannerList();
     widget.service.store.settings.setAdBannerState(res);
 
-    widget.service.store.settings.claimState =
-        await WalletApi.getClaim(widget.service.keyring.current.address);
+    // widget.service.store.settings.claimState =
+    //     await WalletApi.getClaim(widget.service.keyring.current.address);
   }
 
   @override
@@ -53,12 +53,12 @@ class _AdBannerState extends State<AdBanner> {
     }
     if (all != null && all.length > 0) {
       // todo: remove this filter after ACA claim closed.
-      if (!(widget.service.store.settings.claimState['result'] == true &&
-          widget.service.store.settings.claimState['claimed'] == false &&
-          widget.service.store.settings.claimState['originClaimed'] == false)) {
-        all.removeWhere(
-            (e) => e['link'] == 'https://distribution.acala.network/claim');
-      }
+      // if (!(widget.service.store.settings.claimState['result'] == true &&
+      //     widget.service.store.settings.claimState['claimed'] == false &&
+      //     widget.service.store.settings.claimState['originClaimed'] == false)) {
+      //   all.removeWhere(
+      //       (e) => e['link'] == 'https://distribution.acala.network/claim');
+      // }
 
       // observation account is not support for Dapp page
       if (widget.service.keyring.current.observation == true) {

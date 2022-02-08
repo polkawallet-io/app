@@ -115,9 +115,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.service.account
-          .checkBannerStatus(widget.service.keyring.current.pubKey);
-
       _setupJPush();
     });
   }

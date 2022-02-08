@@ -62,6 +62,10 @@ const xcm_send_fees = {
     'fee': '64000000',
     'existentialDeposit': '100000000',
   },
+  para_chain_name_acala: {
+    'fee': '0',
+    'existentialDeposit': '10000000000',
+  },
   para_chain_name_bifrost: {
     'fee': '4800000000',
     'existentialDeposit': '100000000',
@@ -86,7 +90,11 @@ const xcm_support_dest_chains = {
   // ],
 };
 
+const bridge_account = {
+  'mandala': '5G9VH1qNxbPE39SW9SWmDDhePxt1zxLScJ7ync57MFhJSh1v',
+  'acala': '13YMK2eYoAvStnzReuxBjMrAvPXmmdsURwZvc62PrdXimbNy'
+};
+
 const show_guide_status_key = 'show_guide_status';
-const show_banner_status_key = 'show_banner_status';
 
 const JPUSH_APP_KEY = 'dfa60080aa05c5c7b7dc7aa0';
