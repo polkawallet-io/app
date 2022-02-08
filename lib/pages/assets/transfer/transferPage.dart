@@ -551,6 +551,11 @@ class _TransferPageState extends State<TransferPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
     if (!res) {
+      // todo: remove this after polkadot xcm alive
+      if (_chainTo?.basic?.name == para_chain_name_acala) {
+        return;
+      }
+
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {

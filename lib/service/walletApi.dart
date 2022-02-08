@@ -52,6 +52,7 @@ class WalletApi {
     try {
       Response res =
           await get(getUrl(_configEndpoint, "/wallet/nativeTokenXCM.json"));
+      // await get(getUrl(_endpoint, "/config/nativeTokenXCM.json"));
       if (res == null) {
         return {};
       } else {
@@ -172,7 +173,8 @@ class WalletApi {
   }
 
   static Future<Map> getTokenPrices() async {
-    final url = '$_cdnEndpoint/lastPrice.json';
+    final url =
+        '$_cdnEndpoint/lastPrice.json?t=${DateTime.now().millisecondsSinceEpoch}';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {
@@ -204,124 +206,6 @@ class WalletApi {
   static Future<Map> getAdBannerList() async {
     try {
       final res = await get(getUrl(_configEndpoint, '/wallet/banners.json'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> getKarCrowdLoanStatement(String endpoint) async {
-    try {
-      final res = await get(Uri.parse('https://$endpoint/statement'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> getKarCrowdLoanPromotion(
-      String endpoint, int blockNumber) async {
-    try {
-      final res = await get(
-          Uri.parse('https://$endpoint/promotion?blockNumber=$blockNumber'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<List> getKarCrowdLoanHistory(
-      String address, String endpoint) async {
-    try {
-      final res =
-          await get(Uri.parse('https://$endpoint/contributions/$address'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> verifyKarReferralCode(String code, String endpoint) async {
-    try {
-      final res = await get(Uri.parse('https://$endpoint/referral/$code'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> checkKarRewardValid(
-      String address, String endpoint) async {
-    try {
-      final res =
-          await get(Uri.parse('https://$endpoint/promotion/karura/$address'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> postKarCrowdLoan(
-      String address,
-      BigInt amount,
-      String email,
-      bool receiveEmail,
-      String referral,
-      String signature,
-      String endpoint,
-      String authToken,
-      {bool isProxy = false}) async {
-    final headers = {
-      "Content-type": "application/json",
-      "Accept": "*/*",
-      "Authorization": "Bearer $authToken"
-    };
-    final Map body = {
-      "address": address,
-      "amount": amount.toString(),
-      "signature": signature,
-    };
-    if (email.isNotEmpty) {
-      body.addAll({"email": email, "receiveEmail": receiveEmail});
-    }
-    if (referral.isNotEmpty) {
-      body.addAll({"referral": referral});
-    }
-    try {
-      final res = await post(
-          Uri.parse('https://$endpoint/${isProxy ? 'transfer' : 'contribute'}'),
-          headers: headers,
-          body: jsonEncode(body));
       if (res == null) {
         return null;
       } else {
