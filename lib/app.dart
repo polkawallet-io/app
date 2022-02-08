@@ -703,9 +703,27 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     };
   }
 
+  void _toPageByUri(Uri uri) {
+    final paths = uri.toString().split("polkawallet.io");
+    Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
+    if (paths.length > 1) {
+      final pathDatas = paths[1].split("?");
+      if (pathDatas.length > 1) {
+        final datas = pathDatas[1].split("&");
+        datas.forEach((element) {
+          args[element.split("=")[0]] =
+              Uri.decodeComponent(element.split("=")[1]);
+        });
+      }
+      _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
+    }
+  }
+
   void _handleIncomingAppLinks() {
     uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
+      _toPageByUri(uri);
       print('got uri: $uri');
     }, onError: (Object err) {
       if (!mounted) return;
@@ -722,6 +740,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         if (uri == null) {
           print('no initial uri');
         } else {
+          _toPageByUri(uri);
           print('got initial uri: $uri');
         }
         if (!mounted) return;
@@ -747,6 +766,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _doAutoRouting() {
+    print('page auto routing...1');
     if (_autoRoutingParams != null) {
       print('page auto routing...');
       Navigator.of(_homePageContext).pushNamed(_autoRoutingParams.path,
