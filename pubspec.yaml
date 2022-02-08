@@ -82,7 +82,7 @@ dependencies:
   flutter_bugly_play:
     git:
       url: https://github.com/polkawallet-io/flutter_bugly.git
-      ref: 61ae67b70fa68d3f9e04c002ab15d720821165b4
+      ref: da653ff78e269d011d1224e368e70703794601a1
   flutter_mobx: ^2.0.0
   flutter_svg: ^0.23.0+1
   flutter_swiper: ^1.1.6

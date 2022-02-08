@@ -397,8 +397,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "61ae67b70fa68d3f9e04c002ab15d720821165b4"
-      resolved-ref: "61ae67b70fa68d3f9e04c002ab15d720821165b4"
+      ref: da653ff78e269d011d1224e368e70703794601a1
+      resolved-ref: da653ff78e269d011d1224e368e70703794601a1
       url: "https://github.com/polkawallet-io/flutter_bugly.git"
     source: git
     version: "0.4.3"
