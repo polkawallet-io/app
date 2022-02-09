@@ -894,7 +894,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.3.8"
+    version: "0.4.1"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -958,14 +958,14 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.4.1"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.4.1"
   pool:
     dependency: transitive
     description:

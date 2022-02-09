@@ -334,12 +334,7 @@ class _AssetPageState extends State<AssetPage> {
                             onPressed: transferEnabled
                                 ? () {
                                     Navigator.pushNamed(
-                                      context,
-                                      TransferPage.route,
-                                      arguments: TransferPageParams(
-                                        redirect: AssetPage.route,
-                                      ),
-                                    );
+                                        context, TransferPage.route);
                                   }
                                 : null,
                           ),
@@ -375,12 +370,7 @@ class _AssetPageState extends State<AssetPage> {
                                           BigInt.one
                                       ? () {
                                           Navigator.pushNamed(
-                                            context,
-                                            LocksDetailPage.route,
-                                            arguments: TransferPageParams(
-                                              redirect: LocksDetailPage.route,
-                                            ),
-                                          );
+                                              context, LocksDetailPage.route);
                                         }
                                       : null,
                                 ),

@@ -35,6 +35,7 @@ import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
+import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
@@ -650,6 +651,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
+      AcalaBridgePage.route: (_) => AcalaBridgePage(),
 
       /// account
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),

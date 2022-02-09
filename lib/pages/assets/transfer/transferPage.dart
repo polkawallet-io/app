@@ -28,10 +28,10 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 class TransferPageParams {
   TransferPageParams({
     this.address,
-    this.redirect,
+    this.chainTo,
   });
   final String address;
-  final String redirect;
+  final String chainTo;
 }
 
 class TransferPage extends StatefulWidget {
@@ -630,9 +630,18 @@ class _TransferPageState extends State<TransferPage> {
       final xcmEnabledChains = await widget.service.store.settings
           .getXcmEnabledChains(widget.service.plugin.basic.name);
       setState(() {
-        _chainTo = widget.service.plugin;
         _accountOptions = widget.service.keyring.allWithContacts.toList();
         _xcmEnabledChains = xcmEnabledChains;
+
+        if (args.chainTo != null) {
+          final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
+          if (chainToIndex > -1) {
+            _chainTo = widget.service.allPlugins
+                .firstWhere((e) => e.basic.name == args.chainTo);
+            return;
+          }
+        }
+        _chainTo = widget.service.plugin;
       });
     });
   }
@@ -712,7 +721,7 @@ class _TransferPageState extends State<TransferPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    padding: EdgeInsets.only(bottom: 16.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
