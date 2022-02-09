@@ -90,7 +90,7 @@ class WalletApp extends StatefulWidget {
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
   static BuildTargets buildTarget;
-  static bool isInitial = false;
+  static int isInitial = 0;
 
   static Future<void> checkUpdate(BuildContext context) async {
     final versions = await WalletApi.getLatestVersion();
@@ -609,8 +609,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData && _service != null) {
-                      if (WalletApp.isInitial) {
-                        WalletApp.isInitial = false;
+                      if (WalletApp.isInitial == 1) {
+                        WalletApp.isInitial++;
                         _checkJSCodeUpdate(context, _service.plugin,
                             needReload: false);
                         WalletApp.checkUpdate(context);
@@ -740,7 +740,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         if (uri == null) {
           print('no initial uri');
         } else {
-          _toPageByUri(uri);
+          Timer.periodic(Duration(milliseconds: 1000), (timer) {
+            if (WalletApp.isInitial > 0) {
+              timer.cancel();
+              _toPageByUri(uri);
+            }
+          });
           print('got initial uri: $uri');
         }
         if (!mounted) return;
@@ -766,7 +771,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _doAutoRouting() {
-    print('page auto routing...1');
     if (_autoRoutingParams != null) {
       print('page auto routing...');
       Navigator.of(_homePageContext).pushNamed(_autoRoutingParams.path,

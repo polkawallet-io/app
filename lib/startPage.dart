@@ -33,7 +33,7 @@ class _StartPageState extends State<StartPage>
     _controller = OneShotAnimation(
       'Animation1',
       onStop: () {
-        WalletApp.isInitial = true;
+        WalletApp.isInitial++;
         toPage();
       },
     );
