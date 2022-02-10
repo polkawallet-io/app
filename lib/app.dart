@@ -125,7 +125,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       // backgroundColor: Color(0xFFF0ECE6),
       scaffoldBackgroundColor: Color(0xFFF5F3F0),
       dividerColor: Color(0xFFD4D4D4),
-      cardColor: Color(0xFFF9F8F6),
+      cardColor: Colors.white,
       toggleableActiveColor: Color(0xFF768FE1),
       errorColor: Color(0xFFE46B41),
       unselectedWidgetColor: Color(0xFF858380),

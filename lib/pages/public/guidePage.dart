@@ -21,7 +21,6 @@ class _GuidePageState extends State<GuidePage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final size = MediaQuery.of(context).size;
     final data = (ModalRoute.of(context).settings.arguments as Map);
     return WillPopScope(
         onWillPop: () async => false,
@@ -66,8 +65,8 @@ class _GuidePageState extends State<GuidePage> {
                       children: _pages
                           .map((i) => Container(
                                 margin: EdgeInsets.only(right: 19),
-                                height: 19,
-                                width: 19,
+                                height: 17,
+                                width: 17,
                                 // child: Text("$_pageIndex"),
                                 decoration: BoxDecoration(
                                     color: i == _pageIndex
