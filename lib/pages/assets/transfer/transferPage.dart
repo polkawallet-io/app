@@ -668,6 +668,8 @@ class _TransferPageState extends State<TransferPage> {
         final decimals =
             (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
+        final connected = widget.service.plugin.sdk.api.connectedNode != null;
+
         final available = Fmt.balanceInt(
             (widget.service.plugin.balances.native?.availableBalance ?? 0)
                 .toString());
@@ -1147,8 +1149,8 @@ class _TransferPageState extends State<TransferPage> {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: TxButton(
-                    text: dic['make'],
-                    getTxParams: _getTxParams,
+                    text: connected ? dic['make'] : 'connecting...',
+                    getTxParams: connected ? _getTxParams : () => null,
                     onFinish: (res) {
                       if (res != null) {
                         Navigator.of(context).pop(res);
