@@ -94,7 +94,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
       final blockNow = BigInt.from(res[0]['count']);
       BigInt vestOriginal = BigInt.zero;
       BigInt unlocking = BigInt.zero;
-      print(res[1]);
+
       List.from(res[1]).forEach((e) {
         final periodBlocks = BigInt.parse(e['period'].toString());
         final periodCount = BigInt.parse(e['periodCount'].toString());
@@ -124,11 +124,13 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         }
       });
 
-      setState(() {
-        _claimable = vestLeft - unlocking;
-        _unlocking = unlocking;
-        _originalLocked = vestOriginal;
-      });
+      if (mounted) {
+        setState(() {
+          _claimable = vestLeft - unlocking;
+          _unlocking = unlocking;
+          _originalLocked = vestOriginal;
+        });
+      }
     }
   }
 

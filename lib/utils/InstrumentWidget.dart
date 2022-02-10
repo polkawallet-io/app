@@ -39,10 +39,8 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
 
   @override
   void initState() {
-    // print("initState");
     WidgetsBinding.instance
         .addPostFrameCallback((_) => controller.switchAction(isOnClick: false));
-    // TODO: implement initState
     super.initState();
   }
 
@@ -165,8 +163,11 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                         ])),
                                 child: Center(
                                   child: Text(
-                                    I18n.of(context).getDic(
-                                        i18n_full_dic_app, 'assets')['v3.tap'],
+                                    widget.enabled
+                                        ? I18n.of(context).getDic(
+                                            i18n_full_dic_app,
+                                            'assets')['v3.tap']
+                                        : '',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline5
