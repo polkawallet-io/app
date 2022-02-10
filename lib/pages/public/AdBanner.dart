@@ -25,6 +25,8 @@ class _AdBannerState extends State<AdBanner> {
   bool _loading = false;
 
   Future<void> _getAdBannerList() async {
+    if (widget.service.store.settings.adBanners.keys.length > 0) return;
+
     var res = await WalletApi.getAdBannerList();
     widget.service.store.settings.setAdBannerState(res);
 

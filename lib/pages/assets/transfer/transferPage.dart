@@ -484,7 +484,7 @@ class _TransferPageState extends State<TransferPage> {
                         relay_chain_name_polkadot &&
                     e.basic.name == para_chain_name_acala;
                 if (isAcalaBridge) {
-                  await showAcalaBridgeAlert();
+                  await _showAcalaBridgeAlert();
                 }
 
                 // set ss58 of _chainTo so we can get according address
@@ -529,7 +529,7 @@ class _TransferPageState extends State<TransferPage> {
     );
   }
 
-  Future<void> showAcalaBridgeAlert() async {
+  Future<void> _showAcalaBridgeAlert() async {
     await showCupertinoDialog(
         context: context,
         builder: (_) {
@@ -649,6 +649,12 @@ class _TransferPageState extends State<TransferPage> {
         }
         _chainTo = widget.service.plugin;
       });
+
+      // todo: remove this after polkadot xcm alive
+      if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
+          args?.chainTo == para_chain_name_acala) {
+        _showAcalaBridgeAlert();
+      }
     });
   }
 

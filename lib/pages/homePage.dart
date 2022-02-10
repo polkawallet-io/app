@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   final _jPush = JPush();
 
   int _tabIndex = 0;
+  Timer _wssNotifyTimer;
 
   final PageController _metahubPageController = PageController();
   int _metahubTabIndex = 0;
@@ -115,8 +116,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _setupConnectionChecker() async {
-    Timer(Duration(seconds: 60), () {
-      if (widget.connectedNode == null) {
+    if (_wssNotifyTimer != null) {
+      _wssNotifyTimer.cancel();
+    }
+
+    _wssNotifyTimer = Timer(Duration(seconds: 60), () {
+      if (mounted && widget.connectedNode == null) {
         showCupertinoDialog(
             context: context,
             builder: (_) {
@@ -129,6 +134,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.of(context).pop();
         });
       }
+      _wssNotifyTimer = null;
     });
   }
 
