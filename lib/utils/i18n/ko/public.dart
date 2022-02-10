@@ -57,4 +57,5 @@ const Map<String, String> enPublic = {
   'hub.cover.parachains':
       'Provide users with an aggregated module of Crowdloan and Auction. Users can participate in different events in this module, and track the follow-up of the crowdloan.',
   'hub.enter': 'Enter',
+  'wss.timeout': 'Connection timeout.\nTry changing node later.',
 };
