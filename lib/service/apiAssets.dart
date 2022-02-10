@@ -36,7 +36,9 @@ class ApiAssets {
       'USDT': 1.0,
     };
     if (res != null && res['prices'] != null) {
-      prices.addAll(((res['prices'] as Map) ?? {}));
+      res['prices'].forEach((key, value) {
+        prices.addAll({key: value});
+      });
     }
 
     apiRoot.store.assets.setMarketPrices(prices);
