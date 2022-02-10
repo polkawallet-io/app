@@ -979,7 +979,7 @@ packages:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.0"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
@@ -1203,11 +1203,13 @@ packages:
     source: hosted
     version: "0.1.5"
   transformer_page_view:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: transformer_page_view
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: "19f3b7c46d5e81653cf027baa2cbe8d629dc052d"
+      resolved-ref: "19f3b7c46d5e81653cf027baa2cbe8d629dc052d"
+      url: "https://github.com/polkawallet-io/transformer_page_view.git"
+    source: git
     version: "0.1.6"
   typed_data:
     dependency: transitive

@@ -116,6 +116,10 @@ dependency_overrides:
 #  polkawallet_sdk: ^0.4.1
   polkawallet_sdk:
      path: ../../coding/polkawallet/sdk
+  transformer_page_view:
+    git:
+      url: https://github.com/polkawallet-io/transformer_page_view.git
+      ref: 19f3b7c46d5e81653cf027baa2cbe8d629dc052d
   charts_flutter:
      git:
        url: https://github.com/google/charts
