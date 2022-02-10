@@ -49,7 +49,7 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: SimpleShadow(
         child: BottomAppBar(
-          color: Color(0xFFDAD6D0),
+          color: Color(0xFFE0DEDA),
           shape: CustomNotchedShape(context),
           child: SizedBox(height: 64, child: Row(children: children)),
         ),

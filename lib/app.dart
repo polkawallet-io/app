@@ -123,8 +123,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFEAE7E2),
-      dividerColor: Color(0xFFBAB7B2),
+      scaffoldBackgroundColor: Color(0xFFF5F3F0),
+      dividerColor: Color(0xFFD4D4D4),
       cardColor: Color(0xFFF9F8F6),
       toggleableActiveColor: Color(0xFF768FE1),
       errorColor: Color(0xFFE46B41),
@@ -132,7 +132,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       textSelectionTheme:
           TextSelectionThemeData(selectionColor: Color(0xFF565554)),
       appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFEAE7E2),
+          backgroundColor: Color(0xFFF5F3F0),
           elevation: 0,
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),
