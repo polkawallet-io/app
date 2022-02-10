@@ -1,3 +1,7 @@
+# [3.1.0-beta] - 20210209
+- update acala plugin: lcDOT support
+- update statemine plugin: RMRK xcm
+
 # [3.0.7-beta] - 20210111
 - update karura plugin
 - update statemine plugin: RMRK xcm

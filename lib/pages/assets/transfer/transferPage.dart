@@ -34,6 +34,8 @@ class TransferPageParams {
   final String chainTo;
 }
 
+const relay_chain_name_polkadot = 'polkadot';
+
 class TransferPage extends StatefulWidget {
   const TransferPage(this.service);
 
@@ -162,7 +164,8 @@ class _TransferPageState extends State<TransferPage> {
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
         // todo: remove this after polkadot xcm alive
-        if (_chainTo.basic.name == para_chain_name_acala) {
+        if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
+            _chainTo.basic.name == para_chain_name_acala) {
           return _getDotAcalaBridgeTxParams();
         }
 
@@ -477,7 +480,9 @@ class _TransferPageState extends State<TransferPage> {
             onPressed: () async {
               if (e.basic.name != _chainTo.basic.name) {
                 // todo: remove this after polkadot xcm alive
-                final isAcalaBridge = e.basic.name == para_chain_name_acala;
+                final isAcalaBridge = widget.service.plugin.basic.name ==
+                        relay_chain_name_polkadot &&
+                    e.basic.name == para_chain_name_acala;
                 if (isAcalaBridge) {
                   await showAcalaBridgeAlert();
                 }
@@ -552,7 +557,8 @@ class _TransferPageState extends State<TransferPage> {
 
     if (!res) {
       // todo: remove this after polkadot xcm alive
-      if (_chainTo?.basic?.name == para_chain_name_acala) {
+      if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
+          _chainTo?.basic?.name == para_chain_name_acala) {
         return;
       }
 
@@ -617,7 +623,7 @@ class _TransferPageState extends State<TransferPage> {
       _getTxFee();
 
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
-      if (args.address != null) {
+      if (args?.address != null) {
         _updateAccountTo(args.address);
       } else {
         if (widget.service.keyring.allWithContacts.length > 0) {
@@ -633,7 +639,7 @@ class _TransferPageState extends State<TransferPage> {
         _accountOptions = widget.service.keyring.allWithContacts.toList();
         _xcmEnabledChains = xcmEnabledChains;
 
-        if (args.chainTo != null) {
+        if (args?.chainTo != null) {
           final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
           if (chainToIndex > -1) {
             _chainTo = widget.service.allPlugins
@@ -679,7 +685,9 @@ class _TransferPageState extends State<TransferPage> {
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
         // todo: remove this after polkadot xcm alive
-        final isAcalaBridge = _chainTo?.basic?.name == para_chain_name_acala;
+        final isAcalaBridge =
+            widget.service.plugin.basic.name == relay_chain_name_polkadot &&
+                _chainTo?.basic?.name == para_chain_name_acala;
 
         final existDeposit = Fmt.balanceInt(widget
             .service.plugin.networkConst['balances']['existentialDeposit']

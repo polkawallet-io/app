@@ -202,6 +202,7 @@ class _AssetPageState extends State<AssetPage> {
             data: i,
             token: symbol,
             isOut: i.from == widget.service.keyring.current.address,
+            crossChain: i.to == bridge_account['acala'] ? 'Acala Bridge' : null,
             hasDetail: true,
           ),
           Divider(

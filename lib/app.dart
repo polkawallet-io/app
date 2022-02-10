@@ -377,6 +377,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         ) >
         network.basic.jsCodeVersion;
 
+    _service.plugin.dispose();
+
     final service = AppService(widget.plugins, network, _keyring, _store);
     service.init();
 
