@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -95,6 +96,8 @@ class _HomePageState extends State<HomePage> {
     final tab = params['tab'];
     if (network != null && network != widget.service.plugin.basic.name) {
       Navigator.popUntil(context, ModalRoute.withName('/'));
+
+      _setupConnectionChecker();
       await widget.switchNetwork(network);
     }
     if (tab != null) {
@@ -111,11 +114,30 @@ class _HomePageState extends State<HomePage> {
     // }
   }
 
+  Future<void> _setupConnectionChecker() async {
+    Timer(Duration(seconds: 60), () {
+      if (widget.connectedNode == null) {
+        showCupertinoDialog(
+            context: context,
+            builder: (_) {
+              return CupertinoAlertDialog(
+                content: Text(I18n.of(context)
+                    .getDic(i18n_full_dic_app, 'public')['wss.timeout']),
+              );
+            });
+        Timer(Duration(seconds: 5), () {
+          Navigator.of(context).pop();
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setupJPush();
+      _setupConnectionChecker();
     });
   }
 
@@ -149,15 +171,15 @@ class _HomePageState extends State<HomePage> {
           "assets/images/icon_assets_sel.png",
           fit: BoxFit.contain,
         ),
-        content: AssetsPage(
-            widget.service,
-            widget.plugins,
-            widget.connectedNode,
-            (PolkawalletPlugin plugin) =>
-                widget.checkJSCodeUpdate(context, plugin),
-            (String name, {NetworkParams node}) async =>
-                widget.switchNetwork(name, node: node),
-            _handleWalletConnect),
+        content:
+            AssetsPage(widget.service, widget.plugins, widget.connectedNode,
+                (PolkawalletPlugin plugin) async {
+          _setupConnectionChecker();
+          widget.checkJSCodeUpdate(context, plugin);
+        }, (String name, {NetworkParams node}) async {
+          _setupConnectionChecker();
+          widget.switchNetwork(name, node: node);
+        }, _handleWalletConnect),
         // content: Container(),
       )
     ];

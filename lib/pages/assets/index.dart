@@ -74,6 +74,8 @@ class _AssetsState extends State<AssetsPage> {
   double _rate = 1.0;
 
   Future<void> _updateBalances() async {
+    if (widget.connectedNode == null) return;
+
     setState(() {
       _refreshing = true;
     });
