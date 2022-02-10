@@ -34,8 +34,10 @@ class ApiAssets {
       'KUSD': 1.0,
       'AUSD': 1.0,
       'USDT': 1.0,
-      ...((res['prices'] as Map) ?? {})
     };
+    if (res != null && res['prices'] != null) {
+      prices.addAll(((res['prices'] as Map) ?? {}));
+    }
 
     apiRoot.store.assets.setMarketPrices(prices);
   }

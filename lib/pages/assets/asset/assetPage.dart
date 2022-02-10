@@ -160,11 +160,13 @@ class _AssetPageState extends State<AssetPage> {
     WalletApi.getMarketPriceList(
             (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
         .then((value) {
-      setState(() {
-        if (value['data'] != null) {
-          _marketPriceList = value['data']['price'] as List;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (value['data'] != null) {
+            _marketPriceList = value['data']['price'] as List;
+          }
+        });
+      }
     });
   }
 

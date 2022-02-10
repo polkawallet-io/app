@@ -377,9 +377,11 @@ class _AssetsState extends State<AssetsPage> {
 
   Future<void> getRate() async {
     var rate = await widget.service.store.settings.getRate();
-    setState(() {
-      this._rate = rate;
-    });
+    if (mounted) {
+      setState(() {
+        this._rate = rate;
+      });
+    }
   }
 
   @override
