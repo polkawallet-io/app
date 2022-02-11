@@ -411,10 +411,8 @@ class _AssetsState extends State<AssetsPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
     final title = "${dic['v3.my']} $symbol";
-    final prompt =
-        I18n.of(context).getDic(i18n_full_dic_app, 'assets')["v3.switchDefi"];
 
-    final instrument1 = InstrumentData(0, [], title: title, prompt: prompt);
+    final instrument1 = InstrumentData(0, [], title: title);
 
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
@@ -447,11 +445,7 @@ class _AssetsState extends State<AssetsPage> {
         );
 
     InstrumentData totalBalance =
-        InstrumentData(available + reserved + locked, [],
-            title: title,
-            // title: I18n.of(context)
-            //     .getDic(i18n_full_dic_app, 'assets')["v3.totalBalance"],
-            prompt: prompt);
+        InstrumentData(available + reserved + locked, [], title: title);
     totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
         dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
     totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],
@@ -849,7 +843,7 @@ class _AssetsState extends State<AssetsPage> {
                 child: Divider(height: 1),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
                 child: Row(
                   children: [
                     BorderedTitle(
@@ -918,11 +912,10 @@ class _AssetsState extends State<AssetsPage> {
                   onRefresh: _updateBalances,
                   child: ListView(
                     physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 6.h, top: 8.h),
+                    padding: EdgeInsets.only(bottom: 6.h, top: 3.h),
                     children: [
                       RoundedCard(
-                        margin:
-                            EdgeInsets.only(top: 5.h, left: 16.w, right: 16.w),
+                        margin: EdgeInsets.only(left: 16.w, right: 16.w),
                         child: Column(
                           children: [
                             ListTile(

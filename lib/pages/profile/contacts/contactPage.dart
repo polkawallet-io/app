@@ -178,12 +178,12 @@ class _Contact extends State<ContactPage> {
                         decoration: v3.InputDecorationV3(
                           labelText: dic['contact.address'],
                           labelStyle: Theme.of(context).textTheme.headline4,
-                          suffix: GestureDetector(
+                          suffixIcon: GestureDetector(
                             child: Padding(
-                              padding: EdgeInsets.only(left: 16.w),
+                              padding: EdgeInsets.only(
+                                  left: 12.w, top: 10, bottom: 10),
                               child: SvgPicture.asset('assets/images/scan.svg',
-                                  color: Theme.of(context).disabledColor,
-                                  width: 24.w),
+                                  color: Theme.of(context).disabledColor),
                             ),
                             onTap: () async {
                               final to = await Navigator.of(context)

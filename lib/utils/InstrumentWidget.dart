@@ -192,7 +192,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                         .textTheme
                                         .headline5
                                         ?.copyWith(
-                                            color: Colors.white,
+                                            color: isTapDown
+                                                ? Colors.white
+                                                : Color(0xFF757371),
                                             fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -205,21 +207,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                 )
               ],
             )),
-        !widget.switchDefi
-            ? Container(
-                margin: EdgeInsets.only(bottom: 16),
-              )
-            : Container(
-                margin: EdgeInsets.only(top: 4, bottom: 8),
-                child: Text(widget.datas[getIndex()].prompt,
-                    style: TextStyle(
-                        fontFamily: "SF_Pro",
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
-                        color: Theme.of(context)
-                            .textSelectionTheme
-                            .selectionColor)),
-              ),
+        Container(
+          height: 10,
+        ),
         getRoundedCardItem(),
       ],
     );

@@ -533,7 +533,7 @@ class BalanceCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             // color: primaryColor.withAlpha(100),
-            color: Color(0x40000000),
+            color: Color(0x5D000000),
             blurRadius: 3.0,
             spreadRadius: 0.0,
             offset: Offset(2.0, 2.0),
