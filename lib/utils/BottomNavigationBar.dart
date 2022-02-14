@@ -53,10 +53,10 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
           shape: CustomNotchedShape(context),
           child: SizedBox(height: 64, child: Row(children: children)),
         ),
-        opacity: 0.7, // Default: 0.5
-        color: Color(0x66000000), // Default: Black
+        opacity: 0.4, // Default: 0.5
+        color: Color(0xAA000000), // Default: Black
         offset: Offset(0, -1), // Default: Offset(2, 2)
-        sigma: 4, // Default: 2
+        sigma: 2, // Default: 2
       ),
       floatingActionButton: CentralNavItem(
           widget.pages[centralIndex], centralIndex == widget.tabIndex, (item) {

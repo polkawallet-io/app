@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
       case 'edgeware':
         return [Color(0xFF21C1D5), Color(0xFF057AA9)];
       default:
-        return [Color(0xFFE40C5B), Color(0xFFFF4C3B)];
+        return [Theme.of(context).primaryColor, Theme.of(context).hoverColor];
     }
   }
 

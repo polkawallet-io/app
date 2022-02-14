@@ -193,7 +193,6 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 i.indexInfo['accountIndex'] != null
             ? '${i.indexInfo['accountIndex']}\n'
             : '';
-        final double padding = accIndex.isEmpty ? 0 : 7;
         final isCurrent = isCurrentNetwork &&
             i.address == widget.service.keyring.current.address;
         return Column(
@@ -288,7 +287,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       });
     }
     return Scaffold(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
           title: Text(I18n.of(context)
               .getDic(i18n_full_dic_app, 'profile')['setting.network']),

@@ -400,6 +400,12 @@ class _AssetsState extends State<AssetsPage> {
       case para_chain_name_acala:
         return [Color(0xFFFF5D3A), Color(0xFFFF3F3F), Color(0xFF4528FF)];
       case para_chain_name_bifrost:
+        return [
+          Color(0xFF5AAFE1),
+          Color(0xFF596ED2),
+          Color(0xFFB358BD),
+          Color(0xFFFFAE5E)
+        ];
       default:
         return [Theme.of(context).primaryColor, Theme.of(context).hoverColor];
     }
