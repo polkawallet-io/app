@@ -469,7 +469,7 @@ class _AssetsState extends State<AssetsPage> {
           Container(
             child: AddressIcon(widget.service.keyring.current.address,
                 svg: widget.service.keyring.current.icon),
-            margin: EdgeInsets.only(right: 8.w),
+            margin: EdgeInsets.only(right: 8.w, top: 2),
           ),
           Column(
             mainAxisSize: MainAxisSize.min,
