@@ -67,9 +67,11 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                     if (isOnClick) {
                       widget.onSwitchChange();
                     }
-                    setState(() {
-                      this.index = index;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        this.index = index;
+                      });
+                    }
                   },
                   datas: widget.datas,
                   initializeIndex: getIndex(),

@@ -53,7 +53,6 @@ class AppUI {
       {bool autoCheck = false}) async {
     if (versions == null || !Platform.isAndroid && !Platform.isIOS) return;
     String platform = Platform.isAndroid ? 'android' : 'ios';
-    final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
     final int latestCode = versions[platform]['version-code'];
     final String latestBeta = versions[platform]['version-beta'];
@@ -74,6 +73,8 @@ class AppUI {
     } else {
       if (autoCheck) return;
     }
+
+    final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
     showCupertinoDialog(
       context: context,

@@ -131,7 +131,9 @@ class _HomePageState extends State<HomePage> {
               );
             });
         Timer(Duration(seconds: 5), () {
-          Navigator.of(context).pop();
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         });
       }
       _wssNotifyTimer = null;
