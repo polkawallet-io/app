@@ -288,7 +288,7 @@ SPEC CHECKSUMS:
   update_app: 03c24a56ba197e2a036d5230b02e85825b76e045
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
   video_player: 7e9dad9437c238a97648819f6dd443c8854cf0c7
-  webview_flutter_wkwebview: 02b129c6fe415e58e4ab7346512c8c2f79f678db
+  webview_flutter_wkwebview: 005fbd90c888a42c5690919a1527ecc6649e1162
 
 PODFILE CHECKSUM: 54d14ef5a14a0b3c64cc6d6bfeff28f02dcce905
 
