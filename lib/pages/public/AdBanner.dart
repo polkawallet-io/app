@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/utils/Utils.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AdBanner extends StatefulWidget {
@@ -23,6 +28,7 @@ class AdBanner extends StatefulWidget {
 
 class _AdBannerState extends State<AdBanner> {
   bool _loading = false;
+  int _appVersion;
 
   Future<void> _getAdBannerList() async {
     if (widget.service.store.settings.adBanners.keys.length > 0) return;
@@ -34,12 +40,50 @@ class _AdBannerState extends State<AdBanner> {
     //     await WalletApi.getClaim(widget.service.keyring.current.address);
   }
 
+  void _showBannerInvalidAlert() {
+    showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+          return CupertinoAlertDialog(
+            title: Text(dic['banner.invalid']),
+            content: Text(dic['banner.invalid.info']),
+            actions: [
+              CupertinoButton(
+                  child: Text(
+                    I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['cancel'],
+                    style: TextStyle(
+                        color: Theme.of(context).unselectedWidgetColor),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              CupertinoButton(
+                  child: Text(I18n.of(context)
+                      .getDic(i18n_full_dic_ui, 'common')['ok']),
+                  onPressed: () {
+                    Navigator.of(context).popAndPushNamed(AboutPage.route);
+                  })
+            ],
+          );
+        });
+  }
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getAdBannerList();
+
+      Utils.getBuildNumber().then((value) {
+        if (mounted) {
+          setState(() {
+            _appVersion = value;
+          });
+        }
+      });
     });
   }
 
@@ -85,7 +129,10 @@ class _AdBannerState extends State<AdBanner> {
               final route = e['route'] as String;
               final network = e['routeNetwork'] as String;
               final args = e['routeArgs'] as Map;
-              if (network != widget.service.plugin.basic.name) {
+              final minVersion = e['minVersion'] as int;
+              if (minVersion != null && _appVersion < minVersion) {
+                _showBannerInvalidAlert();
+              } else if (network != widget.service.plugin.basic.name) {
                 widget.service.plugin.appUtils.switchNetwork(
                   network,
                   pageRoute: PageRouteParams(route, args: args),

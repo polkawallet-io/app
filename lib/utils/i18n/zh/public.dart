@@ -54,4 +54,6 @@ const Map<String, String> zhPublic = {
   'hub.cover.parachains': '此为用户提供众贷和拍卖的聚合模块。你可以在该模块中参与不同的活动，并跟踪众贷的后续情况。',
   'hub.enter': '进入',
   'wss.timeout': '连接超时.\n请稍后切换节点重试.',
+  'banner.invalid': '页面不可用',
+  'banner.invalid.info': '你需要升级 App 至最新版本, 确认继续吗?',
 };

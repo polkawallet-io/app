@@ -28,7 +28,7 @@ class _AboutPage extends State<AboutPage> {
   bool _updateLoading = false;
   String _appVersion;
 
-  Future<void> _checkUpdate() async {
+  Future<void> _checkUpdate({bool autoCheck = false}) async {
     if (_updateLoading) return;
 
     setState(() {
@@ -38,16 +38,18 @@ class _AboutPage extends State<AboutPage> {
     setState(() {
       _updateLoading = false;
     });
-    AppUI.checkUpdate(context, versions, WalletApp.buildTarget);
+    AppUI.checkUpdate(context, versions, WalletApp.buildTarget,
+        autoCheck: autoCheck);
   }
 
   @override
   void initState() {
     super.initState();
-    getAppVersion();
+    _getAppVersion();
+    _checkUpdate(autoCheck: true);
   }
 
-  getAppVersion() async {
+  _getAppVersion() async {
     var appVersion = await Utils.getAppVersion();
     setState(() {
       _appVersion = appVersion;
