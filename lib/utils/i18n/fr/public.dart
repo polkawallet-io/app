@@ -58,4 +58,6 @@ const Map<String, String> enPublic = {
       'Provide users with an aggregated module of Crowdloan and Auction. Users can participate in different events in this module, and track the follow-up of the crowdloan.',
   'hub.enter': 'Enter',
   'wss.timeout': 'Connection timeout.\nTry changing node later.',
+  'banner.invalid': 'Invalid Page',
+  'banner.invalid.info': 'You need to update to the latest version, continue?',
 };
