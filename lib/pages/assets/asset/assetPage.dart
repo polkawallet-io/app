@@ -290,16 +290,6 @@ class _AssetPageState extends State<AssetPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Observer(
         builder: (_) {
-          bool transferEnabled = true;
-          if (widget.service.plugin.basic.name == para_chain_name_karura ||
-              widget.service.plugin.basic.name == para_chain_name_acala) {
-            transferEnabled = false;
-            if (widget.service.store.settings.liveModules['assets'] != null) {
-              transferEnabled = widget
-                  .service.store.settings.liveModules['assets']['enabled'];
-            }
-          }
-
           BalanceData balancesInfo = widget.service.plugin.balances.native;
           return Column(
             children: <Widget>[
@@ -334,12 +324,9 @@ class _AssetPageState extends State<AssetPage> {
                               ),
                             ),
                             text: dic['v3.send'],
-                            onPressed: transferEnabled
-                                ? () {
-                                    Navigator.pushNamed(
-                                        context, TransferPage.route);
-                                  }
-                                : null,
+                            onPressed: () {
+                              Navigator.pushNamed(context, TransferPage.route);
+                            },
                           ),
                         ),
                       ),

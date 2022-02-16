@@ -31,7 +31,6 @@ import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -110,7 +109,7 @@ class _AssetsState extends State<AssetsPage> {
     _priceUpdateTimer = Timer(Duration(seconds: duration), _updateMarketPrices);
   }
 
-  Future<void> _handleScan(bool transferEnabled) async {
+  Future<void> _handleScan() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = (await Navigator.pushNamed(
       context,
@@ -124,7 +123,7 @@ class _AssetsState extends State<AssetsPage> {
         return;
       }
 
-      if (transferEnabled && data.type == QRCodeResultType.address) {
+      if (data.type == QRCodeResultType.address) {
         Navigator.of(context).pushNamed(
           TransferPage.route,
           arguments: TransferPageParams(address: data.address.address),
@@ -466,7 +465,7 @@ class _AssetsState extends State<AssetsPage> {
     return datas;
   }
 
-  PreferredSizeWidget buildAppBar(bool transferEnabled) {
+  PreferredSizeWidget buildAppBar() {
     return AppBar(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       title: Row(
@@ -600,7 +599,7 @@ class _AssetsState extends State<AssetsPage> {
                 onSelected: (value) {
                   if (widget.service.keyring.current.address != '') {
                     if (value == '0') {
-                      _handleScan(transferEnabled);
+                      _handleScan();
                     } else {
                       Navigator.pushNamed(context, AccountQrCodePage.route);
                     }
@@ -672,22 +671,6 @@ class _AssetsState extends State<AssetsPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool transferEnabled = true;
-        // // todo: fix this after new acala online
-        if (widget.service.plugin.basic.name == para_chain_name_acala) {
-          transferEnabled = false;
-          if (widget.service.store.settings.liveModules['assets'] != null) {
-            transferEnabled =
-                widget.service.store.settings.liveModules['assets']['enabled'];
-          }
-        }
-        bool claimKarEnabled = false;
-        if (widget.service.plugin.basic.name == para_chain_name_karura) {
-          if (widget.service.store.settings.liveModules['claim'] != null) {
-            claimKarEnabled =
-                widget.service.store.settings.liveModules['claim']['enabled'];
-          }
-        }
         final symbol =
             (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
         final decimals =
@@ -727,7 +710,7 @@ class _AssetsState extends State<AssetsPage> {
 
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: buildAppBar(transferEnabled),
+          appBar: buildAppBar(),
           body: Column(
             children: <Widget>[
               Padding(
@@ -860,37 +843,6 @@ class _AssetsState extends State<AssetsPage> {
                           .getDic(i18n_full_dic_app, 'assets')['assets'],
                     ),
                     Visibility(
-                        visible: widget.service.plugin.basic.name ==
-                                para_chain_name_karura &&
-                            claimKarEnabled,
-                        child: GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(
-                                DAppWrapperPage.route,
-                                arguments:
-                                    'https://distribution.acala.network/claim'),
-                            child: Container(
-                              padding: EdgeInsets.fromLTRB(15.w, 0, 15.w, 4),
-                              height: 24,
-                              margin: EdgeInsets.only(left: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        "assets/images/icon_bg_2.png"),
-                                    fit: BoxFit.contain),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Claim KAR',
-                                style: TextStyle(
-                                  color: Theme.of(context).cardColor,
-                                  fontSize: 12,
-                                  fontFamily: 'TitilliumWeb',
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ))),
-                    Visibility(
                         visible:
                             (widget.service.plugin.noneNativeTokensAll ?? [])
                                     .length >
@@ -983,12 +935,9 @@ class _AssetsState extends State<AssetsPage> {
                                   ),
                                 ],
                               ),
-                              onTap: transferEnabled
-                                  ? () {
-                                      Navigator.pushNamed(
-                                          context, AssetPage.route);
-                                    }
-                                  : null,
+                              onTap: () {
+                                Navigator.pushNamed(context, AssetPage.route);
+                              },
                             ),
                             Visibility(
                                 visible: tokens != null && tokens.length > 0,
