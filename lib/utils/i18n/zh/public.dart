@@ -56,4 +56,5 @@ const Map<String, String> zhPublic = {
   'wss.timeout': '连接超时.\n请稍后切换节点重试.',
   'banner.invalid': '页面不可用',
   'banner.invalid.info': '你需要升级 App 至最新版本, 确认继续吗?',
+  'os.invalid': '该设备系统环境不支持 Polkawallet 运行',
 };

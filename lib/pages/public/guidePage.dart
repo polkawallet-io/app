@@ -37,13 +37,12 @@ class _GuidePageState extends State<GuidePage> {
                 children: _pages
                     .map(
                       (e) => Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Image.asset('assets/images/public/guide_$e.png'),
                           Container(
                               width: double.infinity,
                               margin: EdgeInsets.only(
-                                  bottom: 194, left: 27, right: 27),
+                                  bottom: 24, left: 24, right: 24),
                               child: Text(
                                 dic['guide.$e'],
                                 textAlign: TextAlign.start,
@@ -82,7 +81,7 @@ class _GuidePageState extends State<GuidePage> {
                           .toList(),
                     )),
                 Padding(
-                    padding: EdgeInsets.fromLTRB(27, 32, 27, 63),
+                    padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
                     child: Button(
                       title: _pageIndex + 1 >= _pages.length
                           ? dic['guide.enter']

@@ -622,7 +622,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                       return snapshot.data > 0
                           ? HomePage(_service, widget.plugins, _connectedNode,
                               _checkJSCodeUpdate, _switchNetwork, _changeNode)
-                          : CreateAccountEntryPage();
+                          : CreateAccountEntryPage(_service.plugin);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);
                     }
@@ -656,7 +656,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AcalaBridgePage.route: (_) => AcalaBridgePage(),
 
       /// account
-      CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(),
+      CreateAccountEntryPage.route: (_) =>
+          CreateAccountEntryPage(_service.plugin),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
       DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring),

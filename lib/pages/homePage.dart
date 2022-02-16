@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
     if (network != null && network != widget.service.plugin.basic.name) {
       Navigator.popUntil(context, ModalRoute.withName('/'));
 
-      _setupConnectionChecker();
+      _setupWssNotifyTimer();
       await widget.switchNetwork(network);
     }
     if (tab != null) {
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
     // }
   }
 
-  Future<void> _setupConnectionChecker() async {
+  Future<void> _setupWssNotifyTimer() async {
     if (_wssNotifyTimer != null) {
       _wssNotifyTimer.cancel();
     }
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setupJPush();
-      _setupConnectionChecker();
+      _setupWssNotifyTimer();
     });
   }
 
@@ -182,10 +182,10 @@ class _HomePageState extends State<HomePage> {
         content:
             AssetsPage(widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
-          _setupConnectionChecker();
+          _setupWssNotifyTimer();
           widget.checkJSCodeUpdate(context, plugin);
         }, (String name, {NetworkParams node}) async {
-          _setupConnectionChecker();
+          _setupWssNotifyTimer();
           widget.switchNetwork(name, node: node);
         }, _handleWalletConnect),
         // content: Container(),

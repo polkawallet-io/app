@@ -2,17 +2,39 @@ import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 
 import 'import/selectImportTypePage.dart';
 
 class CreateAccountEntryPage extends StatelessWidget {
+  CreateAccountEntryPage(this.plugin);
+
   static final String route = '/account/entry';
+
+  final PolkawalletPlugin plugin;
+
+  void _checkJsCodeStarted(BuildContext context) {
+    if (plugin.sdk.webView.webViewLoaded) {
+      if (!plugin.sdk.webView.jsCodeStarted) {
+        showCupertinoDialog(
+            context: context,
+            builder: (_) {
+              return CupertinoAlertDialog(
+                content: Text(I18n.of(context)
+                    .getDic(i18n_full_dic_app, 'public')['os.invalid']),
+              );
+            });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkJsCodeStarted(context);
+    });
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
