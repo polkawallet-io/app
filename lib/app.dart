@@ -261,19 +261,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _getAcalaModulesConfig(String pluginName) async {
-    final karModulesConfig = await (pluginName == 'karura'
-        ? WalletApi.getKarModulesConfig()
-        : WalletApi.getAcalaModulesConfig());
-    if (karModulesConfig != null) {
-      _store.settings.setLiveModules(karModulesConfig);
-    } else {
-      _store.settings.setLiveModules({
-        'assets': {'enabled': true}
-      });
-    }
-  }
-
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
@@ -290,11 +277,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
 
     _dropsService(service, node: node);
-
-    if (_service.plugin.basic.name == para_chain_name_karura ||
-        _service.plugin.basic.name == para_chain_name_acala) {
-      _getAcalaModulesConfig(_service.plugin.basic.name);
-    }
   }
 
   Future<void> _restartWebConnect(AppService service,

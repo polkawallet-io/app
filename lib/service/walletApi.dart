@@ -188,21 +188,6 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getClaim(String address) async {
-    final url = '$_endpoint/acala/claim/claim?address=$address';
-    try {
-      Response res = await get(Uri.parse(url));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
   static Future<Map> getAdBannerList() async {
     try {
       final res = await get(getUrl(_configEndpoint, '/wallet/banners.json'));
@@ -222,35 +207,6 @@ class WalletApi {
     try {
       Response res = await get(
           getUrl(_configEndpoint, '/wallet/plugins.json', targets: targets));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(res.body) as Map;
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> getKarModulesConfig() async {
-    try {
-      Response res = await get(getUrl(_configEndpoint, '/config/modules.json'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(res.body) as Map;
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-  static Future<Map> getAcalaModulesConfig() async {
-    try {
-      Response res =
-          await get(getUrl(_configEndpoint, '/config/modulesAcala.json'));
       if (res == null) {
         return null;
       } else {

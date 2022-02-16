@@ -28,9 +28,6 @@ abstract class _SettingsStore with Store {
 
   String network = 'polkadot';
 
-  @observable
-  Map liveModules = Map();
-
   Map pluginsConfig = Map();
 
   Map adBanners = Map();
@@ -129,11 +126,6 @@ abstract class _SettingsStore with Store {
     if (value != null) {
       network = value;
     }
-  }
-
-  @action
-  void setLiveModules(Map value) {
-    liveModules = value;
   }
 
   void setAdBannerState(Map value) {

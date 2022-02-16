@@ -47,21 +47,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
     super.network = value;
   }
 
-  final _$liveModulesAtom = Atom(name: '_SettingsStore.liveModules');
-
-  @override
-  Map<dynamic, dynamic> get liveModules {
-    _$liveModulesAtom.reportRead();
-    return super.liveModules;
-  }
-
-  @override
-  set liveModules(Map<dynamic, dynamic> value) {
-    _$liveModulesAtom.reportWrite(value, super.liveModules, () {
-      super.liveModules = value;
-    });
-  }
-
   Map<dynamic, dynamic> get adBanners {
     return super.adBanners;
   }
@@ -120,17 +105,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return super.setNetwork(value);
   }
 
-  @override
-  void setLiveModules(Map<dynamic, dynamic> value) {
-    final _$actionInfo = _$_SettingsStoreActionController.startAction(
-        name: '_SettingsStore.setLiveModules');
-    try {
-      return super.setLiveModules(value);
-    } finally {
-      _$_SettingsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
   void setAdBannerState(Map<dynamic, dynamic> value) {
     return super.setAdBannerState(value);
   }
@@ -142,7 +116,6 @@ localeCode: ${localeCode},
 network: ${network},
 priceCurrency: ${priceCurrency},
 isHideBalance: ${isHideBalance},
-liveModules: ${liveModules},
 adBannerState: ${adBanners}
     ''';
   }
