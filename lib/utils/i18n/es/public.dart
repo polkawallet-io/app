@@ -60,4 +60,6 @@ const Map<String, String> enPublic = {
   'wss.timeout': 'Connection timeout.\nTry changing node later.',
   'banner.invalid': 'Invalid Page',
   'banner.invalid.info': 'You need to update to the latest version, continue?',
+  'os.invalid':
+      'The OS environment of this device does NOT support Polkawallet running',
 };
