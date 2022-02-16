@@ -75,6 +75,8 @@ class AppUI {
     }
 
     final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
+    final showLatestBeta =
+        needUpdate ? latestBeta : await Utils.getAppVersion();
 
     showCupertinoDialog(
       context: context,
@@ -82,7 +84,7 @@ class AppUI {
         List versionInfo = versions[platform]['info']
             [I18n.of(context).locale.toString().contains('zh') ? 'zh' : 'en'];
         return CupertinoAlertDialog(
-          title: Text('v$latestBeta'),
+          title: Text('v$showLatestBeta'),
           content: Column(
             children: [
               Padding(

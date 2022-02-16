@@ -50,9 +50,6 @@ class _HomePageState extends State<HomePage> {
   int _tabIndex = 0;
   Timer _wssNotifyTimer;
 
-  final PageController _metahubPageController = PageController();
-  int _metahubTabIndex = 0;
-
   Future<void> _handleWalletConnect(String uri) async {
     print('wallet connect uri:');
     print(uri);
@@ -299,53 +296,6 @@ class _HomePageState extends State<HomePage> {
           text: I18n.of(context)
               .getDic(i18n_full_dic_app, 'public')['v3.metahub']));
     }
-    // if (pluginPages.length > 1) {
-    //   pluginPage = HomeNavItem(
-    //       content: Scaffold(
-    //         appBar: AppBar(
-    //           title: Container(
-    //               child: MainTabBar(
-    //             tabs: [pluginPages[0].text, pluginPages[1].text],
-    //             activeTab: _metahubTabIndex,
-    //             onTap: (index) {
-    //               setState(() {
-    //                 _metahubPageController.jumpToPage(index);
-    //                 _metahubTabIndex = index;
-    //               });
-    //             },
-    //           )),
-    //           centerTitle: true,
-    //         ),
-    //         body: PageView(
-    //           controller: _metahubPageController,
-    //           onPageChanged: (index) {
-    //             setState(() {
-    //               _metahubTabIndex = index;
-    //             });
-    //           },
-    //           children: pluginPages
-    //               .map((e) => PageWrapperWithBackground(
-    //                     e.content,
-    //                     height: 220,
-    //                     backgroundImage:
-    //                         widget.service.plugin.basic.backgroundImage,
-    //                   ))
-    //               .toList(),
-    //         ),
-    //       ),
-    //       icon: Image.asset(
-    //         "assets/images/compass.png",
-    //         fit: BoxFit.contain,
-    //       ),
-    //       iconActive: Image.asset(
-    //         "assets/images/compass.png",
-    //         fit: BoxFit.contain,
-    //       ),
-    //       text: I18n.of(context)
-    //           .getDic(i18n_full_dic_app, 'public')['v3.metahub']);
-    // }
-
-    // pages.add(pluginPage);
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
@@ -368,7 +318,6 @@ class _HomePageState extends State<HomePage> {
             onPageChanged: (index) {
               setState(() {
                 _tabIndex = index;
-                _metahubTabIndex = 0;
               });
             },
             children: pages
@@ -416,7 +365,6 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _pageController.jumpToPage(index);
           _tabIndex = index;
-          _metahubTabIndex = 0;
         });
       },
       pages: pages,
