@@ -40,7 +40,7 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
             children: [
               ListTile(title: Text(dic['import.type'])),
               RoundedCard(
-                  margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                  margin: EdgeInsets.only(left: 15.w, right: 15.w),
                   padding: EdgeInsets.all(8),
                   child: ListView.separated(
                       shrinkWrap: true,

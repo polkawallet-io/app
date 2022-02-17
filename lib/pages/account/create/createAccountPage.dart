@@ -150,25 +150,31 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 padding: EdgeInsets.all(16),
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: Text(dic['create.warn1'], style: theme.headline4),
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Text(dic['create.warn1'],
+                        style: theme.headline4
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   Text(dic['create.warn2']),
                   Container(
-                    padding: EdgeInsets.only(bottom: 16, top: 32),
-                    child: Text(dic['create.warn3'], style: theme.headline4),
+                    padding: EdgeInsets.only(bottom: 10, top: 32),
+                    child: Text(dic['create.warn3'],
+                        style: theme.headline4
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   Container(
-                    padding: EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.only(bottom: 5),
                     child: Text(dic['create.warn4']),
                   ),
                   Text(dic['create.warn5']),
                   Container(
-                    padding: EdgeInsets.only(bottom: 16, top: 32),
-                    child: Text(dic['create.warn6'], style: theme.headline4),
+                    padding: EdgeInsets.only(bottom: 10, top: 32),
+                    child: Text(dic['create.warn6'],
+                        style: theme.headline4
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                   ),
                   Container(
-                    padding: EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.only(bottom: 5),
                     child: Text(dic['create.warn7']),
                   ),
                   Text(dic['create.warn8']),
