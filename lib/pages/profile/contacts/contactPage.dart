@@ -160,7 +160,7 @@ class _Contact extends State<ContactPage> {
                         decoration: v3.InputDecorationV3(
                           labelText: dic['contact.address'],
                           labelStyle: Theme.of(context).textTheme.headline4,
-                          suffix: _args != null
+                          suffixIcon: _args != null
                               ? null
                               : GestureDetector(
                                   child: Padding(

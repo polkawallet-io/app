@@ -10,8 +10,8 @@ const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
 class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
-  static const String _configEndpoint = 'https://acala.subdao.com';
-  static const String _cdnEndpoint = 'https://cdn.subdao.com';
+  static const String _configEndpoint = 'https://acala.polkawallet-cloud.com';
+  static const String _cdnEndpoint = 'https://cdn.polkawallet-cloud.com';
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
