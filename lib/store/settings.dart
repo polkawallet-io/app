@@ -32,8 +32,6 @@ abstract class _SettingsStore with Store {
 
   Map adBanners = Map();
 
-  Map claimState = Map();
-
   Map _disabledCalls;
 
   Map _xcmEnabledChains;

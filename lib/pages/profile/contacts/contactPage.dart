@@ -9,10 +9,10 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class ContactPage extends StatefulWidget {
   ContactPage(this.service);
@@ -138,24 +138,6 @@ class _Contact extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    // List<Widget> action = <Widget>[
-    //   IconButton(
-    //     icon: SvgPicture.asset(
-    //       'assets/images/scan.svg',
-    //       color: Theme.of(context).cardColor,
-    //       width: 24,
-    //     ),
-    //     onPressed: () async {
-    //       final to = await Navigator.of(context).pushNamed(ScanPage.route);
-    //       if (to != null) {
-    //         setState(() {
-    //           _addressCtrl.text = (to as QRCodeResult).address.address;
-    //           _nameCtrl.text = (to as QRCodeResult).address.name;
-    //         });
-    //       }
-    //     },
-    //   )
-    // ];
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['contact']),
@@ -178,26 +160,30 @@ class _Contact extends State<ContactPage> {
                         decoration: v3.InputDecorationV3(
                           labelText: dic['contact.address'],
                           labelStyle: Theme.of(context).textTheme.headline4,
-                          suffixIcon: GestureDetector(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 12.w, top: 10, bottom: 10),
-                              child: SvgPicture.asset('assets/images/scan.svg',
-                                  color: Theme.of(context).disabledColor),
-                            ),
-                            onTap: () async {
-                              final to = await Navigator.of(context)
-                                  .pushNamed(ScanPage.route);
-                              if (to != null) {
-                                setState(() {
-                                  _addressCtrl.text =
-                                      (to as QRCodeResult).address.address;
-                                  _nameCtrl.text =
-                                      (to as QRCodeResult).address.name;
-                                });
-                              }
-                            },
-                          ),
+                          suffix: _args != null
+                              ? null
+                              : GestureDetector(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 12.w, top: 10, bottom: 10),
+                                    child: SvgPicture.asset(
+                                        'assets/images/scan.svg',
+                                        color: Theme.of(context).disabledColor),
+                                  ),
+                                  onTap: () async {
+                                    final to = await Navigator.of(context)
+                                        .pushNamed(ScanPage.route);
+                                    if (to != null) {
+                                      setState(() {
+                                        _addressCtrl.text = (to as QRCodeResult)
+                                            .address
+                                            .address;
+                                        _nameCtrl.text =
+                                            (to as QRCodeResult).address.name;
+                                      });
+                                    }
+                                  },
+                                ),
                         ),
                         controller: _addressCtrl,
                         validator: (v) {

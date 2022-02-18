@@ -949,30 +949,30 @@ class _AssetsState extends State<AssetsPage> {
                                         widget.service.store.assets
                                             .marketPrices[i.symbol] ??
                                         0.0;
-                                    return TokenItem(i, i.decimals,
-                                        isFromCache: isTokensFromCache,
-                                        detailPageRoute: i.detailPageRoute,
-                                        marketPrice: price *
-                                            (widget.service.store
-                                                        .settings.priceCurrency ==
-                                                    "CNY"
-                                                ? _rate
-                                                : 1.0),
-                                        icon: TokenIcon(
-                                          widget.service.plugin.basic.name ==
-                                                  para_chain_name_statemine
-                                              ? i.id
-                                              : i.symbol.toUpperCase(),
-                                          widget.service.plugin.tokenIcons,
-                                          symbol: i.symbol,
-                                        ),
-                                        isHideBalance:
-                                            widget.service.store.settings
-                                                .isHideBalance,
-                                        priceCurrency: widget.service.store
-                                            .settings.priceCurrency,
-                                        isClickable:
-                                            widget.connectedNode != null);
+                                    return TokenItem(
+                                      i,
+                                      i.decimals,
+                                      isFromCache: isTokensFromCache,
+                                      detailPageRoute: i.detailPageRoute,
+                                      marketPrice: price *
+                                          (widget.service.store.settings
+                                                      .priceCurrency ==
+                                                  "CNY"
+                                              ? _rate
+                                              : 1.0),
+                                      icon: TokenIcon(
+                                        widget.service.plugin.basic.name ==
+                                                para_chain_name_statemine
+                                            ? i.id
+                                            : i.symbol.toUpperCase(),
+                                        widget.service.plugin.tokenIcons,
+                                        symbol: i.symbol,
+                                      ),
+                                      isHideBalance: widget
+                                          .service.store.settings.isHideBalance,
+                                      priceCurrency: widget
+                                          .service.store.settings.priceCurrency,
+                                    );
                                   }).toList(),
                                 )),
                             Visibility(
@@ -992,18 +992,25 @@ class _AssetsState extends State<AssetsPage> {
                                     ),
                                     Column(
                                       children: i.tokens
-                                          .map((e) => TokenItem(e, e.decimals,
-                                              isFromCache: isTokensFromCache,
-                                              detailPageRoute:
-                                                  e.detailPageRoute,
-                                              icon: widget.service.plugin
-                                                  .tokenIcons[e.symbol],
-                                              isHideBalance: widget.service
-                                                  .store.settings.isHideBalance,
-                                              priceCurrency: widget.service
-                                                  .store.settings.priceCurrency,
-                                              isClickable:
-                                                  widget.connectedNode != null))
+                                          .map((e) => TokenItem(
+                                                e,
+                                                e.decimals,
+                                                isFromCache: isTokensFromCache,
+                                                detailPageRoute:
+                                                    e.detailPageRoute,
+                                                icon: widget.service.plugin
+                                                    .tokenIcons[e.symbol],
+                                                isHideBalance: widget
+                                                    .service
+                                                    .store
+                                                    .settings
+                                                    .isHideBalance,
+                                                priceCurrency: widget
+                                                    .service
+                                                    .store
+                                                    .settings
+                                                    .priceCurrency,
+                                              ))
                                           .toList(),
                                     )
                                   ],
@@ -1032,13 +1039,11 @@ class TokenItem extends StatelessWidget {
       this.icon,
       this.isFromCache = false,
       this.isHideBalance,
-      this.priceCurrency,
-      this.isClickable = false});
+      this.priceCurrency});
   final TokenBalanceData item;
   final int decimals;
   final double marketPrice;
   final String detailPageRoute;
-  final bool isClickable;
   final Widget icon;
   final bool isFromCache;
   final bool isHideBalance;
@@ -1102,7 +1107,7 @@ class TokenItem extends StatelessWidget {
                   : Container(height: 0, width: 8),
             ],
           ),
-          onTap: detailPageRoute == null || !isClickable
+          onTap: detailPageRoute == null
               ? null
               : () {
                   Navigator.of(context)

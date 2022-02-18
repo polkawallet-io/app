@@ -218,21 +218,6 @@ class WalletApi {
     }
   }
 
-  static Future<Map> getCrowdLoansConfig({bool isKSM = true}) async {
-    try {
-      Response res = await get(getUrl(_configEndpoint,
-          isKSM ? '/wallet/paras.json' : '/wallet/parasDot.json'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(res.body) as Map;
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
   static Future<Map> fetchBlocksFromSn(String relayChainName,
       {int count = 1}) async {
     final url = '${getSnEndpoint(relayChainName)}/blocks';
