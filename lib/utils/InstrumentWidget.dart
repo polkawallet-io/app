@@ -141,18 +141,31 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                             child: Container(
                               width: 46.w,
                               height: 46.w,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: widget.gradienColors ??
-                                        [
-                                          Theme.of(context).primaryColor,
-                                          Theme.of(context).hoverColor
-                                        ]),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(46.w / 2)),
-                              ),
+                              decoration: widget.switchDefi
+                                  ? BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: widget.gradienColors ??
+                                              [
+                                                Theme.of(context).primaryColor,
+                                                Theme.of(context).hoverColor
+                                              ]),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(46.w / 2)),
+                                    )
+                                  : BoxDecoration(
+                                      color: Color(0xFF706C6A),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(46.w / 2)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Color(0x61000000),
+                                            offset: Offset(1, 1),
+                                            blurRadius: 2,
+                                            spreadRadius: 1),
+                                      ],
+                                    ),
                               // child: Center(
                               child: Center(
                                   child: Container(
@@ -185,7 +198,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                         ])),
                                 child: Center(
                                   child: Text(
-                                    widget.enabled
+                                    widget.switchDefi && widget.enabled
                                         ? I18n.of(context).getDic(
                                             i18n_full_dic_app,
                                             'assets')['v3.tap']
