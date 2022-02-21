@@ -257,12 +257,17 @@ class _HomePageState extends State<HomePage> {
                           )
                         ],
                 ),
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                    PluginPage.route,
-                    arguments: {"title": element.text, 'body': element.content},
-                  );
-                },
+                onTap: element.onTap != null
+                    ? element.onTap
+                    : () {
+                        Navigator.of(context).pushNamed(
+                          PluginPage.route,
+                          arguments: {
+                            "title": element.text,
+                            'body': element.content
+                          },
+                        );
+                      },
               )));
         }
       });
