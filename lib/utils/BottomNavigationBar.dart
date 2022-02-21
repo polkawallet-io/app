@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:polkawallet_ui/components/circularProgressBar.dart';
 
 class BottomBarScaffold extends StatefulWidget {
   BottomBarScaffold(
@@ -239,46 +240,6 @@ class _CentraNavBtnState extends State<CentraNavBtn>
                 )),
           ),
         ));
-  }
-}
-
-class CircularProgressBar extends CustomPainter {
-  List<Color> lineColor;
-  double width;
-  double progress; //0-1
-  double endAngle;
-
-  CircularProgressBar({this.lineColor, this.width, this.progress = 1}) {
-    this.endAngle = this.progress / 1 * 2 * pi;
-  }
-  @override
-  void paint(Canvas canvas, Size size) {
-    Offset center = Offset(size.width / 2, size.height / 2);
-    double radius =
-        min(size.width / 2 - width / 2, size.height / 2 - width / 2);
-
-    var paint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..isAntiAlias = true
-      ..strokeWidth = width;
-
-    paint.shader = SweepGradient(
-      startAngle: 0,
-      endAngle: 2 * pi,
-      colors: lineColor,
-      transform: GradientRotation(pi / 2),
-    ).createShader(
-      Rect.fromCircle(center: center, radius: radius),
-    );
-
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), pi / 2,
-        endAngle, false, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return (oldDelegate as CircularProgressBar).progress != this.progress;
   }
 }
 
