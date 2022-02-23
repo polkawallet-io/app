@@ -35,6 +35,7 @@ import 'package:app/pages/profile/recovery/txDetailPage.dart';
 import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
+import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
@@ -68,6 +69,7 @@ import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
+import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -626,6 +628,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
+      PluginAccountListPage.route: (_) =>
+          PluginAccountListPage(_service.plugin, _keyring),
       AccountQrCodePage.route: (_) =>
           AccountQrCodePage(_service.plugin, _keyring),
       NetworkSelectPage.route: (_) => NetworkSelectPage(
@@ -687,6 +691,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       TxDetailPage.route: (_) => TxDetailPage(_service),
 
       PluginPage.route: (_) => PluginPage(_service),
+
+      /// test
+      DAppsTestPage.route: (_) => DAppsTestPage(),
     };
   }
 
