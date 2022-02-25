@@ -53,6 +53,26 @@ class _DAppsTestPageState extends State<DAppsTestPage> {
               RoundedCard(
                 margin: EdgeInsets.only(bottom: 16),
                 child: ListTile(
+                  title: Text('apps.acala.network'),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
+                        arguments: 'https://apps.acala.network/');
+                  },
+                ),
+              ),
+              RoundedCard(
+                margin: EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  title: Text('apps.karura.network'),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
+                        arguments: 'https://apps.karura.network/');
+                  },
+                ),
+              ),
+              RoundedCard(
+                margin: EdgeInsets.only(bottom: 16),
+                child: ListTile(
                   title: Text('polkadot.polkassembly.io'),
                   onTap: () {
                     Navigator.of(context).pushNamed(DAppWrapperPage.route,

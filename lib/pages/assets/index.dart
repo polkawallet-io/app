@@ -768,6 +768,14 @@ class _AssetsState extends State<AssetsPage> {
                 margin: EdgeInsets.only(left: 16.w, right: 16.w),
                 child: AdBanner(widget.service, widget.connectedNode),
               ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
+              //   child: RoundedButton(
+              //     text: 'DApps Test',
+              //     onPressed: () =>
+              //         Navigator.of(context).pushNamed(DAppsTestPage.route),
+              //   ),
+              // ),
               widget.service.plugin.basic.isTestNet
                   ? Padding(
                       padding: EdgeInsets.only(top: 5.h),
