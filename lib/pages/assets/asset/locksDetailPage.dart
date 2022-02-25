@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -199,137 +200,155 @@ class LocksDetailPageState extends State<LocksDetailPage> {
               child: RefreshIndicator(
                 key: _refreshKey,
                 onRefresh: _refreshUnlockDatas,
-                child: ListView(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.all(16),
-                  children: locks.map((e) {
-                    final amt = BigInt.parse(e.amount.toString());
-                    Widget Democracchild;
-                    final List<String> unLockIds = [];
-                    double maxLockAmount = 0, maxUnlockAmount = 0;
-                    if (e.use.contains('democrac') && _locks.length > 0) {
-                      for (int index = 0; index < _locks.length; index++) {
-                        var unlockAt = _locks[index]['unlockAt'];
-                        final amount = Fmt.balanceDouble(
-                          _locks[index]['balance'].toString(),
-                          decimals,
-                        );
-                        if (unlockAt != "0") {
-                          BigInt endLeft;
-                          try {
-                            endLeft = BigInt.parse("${unlockAt.toString()}") -
-                                BigInt.from(bestNumber);
-                          } catch (e) {
-                            endLeft = BigInt.parse("0x${unlockAt.toString()}") -
-                                BigInt.from(bestNumber);
-                          }
-                          if (endLeft.toInt() <= 0) {
-                            unLockIds.add(_locks[index]['referendumId']);
-                            if (amount > maxUnlockAmount) {
-                              maxUnlockAmount = amount;
+                child: locks.length == 0
+                    ? Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text(
+                          I18n.of(context)
+                              .getDic(i18n_full_dic_ui, 'common')['list.empty'],
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      )
+                    : ListView(
+                        physics: BouncingScrollPhysics(),
+                        padding: EdgeInsets.all(16),
+                        children: locks.map((e) {
+                          final amt = BigInt.parse(e.amount.toString());
+                          Widget Democracchild;
+                          final List<String> unLockIds = [];
+                          double maxLockAmount = 0, maxUnlockAmount = 0;
+                          if (e.use.contains('democrac') && _locks.length > 0) {
+                            for (int index = 0;
+                                index < _locks.length;
+                                index++) {
+                              var unlockAt = _locks[index]['unlockAt'];
+                              final amount = Fmt.balanceDouble(
+                                _locks[index]['balance'].toString(),
+                                decimals,
+                              );
+                              if (unlockAt != "0") {
+                                BigInt endLeft;
+                                try {
+                                  endLeft =
+                                      BigInt.parse("${unlockAt.toString()}") -
+                                          BigInt.from(bestNumber);
+                                } catch (e) {
+                                  endLeft =
+                                      BigInt.parse("0x${unlockAt.toString()}") -
+                                          BigInt.from(bestNumber);
+                                }
+                                if (endLeft.toInt() <= 0) {
+                                  unLockIds.add(_locks[index]['referendumId']);
+                                  if (amount > maxUnlockAmount) {
+                                    maxUnlockAmount = amount;
+                                  }
+                                  continue;
+                                }
+                              }
+                              if (amount > maxLockAmount) {
+                                maxLockAmount = amount;
+                              }
                             }
-                            continue;
+                            Democracchild = Column(
+                              children: [
+                                InfoItemRow(dic['lock.democrac.total'],
+                                    "${maxLockAmount + maxUnlockAmount}"),
+                                InfoItemRow(dic['lock.vest.unlocking'],
+                                    "$maxLockAmount"),
+                                maxUnlockAmount - maxLockAmount > 0
+                                    ? InfoItemRow(
+                                        dic['lock.vest.claimable'],
+                                        "${maxUnlockAmount - maxLockAmount}",
+                                        labelStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            .copyWith(fontSize: 18),
+                                        contentStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            .copyWith(
+                                                fontSize: 18,
+                                                color: Color(0xFFE46B41),
+                                                fontWeight: FontWeight.w600),
+                                      )
+                                    : Container(),
+                              ],
+                            );
                           }
-                        }
-                        if (amount > maxLockAmount) {
-                          maxLockAmount = amount;
-                        }
-                      }
-                      Democracchild = Column(
-                        children: [
-                          InfoItemRow(dic['lock.democrac.total'],
-                              "${maxLockAmount + maxUnlockAmount}"),
-                          InfoItemRow(
-                              dic['lock.vest.unlocking'], "$maxLockAmount"),
-                          maxUnlockAmount - maxLockAmount > 0
-                              ? InfoItemRow(
-                                  dic['lock.vest.claimable'],
-                                  "${maxUnlockAmount - maxLockAmount}",
-                                  labelStyle: Theme.of(context)
-                                      .textTheme
-                                      .headline5
-                                      .copyWith(fontSize: 18),
-                                  contentStyle: Theme.of(context)
-                                      .textTheme
-                                      .headline5
-                                      .copyWith(
-                                          fontSize: 18,
-                                          color: Color(0xFFE46B41),
-                                          fontWeight: FontWeight.w600),
-                                )
-                              : Container(),
-                        ],
-                      );
-                    }
-                    if (e.use.contains('ormlvest')) {
-                      return buildItem(
-                          title: "Vesting",
-                          child: Column(
-                            children: [
-                              _originalLocked != null
-                                  ? InfoItemRow(dic['lock.vest.original'],
-                                      '${Fmt.priceFloorBigInt(_originalLocked, decimals, lengthMax: 4)}')
-                                  : Container(),
-                              InfoItemRow(dic['lock.vest'],
-                                  '${Fmt.priceFloorBigInt(amt, decimals, lengthMax: 4)}'),
-                              InfoItemRow(
-                                  dic['lock.vest.unlocking'],
-                                  Fmt.priceFloorBigInt(_unlocking, decimals,
-                                      lengthMax: 4)),
-                              _originalLocked != null
-                                  ? InfoItemRow(dic['lock.vest.claimed'],
-                                      '${Fmt.priceFloorBigInt(_originalLocked - amt, decimals, lengthMax: 4)}')
-                                  : Container(),
-                              hasClaim
-                                  ? InfoItemRow(
-                                      dic['lock.vest.claimable'],
-                                      claimableAmount,
-                                      labelStyle: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          .copyWith(fontSize: 18),
-                                      contentStyle: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          .copyWith(
-                                              fontSize: 18,
-                                              color: Color(0xFFE46B41),
-                                              fontWeight: FontWeight.w600),
-                                    )
-                                  : Container()
-                            ],
-                          ),
-                          hasClaim: hasClaim,
-                          onRedeem: () =>
-                              _claimVest(claimableAmount, decimals, symbol));
-                    } else if (Democracchild != null) {
-                      return buildItem(
-                          title: 'Democracy',
-                          child: Democracchild,
-                          hasClaim: maxUnlockAmount - maxLockAmount > 0,
-                          onRedeem: () => _onUnlock(unLockIds));
-                    } else if (e.use.length == 0) {
-                      return buildItem(
-                          title: 'Others',
-                          child: Column(
-                            children: [
-                              ...l
-                                  .map((e) => InfoItemRow(
-                                      dic['lock.${e.use.trim()}'],
-                                      Fmt.priceFloorBigInt(
-                                          BigInt.parse(e.amount.toString()),
-                                          decimals,
-                                          lengthMax: 4)))
-                                  .toList()
-                            ],
-                          ),
-                          hasClaim: false,
-                          onRedeem: null);
-                    } else {
-                      return Container();
-                    }
-                  }).toList(),
-                ),
+                          if (e.use.contains('ormlvest')) {
+                            return buildItem(
+                                title: "Vesting",
+                                child: Column(
+                                  children: [
+                                    _originalLocked != null
+                                        ? InfoItemRow(dic['lock.vest.original'],
+                                            '${Fmt.priceFloorBigInt(_originalLocked, decimals, lengthMax: 4)}')
+                                        : Container(),
+                                    InfoItemRow(dic['lock.vest'],
+                                        '${Fmt.priceFloorBigInt(amt, decimals, lengthMax: 4)}'),
+                                    InfoItemRow(
+                                        dic['lock.vest.unlocking'],
+                                        Fmt.priceFloorBigInt(
+                                            _unlocking, decimals,
+                                            lengthMax: 4)),
+                                    _originalLocked != null
+                                        ? InfoItemRow(dic['lock.vest.claimed'],
+                                            '${Fmt.priceFloorBigInt(_originalLocked - amt, decimals, lengthMax: 4)}')
+                                        : Container(),
+                                    hasClaim
+                                        ? InfoItemRow(
+                                            dic['lock.vest.claimable'],
+                                            claimableAmount,
+                                            labelStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                .copyWith(fontSize: 18),
+                                            contentStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                .copyWith(
+                                                    fontSize: 18,
+                                                    color: Color(0xFFE46B41),
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                          )
+                                        : Container()
+                                  ],
+                                ),
+                                hasClaim: hasClaim,
+                                onRedeem: () => _claimVest(
+                                    claimableAmount, decimals, symbol));
+                          } else if (Democracchild != null) {
+                            return buildItem(
+                                title: 'Democracy',
+                                child: Democracchild,
+                                hasClaim: maxUnlockAmount - maxLockAmount > 0,
+                                onRedeem: () => _onUnlock(unLockIds));
+                          } else if (e.use.length == 0) {
+                            return buildItem(
+                                title: 'Others',
+                                child: Column(
+                                  children: [
+                                    ...l
+                                        .map((e) => InfoItemRow(
+                                            dic['lock.${e.use.trim()}'],
+                                            Fmt.priceFloorBigInt(
+                                                BigInt.parse(
+                                                    e.amount.toString()),
+                                                decimals,
+                                                lengthMax: 4)))
+                                        .toList()
+                                  ],
+                                ),
+                                hasClaim: false,
+                                onRedeem: null);
+                          } else {
+                            return Container();
+                          }
+                        }).toList(),
+                      ),
               ),
             ),
           ],

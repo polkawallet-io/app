@@ -38,25 +38,24 @@ class _GuidePageState extends State<GuidePage> {
                     .map(
                       (e) => Column(
                         children: [
-                          Image.asset('assets/images/public/guide_$e.png'),
-                          Container(
-                              width: double.infinity,
-                              margin: EdgeInsets.only(
-                                  bottom: 24, left: 24, right: 24),
-                              child: Text(
-                                dic['guide.$e'],
-                                textAlign: TextAlign.start,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline1
-                                    .copyWith(fontSize: 28, height: 1.15),
-                              )),
+                          Image.asset('assets/images/public/guide_$e.png')
                         ],
                       ),
                     )
                     .toList(),
               ),
               Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 44, left: 24, right: 24),
+                    child: Text(
+                      dic['guide.$_pageIndex'],
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline1
+                          .copyWith(fontSize: 28, height: 1.15),
+                    )),
                 Padding(
                     padding: EdgeInsets.only(left: 27),
                     child: Row(
@@ -81,7 +80,7 @@ class _GuidePageState extends State<GuidePage> {
                           .toList(),
                     )),
                 Padding(
-                    padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    padding: EdgeInsets.fromLTRB(24, 16, 24, 30),
                     child: Button(
                       title: _pageIndex + 1 >= _pages.length
                           ? dic['guide.enter']
