@@ -17,7 +17,7 @@ class CreateAccountEntryPage extends StatelessWidget {
 
   void _checkJsCodeStarted(BuildContext context) {
     if (plugin.sdk.webView.webViewLoaded) {
-      if (!plugin.sdk.webView.jsCodeStarted) {
+      if (plugin.sdk.webView.jsCodeStarted == 0) {
         showCupertinoDialog(
             context: context,
             builder: (_) {
