@@ -142,6 +142,21 @@ class _AssetPageState extends State<AssetPage> {
   void initState() {
     super.initState();
 
+    WalletApi.getMarketPriceList(
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
+        .then((value) {
+      if (mounted) {
+        setState(() {
+          if (value['data'] != null) {
+            _marketPriceList = value['data']['price'] as List;
+          }
+        });
+      }
+    });
+
+    if (widget.service.plugin.basic.name == para_chain_name_acala ||
+        widget.service.plugin.basic.name == para_chain_name_karura) return;
+
     _scrollController = ScrollController();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
@@ -156,18 +171,6 @@ class _AssetPageState extends State<AssetPage> {
       _refreshData();
       getRate();
     });
-
-    WalletApi.getMarketPriceList(
-            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
-        .then((value) {
-      if (mounted) {
-        setState(() {
-          if (value['data'] != null) {
-            _marketPriceList = value['data']['price'] as List;
-          }
-        });
-      }
-    });
   }
 
   Future<void> getRate() async {
@@ -179,7 +182,7 @@ class _AssetPageState extends State<AssetPage> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController?.dispose();
     super.dispose();
   }
 
@@ -291,6 +294,9 @@ class _AssetPageState extends State<AssetPage> {
       body: Observer(
         builder: (_) {
           BalanceData balancesInfo = widget.service.plugin.balances.native;
+          final txs = widget.service.plugin.getNativeTokenTransfers(
+              address: widget.service.keyring.current.address,
+              transferType: _tab);
           return Column(
             children: <Widget>[
               BalanceCard(
@@ -447,15 +453,17 @@ class _AssetPageState extends State<AssetPage> {
               Expanded(
                 child: Container(
                   color: Theme.of(context).cardColor,
-                  child: RefreshIndicator(
-                    key: _refreshKey,
-                    onRefresh: _refreshData,
-                    child: ListView(
-                      physics: BouncingScrollPhysics(),
-                      controller: _scrollController,
-                      children: [..._buildTxList()],
-                    ),
-                  ),
+                  child: txs == null
+                      ? RefreshIndicator(
+                          key: _refreshKey,
+                          onRefresh: _refreshData,
+                          child: ListView(
+                            physics: BouncingScrollPhysics(),
+                            controller: _scrollController,
+                            children: [..._buildTxList()],
+                          ),
+                        )
+                      : txs,
                 ),
               )
             ],
