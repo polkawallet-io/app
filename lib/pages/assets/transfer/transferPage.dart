@@ -626,11 +626,9 @@ class _TransferPageState extends State<TransferPage> {
       if (args?.address != null) {
         _updateAccountTo(args.address);
       } else {
-        if (widget.service.keyring.allWithContacts.length > 0) {
-          setState(() {
-            _accountTo = widget.service.keyring.allWithContacts[0];
-          });
-        }
+        setState(() {
+          _accountTo = widget.service.keyring.current;
+        });
       }
 
       final xcmEnabledChains = await widget.service.store.settings
@@ -644,6 +642,7 @@ class _TransferPageState extends State<TransferPage> {
           if (chainToIndex > -1) {
             _chainTo = widget.service.allPlugins
                 .firstWhere((e) => e.basic.name == args.chainTo);
+            _accountTo = widget.service.keyring.current;
             return;
           }
         }
