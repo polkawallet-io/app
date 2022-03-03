@@ -934,6 +934,15 @@ packages:
       url: "https://github.com/chainx-org/polkawallet_plugin_chainx.git"
     source: git
     version: "0.0.2"
+  polkawallet_plugin_dbc:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "162e1e45c95f1a12011dfe687343a85a418cf2fd"
+      resolved-ref: "162e1e45c95f1a12011dfe687343a85a418cf2fd"
+      url: "https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC"
+    source: git
+    version: "0.3.6"
   polkawallet_plugin_edgeware:
     dependency: "direct main"
     description:

@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
 import 'package:polkawallet_plugin_chainx/polkawallet_plugin_chainx.dart';
+import 'package:polkawallet_plugin_dbc/polkawallet_plugin_dbc.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
@@ -32,6 +33,7 @@ void main() {
       PluginChainX(),
       PluginEdgeware(),
       // PluginLaminar(),
+      PluginDBC(),
     ];
 
     runApp(WalletApp(

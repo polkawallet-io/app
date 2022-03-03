@@ -74,6 +74,10 @@ dependencies:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
       ref: 11be316dc77b721d41ed6774fbf8d444a5a8eaa9
+  polkawallet_plugin_dbc:
+    git:
+      url: https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC
+      ref: 162e1e45c95f1a12011dfe687343a85a418cf2fd
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

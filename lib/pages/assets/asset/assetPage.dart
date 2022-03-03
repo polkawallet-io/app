@@ -252,8 +252,10 @@ class _AssetPageState extends State<AssetPage> {
         ];
       case relay_chain_name_dot:
         return [Color(0xFFDD1878), Color(0xFF72AEFF)];
-      case "edgeware":
+      case chain_name_edgeware:
         return [Color(0xFF21C1D5), Color(0xFF057AA9)];
+      case chain_name_dbc:
+        return [Color(0xFF5BC1D3), Color(0xFF374BD4)];
       default:
         return [Theme.of(context).primaryColor, Theme.of(context).hoverColor];
     }

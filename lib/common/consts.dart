@@ -27,6 +27,9 @@ const para_chain_name_statemint = 'statemint';
 const para_chain_name_karura = 'karura';
 const para_chain_name_acala = 'acala';
 const para_chain_name_bifrost = 'bifrost';
+const chain_name_chainx = 'chainx';
+const chain_name_edgeware = 'edgeware';
+const chain_name_dbc = 'dbc';
 const plugin_github_links = {
   relay_chain_name_ksm: 'https://github.com/polkawallet-io/app/issues',
   relay_chain_name_dot: 'https://github.com/polkawallet-io/app/issues',
@@ -38,12 +41,21 @@ const plugin_github_links = {
       'https://github.com/AcalaNetwork/polkawallet_plugin_statemine/issues',
   'laminar-tc3':
       'https://github.com/polkawallet-io/polkawallet_plugin_laminar/issues',
-  'chainx': 'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
-  'edgeware': 'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
+  chain_name_chainx:
+      'https://github.com/chainx-org/polkawallet_plugin_chainx/issues',
+  chain_name_edgeware:
+      'https://github.com/remzrn/polkawallet_plugin_edgeware/issues',
   para_chain_name_bifrost:
       'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
+  chain_name_dbc:
+      'https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC/issues',
 };
-const plugin_from_community = ['chainx', 'edgeware', para_chain_name_bifrost];
+const plugin_from_community = [
+  chain_name_chainx,
+  chain_name_edgeware,
+  para_chain_name_bifrost,
+  chain_name_dbc
+];
 
 const xcm_base_weight = 1000000000;
 const xcm_dest_weight_ksm = 3 * xcm_base_weight;
