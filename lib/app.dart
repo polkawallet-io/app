@@ -552,13 +552,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           ) >
           service.plugin.basic.jsCodeVersion;
 
-      await service.plugin.beforeStart(
-        _keyring,
-        jsCode: useLocalJS
-            ? WalletApi.getPolkadotJSCode(
-                _store.storage, service.plugin.basic.name)
-            : null,
-      );
+      await service.plugin.beforeStart(_keyring,
+          jsCode: useLocalJS
+              ? WalletApi.getPolkadotJSCode(
+                  _store.storage, service.plugin.basic.name)
+              : null, socketDisconnectedAction: () {
+        _dropsServiceCancel();
+        _restartWebConnect(service);
+      });
 
       if (_keyring.keyPairs.length > 0) {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);

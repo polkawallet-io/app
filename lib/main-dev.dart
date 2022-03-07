@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+import 'package:polkawallet_plugin_dbc/polkawallet_plugin_dbc.dart';
 
 void main() async {
   FlutterBugly.postCatchedException(() async {
@@ -32,6 +33,7 @@ void main() async {
       // PluginChainX(),
       PluginEdgeware(),
       // PluginLaminar(),
+      PluginDBC(),
     ];
 
     runApp(WalletApp(
