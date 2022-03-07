@@ -367,13 +367,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
-    await network.beforeStart(
-      _keyring,
-      webView: _service?.plugin?.sdk?.webView,
-      jsCode: useLocalJS
-          ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
-          : null,
-    );
+    await network.beforeStart(_keyring,
+        webView: _service?.plugin?.sdk?.webView,
+        jsCode: useLocalJS
+            ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
+            : null, socketDisconnectedAction: () {
+      _dropsServiceCancel();
+      _restartWebConnect(service);
+    });
 
     setState(() {
       _service = service;
