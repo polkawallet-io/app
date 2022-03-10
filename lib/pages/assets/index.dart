@@ -679,7 +679,18 @@ class _AssetsState extends State<AssetsPage> {
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens.toList();
         final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
+        final defaultTokens = widget.service.plugin.defaultTokens;
 
+        // filter tokens by plugin.defaultTokens
+        if (defaultTokens.length > 0) {
+          tokens.retainWhere((e) =>
+              e.symbol.contains('-') ||
+              defaultTokens.indexOf(e.tokenNameId) > -1);
+        }
+        // remove empty LP tokens
+        if (tokens.length > 0) {
+          tokens.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
+        }
         // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
         if (customTokensConfig.keys.length > 0) {
@@ -691,6 +702,14 @@ class _AssetsState extends State<AssetsPage> {
               tokens.add(e);
             }
           });
+        }
+        // sort the list
+        if (tokens.length > 0) {
+          tokens.sort((a, b) => a.symbol.contains('-')
+              ? 1
+              : b.symbol.contains('-')
+                  ? -1
+                  : a.symbol.compareTo(b.symbol));
         }
 
         final extraTokens = widget.service.plugin.balances.extraTokens;
@@ -972,7 +991,7 @@ class _AssetsState extends State<AssetsPage> {
                                         widget.service.plugin.basic.name ==
                                                 para_chain_name_statemine
                                             ? i.id
-                                            : i.symbol.toUpperCase(),
+                                            : i.symbol,
                                         widget.service.plugin.tokenIcons,
                                         symbol: i.symbol,
                                       ),
