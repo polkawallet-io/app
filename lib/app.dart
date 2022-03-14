@@ -82,6 +82,8 @@ import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
 
+import 'package:polkawallet_ui/utils/index.dart';
+
 const get_storage_container = 'configuration';
 
 bool _isInitialUriHandled = false;
@@ -372,8 +374,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         jsCode: useLocalJS
             ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
             : null, socketDisconnectedAction: () {
-      _dropsServiceCancel();
-      _restartWebConnect(service);
+      UI.throttle(() {
+        _dropsServiceCancel();
+        _restartWebConnect(service, node: node);
+      });
     });
 
     setState(() {
@@ -558,8 +562,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               ? WalletApi.getPolkadotJSCode(
                   _store.storage, service.plugin.basic.name)
               : null, socketDisconnectedAction: () {
-        _dropsServiceCancel();
-        _restartWebConnect(service);
+        UI.throttle(() {
+          _dropsServiceCancel();
+          _restartWebConnect(service);
+        });
       });
 
       if (_keyring.keyPairs.length > 0) {
