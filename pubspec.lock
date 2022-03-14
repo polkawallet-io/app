@@ -393,22 +393,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_bugly:
-    dependency: "direct main"
-    description:
-      name: flutter_bugly
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.3"
-  flutter_bugly_play:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: da653ff78e269d011d1224e368e70703794601a1
-      resolved-ref: da653ff78e269d011d1224e368e70703794601a1
-      url: "https://github.com/polkawallet-io/flutter_bugly.git"
-    source: git
-    version: "0.4.3"
   flutter_inappwebview:
     dependency: transitive
     description:

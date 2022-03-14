@@ -82,11 +82,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
-  flutter_bugly: ^0.4.3
-  flutter_bugly_play:
-    git:
-      url: https://github.com/polkawallet-io/flutter_bugly.git
-      ref: da653ff78e269d011d1224e368e70703794601a1
+  # flutter_bugly: ^0.4.3
+  # flutter_bugly_play:
+  #   git:
+  #     url: https://github.com/polkawallet-io/flutter_bugly.git
+  #     ref: da653ff78e269d011d1224e368e70703794601a1
   flutter_mobx: ^2.0.0
   flutter_svg: ^0.23.0+1
   flutter_swiper: ^1.1.6
