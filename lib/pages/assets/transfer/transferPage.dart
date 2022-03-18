@@ -213,10 +213,6 @@ class _TransferPageState extends State<TransferPage> {
 
         List paramsX;
         if (isFromXTokensParaChain && isToParaChain) {
-          final isV2XTokens = await widget.service.plugin.sdk.webView
-              .evalJavascript(
-                  'api.createType(api.tx.$txModule.$txCall.meta.args[2].toJSON()["type"]).defKeys.includes("V1")',
-                  wrapPromise: false);
           final dest = {
             'parents': 1,
             'interior': {
@@ -234,7 +230,7 @@ class _TransferPageState extends State<TransferPage> {
           paramsX = [
             {'Token': symbol},
             amount,
-            isV2XTokens ? {'V1': dest} : dest,
+            {'V1': dest},
             xcm_dest_weight_bifrost
           ];
         } else {

@@ -124,6 +124,25 @@ class _AssetsState extends State<AssetsPage> {
       }
 
       if (data.type == QRCodeResultType.address) {
+        if (widget.service.plugin.basic.name == para_chain_name_karura) {
+          final symbol =
+              (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+          final decimals =
+              (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+          final balance = widget.service.plugin.balances.native;
+          final token = TokenBalanceData(
+            symbol: symbol,
+            tokenNameId: symbol,
+            currencyId: {'Token': symbol},
+            decimals: decimals,
+            amount: balance.freeBalance,
+            locked: balance.lockedBalance,
+            reserved: balance.reservedBalance,
+          );
+          Navigator.of(context)
+              .pushNamed('/assets/token/transfer', arguments: token);
+          return;
+        }
         Navigator.of(context).pushNamed(
           TransferPage.route,
           arguments: TransferPageParams(address: data.address.address),

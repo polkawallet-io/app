@@ -16,6 +16,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
@@ -333,6 +334,30 @@ class _AssetPageState extends State<AssetPage> {
                             ),
                             text: dic['v3.send'],
                             onPressed: () {
+                              if (widget.service.plugin.basic.name ==
+                                  para_chain_name_karura) {
+                                final symbol = (widget.service.plugin
+                                        .networkState.tokenSymbol ??
+                                    [''])[0];
+                                final decimals = (widget.service.plugin
+                                        .networkState.tokenDecimals ??
+                                    [12])[0];
+                                final balance =
+                                    widget.service.plugin.balances.native;
+                                final token = TokenBalanceData(
+                                  symbol: symbol,
+                                  tokenNameId: symbol,
+                                  currencyId: {'Token': symbol},
+                                  decimals: decimals,
+                                  amount: balance.freeBalance,
+                                  locked: balance.lockedBalance,
+                                  reserved: balance.reservedBalance,
+                                );
+                                Navigator.of(context).pushNamed(
+                                    '/assets/token/transfer',
+                                    arguments: token);
+                                return;
+                              }
                               Navigator.pushNamed(context, TransferPage.route);
                             },
                           ),
