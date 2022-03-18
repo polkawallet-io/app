@@ -124,20 +124,18 @@ class AppUI {
                 }
                 if (Platform.isIOS) {
                   // go to ios download page
-                  UI.launchURL(
-                      'https://apps.apple.com/hk/app/polkawallet/id1520301768');
+                  UI.launchURL(versions[platform]['store-url']);
                 } else if (Platform.isAndroid) {
                   if (buildTarget == BuildTargets.playStore) {
                     // go to google play page
-                    UI.launchURL(
-                        'https://play.google.com/store/apps/details?id=io.polkawallet.www.polka_wallet');
+                    UI.launchURL(versions[platform]['store-url']);
                     return;
                   }
                   // download apk
                   // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
                   try {
-                    String url = versions['android']['url'];
-                    UpdateApp.updateApp(url: url, appleId: "1520301768");
+                    UpdateApp.updateApp(
+                        url: versions['android']['url'], appleId: "1520301768");
                     showCupertinoDialog(
                         context: context,
                         builder: (BuildContext ctx) {
