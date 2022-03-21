@@ -1111,15 +1111,8 @@ class TokenItem extends StatelessWidget {
                   child: Text(item.symbol.substring(0, 2)),
                 ),
           ),
-          // todo: fix me
-          // we should use token name here,
-          // for old cache data, it use token symbol as token name.
-          // title: Text(item.name),
           title: Text(
-            (item.name ?? '').toUpperCase() == item.symbol.toUpperCase() ||
-                    (item.name ?? '').contains('-')
-                ? item.name
-                : item.symbol,
+            item.name,
             style: Theme.of(context)
                 .textTheme
                 .headline5
