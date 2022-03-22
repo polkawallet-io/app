@@ -432,7 +432,7 @@ class _NetworkItemActive extends StatelessWidget {
             child: Image.asset(
               "assets/images/selectWallet_select_bg.png",
               fit: BoxFit.contain,
-              width: 52.w,
+              width: 51.w,
             )),
         Container(
             padding: EdgeInsets.all(12),
