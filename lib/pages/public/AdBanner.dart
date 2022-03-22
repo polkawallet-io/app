@@ -8,7 +8,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
