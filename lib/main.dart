@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_dbc/polkawallet_plugin_dbc.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
+import 'package:polkawallet_plugin_robonomics/polkawallet_plugin_robonomics.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 
 void main() async {
@@ -34,6 +35,7 @@ void main() async {
     PluginEdgeware(),
     // PluginLaminar(),
     PluginDBC(),
+    PluginRobonomics(),
   ];
 
   runApp(WalletApp(

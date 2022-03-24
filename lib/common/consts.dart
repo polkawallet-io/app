@@ -30,6 +30,7 @@ const para_chain_name_bifrost = 'bifrost';
 const chain_name_chainx = 'chainx';
 const chain_name_edgeware = 'edgeware';
 const chain_name_dbc = 'dbc';
+const chain_name_robonomics = 'Robonomics';
 const plugin_github_links = {
   relay_chain_name_ksm: 'https://github.com/polkawallet-io/app/issues',
   relay_chain_name_dot: 'https://github.com/polkawallet-io/app/issues',
@@ -49,12 +50,15 @@ const plugin_github_links = {
       'https://github.com/bifrost-finance/polkawallet_plugin_bifrost/issues',
   chain_name_dbc:
       'https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC/issues',
+  chain_name_robonomics:
+      'https://github.com/Multi-Agent-io/polkawallet_plugin_robonomics/issues',
 };
 const plugin_from_community = [
   chain_name_chainx,
   chain_name_edgeware,
   para_chain_name_bifrost,
-  chain_name_dbc
+  chain_name_dbc,
+  chain_name_robonomics
 ];
 
 const xcm_base_weight = 1000000000;

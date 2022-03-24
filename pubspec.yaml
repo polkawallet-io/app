@@ -45,19 +45,19 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 8a6528d6c174cde5f9408c2212572e9288f5eec9
+      ref: 37ea059b990e6771926da7e0148da417d376a4fd
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 4e9f4f714666a5e6214fff9e5a89df03d62b756b
+      ref: 61dc26bc87986272c1077bf62cec8cda19e32e06
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: 5db24a99a47728bac59400f10ce0a426ffd71174
+      ref: 70e236b5d2f1b73ed868b390171d43fbc3050fa0
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
-      ref: 7d8cf727c5eb78d97205e53fe2ade55c513754a9
+      ref: 920084c88546c0eb6f66a2dfa290a12c04928767
   polkawallet_plugin_laminar:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
@@ -77,7 +77,11 @@ dependencies:
   polkawallet_plugin_dbc:
     git:
       url: https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC
-      ref: 162e1e45c95f1a12011dfe687343a85a418cf2fd
+      ref: 1cfd68ebbee73f2cf211dedf5eaf9332e8399a8d
+  polkawallet_plugin_robonomics:
+    git:
+      url: https://github.com/Multi-Agent-io/polkawallet_plugin_robonomics.git
+      ref: 480a3872cc684b72f3d1dad9e05871ea0dd82f04
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
