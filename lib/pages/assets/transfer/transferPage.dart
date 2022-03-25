@@ -692,9 +692,11 @@ class _TransferPageState extends State<TransferPage> {
             widget.service.plugin.basic.name == relay_chain_name_polkadot &&
                 _chainTo?.basic?.name == para_chain_name_acala;
 
-        final existDeposit = Fmt.balanceInt(widget
-            .service.plugin.networkConst['balances']['existentialDeposit']
-            .toString());
+        final existDeposit = Fmt.balanceInt(
+            ((widget.service.plugin.networkConst['balances'] ??
+                        {})['existentialDeposit'] ??
+                    0)
+                .toString());
         final existAmount = _getExistAmount(notTransferable, existDeposit);
 
         final destExistDeposit = isCrossChain
