@@ -906,7 +906,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.4"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -929,8 +929,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "162e1e45c95f1a12011dfe687343a85a418cf2fd"
-      resolved-ref: "162e1e45c95f1a12011dfe687343a85a418cf2fd"
+      ref: "1cfd68ebbee73f2cf211dedf5eaf9332e8399a8d"
+      resolved-ref: "1cfd68ebbee73f2cf211dedf5eaf9332e8399a8d"
       url: "https://github.com/DeepBrainChain/PolkaWallet_Plugin_DBC"
     source: git
     version: "0.3.6"
@@ -949,7 +949,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.4"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
@@ -966,6 +966,15 @@ packages:
       url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
     source: git
     version: "0.2.8"
+  polkawallet_plugin_robonomics:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "480a3872cc684b72f3d1dad9e05871ea0dd82f04"
+      resolved-ref: "480a3872cc684b72f3d1dad9e05871ea0dd82f04"
+      url: "https://github.com/Multi-Agent-io/polkawallet_plugin_robonomics.git"
+    source: git
+    version: "0.3.7"
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
