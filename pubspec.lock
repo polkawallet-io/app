@@ -956,7 +956,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_kusama"
       relative: true
     source: path
-    version: "0.3.6"
+    version: "0.4.4"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
@@ -981,14 +981,14 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_statemine"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.4.4"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
-    version: "0.4.3"
+    version: "0.4.4"
   polkawallet_ui:
     dependency: "direct overridden"
     description:

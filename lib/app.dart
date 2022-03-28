@@ -74,6 +74,7 @@ import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'pages/account/import/importAccountCreatePage.dart';
@@ -81,8 +82,6 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
-
-import 'package:polkawallet_ui/utils/index.dart';
 
 const get_storage_container = 'configuration';
 
@@ -268,7 +267,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
-    // _store.settings.getXcmEnabledChains(service.plugin.basic.name);
+    // query black list after plugin initiated
+    if (_service.store.account.blackList.length == 0) {
+      service.account.queryBlackList();
+    }
 
     setState(() {
       _connectedNode = null;
@@ -546,9 +548,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       } else {
         _changeLang(Localizations.localeOf(context).toString());
       }
-
-      // _checkUpdate(context);
-      // await _checkJSCodeUpdate(context, service.plugin, needReload: false);
 
       final useLocalJS = WalletApi.getPolkadotJSVersion(
             _store.storage,

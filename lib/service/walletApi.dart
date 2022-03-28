@@ -233,4 +233,19 @@ class WalletApi {
     }
     return {};
   }
+
+  static Future<Map> getAddressesBlackList() async {
+    try {
+      Response res =
+          await get(Uri.parse('https://polkadot.js.org/phishing/address.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(res.body) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
 }

@@ -63,7 +63,23 @@ class _TransferPageState extends State<TransferPage> {
 
   bool _submitting = false;
 
+  Future<String> _checkBlackList(KeyPairData acc) async {
+    final addresses = await widget.service.plugin.sdk.api.account
+        .decodeAddress([acc.address]);
+    if (addresses != null) {
+      final pubKey = addresses.keys.toList()[0];
+      if (widget.service.store.account.blackList.indexOf(pubKey) > -1) {
+        return I18n.of(context)
+            .getDic(i18n_full_dic_app, 'account')['bad.scam'];
+      }
+    }
+    return null;
+  }
+
   Future<String> _checkAccountTo(KeyPairData acc) async {
+    final blackListCheck = await _checkBlackList(acc);
+    if (blackListCheck != null) return blackListCheck;
+
     if (widget.service.keyring.allAccounts
             .indexWhere((e) => e.pubKey == acc.pubKey) >=
         0) {

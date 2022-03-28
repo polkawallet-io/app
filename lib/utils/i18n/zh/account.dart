@@ -74,6 +74,7 @@ const Map<String, String> zhAccount = {
   'plugin.note': '功能插件由 ',
   'plugin.team': ' 团队维护。',
   'plugin.disable': '该插件与当前 App 版本不兼容，请等待插件修复。',
+  'bad.scam': '诈骗地址',
   'bad.warn': '警告!!!',
   'bad.warn.info': '是一个助记词为【null】的公共账户，请将其删除并创建新的账户使用.',
   'biometric.msg': "由于该账户超过7日未使用过指纹/面容ID，需要输入密码进行解锁。",

@@ -34,6 +34,8 @@ abstract class _AccountStore with Store {
   @observable
   ObservableList<WCPairedData> wcSessions = ObservableList<WCPairedData>();
 
+  List<String> blackList = [];
+
   @action
   void setNewAccount(String name, String password) {
     newAccount.name = name;
@@ -100,6 +102,10 @@ abstract class _AccountStore with Store {
   @action
   void deleteWCSession(WCPairedData session) {
     wcSessions.removeWhere((e) => e.topic == session.topic);
+  }
+
+  void setBlackList(List<String> data) {
+    blackList = data;
   }
 }
 
