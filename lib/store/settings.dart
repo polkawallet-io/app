@@ -1,4 +1,5 @@
 import 'package:app/service/walletApi.dart';
+import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 
@@ -17,6 +18,7 @@ abstract class _SettingsStore with Store {
   final String localStorageNetworkKey = 'network';
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
+  final String localStorageMessageKey = 'message';
 
   @observable
   String localeCode = '';
@@ -37,6 +39,101 @@ abstract class _SettingsStore with Store {
   Map _xcmEnabledChains;
 
   double _rate = -1;
+
+  @observable
+  List<MessageData> communityMessages = [];
+
+  @observable
+  List<MessageData> systemMessages = [];
+
+  @observable
+  int communityUnreadNumber = 0;
+
+  @observable
+  int systemUnreadNumber = 0;
+
+  Future<void> initMessage() async {
+    final data = await WalletApi.getMessage();
+    final stored = storage.read(localStorageMessageKey);
+    if (data['community'].length > 0) {
+      setCommunityMessages(data['community']
+          .map((element) => MessageData.fromJson(element))
+          .toList());
+    }
+    if (data['system'].length > 0) {
+      setSystemMessages(data['system']
+          .map((element) => MessageData.fromJson(element))
+          .toList());
+    }
+    if (stored != null) {
+      final ids = (stored as String).split("-");
+      var communityUnreadNumber = 0;
+      communityMessages.forEach((element) {
+        if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+          communityUnreadNumber++;
+        }
+      });
+      setCommunityUnreadNumber(communityUnreadNumber);
+
+      var systemUnreadNumber = 0;
+      systemMessages.forEach((element) {
+        if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+          systemUnreadNumber++;
+        }
+      });
+      setSystemUnreadNumber(systemUnreadNumber);
+    } else {
+      setCommunityUnreadNumber(communityMessages.length);
+      setSystemUnreadNumber(systemMessages.length);
+    }
+  }
+
+  Future<void> readMessage(int id) async {
+    var stored = storage.read(localStorageMessageKey);
+    if (stored != null) {
+      stored = "$stored-$id";
+    } else {
+      stored = "$id";
+    }
+    storage.write(localStorageMessageKey, stored);
+
+    final ids = (stored as String).split("-");
+    var communityUnreadNumber = 0;
+    communityMessages.forEach((element) {
+      if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+        communityUnreadNumber++;
+      }
+    });
+    setCommunityUnreadNumber(communityUnreadNumber);
+
+    var systemUnreadNumber = 0;
+    systemMessages.forEach((element) {
+      if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+        systemUnreadNumber++;
+      }
+    });
+    setSystemUnreadNumber(systemUnreadNumber);
+  }
+
+  @action
+  Future<void> setCommunityMessages(List<MessageData> data) async {
+    communityMessages = data;
+  }
+
+  @action
+  Future<void> setSystemMessages(List<MessageData> data) async {
+    systemMessages = data;
+  }
+
+  @action
+  Future<void> setCommunityUnreadNumber(int number) async {
+    communityUnreadNumber = number;
+  }
+
+  @action
+  Future<void> setSystemUnreadNumber(int number) async {
+    systemUnreadNumber = number;
+  }
 
   Future<double> getRate() async {
     if (_rate < 0) {
@@ -71,6 +168,7 @@ abstract class _SettingsStore with Store {
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
+      initMessage(),
     ]);
   }
 

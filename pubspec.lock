@@ -906,7 +906,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.4"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -949,7 +949,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.4"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:

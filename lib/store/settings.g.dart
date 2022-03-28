@@ -39,20 +39,104 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
-  String get network {
-    return super.network;
+  final _$communityMessagesAtom =
+      Atom(name: '_SettingsStore.communityMessages');
+
+  @override
+  List<MessageData> get communityMessages {
+    _$communityMessagesAtom.reportRead();
+    return super.communityMessages;
   }
 
-  set network(String value) {
-    super.network = value;
+  @override
+  set communityMessages(List<MessageData> value) {
+    _$communityMessagesAtom.reportWrite(value, super.communityMessages, () {
+      super.communityMessages = value;
+    });
   }
 
-  Map<dynamic, dynamic> get adBanners {
-    return super.adBanners;
+  final _$systemMessagesAtom = Atom(name: '_SettingsStore.systemMessages');
+
+  @override
+  List<MessageData> get systemMessages {
+    _$systemMessagesAtom.reportRead();
+    return super.systemMessages;
   }
 
-  set adBanners(Map<dynamic, dynamic> value) {
-    super.adBanners = value;
+  @override
+  set systemMessages(List<MessageData> value) {
+    _$systemMessagesAtom.reportWrite(value, super.systemMessages, () {
+      super.systemMessages = value;
+    });
+  }
+
+  final _$communityUnreadNumberAtom =
+      Atom(name: '_SettingsStore.communityUnreadNumber');
+
+  @override
+  int get communityUnreadNumber {
+    _$communityUnreadNumberAtom.reportRead();
+    return super.communityUnreadNumber;
+  }
+
+  @override
+  set communityUnreadNumber(int value) {
+    _$communityUnreadNumberAtom.reportWrite(value, super.communityUnreadNumber,
+        () {
+      super.communityUnreadNumber = value;
+    });
+  }
+
+  final _$systemUnreadNumberAtom =
+      Atom(name: '_SettingsStore.systemUnreadNumber');
+
+  @override
+  int get systemUnreadNumber {
+    _$systemUnreadNumberAtom.reportRead();
+    return super.systemUnreadNumber;
+  }
+
+  @override
+  set systemUnreadNumber(int value) {
+    _$systemUnreadNumberAtom.reportWrite(value, super.systemUnreadNumber, () {
+      super.systemUnreadNumber = value;
+    });
+  }
+
+  final _$setCommunityMessagesAsyncAction =
+      AsyncAction('_SettingsStore.setCommunityMessages');
+
+  @override
+  Future<void> setCommunityMessages(List<MessageData> data) {
+    return _$setCommunityMessagesAsyncAction
+        .run(() => super.setCommunityMessages(data));
+  }
+
+  final _$setSystemMessagesAsyncAction =
+      AsyncAction('_SettingsStore.setSystemMessages');
+
+  @override
+  Future<void> setSystemMessages(List<MessageData> data) {
+    return _$setSystemMessagesAsyncAction
+        .run(() => super.setSystemMessages(data));
+  }
+
+  final _$setCommunityUnreadNumberAsyncAction =
+      AsyncAction('_SettingsStore.setCommunityUnreadNumber');
+
+  @override
+  Future<void> setCommunityUnreadNumber(int number) {
+    return _$setCommunityUnreadNumberAsyncAction
+        .run(() => super.setCommunityUnreadNumber(number));
+  }
+
+  final _$setSystemUnreadNumberAsyncAction =
+      AsyncAction('_SettingsStore.setSystemUnreadNumber');
+
+  @override
+  Future<void> setSystemUnreadNumber(int number) {
+    return _$setSystemUnreadNumberAsyncAction
+        .run(() => super.setSystemUnreadNumber(number));
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
@@ -81,9 +165,9 @@ mixin _$SettingsStore on _SettingsStore, Store {
       AsyncAction('_SettingsStore.setIsHideBalance');
 
   @override
-  Future<void> setIsHideBalance(bool code) {
+  Future<void> setIsHideBalance(bool hide) {
     return _$setIsHideBalanceAsyncAction
-        .run(() => super.setIsHideBalance(code));
+        .run(() => super.setIsHideBalance(hide));
   }
 
   final _$loadIsHideBalanceAsyncAction =
@@ -94,29 +178,15 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadIsHideBalanceAsyncAction.run(() => super.loadIsHideBalance());
   }
 
-  Future<void> loadNetwork() {
-    return super.loadNetwork();
-  }
-
-  final _$_SettingsStoreActionController =
-      ActionController(name: '_SettingsStore');
-
-  void setNetwork(String value) {
-    return super.setNetwork(value);
-  }
-
-  void setAdBannerState(Map<dynamic, dynamic> value) {
-    return super.setAdBannerState(value);
-  }
-
   @override
   String toString() {
     return '''
 localeCode: ${localeCode},
-network: ${network},
-priceCurrency: ${priceCurrency},
 isHideBalance: ${isHideBalance},
-adBannerState: ${adBanners}
+communityMessages: ${communityMessages},
+systemMessages: ${systemMessages},
+communityUnreadNumber: ${communityUnreadNumber},
+systemUnreadNumber: ${systemUnreadNumber}
     ''';
   }
 }

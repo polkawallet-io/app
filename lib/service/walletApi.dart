@@ -233,4 +233,18 @@ class WalletApi {
     }
     return {};
   }
+
+  static Future<Map> getMessage() async {
+    try {
+      Response res = await get(getUrl(_configEndpoint, '/messageJson.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(res.body) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
 }
