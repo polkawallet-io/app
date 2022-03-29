@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
-import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -213,17 +212,5 @@ class ApiAccount {
       queryAddressIcons(res.friends);
     }
     return res;
-  }
-
-  Future<void> queryBlackList() async {
-    final data = await WalletApi.getAddressesBlackList();
-    if (data != null) {
-      final List<String> list = [];
-      data.values.forEach((e) {
-        list.addAll(List<String>.from(e));
-      });
-      final pubKeys = await apiRoot.plugin.sdk.api.account.decodeAddress(list);
-      apiRoot.store.account.setBlackList(pubKeys.keys.toList());
-    }
   }
 }

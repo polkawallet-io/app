@@ -68,7 +68,7 @@ class _TransferPageState extends State<TransferPage> {
         .decodeAddress([acc.address]);
     if (addresses != null) {
       final pubKey = addresses.keys.toList()[0];
-      if (widget.service.store.account.blackList.indexOf(pubKey) > -1) {
+      if (widget.service.plugin.sdk.blackList.indexOf(pubKey) > -1) {
         return I18n.of(context)
             .getDic(i18n_full_dic_app, 'account')['bad.scam'];
       }

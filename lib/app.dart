@@ -267,11 +267,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     // _initWalletConnect();
 
-    // query black list after plugin initiated
-    if (_service.store.account.blackList.length == 0) {
-      service.account.queryBlackList();
-    }
-
     setState(() {
       _connectedNode = null;
     });
@@ -498,24 +493,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
     }
   }
-
-  // Future<void> _showGuide(BuildContext context, GetStorage storage) async {
-  //   // todo: remove this after crowd loan
-  //   // final karStarted = await WalletApi.getKarCrowdLoanStarted();
-  //   // if (karStarted != null && karStarted['started']) {
-  //   //   Navigator.of(context).pushNamed(AdPage.route);
-  //   //   return;
-  //   // }
-
-  //   final storeKey = '${show_guide_status_key}_${await Utils.getAppVersion()}';
-  //   final showGuideStatus = storage.read(storeKey);
-  //   if (showGuideStatus == null) {
-  //     final res = await Navigator.of(context).pushNamed(GuidePage.route);
-  //     if (res != null) {
-  //       storage.write(storeKey, true);
-  //     }
-  //   }
-  // }
 
   Future<int> _startApp(BuildContext context) async {
     if (_keyring == null) {
