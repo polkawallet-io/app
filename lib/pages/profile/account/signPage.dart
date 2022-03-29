@@ -119,7 +119,7 @@ class _SignMessagePageState extends State<SignMessagePage>
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 16.w),
                 child: MainTabBar(
-                  tabs: [dic['sign.sign'], dic['sign.verify']],
+                  tabs: {dic['sign.sign']: false, dic['sign.verify']: false},
                   activeTab: _tab,
                   onTap: (i) {
                     setState(() {

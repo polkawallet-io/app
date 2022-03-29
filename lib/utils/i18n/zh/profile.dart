@@ -109,4 +109,8 @@ const Map<String, String> zhProfile = {
   'recovery.cancel': '取消账户代理',
   'recovery.recovered': '已恢复账户',
   'recovery.proxy': '代理账户',
+  'message': '消息',
+  'message.readAll': '阅读所有',
+  'message.community': '社区推送',
+  'message.system': '系统消息'
 };

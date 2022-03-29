@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
@@ -54,22 +56,27 @@ abstract class _SettingsStore with Store {
 
   Future<void> initMessage() async {
     final data = await WalletApi.getMessage();
+    if (data == null) {
+      return;
+    }
     final stored = storage.read(localStorageMessageKey);
     if (data['community'].length > 0) {
-      setCommunityMessages(data['community']
+      setCommunityMessages(List.of(data['community'])
           .map((element) => MessageData.fromJson(element))
           .toList());
     }
     if (data['system'].length > 0) {
-      setSystemMessages(data['system']
+      setSystemMessages(List.of(data['system'])
           .map((element) => MessageData.fromJson(element))
           .toList());
     }
     if (stored != null) {
-      final ids = (stored as String).split("-");
+      Map<String, String> storedMap =
+          new Map<String, String>.from(json.decode(stored));
+      print(storedMap.toString());
       var communityUnreadNumber = 0;
       communityMessages.forEach((element) {
-        if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+        if (storedMap["${element.id}"] == null) {
           communityUnreadNumber++;
         }
       });
@@ -77,7 +84,7 @@ abstract class _SettingsStore with Store {
 
       var systemUnreadNumber = 0;
       systemMessages.forEach((element) {
-        if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+        if (storedMap["${element.id}"] == null) {
           systemUnreadNumber++;
         }
       });
@@ -88,19 +95,25 @@ abstract class _SettingsStore with Store {
     }
   }
 
-  Future<void> readMessage(int id) async {
+  Future<void> readMessage(List<MessageData> datas) async {
     var stored = storage.read(localStorageMessageKey);
-    if (stored != null) {
-      stored = "$stored-$id";
-    } else {
-      stored = "$id";
+    Map<String, String> storedMap =
+        new Map<String, String>.from(json.decode(stored));
+    var isNew = false;
+    datas.forEach((element) {
+      if (storedMap["${element.id}"] == null) {
+        isNew = true;
+        storedMap.addAll({"${element.id}": "1"});
+      }
+    });
+    if (!isNew) {
+      return;
     }
-    storage.write(localStorageMessageKey, stored);
+    storage.write(localStorageMessageKey, json.encode(storedMap));
 
-    final ids = (stored as String).split("-");
     var communityUnreadNumber = 0;
     communityMessages.forEach((element) {
-      if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+      if (storedMap["${element.id}"] == null) {
         communityUnreadNumber++;
       }
     });
@@ -108,7 +121,7 @@ abstract class _SettingsStore with Store {
 
     var systemUnreadNumber = 0;
     systemMessages.forEach((element) {
-      if (ids.indexWhere((id) => int.parse(id) == element.id) < 0) {
+      if (storedMap["${element.id}"] == null) {
         systemUnreadNumber++;
       }
     });
@@ -168,8 +181,8 @@ abstract class _SettingsStore with Store {
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
-      initMessage(),
     ]);
+    initMessage();
   }
 
   @action

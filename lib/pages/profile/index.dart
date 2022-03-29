@@ -4,6 +4,7 @@ import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/communityPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
+import 'package:app/pages/profile/message/messagePage.dart';
 import 'package:app/pages/profile/recovery/recoveryProofPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/pages/profile/recovery/recoveryStatePage.dart';
@@ -13,6 +14,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -101,8 +103,54 @@ class _ProfilePageState extends State<ProfilePage> {
     final pagePadding = 16.w;
 
     return Scaffold(
-      appBar:
-          AppBar(title: Text(dic['title']), centerTitle: true, elevation: 0.0),
+      appBar: AppBar(
+        title: Text(dic['title']),
+        centerTitle: true,
+        elevation: 0.0,
+        actions: [
+          Center(child: Observer(builder: (_) {
+            return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(MessagePage.route);
+                },
+                child: Container(
+                  width: 32.h,
+                  height: 32.h,
+                  margin: EdgeInsets.only(right: 16),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(
+                              "packages/polkawallet_ui/assets/images/icon_bg_grey.png"),
+                          fit: BoxFit.fill)),
+                  child: Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: EdgeInsets.only(right: 1, bottom: 1),
+                          child: Image.asset("assets/images/message.png",
+                              width: 24.h)),
+                      Visibility(
+                          visible: widget.service.store.settings
+                                      .communityUnreadNumber +
+                                  widget.service.store.settings
+                                      .systemUnreadNumber >
+                              0,
+                          child: Container(
+                            width: 9.h,
+                            height: 9.h,
+                            margin: EdgeInsets.only(right: 1, top: 1),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4.5.h),
+                                color: Theme.of(context).errorColor),
+                          ))
+                    ],
+                  ),
+                ));
+          }))
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),

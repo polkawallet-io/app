@@ -115,4 +115,8 @@ const Map<String, String> enProfile = {
   'recovery.cancel': 'Cancel Recovered',
   'recovery.recovered': 'Recovered Account',
   'recovery.proxy': 'Proxy Account',
+  'message': 'Message',
+  'message.readAll': 'Read All',
+  'message.community': 'From Community',
+  'message.system': 'From System'
 };
