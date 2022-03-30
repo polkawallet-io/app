@@ -1,3 +1,4 @@
+import 'package:app/pages/profile/message/messageMarkdownPage.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
@@ -31,9 +32,20 @@ class MessageData {
   String detailUrl;
 
   void onLinkAction(BuildContext context) {
-    this.linkType == 'url'
-        ? UI.launchURL(this.link)
-        : Navigator.of(context).pushNamed(this.link);
+    if (this.link.trim().length > 0) {
+      this.linkType == 'url'
+          ? UI.launchURL(this.link)
+          : Navigator.of(context).pushNamed(this.link);
+    }
+  }
+
+  void onDetailAction(BuildContext context) {
+    if (this.detailUrl.trim().length > 0) {
+      this.detailUrl.endsWith(".md")
+          ? Navigator.of(context)
+              .pushNamed(MessageMarkdownPage.route, arguments: this)
+          : UI.launchURL(this.detailUrl);
+    }
   }
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>
