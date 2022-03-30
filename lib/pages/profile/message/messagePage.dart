@@ -1,4 +1,5 @@
 import 'package:app/service/index.dart';
+import 'package:app/store/types/messageData.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -56,15 +57,35 @@ class _MessagePageState extends State<MessagePage> {
                     )))
           ],
         ),
-        body: SafeArea(
-            child: Column(
-          children: [
-            Observer(builder: (_) {
-              final communityUnreadNumber =
-                  widget.service.store.settings.communityUnreadNumber;
-              final systemUnreadNumber =
-                  widget.service.store.settings.systemUnreadNumber;
-              return Padding(
+        body: SafeArea(child: Observer(builder: (_) {
+          final communityUnreadNumber = (widget
+                          .service.store.settings.communityUnreadNumber[
+                      widget.service.plugin.basic.name] ??
+                  0) +
+              (widget.service.store.settings.communityUnreadNumber['all'] ?? 0);
+          final systemUnreadNumber = (widget.service.store.settings
+                      .systemUnreadNumber[widget.service.plugin.basic.name] ??
+                  0) +
+              (widget.service.store.settings.systemUnreadNumber['all'] ?? 0);
+
+          final List<MessageData> datas = [];
+          if (_tabIndex == 0) {
+            datas.addAll(widget.service.store.settings
+                    .communityMessages[widget.service.plugin.basic.name] ??
+                []);
+            datas.addAll(
+                widget.service.store.settings.communityMessages['all'] ?? []);
+          } else {
+            datas.addAll(widget.service.store.settings
+                    .systemMessages[widget.service.plugin.basic.name] ??
+                []);
+            datas.addAll(
+                widget.service.store.settings.systemMessages['all'] ?? []);
+          }
+          datas.sort((left, right) => left.time.compareTo(right.time));
+          return Column(
+            children: [
+              Padding(
                   padding: EdgeInsets.all(16),
                   child: MainTabBar(
                     tabs: {
@@ -79,89 +100,87 @@ class _MessagePageState extends State<MessagePage> {
                         });
                       }
                     },
-                  ));
-            }),
-            Divider(
-              height: 1,
-              color: Colors.black.withAlpha(25),
-            ),
-            Expanded(
-                child: Container(
-              color: Colors.white,
-              child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  itemCount: _tabIndex == 0
-                      ? widget.service.store.settings.communityMessages.length
-                      : widget.service.store.settings.systemMessages.length,
-                  itemBuilder: (context, index) {
-                    final data = _tabIndex == 0
-                        ? widget.service.store.settings.communityMessages[index]
-                        : widget.service.store.settings.systemMessages[index];
-                    Future.delayed(Duration(microseconds: 500), () {
-                      widget.service.store.settings.readMessage([data]);
-                    });
+                  )),
+              Divider(
+                height: 1,
+                color: Colors.black.withAlpha(25),
+              ),
+              Expanded(
+                  child: Container(
+                color: Colors.white,
+                child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    itemCount: datas.length,
+                    itemBuilder: (context, index) {
+                      final data = datas[index];
+                      Future.delayed(Duration(microseconds: 500), () {
+                        widget.service.store.settings.readMessage([data],
+                            widget.service.plugin.basic.name, _tabIndex == 1);
+                      });
 
-                    if (_tabIndex == 0) {
-                      return GestureDetector(
-                          onTap: () {
-                            data.onLinkAction(context);
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 25, vertical: 10),
-                            child: Column(
-                              children: [
-                                Text(
-                                  DateFormat("MM/dd yyyy HH:mm")
-                                      .format(data.time),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6
-                                      ?.copyWith(
-                                          fontSize: 10,
-                                          color: Theme.of(context)
-                                              .textSelectionTheme
-                                              .selectionColor
-                                              .withAlpha(66)),
-                                ),
-                                RoundedCard(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  margin: EdgeInsets.only(top: 22),
-                                  child: Column(
-                                    children: [
-                                      ClipRRect(
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(10),
-                                              topRight: Radius.circular(10)),
-                                          child: Image.network(
-                                            data.banner,
-                                            width: double.infinity,
-                                          )),
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(14),
-                                        child: Text(
-                                          data.title,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6
-                                              ?.copyWith(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                        ),
-                                      )
-                                    ],
+                      if (_tabIndex == 0) {
+                        return GestureDetector(
+                            onTap: () {
+                              data.onLinkAction(context);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 25, vertical: 10),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    DateFormat("MM/dd yyyy HH:mm")
+                                        .format(data.time),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            fontSize: 10,
+                                            color: Theme.of(context)
+                                                .textSelectionTheme
+                                                .selectionColor
+                                                .withAlpha(66)),
                                   ),
-                                )
-                              ],
-                            ),
-                          ));
-                    }
-                    return Container();
-                  }),
-            ))
-          ],
-        )));
+                                  RoundedCard(
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    margin: EdgeInsets.only(top: 22),
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(10),
+                                                topRight: Radius.circular(10)),
+                                            child: Image.network(
+                                              data.banner,
+                                              width: double.infinity,
+                                            )),
+                                        Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsets.all(14),
+                                          child: Text(
+                                            data.title,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline6
+                                                ?.copyWith(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ));
+                      }
+                      return Container();
+                    }),
+              ))
+            ],
+          );
+        })));
   }
 }

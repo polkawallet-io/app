@@ -43,13 +43,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
       Atom(name: '_SettingsStore.communityMessages');
 
   @override
-  List<MessageData> get communityMessages {
+  Map<String, List<MessageData>> get communityMessages {
     _$communityMessagesAtom.reportRead();
     return super.communityMessages;
   }
 
   @override
-  set communityMessages(List<MessageData> value) {
+  set communityMessages(Map<String, List<MessageData>> value) {
     _$communityMessagesAtom.reportWrite(value, super.communityMessages, () {
       super.communityMessages = value;
     });
@@ -58,13 +58,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
   final _$systemMessagesAtom = Atom(name: '_SettingsStore.systemMessages');
 
   @override
-  List<MessageData> get systemMessages {
+  Map<String, List<MessageData>> get systemMessages {
     _$systemMessagesAtom.reportRead();
     return super.systemMessages;
   }
 
   @override
-  set systemMessages(List<MessageData> value) {
+  set systemMessages(Map<String, List<MessageData>> value) {
     _$systemMessagesAtom.reportWrite(value, super.systemMessages, () {
       super.systemMessages = value;
     });
@@ -74,13 +74,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
       Atom(name: '_SettingsStore.communityUnreadNumber');
 
   @override
-  int get communityUnreadNumber {
+  Map<String, int> get communityUnreadNumber {
     _$communityUnreadNumberAtom.reportRead();
     return super.communityUnreadNumber;
   }
 
   @override
-  set communityUnreadNumber(int value) {
+  set communityUnreadNumber(Map<String, int> value) {
     _$communityUnreadNumberAtom.reportWrite(value, super.communityUnreadNumber,
         () {
       super.communityUnreadNumber = value;
@@ -91,13 +91,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
       Atom(name: '_SettingsStore.systemUnreadNumber');
 
   @override
-  int get systemUnreadNumber {
+  Map<String, int> get systemUnreadNumber {
     _$systemUnreadNumberAtom.reportRead();
     return super.systemUnreadNumber;
   }
 
   @override
-  set systemUnreadNumber(int value) {
+  set systemUnreadNumber(Map<String, int> value) {
     _$systemUnreadNumberAtom.reportWrite(value, super.systemUnreadNumber, () {
       super.systemUnreadNumber = value;
     });
@@ -107,7 +107,7 @@ mixin _$SettingsStore on _SettingsStore, Store {
       AsyncAction('_SettingsStore.setCommunityMessages');
 
   @override
-  Future<void> setCommunityMessages(List<MessageData> data) {
+  Future<void> setCommunityMessages(Map<String, List<MessageData>> data) {
     return _$setCommunityMessagesAsyncAction
         .run(() => super.setCommunityMessages(data));
   }
@@ -116,7 +116,7 @@ mixin _$SettingsStore on _SettingsStore, Store {
       AsyncAction('_SettingsStore.setSystemMessages');
 
   @override
-  Future<void> setSystemMessages(List<MessageData> data) {
+  Future<void> setSystemMessages(Map<String, List<MessageData>> data) {
     return _$setSystemMessagesAsyncAction
         .run(() => super.setSystemMessages(data));
   }
@@ -125,18 +125,18 @@ mixin _$SettingsStore on _SettingsStore, Store {
       AsyncAction('_SettingsStore.setCommunityUnreadNumber');
 
   @override
-  Future<void> setCommunityUnreadNumber(int number) {
+  Future<void> setCommunityUnreadNumber(Map<String, int> data) {
     return _$setCommunityUnreadNumberAsyncAction
-        .run(() => super.setCommunityUnreadNumber(number));
+        .run(() => super.setCommunityUnreadNumber(data));
   }
 
   final _$setSystemUnreadNumberAsyncAction =
       AsyncAction('_SettingsStore.setSystemUnreadNumber');
 
   @override
-  Future<void> setSystemUnreadNumber(int number) {
+  Future<void> setSystemUnreadNumber(Map<String, int> data) {
     return _$setSystemUnreadNumberAsyncAction
-        .run(() => super.setSystemUnreadNumber(number));
+        .run(() => super.setSystemUnreadNumber(data));
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');

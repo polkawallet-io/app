@@ -109,6 +109,16 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0.0,
         actions: [
           Center(child: Observer(builder: (_) {
+            final communityUnreadNumber = (widget
+                            .service.store.settings.communityUnreadNumber[
+                        widget.service.plugin.basic.name] ??
+                    0) +
+                (widget.service.store.settings.communityUnreadNumber['all'] ??
+                    0);
+            final systemUnreadNumber = (widget.service.store.settings
+                        .systemUnreadNumber[widget.service.plugin.basic.name] ??
+                    0) +
+                (widget.service.store.settings.systemUnreadNumber['all'] ?? 0);
             return GestureDetector(
                 onTap: () {
                   Navigator.of(context).pushNamed(MessagePage.route);
@@ -132,11 +142,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Image.asset("assets/images/message.png",
                               width: 24.h)),
                       Visibility(
-                          visible: widget.service.store.settings
-                                      .communityUnreadNumber +
-                                  widget.service.store.settings
-                                      .systemUnreadNumber >
-                              0,
+                          visible:
+                              communityUnreadNumber + systemUnreadNumber > 0,
                           child: Container(
                             width: 9.h,
                             height: 9.h,

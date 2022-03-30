@@ -6,8 +6,18 @@ part 'messageData.g.dart';
 
 @JsonSerializable()
 class MessageData {
-  MessageData(this.id, this.banner, this.time, this.senderIcon, this.title,
-      this.content, this.link, this.linkType, this.senderName);
+  MessageData(
+      this.id,
+      this.banner,
+      this.time,
+      this.senderIcon,
+      this.title,
+      this.content,
+      this.link,
+      this.linkType,
+      this.senderName,
+      this.network,
+      this.detailUrl);
   int id;
   String banner;
   String title;
@@ -17,6 +27,8 @@ class MessageData {
   DateTime time;
   String senderIcon;
   String senderName;
+  String network;
+  String detailUrl;
 
   void onLinkAction(BuildContext context) {
     this.linkType == 'url'

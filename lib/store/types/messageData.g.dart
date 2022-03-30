@@ -17,6 +17,8 @@ MessageData _$MessageDataFromJson(Map<String, dynamic> json) {
     json['link'] as String,
     json['linkType'] as String,
     json['senderName'] as String,
+    json['network'] as String,
+    json['detailUrl'] as String,
   );
 }
 
@@ -31,4 +33,6 @@ Map<String, dynamic> _$MessageDataToJson(MessageData instance) =>
       'time': instance.time.toIso8601String(),
       'senderIcon': instance.senderIcon,
       'senderName': instance.senderName,
+      'network': instance.network,
+      'detailUrl': instance.detailUrl,
     };
