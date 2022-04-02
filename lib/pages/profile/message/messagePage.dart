@@ -141,11 +141,9 @@ class _MessagePageState extends State<MessagePage> {
                     itemCount: datas.length,
                     itemBuilder: (context, index) {
                       final data = datas[index];
-                      if (widget.service.store.settings.getReadMessage() ==
-                              null ||
-                          widget.service.store.settings
-                                  .getReadMessage()["${data.id}"] ==
-                              null) {
+                      if (widget.service.store.settings
+                              .getReadMessage()["${data.id}"] ==
+                          null) {
                         Future.delayed(Duration(microseconds: 500), () {
                           _tabIndex == 0
                               ? widget.service.store.settings
@@ -177,6 +175,7 @@ class _MessagePageState extends State<MessagePage> {
                               ),
                               GestureDetector(
                                   onTap: () {
+                                    print("ontap");
                                     data.onDetailAction(context);
                                   },
                                   child: RoundedCard(

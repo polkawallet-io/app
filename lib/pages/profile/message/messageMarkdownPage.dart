@@ -58,6 +58,9 @@ class _MessageMarkdownPageState extends State<MessageMarkdownPage> {
                   child: PluginLoadingWidget(),
                 ),
               )
-            : Markdown(data: _mdContent, selectable: true));
+            : Markdown(
+                data: _mdContent,
+                selectable: true,
+                physics: BouncingScrollPhysics()));
   }
 }

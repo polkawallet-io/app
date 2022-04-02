@@ -131,14 +131,15 @@ abstract class _SettingsStore with Store {
     if (stored != null) {
       return new Map<String, String>.from(json.decode(stored));
     }
-    return null;
+    return Map<String, String>();
   }
 
   Future<void> readSystmeMessage(
       List<MessageData> datas, String network) async {
     var stored = storage.read(localStorageMessageKey);
-    final Map<String, String> storedMap =
-        new Map<String, String>.from(json.decode(stored));
+    final Map<String, String> storedMap = stored != null
+        ? new Map<String, String>.from(json.decode(stored))
+        : Map<String, String>();
     var isNew = false;
     datas.forEach((element) {
       if (storedMap["${element.id}"] == null) {
@@ -166,8 +167,9 @@ abstract class _SettingsStore with Store {
   Future<void> readCommunityMessage(
       List<MessageData> datas, String network) async {
     var stored = storage.read(localStorageMessageKey);
-    final Map<String, String> storedMap =
-        new Map<String, String>.from(json.decode(stored));
+    final Map<String, String> storedMap = stored != null
+        ? new Map<String, String>.from(json.decode(stored))
+        : Map<String, String>();
     var isNew = false;
     datas.forEach((element) {
       if (storedMap["${element.id}"] == null) {
