@@ -7,21 +7,10 @@ part 'messageData.g.dart';
 
 @JsonSerializable()
 class MessageData {
-  MessageData(
-      this.id,
-      this.banner,
-      this.time,
-      this.senderIcon,
-      this.title,
-      this.content,
-      this.link,
-      this.linkType,
-      this.senderName,
-      this.network,
-      this.detailUrl);
+  MessageData(this.id, this.banner, this.time, this.senderIcon, this.content,
+      this.link, this.linkType, this.senderName, this.network, this.detailUrl);
   int id;
   String banner;
-  String title;
   String content;
   String link;
   String linkType;

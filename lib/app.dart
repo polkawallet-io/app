@@ -217,6 +217,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
     setState(() {
       _locale = res;
+      _service.store.settings
+          .initMessage((_locale ?? Locale('en', '')).languageCode);
     });
   }
 
@@ -504,7 +506,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
-      await store.init();
+      await store.init((_locale ?? Locale('en', '')).languageCode);
 
       // await _showGuide(context, storage);
 

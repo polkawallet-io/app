@@ -12,7 +12,6 @@ MessageData _$MessageDataFromJson(Map<String, dynamic> json) {
     json['banner'] as String,
     DateTime.parse(json['time'] as String),
     json['senderIcon'] as String,
-    json['title'] as String,
     json['content'] as String,
     json['link'] as String,
     json['linkType'] as String,
@@ -26,7 +25,6 @@ Map<String, dynamic> _$MessageDataToJson(MessageData instance) =>
     <String, dynamic>{
       'id': instance.id,
       'banner': instance.banner,
-      'title': instance.title,
       'content': instance.content,
       'link': instance.link,
       'linkType': instance.linkType,

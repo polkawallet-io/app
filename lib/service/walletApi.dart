@@ -234,13 +234,14 @@ class WalletApi {
     return {};
   }
 
-  static Future<Map> getMessage() async {
+  static Future<Map> getMessage(String _languageCode) async {
     try {
-      Response res = await get(getUrl(_configEndpoint, '/messageJson.json'));
+      Response res = await get(
+          getUrl(_configEndpoint, '/messageJson_$_languageCode.json'));
       if (res == null) {
         return null;
       } else {
-        return jsonDecode(res.body) as Map;
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
       }
     } catch (err) {
       print(err);

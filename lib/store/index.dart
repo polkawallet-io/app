@@ -16,9 +16,9 @@ class AppStore {
   ParachainStore parachain;
 
   @action
-  Future<void> init() async {
+  Future<void> init(String _languageCode) async {
     settings = SettingsStore(storage);
-    await settings.init();
+    await settings.init(_languageCode);
     account = AccountStore();
     assets = AssetsStore(storage);
     parachain = ParachainStore();

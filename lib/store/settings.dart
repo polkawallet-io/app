@@ -56,8 +56,8 @@ abstract class _SettingsStore with Store {
   @observable
   Map<String, int> systemUnreadNumber = Map<String, int>();
 
-  Future<void> initMessage() async {
-    final data = await WalletApi.getMessage();
+  Future<void> initMessage(String _languageCode) async {
+    final data = await WalletApi.getMessage(_languageCode);
     if (data == null) {
       return;
     }
@@ -128,7 +128,10 @@ abstract class _SettingsStore with Store {
 
   Map<String, String> getReadMessage() {
     var stored = storage.read(localStorageMessageKey);
-    return new Map<String, String>.from(json.decode(stored));
+    if (stored != null) {
+      return new Map<String, String>.from(json.decode(stored));
+    }
+    return null;
   }
 
   Future<void> readSystmeMessage(
@@ -236,14 +239,14 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  Future<void> init() async {
+  Future<void> init(String _languageCode) async {
     await Future.wait([
       loadLocalCode(),
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
     ]);
-    initMessage();
+    initMessage(_languageCode);
   }
 
   @action

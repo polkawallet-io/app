@@ -332,6 +332,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
+  ethereum_addresses:
+    dependency: transitive
+    description:
+      name: ethereum_addresses
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   fake_async:
     dependency: transitive
     description:
@@ -956,6 +963,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.5.2"
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
@@ -1012,7 +1026,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_kusama"
       relative: true
     source: path
-    version: "0.3.6"
+    version: "0.4.4"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
