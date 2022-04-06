@@ -1032,7 +1032,7 @@ class _TransferPageState extends State<TransferPage> {
                               Visibility(
                                   visible: isCrossChain,
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 16),
+                                    padding: EdgeInsets.only(top: 8),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
@@ -1057,7 +1057,7 @@ class _TransferPageState extends State<TransferPage> {
                                     ),
                                   )),
                               Padding(
-                                padding: EdgeInsets.only(top: 16),
+                                padding: EdgeInsets.only(top: 8),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -1096,7 +1096,7 @@ class _TransferPageState extends State<TransferPage> {
                               Visibility(
                                   visible: _fee?.partialFee != null,
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 16),
+                                    padding: EdgeInsets.only(top: 8),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [

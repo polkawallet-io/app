@@ -242,15 +242,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                   widget.service.plugin.tokenIcons,
                                   symbol: list[i].symbol,
                                 ),
-                                // todo: fix me
-                                // we should use token name here,
-                                // for old cache data, it use token symbol as token name.
-                                title: Text(
-                                    (list[i].name ?? '').toUpperCase() ==
-                                                list[i].symbol.toUpperCase() ||
-                                            (list[i].name ?? '').contains('-')
-                                        ? list[i].name
-                                        : list[i].symbol,
+                                title: Text(list[i].name,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
