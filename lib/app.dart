@@ -507,7 +507,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
-      await store.init(I18n.of(context).locale.languageCode);
+      await store.init();
 
       // await _showGuide(context, storage);
 

@@ -36,24 +36,22 @@ class _MessagePageState extends State<MessagePage> {
             Center(
                 child: GestureDetector(
                     onTap: () {
-                      final List<MessageData> datas = [];
-                      datas.addAll(
-                          widget.service.store.settings.communityMessages[
-                                  widget.service.plugin.basic.name] ??
-                              []);
-                      datas.addAll(widget.service.store.settings
-                              .communityMessages['all'] ??
-                          []);
-                      datas.addAll(widget.service.store.settings.systemMessages[
-                              widget.service.plugin.basic.name] ??
-                          []);
-                      datas.addAll(
-                          widget.service.store.settings.systemMessages['all'] ??
-                              []);
-                      widget.service.store.settings.readCommunityMessage(
-                          datas, widget.service.plugin.basic.name);
-                      widget.service.store.settings.readSystmeMessage(
-                          datas, widget.service.plugin.basic.name);
+                      widget.service.store.settings.readCommunityMessage([
+                        ...(widget.service.store.settings.communityMessages[
+                                widget.service.plugin.basic.name] ??
+                            []),
+                        ...(widget.service.store.settings
+                                .communityMessages['all'] ??
+                            [])
+                      ], widget.service.plugin.basic.name);
+                      widget.service.store.settings.readSystmeMessage([
+                        ...(widget.service.store.settings.systemMessages[
+                                widget.service.plugin.basic.name] ??
+                            []),
+                        ...(widget
+                                .service.store.settings.systemMessages['all'] ??
+                            [])
+                      ], widget.service.plugin.basic.name);
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 3),
@@ -136,6 +134,7 @@ class _MessagePageState extends State<MessagePage> {
                           []);
                 }
                 datas.sort((left, right) => left.time.compareTo(right.time));
+                print(datas.length);
                 return ListView.builder(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     itemCount: datas.length,

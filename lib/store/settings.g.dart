@@ -142,8 +142,8 @@ mixin _$SettingsStore on _SettingsStore, Store {
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
 
   @override
-  Future<void> init(String _languageCode) {
-    return _$initAsyncAction.run(() => super.init(_languageCode));
+  Future<void> init() {
+    return _$initAsyncAction.run(() => super.init());
   }
 
   final _$setLocalCodeAsyncAction = AsyncAction('_SettingsStore.setLocalCode');

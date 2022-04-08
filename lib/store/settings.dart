@@ -136,10 +136,7 @@ abstract class _SettingsStore with Store {
 
   Future<void> readSystmeMessage(
       List<MessageData> datas, String network) async {
-    var stored = storage.read(localStorageMessageKey);
-    final Map<String, String> storedMap = stored != null
-        ? new Map<String, String>.from(json.decode(stored))
-        : Map<String, String>();
+    final storedMap = getReadMessage();
     var isNew = false;
     datas.forEach((element) {
       if (storedMap["${element.id}"] == null) {
@@ -166,10 +163,7 @@ abstract class _SettingsStore with Store {
 
   Future<void> readCommunityMessage(
       List<MessageData> datas, String network) async {
-    var stored = storage.read(localStorageMessageKey);
-    final Map<String, String> storedMap = stored != null
-        ? new Map<String, String>.from(json.decode(stored))
-        : Map<String, String>();
+    final storedMap = getReadMessage();
     var isNew = false;
     datas.forEach((element) {
       if (storedMap["${element.id}"] == null) {
@@ -241,14 +235,13 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  Future<void> init(String _languageCode) async {
+  Future<void> init() async {
     await Future.wait([
       loadLocalCode(),
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
     ]);
-    initMessage(_languageCode);
   }
 
   @action
