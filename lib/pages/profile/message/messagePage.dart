@@ -134,7 +134,6 @@ class _MessagePageState extends State<MessagePage> {
                           []);
                 }
                 datas.sort((left, right) => left.time.compareTo(right.time));
-                print(datas.length);
                 return ListView.builder(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     itemCount: datas.length,
