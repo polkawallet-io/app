@@ -77,4 +77,10 @@ const Map<String, String> enPublic = {
   'hub.staking': 'Staking',
   'hub.cover.tokenStaking':
       'Provide your assets allocated on different networks in the ecosystem. You can send your assets through cross-chain transfer, or endow the liquidity to your assets through HOMA, so as to participate in more ecological projects.',
+  'ecosystem.on': 'On',
+  'ecosystem.convertTo': 'Convert to',
+  'ecosystem.crosschainTransfer': 'Crosschain Transfer',
+  'ecosystem.from': 'From',
+  'ecosystem.bringTo': 'Bring to',
+  'ecosystem.destinationAccount': 'Destination account',
 };

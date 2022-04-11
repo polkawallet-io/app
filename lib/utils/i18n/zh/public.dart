@@ -70,4 +70,10 @@ const Map<String, String> zhPublic = {
   'hub.staking': '质押',
   'hub.cover.tokenStaking':
       '提供您在当前生态中所有网络上分布的资产显示，您可以选择进行跨链转账，或是通过HOMA赋予其流动性，从而参加更多生态项目。',
+  'ecosystem.on': '在',
+  'ecosystem.convertTo': '转换为',
+  'ecosystem.crosschainTransfer': '跨链转账',
+  'ecosystem.from': '付款网络',
+  'ecosystem.bringTo': '转入',
+  'ecosystem.destinationAccount': '目标帐户',
 };
