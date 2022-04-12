@@ -76,4 +76,7 @@ const Map<String, String> zhPublic = {
   'ecosystem.from': '付款网络',
   'ecosystem.bringTo': '转入',
   'ecosystem.destinationAccount': '目标帐户',
+  'ecosystem.to': '收款网络',
+  'ecosystem.completed': '完成',
+  'ecosystem.backList': '返回列表',
 };

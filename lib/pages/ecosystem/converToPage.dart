@@ -1,3 +1,4 @@
+import 'package:app/pages/ecosystem/completedPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
@@ -29,13 +30,14 @@ class _ConverToPageState extends State<ConverToPage> {
     final String token = data["token"];
     final fromNetwork = data["fromNetwork"];
     final amount = data["amount"];
+    final convertToKen = data["convertToKen"];
 
     final balan = widget.service.plugin.noneNativeTokensAll
         .firstWhere((data) => data.symbol == token.toUpperCase());
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text(
-              "${dic['ecosystem.convertTo']} ${token.toUpperCase()} (1/2)"),
+              "${dic['ecosystem.convertTo']} ${convertToKen.toUpperCase()} (1/2)"),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -133,7 +135,15 @@ class _ConverToPageState extends State<ConverToPage> {
                   padding: EdgeInsets.only(top: 37, bottom: 38),
                   child: PluginButton(
                     title: dic['auction.submit'],
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(CompletedPage.route, arguments: {
+                        "token": token,
+                        "fromNetwork": fromNetwork,
+                        "amount": amount,
+                        "convertToKen": convertToKen
+                      });
+                    },
                   )),
             ],
           ),

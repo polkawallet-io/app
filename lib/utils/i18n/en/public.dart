@@ -83,4 +83,7 @@ const Map<String, String> enPublic = {
   'ecosystem.from': 'From',
   'ecosystem.bringTo': 'Bring to',
   'ecosystem.destinationAccount': 'Destination account',
+  'ecosystem.to': 'To',
+  'ecosystem.completed': 'Completed',
+  'ecosystem.backList': 'Back to List',
 };

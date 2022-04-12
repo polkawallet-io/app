@@ -160,7 +160,8 @@ class _TokenItemViewState extends State<TokenItemView> {
                                   arguments: {
                                     "token": widget.token,
                                     "fromNetwork": widget.name,
-                                    "amount": widget.amount
+                                    "amount": widget.amount,
+                                    "convertToKen": widget.convertToKen
                                   });
                             },
                           ),
@@ -179,7 +180,8 @@ class _TokenItemViewState extends State<TokenItemView> {
                                   .pushNamed(ConverToPage.route, arguments: {
                                 "token": widget.token,
                                 "fromNetwork": widget.name,
-                                "amount": widget.amount
+                                "amount": widget.amount,
+                                "convertToKen": widget.convertToKen
                               });
                             },
                           ),
