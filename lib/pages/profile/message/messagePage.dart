@@ -4,6 +4,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
@@ -11,6 +12,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class MessagePage extends StatefulWidget {
   MessagePage(this.service, {Key key}) : super(key: key);
@@ -44,14 +46,9 @@ class _MessagePageState extends State<MessagePage> {
                                 .communityMessages['all'] ??
                             [])
                       ], widget.service.plugin.basic.name);
-                      widget.service.store.settings.readSystmeMessage([
-                        ...(widget.service.store.settings.systemMessages[
-                                widget.service.plugin.basic.name] ??
-                            []),
-                        ...(widget
-                                .service.store.settings.systemMessages['all'] ??
-                            [])
-                      ], widget.service.plugin.basic.name);
+                      widget.service.store.settings.readSystmeMessage(
+                          widget.service.store.settings.systemMessages,
+                          widget.service.plugin.basic.name);
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 3),
@@ -86,12 +83,8 @@ class _MessagePageState extends State<MessagePage> {
                       0) +
                   (widget.service.store.settings.communityUnreadNumber['all'] ??
                       0);
-              final systemUnreadNumber = (widget
-                              .service.store.settings.systemUnreadNumber[
-                          widget.service.plugin.basic.name] ??
-                      0) +
-                  (widget.service.store.settings.systemUnreadNumber['all'] ??
-                      0);
+              final systemUnreadNumber =
+                  widget.service.store.settings.systemUnreadNumber;
               return Padding(
                   padding: EdgeInsets.all(16),
                   child: MainTabBar(
@@ -126,12 +119,7 @@ class _MessagePageState extends State<MessagePage> {
                       widget.service.store.settings.communityMessages['all'] ??
                           []);
                 } else {
-                  datas.addAll(widget.service.store.settings
-                          .systemMessages[widget.service.plugin.basic.name] ??
-                      []);
-                  datas.addAll(
-                      widget.service.store.settings.systemMessages['all'] ??
-                          []);
+                  datas.addAll(widget.service.store.settings.systemMessages);
                 }
                 datas.sort((left, right) => left.time.compareTo(right.time));
                 return ListView.builder(
@@ -140,7 +128,7 @@ class _MessagePageState extends State<MessagePage> {
                     itemBuilder: (context, index) {
                       final data = datas[index];
                       if (widget.service.store.settings
-                              .getReadMessage()["${data.id}"] ==
+                              .getReadMessage()[data.file] ==
                           null) {
                         Future.delayed(Duration(microseconds: 500), () {
                           _tabIndex == 0
@@ -173,7 +161,6 @@ class _MessagePageState extends State<MessagePage> {
                               ),
                               GestureDetector(
                                   onTap: () {
-                                    print("ontap");
                                     data.onDetailAction(context);
                                   },
                                   child: RoundedCard(
@@ -188,7 +175,7 @@ class _MessagePageState extends State<MessagePage> {
                                                 topRight: Radius.circular(10)),
                                             child: CachedNetworkImage(
                                               width: double.infinity,
-                                              imageUrl: data.banner,
+                                              imageUrl: data.urlByBanner(),
                                               placeholder: (context, url) =>
                                                   PluginLoadingWidget(),
                                               errorWidget:
@@ -199,7 +186,7 @@ class _MessagePageState extends State<MessagePage> {
                                           width: double.infinity,
                                           padding: EdgeInsets.all(14),
                                           child: Text(
-                                            data.content,
+                                            data.title,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline6
@@ -245,61 +232,56 @@ class _MessagePageState extends State<MessagePage> {
                                       child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(21),
-                                          child: CachedNetworkImage(
-                                            width: double.infinity,
-                                            imageUrl: data.senderIcon,
-                                            placeholder: (context, url) =>
-                                                PluginLoadingWidget(),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Icon(Icons.error),
-                                          ))),
+                                          child: Image.asset(
+                                              "assets/images/message_icon.png"))),
                                   Expanded(
                                       child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        data.senderName,
+                                        dic['message.polkawalletTeam'],
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText1
                                             .copyWith(fontSize: 14),
                                       ),
-                                      GestureDetector(
-                                          onTap: () {
-                                            data.onLinkAction(context);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .scaffoldBackgroundColor,
-                                              borderRadius: BorderRadius.only(
-                                                bottomLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x30000000),
+                                              blurRadius: 2.0,
+                                              spreadRadius: 0.0,
+                                              offset: Offset(
+                                                1.0,
+                                                1.0,
                                               ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(0x30000000),
-                                                  blurRadius: 2.0,
-                                                  spreadRadius: 1.0,
-                                                  offset: Offset(
-                                                    2.0,
-                                                    2.0,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 11),
-                                            margin: EdgeInsets.only(top: 10),
-                                            child: Text(data.content,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline6),
-                                          ))
+                                            )
+                                          ],
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 11),
+                                        margin: EdgeInsets.only(top: 10),
+                                        child: Html(
+                                          data: data.content,
+                                          onLinkTap: (url, context, attributes,
+                                              element) {
+                                            UI.launchURL(url);
+                                          },
+                                          onAnchorTap: (url, context,
+                                              attributes, element) {
+                                            UI.launchURL(url);
+                                          },
+                                        ),
+                                      )
                                     ],
                                   ))
                                 ],

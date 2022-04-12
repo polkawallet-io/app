@@ -137,6 +137,8 @@ dependency_overrides:
   webview_flutter: ^3.0.0
   flutter_markdown: ^0.6.9+1
   cached_network_image: ^3.2.0
+  flutter_html: ^2.2.1
+
 
 dev_dependencies:
   flutter_test:

@@ -12,6 +12,7 @@ class WalletApi {
   static const String _endpoint = 'https://api.polkawallet.io';
   static const String _configEndpoint = 'https://acala.polkawallet-cloud.com';
   static const String _cdnEndpoint = 'https://cdn.polkawallet-cloud.com';
+  static const String vercelEndpoint = 'https://polkawallet-docs.vercel.app';
 
   static const String _jsCodeStorageKey = 'js_service_';
   static const String _jsCodeStorageVersionKey = 'js_service_version_';
@@ -234,14 +235,14 @@ class WalletApi {
     return {};
   }
 
-  static Future<Map> getMessage(String _languageCode) async {
+  static Future<List> getMessage(String _type, String _languageCode) async {
     try {
       Response res = await get(
-          getUrl(_configEndpoint, '/messageJson_$_languageCode.json'));
+          Uri.parse("$vercelEndpoint/api/$_type?lang=$_languageCode"));
       if (res == null) {
         return null;
       } else {
-        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+        return jsonDecode(utf8.decode(res.bodyBytes)) as List;
       }
     } catch (err) {
       print(err);

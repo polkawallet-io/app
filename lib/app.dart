@@ -25,7 +25,6 @@ import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/communityPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/pages/profile/contacts/contactsPage.dart';
-import 'package:app/pages/profile/message/messageMarkdownPage.dart';
 import 'package:app/pages/profile/message/messagePage.dart';
 import 'package:app/pages/profile/recovery/createRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/friendListPage.dart';
@@ -679,7 +678,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       VouchRecoveryPage.route: (_) => VouchRecoveryPage(_service),
       TxDetailPage.route: (_) => TxDetailPage(_service),
       MessagePage.route: (_) => MessagePage(_service),
-      MessageMarkdownPage.route: (_) => MessageMarkdownPage(),
 
       PluginPage.route: (_) => PluginPage(_service),
 

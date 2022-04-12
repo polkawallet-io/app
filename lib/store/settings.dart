@@ -47,23 +47,20 @@ abstract class _SettingsStore with Store {
       Map<String, List<MessageData>>();
 
   @observable
-  Map<String, List<MessageData>> systemMessages =
-      Map<String, List<MessageData>>();
+  List<MessageData> systemMessages = [];
 
   @observable
   Map<String, int> communityUnreadNumber = Map<String, int>();
 
   @observable
-  Map<String, int> systemUnreadNumber = Map<String, int>();
+  int systemUnreadNumber = 0;
 
   Future<void> initMessage(String _languageCode) async {
-    final data = await WalletApi.getMessage(_languageCode);
-    if (data == null) {
-      return;
-    }
+    final dataCommunity = await WalletApi.getMessage("contents", _languageCode);
+    final dataSystem = await WalletApi.getMessage("announces", _languageCode);
     final stored = storage.read(localStorageMessageKey);
-    if (data['community'].length > 0) {
-      final all = List.of(data['community'])
+    if (dataCommunity != null && dataCommunity.length > 0) {
+      final all = List.of(dataCommunity)
           .map((element) => MessageData.fromJson(element))
           .toList();
       final Map<String, List<MessageData>> map =
@@ -77,20 +74,11 @@ abstract class _SettingsStore with Store {
       });
       setCommunityMessages(map);
     }
-    if (data['system'].length > 0) {
-      final all = List.of(data['system'])
+    if (dataSystem != null && dataSystem.length > 0) {
+      final all = List.of(dataSystem)
           .map((element) => MessageData.fromJson(element))
           .toList();
-      final Map<String, List<MessageData>> map =
-          Map<String, List<MessageData>>();
-      all.forEach((element) {
-        if (map[element.network] == null) {
-          map[element.network] = [element];
-        } else {
-          map[element.network].add(element);
-        }
-      });
-      setSystemMessages(map);
+      setSystemMessages(all);
     }
     if (stored != null) {
       final Map<String, String> storedMap =
@@ -98,31 +86,25 @@ abstract class _SettingsStore with Store {
       final Map<String, int> map = Map<String, int>();
       communityMessages.forEach((key, value) {
         map[key] = value
-            .where((element) => storedMap["${element.id}"] == null)
+            .where((element) => storedMap[element.file] == null)
             .toList()
             .length;
       });
       setCommunityUnreadNumber(map);
 
-      final Map<String, int> mapSystem = Map<String, int>();
-      systemMessages.forEach((key, value) {
-        mapSystem[key] = value
-            .where((element) => storedMap["${element.id}"] == null)
-            .toList()
-            .length;
-      });
-      setSystemUnreadNumber(mapSystem);
+      final int system = systemMessages
+          .where((element) => storedMap[element.file] == null)
+          .toList()
+          .length;
+      setSystemUnreadNumber(system);
     } else {
       final Map<String, int> map = Map<String, int>();
       communityMessages.forEach((key, value) {
         map[key] = value.length;
       });
       setCommunityUnreadNumber(map);
-      final Map<String, int> mapSystem = Map<String, int>();
-      systemMessages.forEach((key, value) {
-        mapSystem[key] = value.length;
-      });
-      setSystemUnreadNumber(mapSystem);
+
+      setSystemUnreadNumber(systemMessages.length);
     }
   }
 
@@ -139,9 +121,9 @@ abstract class _SettingsStore with Store {
     final storedMap = getReadMessage();
     var isNew = false;
     datas.forEach((element) {
-      if (storedMap["${element.id}"] == null) {
+      if (storedMap[element.file] == null) {
         isNew = true;
-        storedMap["${element.id}"] = element.network;
+        storedMap[element.file] = element.network;
       }
     });
     if (!isNew) {
@@ -149,16 +131,11 @@ abstract class _SettingsStore with Store {
     }
     storage.write(localStorageMessageKey, json.encode(storedMap));
 
-    final systemMap = this.systemUnreadNumber;
-    systemMap[network] = (systemMessages[network] ?? [])
-        .where((element) => storedMap["${element.id}"] == null)
+    final system = systemMessages
+        .where((element) => storedMap[element.file] == null)
         .toList()
         .length;
-    systemMap['all'] = (systemMessages['all'] ?? [])
-        .where((element) => storedMap["${element.id}"] == null)
-        .toList()
-        .length;
-    setSystemUnreadNumber(systemMap);
+    setSystemUnreadNumber(system);
   }
 
   Future<void> readCommunityMessage(
@@ -166,9 +143,9 @@ abstract class _SettingsStore with Store {
     final storedMap = getReadMessage();
     var isNew = false;
     datas.forEach((element) {
-      if (storedMap["${element.id}"] == null) {
+      if (storedMap[element.file] == null) {
         isNew = true;
-        storedMap["${element.id}"] = element.network;
+        storedMap[element.file] = element.network;
       }
     });
     if (!isNew) {
@@ -178,11 +155,11 @@ abstract class _SettingsStore with Store {
 
     final map = this.communityUnreadNumber;
     map[network] = (communityMessages[network] ?? [])
-        .where((element) => storedMap["${element.id}"] == null)
+        .where((element) => storedMap[element.file] == null)
         .toList()
         .length;
     map['all'] = (communityMessages['all'] ?? [])
-        .where((element) => storedMap["${element.id}"] == null)
+        .where((element) => storedMap[element.file] == null)
         .toList()
         .length;
     setCommunityUnreadNumber(map);
@@ -194,7 +171,7 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  Future<void> setSystemMessages(Map<String, List<MessageData>> data) async {
+  Future<void> setSystemMessages(List<MessageData> data) async {
     systemMessages = data;
   }
 
@@ -204,7 +181,7 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  Future<void> setSystemUnreadNumber(Map<String, int> data) async {
+  Future<void> setSystemUnreadNumber(int data) async {
     systemUnreadNumber = data;
   }
 

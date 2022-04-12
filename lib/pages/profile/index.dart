@@ -115,10 +115,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     0) +
                 (widget.service.store.settings.communityUnreadNumber['all'] ??
                     0);
-            final systemUnreadNumber = (widget.service.store.settings
-                        .systemUnreadNumber[widget.service.plugin.basic.name] ??
-                    0) +
-                (widget.service.store.settings.systemUnreadNumber['all'] ?? 0);
+            final systemUnreadNumber =
+                widget.service.store.settings.systemUnreadNumber;
             return GestureDetector(
                 onTap: () {
                   Navigator.of(context).pushNamed(MessagePage.route);
