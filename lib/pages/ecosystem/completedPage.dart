@@ -93,13 +93,13 @@ class CompletedPage extends StatelessWidget {
                                   "${dic['ecosystem.convertTo']} ${convertToKen.toUpperCase()}",
                               onPressed: () {
                                 if (convertToKen.startsWith("L")) {
-                                  //to redeem
-                                  Navigator.of(context).pushNamed(
-                                      "/${service.plugin.basic.name.toLowerCase()}/homa/redeem");
-                                } else {
                                   //to mint
                                   Navigator.of(context).pushNamed(
                                       "/${service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                } else {
+                                  //to redeem
+                                  Navigator.of(context).pushNamed(
+                                      "/${service.plugin.basic.name.toLowerCase()}/homa/redeem");
                                 }
                               },
                             ),

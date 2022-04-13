@@ -46,7 +46,8 @@ class _ConverToPageState extends State<ConverToPage> {
           child: Column(
             children: [
               Expanded(
-                  child: Column(
+                  child: SingleChildScrollView(
+                      child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   PluginTextTag(
@@ -130,7 +131,7 @@ class _ConverToPageState extends State<ConverToPage> {
                         ?.copyWith(color: PluginColorsDark.headline1),
                   ),
                 ],
-              )),
+              ))),
               Padding(
                   padding: EdgeInsets.only(top: 37, bottom: 38),
                   child: PluginButton(

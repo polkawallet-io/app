@@ -1,5 +1,6 @@
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -340,7 +341,15 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                           padding: EdgeInsets.only(top: 37, bottom: 38),
                           child: PluginButton(
                             title: dic['auction.submit'],
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed(EcosystemPage.route, arguments: {
+                                "token": token,
+                                "convertNetwork": _chainTo?.basic?.name ??
+                                    widget.service.plugin.basic.name,
+                                "amount": amount,
+                              });
+                            },
                           )),
                     ],
                   ))));
