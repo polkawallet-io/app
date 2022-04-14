@@ -168,12 +168,12 @@ class _HomePageState extends State<HomePage> {
 
   MetaHubItem buildMetaHubEcosystem() {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    var token = "dot";
+    var token = "DOT";
     if (widget.service.plugin.basic.name == relay_chain_name_ksm ||
         widget.service.plugin.basic.name == para_chain_name_karura ||
         widget.service.plugin.basic.name == para_chain_name_bifrost ||
         widget.service.plugin.basic.name == para_chain_name_statemine) {
-      token = "ksm";
+      token = "KSM";
     }
     return MetaHubItem(
         "${token.toUpperCase()} ${dic['hub.staking']}",

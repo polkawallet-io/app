@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:app/pages/ecosystem/completedPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -11,6 +15,11 @@ import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 
 class ConverToPage extends StatefulWidget {
   ConverToPage(this.service, {Key key}) : super(key: key);
@@ -23,21 +32,177 @@ class ConverToPage extends StatefulWidget {
 
 class _ConverToPageState extends State<ConverToPage> {
   TextEditingController _amountCtrl = TextEditingController();
+
+  String _error1;
+  bool _isMax = false;
+
+  String _fee;
+  String _receiver;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTxFee('100000000');
+    });
+  }
+
+  void _onSetMax(BigInt max, int decimals) {
+    setState(() {
+      _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
+      _getTxFee(_amountCtrl.text);
+      _isMax = true;
+    });
+  }
+
+  Future<XcmTxConfirmParams> _getTxParams() async {
+    if (_error1 == null && _amountCtrl.text.trim().length > 0) {
+      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final data = ModalRoute.of(context).settings.arguments as Map;
+      final TokenBalanceData balance = data["balance"];
+
+      final xcmParams = await _getXcmParams(
+          (Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals)).toString());
+      if (xcmParams != null) {
+        final convertToKen = data["convertToKen"];
+        final fromNetwork = data["fromNetwork"];
+        return XcmTxConfirmParams(
+          txTitle:
+              "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
+          module: xcmParams['module'],
+          call: xcmParams['call'],
+          txDisplay: {
+            dicAcala['cross.chain']:
+                widget.service.plugin.basic.name?.toUpperCase(),
+          },
+          txDisplayBold: {
+            dic['amount']: Text(
+              Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
+                      lengthMax: 8) +
+                  ' ${balance.symbol}',
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            dic['address']: Row(
+              children: [
+                AddressIcon(widget.service.keyring.current.address,
+                    svg: widget.service.keyring.current.icon),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                    child: Text(
+                      Fmt.address(widget.service.keyring.current.address,
+                          pad: 8),
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          },
+          params: xcmParams['params'],
+          chainFrom: fromNetwork,
+          chainFromIcon: Container(), //todo chainFromIcon
+          feeToken: balance.symbol,
+        );
+      }
+    }
+    return null;
+  }
+
+  Future<Map> _getXcmParams(String amount) async {
+    var plugin = (widget.service.plugin as PluginKarura);
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
+    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+    final chainFromInfo = (tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {};
+    final chainToInfo =
+        (tokensConfig['xcmChains'] ?? {})[widget.service.plugin.basic.name] ??
+            {};
+    final sendFee = List.of(
+        (tokensConfig['xcmSendFee'] ?? {})[widget.service.plugin.basic.name] ??
+            []);
+
+    final address = widget.service.keyring.current.address;
+
+    final Map xcmParams = await widget.service.plugin.sdk.webView?.evalJavascript(
+        'xcm.getTransferParams('
+        '{name: "$fromNetwork", paraChainId: ${chainFromInfo['id']}},'
+        '{name: "${widget.service.plugin.basic.name}", paraChainId: ${chainToInfo['id']}},'
+        '"${balance.symbol}", "$amount", "$address", ${jsonEncode(sendFee)})');
+    return xcmParams;
+  }
+
+  _getTxFee(String amount) async {
+    setState(() {
+      _isLoading = true;
+    });
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final TokenBalanceData balance = data["balance"];
+
+    if (_fee == null) {
+      final sender = TxSenderData(widget.service.keyring.current.address,
+          widget.service.keyring.current.pubKey);
+
+      final xcmParams = await _getXcmParams(
+          Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
+      if (xcmParams == null) return '0';
+
+      final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+
+      String fee = '0';
+      final fromNetwork = data["fromNetwork"];
+      final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+      if (feeData != null) {
+        fee = feeData['partialFee'].toString();
+      }
+      setState(() {
+        _fee = fee;
+      });
+    }
+
+    if (mounted) {
+      setState(() {
+        if (_amountCtrl.text.trim().length > 0) {
+          _receiver = (Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals) -
+                  Fmt.balanceInt(_fee))
+              .toString();
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _validateAmount(String value, BigInt available, int decimals) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+
+    String v = value.trim();
+    final error = Fmt.validatePrice(value, context);
+    if (error != null) {
+      return error;
+    }
+    BigInt input = Fmt.tokenInt(v, decimals);
+    if (!_isMax && input > available) {
+      return dic['amount.low'];
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final String token = data["token"];
+    final TokenBalanceData balance = data["balance"];
     final fromNetwork = data["fromNetwork"];
-    final amount = data["amount"];
     final convertToKen = data["convertToKen"];
 
-    final balan = widget.service.plugin.noneNativeTokensAll
-        .firstWhere((data) => data.symbol == token.toUpperCase());
     return PluginScaffold(
         appBar: PluginAppBar(
-          title: Text(
-              "${dic['ecosystem.convertTo']} ${convertToKen.toUpperCase()} (1/2)"),
+          title: Text("${dic['ecosystem.convertTo']} $convertToKen (1/2)"),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -72,26 +237,40 @@ class _ConverToPageState extends State<ConverToPage> {
                             ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
                       )),
                   PluginInputBalance(
-                    margin: EdgeInsets.only(top: 24, bottom: 24),
+                    margin: EdgeInsets.only(
+                        top: 24, bottom: _error1 == null ? 24 : 2),
                     titleTag:
                         "${dic['ecosystem.bringTo']} ${widget.service.plugin.basic.name}",
                     inputCtrl: _amountCtrl,
-                    // onSetMax: (balance ?? BigInt.zero) > BigInt.zero
-                    //     ? (max) => _onSetMax(max, tokenPair[0]!.decimals)
-                    //     : null,
+                    onSetMax: (Fmt.balanceInt(balance.amount) ?? BigInt.zero) >
+                            BigInt.zero
+                        ? (max) => _onSetMax(max, balance.decimals)
+                        : null,
                     onInputChange: (v) {
-                      // var error = _validateAmount(
-                      //     v, balance, tokenPair[0]!.decimals);
-                      // setState(() {
-                      //   _error1 = error;
-                      //   _isMax = false;
-                      // });
+                      var error = _validateAmount(
+                          v, Fmt.balanceInt(balance.amount), balance.decimals);
+                      if (error == null) {
+                        _getTxFee(_amountCtrl.text);
+                      }
+                      setState(() {
+                        _error1 = error;
+                        _isMax = false;
+                      });
                     },
-                    balance: TokenBalanceData(
-                        symbol: balan.symbol,
-                        decimals: balan.decimals,
-                        amount: balan.amount),
+                    onClear: () {
+                      setState(() {
+                        _error1 = null;
+                        _amountCtrl.text = "";
+                        _fee = null;
+                        _receiver = null;
+                      });
+                    },
+                    balance: balance,
                     tokenIconsMap: widget.service.plugin.tokenIcons,
+                  ),
+                  ErrorMessage(
+                    _error1,
+                    margin: EdgeInsets.only(bottom: 24),
                   ),
                   Padding(
                       padding: EdgeInsets.only(bottom: 24),
@@ -99,16 +278,25 @@ class _ConverToPageState extends State<ConverToPage> {
                         label: dic['ecosystem.destinationAccount'],
                         account: widget.service.keyring.current,
                       )),
+                  Visibility(
+                      visible: _isLoading,
+                      child: Container(
+                        width: double.infinity,
+                        child: PluginLoadingWidget(),
+                      )),
                   Text(
-                    "Receive",
+                    I18n.of(context).getDic(
+                        i18n_full_dic_karura, 'acala')['homa.redeem.receive'],
                     style: Theme.of(context)
                         .textTheme
                         .headline5
                         ?.copyWith(color: PluginColorsDark.headline1),
                   ),
                   InfoItemRow(
-                    "99.7999",
-                    balan.symbol,
+                    Fmt.priceCeilBigInt(
+                        Fmt.balanceInt(_receiver), balance.decimals,
+                        lengthMax: 6),
+                    balance.symbol,
                     labelStyle: Theme.of(context).textTheme.headline5?.copyWith(
                         color: PluginColorsDark.headline1,
                         fontSize: 24,
@@ -119,8 +307,9 @@ class _ConverToPageState extends State<ConverToPage> {
                         ?.copyWith(color: PluginColorsDark.headline1),
                   ),
                   InfoItemRow(
-                    "Network Fee",
-                    "0.2 ${balan.symbol}",
+                    I18n.of(context)
+                        .getDic(i18n_full_dic_karura, 'acala')['transfer.fee'],
+                    '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), balance.decimals, lengthMax: 6)} ${balance.symbol}',
                     labelStyle: Theme.of(context)
                         .textTheme
                         .headline5
@@ -136,18 +325,48 @@ class _ConverToPageState extends State<ConverToPage> {
                   padding: EdgeInsets.only(top: 37, bottom: 38),
                   child: PluginButton(
                     title: dic['auction.submit'],
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(CompletedPage.route, arguments: {
-                        "token": token,
-                        "fromNetwork": fromNetwork,
-                        "amount": amount,
-                        "convertToKen": convertToKen
-                      });
+                    onPressed: () async {
+                      final params = await _getTxParams();
+                      if (params != null) {
+                        final res = await Navigator.of(context).pushNamed(
+                            XcmTxConfirmPage.route,
+                            arguments: params);
+                        if (res != null) {
+                          // Navigator.of(context).pop(res);
+                          Navigator.of(context)
+                              .popAndPushNamed(CompletedPage.route, arguments: {
+                            "balance": balance,
+                            "fromNetwork": fromNetwork,
+                            "convertToKen": convertToKen
+                          });
+                        }
+                      }
                     },
                   )),
             ],
           ),
         )));
+  }
+}
+
+class ErrorMessage extends StatelessWidget {
+  ErrorMessage(this.error, {this.margin});
+  final error;
+  EdgeInsetsGeometry margin;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: error == null
+          ? EdgeInsets.zero
+          : margin ?? EdgeInsets.only(left: 16, top: 4),
+      child: error == null
+          ? null
+          : Row(children: [
+              Text(
+                error,
+                style: TextStyle(fontSize: 12, color: Colors.red),
+              )
+            ]),
+    );
   }
 }

@@ -690,7 +690,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       PluginPage.route: (_) => PluginPage(_service),
 
       //ecosystem
-      TokenStaking.route: (_) => TokenStaking(),
+      TokenStaking.route: (_) => TokenStaking(_service),
       ConverToPage.route: (_) => ConverToPage(_service),
       CrosschainTransferPage.route: (_) => CrosschainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),

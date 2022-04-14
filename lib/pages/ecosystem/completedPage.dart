@@ -7,6 +7,8 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class CompletedPage extends StatelessWidget {
   CompletedPage(this.service, {Key key}) : super(key: key);
@@ -18,9 +20,8 @@ class CompletedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final String token = data["token"];
+    final TokenBalanceData balance = data["balance"];
     final fromNetwork = data["fromNetwork"];
-    final amount = data["amount"];
     final String convertToKen = data["convertToKen"];
 
     final style = Theme.of(context)
@@ -54,19 +55,19 @@ class CompletedPage extends StatelessWidget {
                   children: [
                     InfoItemRow(
                       "${dic['ecosystem.on']} ${service.plugin.basic.name}",
-                      "$amount ${token.toUpperCase()}",
+                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)}} ${balance.symbol}",
                       labelStyle: style,
                       contentStyle: style,
                     ),
                     InfoItemRow(
                       "${dic['ecosystem.on']} $fromNetwork",
-                      "$amount ${token.toUpperCase()}",
+                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)}} ${balance.symbol}",
                       labelStyle: style,
                       contentStyle: style,
                     ),
                     InfoItemRow(
                       "Network Fee",
-                      "0.2 ${token.toUpperCase()}",
+                      "0.2 ${balance.symbol}",
                       labelStyle: style,
                       contentStyle: style,
                     ),
@@ -90,7 +91,7 @@ class CompletedPage extends StatelessWidget {
                             child: PluginButton(
                               backgroundColor: PluginColorsDark.headline1,
                               title:
-                                  "${dic['ecosystem.convertTo']} ${convertToKen.toUpperCase()}",
+                                  "${dic['ecosystem.convertTo']} $convertToKen",
                               onPressed: () {
                                 if (convertToKen.startsWith("L")) {
                                   //to mint

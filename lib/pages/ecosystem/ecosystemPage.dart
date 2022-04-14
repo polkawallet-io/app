@@ -5,6 +5,8 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class EcosystemPage extends StatelessWidget {
   const EcosystemPage({Key key}) : super(key: key);
@@ -15,8 +17,7 @@ class EcosystemPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final String token = data["token"];
-    final amount = data["amount"];
+    final TokenBalanceData balance = data["balance"];
     final convertNetwork = data["convertNetwork"];
     return PluginScaffold(
         appBar: PluginAppBar(
@@ -43,7 +44,7 @@ class EcosystemPage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 77, vertical: 10),
                     child: Text(
-                      "${amount} ${token.toUpperCase()} ${dic['ecosystem.msg1']} ${convertNetwork} ${dic['ecosystem.msg2']}",
+                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)} ${balance.symbol} ${dic['ecosystem.msg1']} ${convertNetwork} ${dic['ecosystem.msg2']}",
                       style: Theme.of(context)
                           .textTheme
                           .headline5

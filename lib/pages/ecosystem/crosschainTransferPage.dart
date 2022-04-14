@@ -43,12 +43,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     final dicAssets = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final String token = data["token"];
     final fromNetwork = data["fromNetwork"];
-    final amount = data["amount"];
-
-    final balan = widget.service.plugin.noneNativeTokensAll
-        .firstWhere((data) => data.symbol == token.toUpperCase());
+    final TokenBalanceData balance = data["balance"];
     return Observer(builder: (_) {
       final notTransferable = Fmt.balanceInt(
               (widget.service.plugin.balances.native?.reservedBalance ?? 0)
@@ -69,9 +65,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                       {})['existentialDeposit'] ??
                   0)
               .toString());
-
-      final decimals = balan.decimals;
-      final symbol = balan.symbol;
       return PluginScaffold(
           appBar: PluginAppBar(
             title: Text(dic['ecosystem.crosschainTransfer']),
@@ -121,7 +114,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                               PluginInputBalance(
                                 margin: EdgeInsets.only(top: 24, bottom: 24),
                                 titleTag:
-                                    "${balan.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
+                                    "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
                                 // onSetMax: (balance ?? BigInt.zero) > BigInt.zero
                                 //     ? (max) => _onSetMax(max, tokenPair[0]!.decimals)
@@ -134,10 +127,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                   //   _isMax = false;
                                   // });
                                 },
-                                balance: TokenBalanceData(
-                                    symbol: balan.symbol,
-                                    decimals: balan.decimals,
-                                    amount: balan.amount),
+                                balance: balance,
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
                               ),
                               Padding(
@@ -180,7 +170,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                     Expanded(
                                         flex: 0,
                                         child: Text(
-                                            '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
+                                            '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline5
@@ -209,7 +199,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                       ),
                                     ),
                                     Text(
-                                        '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
+                                        '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline5
@@ -252,7 +242,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                           )),
                                     ),
                                     Text(
-                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
+                                        '${Fmt.priceCeilBigInt(existDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline5
@@ -283,7 +273,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), balance.decimals, lengthMax: 6)} ${balance.symbol}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline5
@@ -344,10 +334,9 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                             onPressed: () {
                               Navigator.of(context)
                                   .pushNamed(EcosystemPage.route, arguments: {
-                                "token": token,
+                                "balance": balance,
                                 "convertNetwork": _chainTo?.basic?.name ??
                                     widget.service.plugin.basic.name,
-                                "amount": amount,
                               });
                             },
                           )),
