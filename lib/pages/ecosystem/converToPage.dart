@@ -20,6 +20,7 @@ import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 
 class ConverToPage extends StatefulWidget {
   ConverToPage(this.service, {Key key}) : super(key: key);
@@ -70,43 +71,49 @@ class _ConverToPageState extends State<ConverToPage> {
         final convertToKen = data["convertToKen"];
         final fromNetwork = data["fromNetwork"];
         return XcmTxConfirmParams(
-          txTitle:
-              "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
-          module: xcmParams['module'],
-          call: xcmParams['call'],
-          txDisplay: {
-            dicAcala['cross.chain']:
-                widget.service.plugin.basic.name?.toUpperCase(),
-          },
-          txDisplayBold: {
-            dic['amount']: Text(
-              Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
-                      lengthMax: 8) +
-                  ' ${balance.symbol}',
-              style: Theme.of(context).textTheme.headline1,
-            ),
-            dic['address']: Row(
-              children: [
-                AddressIcon(widget.service.keyring.current.address,
-                    svg: widget.service.keyring.current.icon),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
-                    child: Text(
-                      Fmt.address(widget.service.keyring.current.address,
-                          pad: 8),
-                      style: Theme.of(context).textTheme.headline4,
+            txTitle:
+                "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
+            module: xcmParams['module'],
+            call: xcmParams['call'],
+            txDisplay: {
+              dicAcala['cross.chain']:
+                  widget.service.plugin.basic.name?.toUpperCase(),
+            },
+            txDisplayBold: {
+              dic['amount']: Text(
+                Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
+                        lengthMax: 8) +
+                    ' ${balance.symbol}',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline1
+                    ?.copyWith(color: PluginColorsDark.headline1),
+              ),
+              dic['address']: Row(
+                children: [
+                  AddressIcon(widget.service.keyring.current.address,
+                      svg: widget.service.keyring.current.icon),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                      child: Text(
+                        Fmt.address(widget.service.keyring.current.address,
+                            pad: 8),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            ?.copyWith(color: PluginColorsDark.headline1),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          },
-          params: xcmParams['params'],
-          chainFrom: fromNetwork,
-          chainFromIcon: Container(), //todo chainFromIcon
-          feeToken: balance.symbol,
-        );
+                ],
+              ),
+            },
+            params: xcmParams['params'],
+            chainFrom: fromNetwork,
+            chainFromIcon: Container(), //todo chainFromIcon
+            feeToken: balance.symbol,
+            isPlugin: true);
       }
     }
     return null;
