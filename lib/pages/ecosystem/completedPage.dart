@@ -180,11 +180,11 @@ class _CompletedPageState extends State<CompletedPage> {
                                           onPressed: () {
                                             if (convertToKen.startsWith("L")) {
                                               //to mint
-                                              Navigator.of(context).pushNamed(
+                                              Navigator.of(context).popAndPushNamed(
                                                   "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
                                             } else {
                                               //to redeem
-                                              Navigator.of(context).pushNamed(
+                                              Navigator.of(context).popAndPushNamed(
                                                   "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
                                             }
                                           },
