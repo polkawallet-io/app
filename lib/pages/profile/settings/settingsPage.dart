@@ -73,7 +73,9 @@ class _Settings extends State<SettingsPage> {
           onWillPop: () async {
             final code = _langOptions[selected];
             if (code != cached) {
-              widget.changeLang(code);
+              widget.changeLang(code == ''
+                  ? Localizations.localeOf(context).toString()
+                  : code);
             }
             return true;
           },

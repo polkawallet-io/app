@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:app/service/walletApi.dart';
+import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 
@@ -17,6 +20,7 @@ abstract class _SettingsStore with Store {
   final String localStorageNetworkKey = 'network';
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
+  final String localStorageMessageKey = 'message';
 
   @observable
   String localeCode = '';
@@ -37,6 +41,149 @@ abstract class _SettingsStore with Store {
   Map _xcmEnabledChains;
 
   double _rate = -1;
+
+  @observable
+  Map<String, List<MessageData>> communityMessages =
+      Map<String, List<MessageData>>();
+
+  @observable
+  List<MessageData> systemMessages = [];
+
+  @observable
+  Map<String, int> communityUnreadNumber = Map<String, int>();
+
+  @observable
+  int systemUnreadNumber = 0;
+
+  Future<void> initMessage(String _languageCode) async {
+    final dataCommunity = await WalletApi.getMessage("contents", _languageCode);
+    final dataSystem = await WalletApi.getMessage("announces", _languageCode);
+    final stored = storage.read(localStorageMessageKey);
+    if (dataCommunity != null && dataCommunity.length > 0) {
+      final all = List.of(dataCommunity)
+          .map((element) => MessageData.fromJson(element))
+          .toList();
+      final Map<String, List<MessageData>> map =
+          Map<String, List<MessageData>>();
+      all.forEach((element) {
+        if (map[element.network] == null) {
+          map[element.network] = [element];
+        } else {
+          map[element.network].add(element);
+        }
+      });
+      setCommunityMessages(map);
+    }
+    if (dataSystem != null && dataSystem.length > 0) {
+      final all = List.of(dataSystem)
+          .map((element) => MessageData.fromJson(element))
+          .toList();
+      setSystemMessages(all);
+    }
+    if (stored != null) {
+      final Map<String, String> storedMap =
+          new Map<String, String>.from(json.decode(stored));
+      final Map<String, int> map = Map<String, int>();
+      communityMessages.forEach((key, value) {
+        map[key] = value
+            .where((element) => storedMap[element.file] == null)
+            .toList()
+            .length;
+      });
+      setCommunityUnreadNumber(map);
+
+      final int system = systemMessages
+          .where((element) => storedMap[element.file] == null)
+          .toList()
+          .length;
+      setSystemUnreadNumber(system);
+    } else {
+      final Map<String, int> map = Map<String, int>();
+      communityMessages.forEach((key, value) {
+        map[key] = value.length;
+      });
+      setCommunityUnreadNumber(map);
+
+      setSystemUnreadNumber(systemMessages.length);
+    }
+  }
+
+  Map<String, String> getReadMessage() {
+    var stored = storage.read(localStorageMessageKey);
+    if (stored != null) {
+      return new Map<String, String>.from(json.decode(stored));
+    }
+    return Map<String, String>();
+  }
+
+  Future<void> readSystmeMessage(
+      List<MessageData> datas, String network) async {
+    final storedMap = getReadMessage();
+    var isNew = false;
+    datas.forEach((element) {
+      if (storedMap[element.file] == null) {
+        isNew = true;
+        storedMap[element.file] = element.network;
+      }
+    });
+    if (!isNew) {
+      return;
+    }
+    storage.write(localStorageMessageKey, json.encode(storedMap));
+
+    final system = systemMessages
+        .where((element) => storedMap[element.file] == null)
+        .toList()
+        .length;
+    setSystemUnreadNumber(system);
+  }
+
+  Future<void> readCommunityMessage(
+      List<MessageData> datas, String network) async {
+    final storedMap = getReadMessage();
+    var isNew = false;
+    datas.forEach((element) {
+      if (storedMap[element.file] == null) {
+        isNew = true;
+        storedMap[element.file] = element.network;
+      }
+    });
+    if (!isNew) {
+      return;
+    }
+    storage.write(localStorageMessageKey, json.encode(storedMap));
+
+    final map = this.communityUnreadNumber;
+    map[network] = (communityMessages[network] ?? [])
+        .where((element) => storedMap[element.file] == null)
+        .toList()
+        .length;
+    map['all'] = (communityMessages['all'] ?? [])
+        .where((element) => storedMap[element.file] == null)
+        .toList()
+        .length;
+    setCommunityUnreadNumber(map);
+  }
+
+  @action
+  Future<void> setCommunityMessages(Map<String, List<MessageData>> data) async {
+    communityMessages = data;
+  }
+
+  @action
+  Future<void> setSystemMessages(List<MessageData> data) async {
+    systemMessages = data;
+  }
+
+  @action
+  Future<void> setCommunityUnreadNumber(Map<String, int> data) async {
+    communityUnreadNumber = data;
+  }
+
+  @action
+  Future<void> setSystemUnreadNumber(int data) async {
+    systemUnreadNumber = data;
+  }
 
   Future<double> getRate() async {
     if (_rate < 0) {

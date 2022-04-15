@@ -376,6 +376,7 @@ class _HomePageState extends State<HomePage> {
       },
       pages: pages,
       tabIndex: _tabIndex,
+      service: widget.service,
     );
   }
 }
