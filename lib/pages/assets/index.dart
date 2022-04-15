@@ -127,20 +127,8 @@ class _AssetsState extends State<AssetsPage> {
         if (widget.service.plugin.basic.name == para_chain_name_karura) {
           final symbol =
               (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-          final decimals =
-              (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-          final balance = widget.service.plugin.balances.native;
-          final token = TokenBalanceData(
-            symbol: symbol,
-            tokenNameId: symbol,
-            currencyId: {'Token': symbol},
-            decimals: decimals,
-            amount: balance.freeBalance,
-            locked: balance.lockedBalance,
-            reserved: balance.reservedBalance,
-          );
-          Navigator.of(context)
-              .pushNamed('/assets/token/transfer', arguments: token);
+          Navigator.of(context).pushNamed('/assets/token/transfer',
+              arguments: {'tokenNameId': symbol});
           return;
         }
         Navigator.of(context).pushNamed(

@@ -38,6 +38,7 @@ import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
+import 'package:app/pages/public/stakingKSMGuide.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -76,6 +77,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'pages/account/import/importAccountCreatePage.dart';
 import 'pages/account/import/importAccountFormKeyStore.dart';
@@ -624,6 +626,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
       AcalaBridgePage.route: (_) => AcalaBridgePage(),
+      StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) =>
@@ -698,14 +701,21 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           }
         });
       }
-      _service.plugin.appUtils.switchNetwork(network,
-          pageRoute: PageRouteParams(pathDatas[0], args: args));
+
+      if (network != _service.plugin.basic.name) {
+        _switchNetwork(network,
+            pageRoute: PageRouteParams(pathDatas[0], args: args));
+      } else {
+        _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
+        WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
+      }
     }
   }
 
   void _handleIncomingAppLinks() {
     uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
+      closeWebView();
       _toPageByUri(uri);
       print('got uri: $uri');
     }, onError: (Object err) {

@@ -5,10 +5,10 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:card_swiper/card_swiper.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -125,28 +125,30 @@ class _AdBannerState extends State<AdBanner> {
               _loading = true;
             });
 
-            if (e['isRoute'] == true) {
-              final route = e['route'] as String;
-              final network = e['routeNetwork'] as String;
-              final args = e['routeArgs'] as Map;
-              final minVersion = e['minVersion'] as int;
-              if (minVersion != null && _appVersion < minVersion) {
-                _showBannerInvalidAlert();
-              } else if (network != widget.service.plugin.basic.name) {
-                widget.service.plugin.appUtils.switchNetwork(
-                  network,
-                  pageRoute: PageRouteParams(route, args: args),
+            final minVersion = e['minVersion'] as int;
+            if (minVersion != null && _appVersion < minVersion) {
+              _showBannerInvalidAlert();
+            } else {
+              if (e['isRoute'] == true) {
+                final route = e['route'] as String;
+                final network = e['routeNetwork'] as String;
+                final args = e['routeArgs'] as Map;
+                if (network != widget.service.plugin.basic.name) {
+                  widget.service.plugin.appUtils.switchNetwork(
+                    network,
+                    pageRoute: PageRouteParams(route, args: args),
+                  );
+                } else {
+                  Navigator.of(context).pushNamed(route, arguments: args);
+                }
+              } else if (e['isDapp'] == true) {
+                Navigator.of(context).pushNamed(
+                  DAppWrapperPage.route,
+                  arguments: e['link'],
                 );
               } else {
-                Navigator.of(context).pushNamed(route, arguments: args);
+                UI.launchURL(e['link']);
               }
-            } else if (e['isDapp'] == true) {
-              Navigator.of(context).pushNamed(
-                DAppWrapperPage.route,
-                arguments: e['link'],
-              );
-            } else {
-              UI.launchURL(e['link']);
             }
 
             Timer(Duration(seconds: 1), () {
