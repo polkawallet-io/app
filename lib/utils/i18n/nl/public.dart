@@ -62,4 +62,16 @@ const Map<String, String> enPublic = {
   'banner.invalid.info': 'You need to update to the latest version, continue?',
   'os.invalid':
       'The OS environment of this device does NOT support Polkawallet running',
+  'event.0415.1':
+      'The 1 million aUSD Tsunami liquidity program is about to begin on Karura!!',
+  'event.0415.2': 'Following the steps to participate:',
+  'event.0415.3': 'Send KSM to Karura\'s parachain.',
+  'event.0415.4': 'Join the liquid staking and mint LKSM.',
+  'event.0415.5': 'Currently 19.92% LKSM Staking APY (rewards in KSM)',
+  'event.0415.6': 'Stake your LKSM and earn rewards!',
+  'event.0415.7':
+      'Earn another potential 10% APY on your KSM staking in aUSD rewards',
+  'event.0415.8': 'Cross-Chain Transfer',
+  'event.0415.9': 'Go Liquid Staking',
+  'event.0415.10': 'Join Collateral Staking',
 };
