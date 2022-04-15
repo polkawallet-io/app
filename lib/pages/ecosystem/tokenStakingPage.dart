@@ -48,21 +48,23 @@ class _TokenStakingState extends State<TokenStaking> {
           final balance = List.of(data)[0];
           if (balance != null) {
             final balanceData = TokenBalanceData(
-              tokenNameId: balance['tokenNameId'],
-              amount: balance['amount'],
-              decimals: balance['decimals'],
-              symbol: token,
-            );
+                tokenNameId: balance['tokenNameId'],
+                amount: balance['amount'],
+                decimals: balance['decimals'],
+                symbol: token,
+                name: token,
+                currencyId: {'Token': token});
             balances[element] = balanceData;
           }
           final lbalance = List.of(data)[1];
           if (lbalance != null) {
             final balanceData = TokenBalanceData(
-              tokenNameId: lbalance['tokenNameId'],
-              amount: lbalance['amount'],
-              decimals: lbalance['decimals'],
-              symbol: "L$token",
-            );
+                tokenNameId: lbalance['tokenNameId'],
+                amount: lbalance['amount'],
+                decimals: lbalance['decimals'],
+                symbol: "L$token",
+                name: "L$token",
+                currencyId: {'Token': "L$token"});
             lpBalances[element] = balanceData;
           }
         }

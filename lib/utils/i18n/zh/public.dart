@@ -83,5 +83,6 @@ const Map<String, String> zhPublic = {
   'ecosystem.transactionCompleted': '交易完成',
   'ecosystem.msg1': '已被转入',
   'ecosystem.msg2': '网络',
-  'ecosystem.seeTransaction': '查看交易明细'
+  'ecosystem.seeTransaction': '查看交易明细',
+  'ecosystem.inTransiting': '传输中'
 };

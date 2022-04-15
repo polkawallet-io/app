@@ -90,5 +90,6 @@ const Map<String, String> enPublic = {
   'ecosystem.transactionCompleted': 'Transaction Completed',
   'ecosystem.msg1': 'has been transferred to',
   'ecosystem.msg2': 'network',
-  'ecosystem.seeTransaction': 'See Transaction'
+  'ecosystem.seeTransaction': 'See Transaction',
+  'ecosystem.inTransiting': 'In Transiting'
 };

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/pages/ecosystem/completedPage.dart';
+import 'package:app/pages/ecosystem/transitingWidget.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +114,9 @@ class _ConverToPageState extends State<ConverToPage> {
             chainFrom: fromNetwork,
             chainFromIcon: Container(), //todo chainFromIcon
             feeToken: balance.symbol,
-            isPlugin: true);
+            isPlugin: true,
+            waitingWidget: TransitingWidget(
+                fromNetwork, widget.service.plugin.basic.name, balance.symbol));
       }
     }
     return null;
@@ -344,7 +347,8 @@ class _ConverToPageState extends State<ConverToPage> {
                               .popAndPushNamed(CompletedPage.route, arguments: {
                             "balance": balance,
                             "fromNetwork": fromNetwork,
-                            "convertToKen": convertToKen
+                            "convertToKen": convertToKen,
+                            "fee": _fee,
                           });
                         }
                       }
