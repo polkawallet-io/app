@@ -18,11 +18,12 @@ class MessageData {
   String content;
 
   void onDetailAction(BuildContext context) {
-    UI.launchURL("${WalletApi.vercelEndpoint}/posts/${this.file}");
+    UI.launchURL(
+        "${WalletApi.vercelEndpoint}/posts/${Uri.encodeComponent(this.file)}");
   }
 
   String urlByBanner() {
-    return "${WalletApi.vercelEndpoint}${this.banner}";
+    return "${WalletApi.vercelEndpoint}${Uri.encodeComponent(this.banner)}";
   }
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>

@@ -1,10 +1,15 @@
 import 'dart:math';
 
+import 'package:app/service/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:polkawallet_ui/components/circularProgressBar.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+
+import 'i18n/index.dart';
 
 class BottomBarScaffold extends StatefulWidget {
   BottomBarScaffold(
@@ -12,12 +17,14 @@ class BottomBarScaffold extends StatefulWidget {
       @required this.pages,
       @required this.tabIndex,
       @required this.onChanged,
+      @required this.service,
       Key key})
       : super(key: key);
   final Widget body;
   final List<HomeNavItem> pages;
   final Function(int) onChanged;
   final int tabIndex;
+  final AppService service;
 
   @override
   _BottomBarScaffoldState createState() => _BottomBarScaffoldState();
@@ -35,6 +42,30 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
             Container(
               width: (MediaQuery.of(context).size.width - 32) / 3,
             ));
+      } else if (I18n.of(context)
+              .getDic(i18n_full_dic_app, 'profile')['title'] ==
+          widget.pages[i].text) {
+        children.add(Observer(builder: (_) {
+          final communityUnreadNumber = (widget
+                          .service.store.settings.communityUnreadNumber[
+                      widget.service.plugin.basic.name] ??
+                  0) +
+              (widget.service.store.settings.communityUnreadNumber['all'] ?? 0);
+          final systemUnreadNumber =
+              widget.service.store.settings.systemUnreadNumber;
+          return NavItem(
+            widget.pages[i],
+            i == widget.tabIndex,
+            (item) {
+              setState(() {
+                final index = widget.pages
+                    .indexWhere((element) => element.text == item.text);
+                widget.onChanged(index);
+              });
+            },
+            isRedDot: communityUnreadNumber + systemUnreadNumber > 0,
+          );
+        }));
       } else {
         children.add(NavItem(widget.pages[i], i == widget.tabIndex, (item) {
           setState(() {
@@ -71,9 +102,11 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
 class NavItem extends StatelessWidget {
   final HomeNavItem item;
   final bool active;
+  final bool isRedDot;
   final void Function(HomeNavItem) onPressed;
 
-  const NavItem(this.item, this.active, this.onPressed);
+  const NavItem(this.item, this.active, this.onPressed,
+      {this.isRedDot = false});
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +117,24 @@ class NavItem extends StatelessWidget {
         onPressed: () => onPressed(item),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           // Icon(item.icon, color: active ? Color(0xfffed802) : style?.color),
-          Container(
-            width: 32,
-            child: active ? item.iconActive : item.icon,
+          Stack(
+            alignment: Alignment.topRight,
+            children: [
+              Container(
+                width: 32,
+                child: active ? item.iconActive : item.icon,
+              ),
+              Visibility(
+                  visible: this.isRedDot,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    margin: EdgeInsets.only(right: 1, top: 1),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.5),
+                        color: Theme.of(context).errorColor),
+                  ))
+            ],
           ),
           Text(
             item.text,
