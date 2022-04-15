@@ -1100,7 +1100,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_statemine"
       relative: true
     source: path
-    version: "0.4.4"
+    version: "0.3.0"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
