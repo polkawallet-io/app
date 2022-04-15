@@ -23,7 +23,7 @@ class MessageData {
   }
 
   String urlByBanner() {
-    return "${WalletApi.vercelEndpoint}${Uri.encodeComponent(this.banner)}";
+    return "${WalletApi.vercelEndpoint}${this.banner}";
   }
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>
