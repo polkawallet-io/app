@@ -6,6 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_laminar/pages/currencySelectPage.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
@@ -20,6 +24,9 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 
 class CrosschainTransferPage extends StatefulWidget {
   CrosschainTransferPage(this.service, {Key key}) : super(key: key);
@@ -35,8 +42,67 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   TextEditingController _amountCtrl = TextEditingController();
 
   bool _keepAlive = true;
-  PolkawalletPlugin _chainTo;
+  String _chainTo;
   TxFeeEstimateResult _fee;
+
+  // Future<String> _getTxFee({reload = false}) async {
+  //   if (_fee != null && !reload) {
+  //     return _fee!;
+  //   }
+
+  //   final sender = TxSenderData(
+  //       widget.service.keyring.current.address, widget.keyring.current.pubKey);
+  //   final xcmParams = await _getXcmParams('100000000', feeEstimate: true);
+  //   if (xcmParams == null) return '0';
+
+  //   final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+
+  //   String fee = '0';
+  //   if (_chainFrom == plugin_name_karura) {
+  //     final feeData = await widget.plugin.sdk.api.tx
+  //         .estimateFees(txInfo, xcmParams['params']);
+  //     fee = feeData.partialFee.toString();
+  //   } else {
+  //     final feeData = await widget.plugin.sdk.webView?.evalJavascript(
+  //         'keyring.txFeeEstimate(xcm.getApi("$_chainFrom"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+  //     if (feeData != null) {
+  //       fee = feeData['partialFee'].toString();
+  //     }
+  //   }
+
+  //   if (mounted) {
+  //     setState(() {
+  //       _fee = fee;
+  //     });
+  //   }
+  //   return fee;
+  // }
+
+  Future<void> _selectChain(BuildContext context, int index,
+      Map<String, Widget> crossChainIcons, List<String> options) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BottomSheetContainer(
+          title: Text(dic['cross.chain.select']),
+          content: ChainSelector(
+            options: options,
+            crossChainIcons: crossChainIcons,
+            onSelect: (chain) {
+              setState(() {
+                _chainTo = chain;
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+      context: context,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +112,18 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     final fromNetwork = data["fromNetwork"];
     final TokenBalanceData balance = data["balance"];
     return Observer(builder: (_) {
+      final plugin = widget.service.plugin as PluginKarura;
+
+      final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+      final tokenXcmConfig = List<String>.from(
+          (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
+      final crossChainIcons = Map<String, Widget>.from(
+          plugin.store.assets.crossChainIcons.map((k, v) => MapEntry(
+              k.toUpperCase(),
+              (v as String).contains('.svg')
+                  ? SvgPicture.network(v)
+                  : Image.network(v))));
+
       final notTransferable = Fmt.balanceInt(
               (widget.service.plugin.balances.native?.reservedBalance ?? 0)
                   .toString()) +
@@ -53,8 +131,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
               (widget.service.plugin.balances.native?.lockedBalance ?? 0)
                   .toString());
 
-      final destChainName =
-          _chainTo?.basic?.name ?? widget.service.plugin.basic.name;
+      final destChainName = _chainTo ?? widget.service.plugin.basic.name;
 
       final destExistDeposit =
           Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit']);
@@ -106,9 +183,31 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                               PluginTagCard(
                                 margin: EdgeInsets.only(top: 24),
                                 titleTag: dic['ecosystem.to'],
-                                child: Container(
-                                  height: 48,
-                                  width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 16),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _selectChain(context, 0, crossChainIcons,
+                                        [plugin.basic.name, ...tokenXcmConfig]);
+                                  },
+                                  behavior: HitTestBehavior.opaque,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        destChainName,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            ?.copyWith(
+                                                color:
+                                                    PluginColorsDark.headline1),
+                                      ),
+                                      Icon(Icons.keyboard_arrow_down_rounded,
+                                          color: PluginColorsDark.headline1)
+                                    ],
+                                  ),
                                 ),
                               ),
                               PluginInputBalance(
@@ -335,7 +434,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                               Navigator.of(context)
                                   .pushNamed(EcosystemPage.route, arguments: {
                                 "balance": balance,
-                                "convertNetwork": _chainTo?.basic?.name ??
+                                "convertNetwork": _chainTo ??
                                     widget.service.plugin.basic.name,
                               });
                             },
@@ -351,7 +450,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     if (!res) {
       // todo: remove this after polkadot xcm alive
       if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-          _chainTo?.basic?.name == para_chain_name_acala) {
+          _chainTo == para_chain_name_acala) {
         return;
       }
 
@@ -406,5 +505,38 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
         _keepAlive = res;
       });
     }
+  }
+}
+
+class ChainSelector extends StatelessWidget {
+  ChainSelector(
+      {@required this.options,
+      @required this.crossChainIcons,
+      @required this.onSelect});
+  final List<String> options;
+  final Map<String, Widget> crossChainIcons;
+  final Function(String) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: options.map((i) {
+        return ListTile(
+          title: CurrencyWithIcon(
+            i.toUpperCase(),
+            TokenIcon(i, crossChainIcons),
+            textStyle: Theme.of(context).textTheme.headline4,
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 18,
+            color: Theme.of(context).unselectedWidgetColor,
+          ),
+          onTap: () {
+            onSelect(i);
+          },
+        );
+      }).toList(),
+    );
   }
 }
