@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_plugin_laminar/pages/currencySelectPage.dart';
@@ -27,6 +32,8 @@ import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 
 class CrosschainTransferPage extends StatefulWidget {
   CrosschainTransferPage(this.service, {Key key}) : super(key: key);
@@ -41,42 +48,153 @@ class CrosschainTransferPage extends StatefulWidget {
 class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   TextEditingController _amountCtrl = TextEditingController();
 
-  bool _keepAlive = true;
+  String _error1;
+  bool _isMax = false;
   String _chainTo;
-  TxFeeEstimateResult _fee;
 
-  // Future<String> _getTxFee({reload = false}) async {
-  //   if (_fee != null && !reload) {
-  //     return _fee!;
-  //   }
+  String _fee;
 
-  //   final sender = TxSenderData(
-  //       widget.service.keyring.current.address, widget.keyring.current.pubKey);
-  //   final xcmParams = await _getXcmParams('100000000', feeEstimate: true);
-  //   if (xcmParams == null) return '0';
+  @override
+  void initState() {
+    super.initState();
+    _chainTo = widget.service.plugin.basic.name;
 
-  //   final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTxFee();
+    });
+  }
 
-  //   String fee = '0';
-  //   if (_chainFrom == plugin_name_karura) {
-  //     final feeData = await widget.plugin.sdk.api.tx
-  //         .estimateFees(txInfo, xcmParams['params']);
-  //     fee = feeData.partialFee.toString();
-  //   } else {
-  //     final feeData = await widget.plugin.sdk.webView?.evalJavascript(
-  //         'keyring.txFeeEstimate(xcm.getApi("$_chainFrom"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
-  //     if (feeData != null) {
-  //       fee = feeData['partialFee'].toString();
-  //     }
-  //   }
+  void _onSetMax(BigInt max, int decimals) {
+    setState(() {
+      _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
 
-  //   if (mounted) {
-  //     setState(() {
-  //       _fee = fee;
-  //     });
-  //   }
-  //   return fee;
-  // }
+      _isMax = true;
+    });
+  }
+
+  String _validateAmount(String value, BigInt available, int decimals) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+
+    String v = value.trim();
+    final error = Fmt.validatePrice(value, context);
+    if (error != null) {
+      return error;
+    }
+    BigInt input = Fmt.tokenInt(v, decimals);
+    if (!_isMax && input > available) {
+      return dic['amount.low'];
+    }
+    return null;
+  }
+
+  Future<XcmTxConfirmParams> _getTxParams() async {
+    if (_error1 == null && _amountCtrl.text.trim().length > 0) {
+      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final data = ModalRoute.of(context).settings.arguments as Map;
+      final TokenBalanceData balance = data["balance"];
+      final fromNetwork = data["fromNetwork"];
+
+      final xcmParams = await _getXcmParams(
+          Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
+      if (xcmParams != null) {
+        return XcmTxConfirmParams(
+            txTitle:
+                '${dicAcala['transfer']} ${balance.symbol} (${dicAcala['cross.xcm']})',
+            module: xcmParams['module'],
+            call: xcmParams['call'],
+            txDisplay: {
+              dicAcala['cross.chain']: _chainTo?.toUpperCase(),
+            },
+            txDisplayBold: {
+              dic['amount']: Text(
+                Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
+                        lengthMax: 8) +
+                    ' ${balance.symbol}',
+                style: Theme.of(context).textTheme.headline1,
+              ),
+              dic['address']: Row(
+                children: [
+                  AddressIcon(widget.service.keyring.current.address,
+                      svg: widget.service.keyring.current.icon),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                      child: Text(
+                        Fmt.address(widget.service.keyring.current.address,
+                            pad: 8),
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            },
+            params: xcmParams['params'],
+            chainFrom: fromNetwork,
+            chainFromIcon: Container(), //todo chainFromIcon
+            feeToken: balance.symbol,
+            isPlugin: true);
+      }
+    }
+    return null;
+  }
+
+  Future<Map> _getXcmParams(String amount, {bool feeEstimate = false}) async {
+    //todo: as PluginAcala
+    final plugin = widget.service.plugin as PluginKarura;
+    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
+    final chainFromInfo = (tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {};
+    final chainToInfo = (tokensConfig['xcmChains'] ?? {})[_chainTo] ?? {};
+    final sendFee = List.of((tokensConfig['xcmSendFee'] ?? {})[_chainTo] ?? []);
+
+    final address = widget.service.keyring.current.address;
+
+    final Map xcmParams = await widget.service.plugin.sdk.webView?.evalJavascript(
+        'xcm.getTransferParams('
+        '{name: "$fromNetwork", paraChainId: ${chainFromInfo['id']}},'
+        '{name: "$_chainTo", paraChainId: ${chainToInfo['id']}},'
+        '"${balance?.symbol}", "$amount", "$address", ${jsonEncode(sendFee)})');
+    return xcmParams;
+  }
+
+  Future<String> _getTxFee({reload = false}) async {
+    if (_fee != null && !reload) {
+      return _fee;
+    }
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+
+    final sender = TxSenderData(widget.service.keyring.current.address,
+        widget.service.keyring.current.pubKey);
+    final xcmParams = await _getXcmParams('100000000', feeEstimate: true);
+    if (xcmParams == null) return '0';
+
+    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+
+    String fee = '0';
+    if (fromNetwork == plugin_name_karura) {
+      final feeData = await widget.service.plugin.sdk.api.tx
+          .estimateFees(txInfo, xcmParams['params']);
+      fee = feeData.partialFee.toString();
+    } else {
+      final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+      if (feeData != null) {
+        fee = feeData['partialFee'].toString();
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _fee = fee;
+      });
+    }
+    return fee;
+  }
 
   Future<void> _selectChain(BuildContext context, int index,
       Map<String, Widget> crossChainIcons, List<String> options) async {
@@ -95,6 +213,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
               setState(() {
                 _chainTo = chain;
               });
+              _getTxFee(reload: true);
               Navigator.of(context).pop();
             },
           ),
@@ -107,11 +226,21 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    final dicAssets = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+    final dicCommon = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
     final TokenBalanceData balance = data["balance"];
+
+    final labelStyle = Theme.of(context)
+        .textTheme
+        .headline4
+        ?.copyWith(color: PluginColorsDark.headline1);
+    final subTitleStyle = TextStyle(fontSize: 12, height: 1);
+    final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
+        fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
     return Observer(builder: (_) {
+      //todo: as PluginAcala
       final plugin = widget.service.plugin as PluginKarura;
 
       final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
@@ -124,14 +253,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                   ? SvgPicture.network(v)
                   : Image.network(v))));
 
-      final notTransferable = Fmt.balanceInt(
-              (widget.service.plugin.balances.native?.reservedBalance ?? 0)
-                  .toString()) +
-          Fmt.balanceInt(
-              (widget.service.plugin.balances.native?.lockedBalance ?? 0)
-                  .toString());
-
-      final destChainName = _chainTo ?? widget.service.plugin.basic.name;
+      final destChainName = _chainTo;
 
       final destExistDeposit =
           Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit']);
@@ -142,6 +264,13 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                       {})['existentialDeposit'] ??
                   0)
               .toString());
+
+      final isFromKar = fromNetwork == plugin_name_karura;
+      final sendFee =
+          List.of((tokensConfig['xcmSendFee'] ?? {})[destChainName] ?? []);
+
+      final sendFeeAmount =
+          sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
       return PluginScaffold(
           appBar: PluginAppBar(
             title: Text(dic['ecosystem.crosschainTransfer']),
@@ -215,19 +344,33 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
-                                // onSetMax: (balance ?? BigInt.zero) > BigInt.zero
-                                //     ? (max) => _onSetMax(max, tokenPair[0]!.decimals)
-                                //     : null,
+                                onSetMax: (Fmt.balanceInt(balance.amount) ??
+                                            BigInt.zero) >
+                                        BigInt.zero
+                                    ? (max) => _onSetMax(max, balance.decimals)
+                                    : null,
                                 onInputChange: (v) {
-                                  // var error = _validateAmount(
-                                  //     v, balance, tokenPair[0]!.decimals);
-                                  // setState(() {
-                                  //   _error1 = error;
-                                  //   _isMax = false;
-                                  // });
+                                  var error = _validateAmount(
+                                      v,
+                                      Fmt.balanceInt(balance.amount),
+                                      balance.decimals);
+                                  setState(() {
+                                    _error1 = error;
+                                    _isMax = false;
+                                  });
+                                },
+                                onClear: () {
+                                  setState(() {
+                                    _error1 = null;
+                                    _isMax = false;
+                                  });
                                 },
                                 balance: balance,
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
+                              ),
+                              ErrorMessage(
+                                _error1,
+                                margin: EdgeInsets.only(bottom: 24),
                               ),
                               Padding(
                                   padding: EdgeInsets.only(bottom: 24),
@@ -235,50 +378,20 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                     label: dic['ecosystem.destinationAccount'],
                                     account: widget.service.keyring.current,
                                   )),
-                              Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          padding: EdgeInsets.only(right: 40),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(dicAssets['cross.exist'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4
-                                                      ?.copyWith(
-                                                          color:
-                                                              PluginColorsDark
-                                                                  .headline1)),
-                                              Text(
-                                                dicAssets['amount.exist.msg'],
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontFamily: 'SF_Pro',
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                    Expanded(
-                                        flex: 0,
-                                        child: Text(
-                                            '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: PluginColorsDark
-                                                        .headline1))),
-                                  ],
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                        padding: EdgeInsets.only(right: 40),
+                                        child: Text(dicAcala['cross.exist'],
+                                            style: labelStyle)),
+                                  ),
+                                  Expanded(
+                                      flex: 0,
+                                      child: Text(
+                                          '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                          style: infoValueStyle)),
+                                ],
                               ),
                               Padding(
                                 padding: EdgeInsets.only(top: 8),
@@ -288,72 +401,69 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                     Expanded(
                                       child: Padding(
                                         padding: EdgeInsets.only(right: 4),
-                                        child: Text(dicAssets['cross.fee'],
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline4
-                                                ?.copyWith(
-                                                    color: PluginColorsDark
-                                                        .headline1)),
+                                        child: Text(dicAcala['cross.fee'],
+                                            style: labelStyle),
                                       ),
                                     ),
                                     Text(
-                                        '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: PluginColorsDark
-                                                    .headline1)),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          padding: EdgeInsets.only(right: 60),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(dicAssets['amount.exist'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4
-                                                      ?.copyWith(
-                                                          color:
-                                                              PluginColorsDark
-                                                                  .headline1)),
-                                              Text(
-                                                dicAssets['amount.exist.msg'],
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w200),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(existDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: PluginColorsDark
-                                                    .headline1)),
+                                      '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                      style: infoValueStyle,
+                                    )
                                   ],
                                 ),
                               ),
                               Visibility(
-                                  visible: _fee?.partialFee != null,
+                                visible: isFromKar && sendFee.length > 0,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(right: 4),
+                                          child: Text('XCM fee',
+                                              style: labelStyle),
+                                        ),
+                                      ),
+                                      Text(
+                                          '${Fmt.priceFloorBigInt(sendFeeAmount, balance.decimals ?? 12, lengthMax: 6)} ${balance.symbol}',
+                                          style: infoValueStyle),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: isFromKar,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                            padding: EdgeInsets.only(right: 60),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(dicAcala['transfer.exist'],
+                                                    style: labelStyle),
+                                                Text(
+                                                    dicAcala['cross.exist.msg'],
+                                                    style: subTitleStyle),
+                                              ],
+                                            )),
+                                      ),
+                                      Text(
+                                          '${Fmt.priceCeilBigInt(existDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                          style: infoValueStyle),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                  visible: _fee != null,
                                   child: Padding(
                                     padding: EdgeInsets.only(top: 8),
                                     child: Row(
@@ -362,149 +472,45 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                         Expanded(
                                           child: Padding(
                                             padding: EdgeInsets.only(right: 4),
-                                            child: Text(dicAssets['amount.fee'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4
-                                                    ?.copyWith(
-                                                        color: PluginColorsDark
-                                                            .headline1)),
+                                            child: Text(
+                                                dicAcala['transfer.fee'],
+                                                style: labelStyle),
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: PluginColorsDark
-                                                        .headline1)),
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                            style: infoValueStyle),
                                       ],
                                     ),
                                   )),
-                              Container(
-                                margin: EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          padding: EdgeInsets.only(right: 60),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(dicAssets['transfer.alive'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4
-                                                      ?.copyWith(
-                                                          color:
-                                                              PluginColorsDark
-                                                                  .headline1)),
-                                              Text(
-                                                dicAssets['transfer.alive.msg'],
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontFamily: 'SF_Pro',
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                    v3.CupertinoSwitch(
-                                      value: _keepAlive,
-                                      // account is not allow_death if it has
-                                      // locked/reserved balances
-                                      onChanged: (v) => _onSwitchCheckAlive(
-                                          v, notTransferable),
-                                    )
-                                  ],
-                                ),
-                              )
                             ]),
                       )),
                       Padding(
                           padding: EdgeInsets.only(top: 37, bottom: 38),
                           child: PluginButton(
                             title: dic['auction.submit'],
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(EcosystemPage.route, arguments: {
-                                "balance": balance,
-                                "convertNetwork": _chainTo ??
-                                    widget.service.plugin.basic.name,
-                              });
+                            onPressed: () async {
+                              final params = await _getTxParams();
+                              if (params != null) {
+                                final res = await Navigator.of(context)
+                                    .pushNamed(XcmTxConfirmPage.route,
+                                        arguments: params);
+                                if (res != null) {
+                                  // Navigator.of(context).pop(res);
+                                  Navigator.of(context).popAndPushNamed(
+                                      EcosystemPage.route,
+                                      arguments: {
+                                        "balance": balance,
+                                        "convertNetwork": _chainTo ??
+                                            widget.service.plugin.basic.name,
+                                      });
+                                }
+                              }
                             },
                           )),
                     ],
                   ))));
     });
-  }
-
-  void _onSwitchCheckAlive(bool res, BigInt notTransferable) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-
-    if (!res) {
-      // todo: remove this after polkadot xcm alive
-      if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-          _chainTo == para_chain_name_acala) {
-        return;
-      }
-
-      showCupertinoDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: Text(dic['note']),
-            content: Text(dic['note.msg1']),
-            actions: <Widget>[
-              CupertinoButton(
-                child: Text(I18n.of(context)
-                    .getDic(i18n_full_dic_ui, 'common')['cancel']),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              CupertinoButton(
-                child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
-                onPressed: () {
-                  Navigator.of(context).pop();
-
-                  if (notTransferable > BigInt.zero) {
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
-                          title: Text(dic['note']),
-                          content: Text(dic['note.msg2']),
-                          actions: <Widget>[
-                            CupertinoButton(
-                              child: Text(I18n.of(context)
-                                  .getDic(i18n_full_dic_ui, 'common')['ok']),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    setState(() {
-                      _keepAlive = res;
-                    });
-                  }
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      setState(() {
-        _keepAlive = res;
-      });
-    }
   }
 }
 

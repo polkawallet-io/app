@@ -123,6 +123,7 @@ class _ConverToPageState extends State<ConverToPage> {
   }
 
   Future<Map> _getXcmParams(String amount) async {
+    //todo: as PluginAcala
     var plugin = (widget.service.plugin as PluginKarura);
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
@@ -273,6 +274,7 @@ class _ConverToPageState extends State<ConverToPage> {
                         _amountCtrl.text = "";
                         _fee = null;
                         _receiver = null;
+                        _isMax = false;
                       });
                     },
                     balance: balance,
