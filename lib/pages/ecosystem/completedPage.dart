@@ -37,15 +37,6 @@ class _CompletedPageState extends State<CompletedPage> {
     Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
         widget.service, networkNames, balance.symbol);
 
-    var plugin;
-    if (widget.service.plugin is PluginKarura) {
-      plugin = widget.service.plugin as PluginKarura;
-    } else if (widget.service.plugin is PluginAcala) {
-      plugin = widget.service.plugin as PluginAcala;
-    }
-    if (plugin != null) {
-      plugin.service.assets.updateTokenBalances(balance);
-    }
     setState(() {
       _connecting = true;
       _balances = balances;

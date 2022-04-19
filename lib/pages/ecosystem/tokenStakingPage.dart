@@ -1,12 +1,11 @@
-import 'dart:convert';
-
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
@@ -15,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:flutter_svg/svg.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
@@ -33,14 +33,23 @@ class _TokenStakingState extends State<TokenStaking> {
   Map<String, TokenBalanceData> _balances;
   Map<String, TokenBalanceData> _lBalances;
 
-  _getBalance(List<String> networkNames) async {
+  final Map<String, List<String>> _networkNames = {
+    "KSM": ["kusama", "moonriver", "bifrost", "parallel heiko"],
+    "LKSM": ["bifrost", "parallel heiko"],
+    "DOT": ["polkadot", "kusama"],
+    "LDOT": ["polkadot"]
+  };
+
+  _getBalance() async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
-    Map<String, TokenBalanceData> balances =
-        await TokenStakingApi.getBalance(widget.service, networkNames, token);
+
+    Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
+        widget.service, _networkNames[token], token);
 
     Map<String, TokenBalanceData> lpBalances = await TokenStakingApi.getBalance(
-        widget.service, networkNames, "L$token");
+        widget.service, _networkNames["L$token"], "L$token");
+
     setState(() {
       _connecting = true;
       _balances = balances;
@@ -51,7 +60,7 @@ class _TokenStakingState extends State<TokenStaking> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getBalance(["kusama"]);
+      _getBalance();
     });
     super.initState();
   }
@@ -109,13 +118,26 @@ class _TokenStakingState extends State<TokenStaking> {
                           itemCount:
                               _tab == 0 ? _balances.length : _lBalances.length,
                           itemBuilder: (context, index) {
-                            final plugin = PluginKusama();
+                            var plugin;
+                            if (widget.service.plugin is PluginKarura) {
+                              plugin = widget.service.plugin as PluginKarura;
+                            } else if (widget.service.plugin is PluginAcala) {
+                              plugin = widget.service.plugin as PluginAcala;
+                            }
+                            final name = _tab == 0
+                                ? _balances.keys.toList()[index]
+                                : _lBalances.keys.toList()[index];
+                            final icon = plugin
+                                .store.assets.crossChainIcons[name] as String;
                             final balance = _tab == 0
                                 ? _balances[_balances.keys.toList()[index]]
                                 : _lBalances[_lBalances.keys.toList()[index]];
+
                             return TokenItemView(
-                                plugin.basic.name,
-                                plugin.basic.icon,
+                                name,
+                                icon.contains('.svg')
+                                    ? SvgPicture.network(icon)
+                                    : Image.network(icon),
                                 balance,
                                 _tab == 1 ? token : "L$token",
                                 widget.service,
@@ -254,11 +276,11 @@ class _TokenItemViewState extends State<TokenItemView> {
                                   widget.service.plugin.basic.name) {
                                 if (widget.convertToKen.startsWith("L")) {
                                   //to mint
-                                  Navigator.of(context).popAndPushNamed(
+                                  Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
                                 } else {
                                   //to redeem
-                                  Navigator.of(context).popAndPushNamed(
+                                  Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
                                 }
                               } else {

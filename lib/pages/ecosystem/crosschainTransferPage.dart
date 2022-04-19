@@ -11,6 +11,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
@@ -147,8 +148,12 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   }
 
   Future<Map> _getXcmParams(String amount, {bool feeEstimate = false}) async {
-    //todo: as PluginAcala
-    final plugin = widget.service.plugin as PluginKarura;
+    var plugin;
+    if (widget.service.plugin is PluginKarura) {
+      plugin = widget.service.plugin as PluginKarura;
+    } else if (widget.service.plugin is PluginAcala) {
+      plugin = widget.service.plugin as PluginAcala;
+    }
     final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
@@ -246,8 +251,12 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
         fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
     return Observer(builder: (_) {
-      //todo: as PluginAcala
-      final plugin = widget.service.plugin as PluginKarura;
+      var plugin;
+      if (widget.service.plugin is PluginKarura) {
+        plugin = widget.service.plugin as PluginKarura;
+      } else if (widget.service.plugin is PluginAcala) {
+        plugin = widget.service.plugin as PluginAcala;
+      }
 
       final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
       final tokenXcmConfig = List<String>.from(

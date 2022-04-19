@@ -11,7 +11,6 @@ class ApiAssets {
   final _tokenStakingAssetsKey = 'token_stading_';
 
   void setTokenStakingAssets(String pubKey, Map<String, dynamic> data) {
-    print("setTokenStakingAssets====${jsonEncode(data)}");
     apiRoot.store.storage
         .write('$_tokenStakingAssetsKey$pubKey', jsonEncode(data));
   }
@@ -19,7 +18,6 @@ class ApiAssets {
   Map<String, dynamic> getTokenStakingAssets(String pubKey) {
     final tokenStakingAssets =
         apiRoot.store.storage.read('$_tokenStakingAssetsKey$pubKey');
-    print("getTokenStakingAssets====${tokenStakingAssets}");
     return tokenStakingAssets != null ? jsonDecode(tokenStakingAssets) : null;
   }
 

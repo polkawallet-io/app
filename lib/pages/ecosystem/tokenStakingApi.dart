@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:app/service/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class TokenStakingApi {
@@ -32,6 +34,7 @@ class TokenStakingApi {
                     ? false
                     : cacheTokenStakingAssets["$element-$token"]['amount'] !=
                         balance['amount']);
+
             balances[element] = balanceData;
             cacheTokenStakingAssets["$element-$token"] = {
               "amount": balance['amount']
@@ -39,9 +42,30 @@ class TokenStakingApi {
           }
         }
       }
+
+      var plugin;
+      if (service.plugin is PluginKarura) {
+        plugin = service.plugin as PluginKarura;
+      } else if (service.plugin is PluginAcala) {
+        plugin = service.plugin as PluginAcala;
+      }
+
+      final balance = await plugin.service.assets
+          .updateTokenBalances(balances.values.toList()[0]);
+      if (cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
+              null &&
+          cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
+              balance.amount) {
+        balance.isCacheChange = true;
+      }
+      cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
+          balance.amount;
+
       service.assets.setTokenStakingAssets(
           service.keyring.current.pubKey, cacheTokenStakingAssets);
-      return balances;
+      return Map<String, TokenBalanceData>()
+        ..addAll({service.plugin.basic.name: balance})
+        ..addAll(balances);
     }
     return null;
   }

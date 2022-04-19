@@ -5,6 +5,7 @@ import 'package:app/pages/ecosystem/transitingWidget.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -123,8 +124,12 @@ class _ConverToPageState extends State<ConverToPage> {
   }
 
   Future<Map> _getXcmParams(String amount) async {
-    //todo: as PluginAcala
-    var plugin = (widget.service.plugin as PluginKarura);
+    var plugin;
+    if (widget.service.plugin is PluginKarura) {
+      plugin = widget.service.plugin as PluginKarura;
+    } else if (widget.service.plugin is PluginAcala) {
+      plugin = widget.service.plugin as PluginAcala;
+    }
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
     final TokenBalanceData balance = data["balance"];
