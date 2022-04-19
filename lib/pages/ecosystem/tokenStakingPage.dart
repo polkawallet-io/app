@@ -237,7 +237,8 @@ class _TokenItemViewState extends State<TokenItemView> {
                     ],
                   )),
               Visibility(
-                  visible: _isOpen,
+                  visible: _isOpen &&
+                      Fmt.balanceInt(widget.balance.amount) != BigInt.zero,
                   child: Padding(
                       padding: EdgeInsets.only(bottom: 16),
                       child: Row(
