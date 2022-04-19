@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                 ))
           ]),
           onTap: () {
-            if (token == "dot") {
+            if (token == "DOT") {
               if (widget.service.plugin.basic.name != para_chain_name_acala) {
                 widget.service.plugin.appUtils.switchNetwork(
                   para_chain_name_acala,
