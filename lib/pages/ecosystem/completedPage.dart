@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -31,30 +32,11 @@ class _CompletedPageState extends State<CompletedPage> {
   Map<String, TokenBalanceData> _balances;
 
   _getBalance(List<String> networkNames) async {
-    final connected = await widget.service.plugin.sdk.webView
-        .evalJavascript('xcm.connectFromChain(${json.encode(networkNames)})');
-    Map<String, TokenBalanceData> balances = Map<String, TokenBalanceData>();
-    if (connected != null) {
-      final data = ModalRoute.of(context).settings.arguments as Map;
-      final TokenBalanceData balance = data["balance"];
-      for (int i = 0; i < networkNames.length; i++) {
-        final element = networkNames[i];
-        final data = await widget.service.plugin.sdk.webView.evalJavascript(
-            'xcm.getBalances("$element", "${widget.service.keyring.current.address}", ["${balance.symbol}"])');
-        if (data != null) {
-          final balanceVar = List.of(data)[0];
-          if (balanceVar != null) {
-            final balanceData = TokenBalanceData(
-              tokenNameId: balanceVar['tokenNameId'],
-              amount: balanceVar['amount'],
-              decimals: balanceVar['decimals'],
-              symbol: balance.symbol,
-            );
-            balances[element] = balanceData;
-          }
-        }
-      }
-    }
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final TokenBalanceData balance = data["balance"];
+    Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
+        widget.service, networkNames, balance.symbol);
+
     var plugin;
     if (widget.service.plugin is PluginKarura) {
       plugin = widget.service.plugin as PluginKarura;
@@ -62,8 +44,6 @@ class _CompletedPageState extends State<CompletedPage> {
       plugin = widget.service.plugin as PluginAcala;
     }
     if (plugin != null) {
-      final data = ModalRoute.of(context).settings.arguments as Map;
-      final TokenBalanceData balance = data["balance"];
       plugin.service.assets.updateTokenBalances(balance);
     }
     setState(() {

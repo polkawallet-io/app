@@ -111,7 +111,10 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                 Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
                         lengthMax: 8) +
                     ' ${balance.symbol}',
-                style: Theme.of(context).textTheme.headline1,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline1
+                    ?.copyWith(color: PluginColorsDark.headline1),
               ),
               dic['address']: Row(
                 children: [
@@ -123,7 +126,10 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                       child: Text(
                         Fmt.address(widget.service.keyring.current.address,
                             pad: 8),
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            ?.copyWith(color: PluginColorsDark.headline1),
                       ),
                     ),
                   ),
@@ -496,7 +502,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                     .pushNamed(XcmTxConfirmPage.route,
                                         arguments: params);
                                 if (res != null) {
-                                  // Navigator.of(context).pop(res);
                                   Navigator.of(context).popAndPushNamed(
                                       EcosystemPage.route,
                                       arguments: {

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
+import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
@@ -33,43 +34,13 @@ class _TokenStakingState extends State<TokenStaking> {
   Map<String, TokenBalanceData> _lBalances;
 
   _getBalance(List<String> networkNames) async {
-    final connected = await widget.service.plugin.sdk.webView
-        .evalJavascript('xcm.connectFromChain(${json.encode(networkNames)})');
-    Map<String, TokenBalanceData> balances = Map<String, TokenBalanceData>();
-    Map<String, TokenBalanceData> lpBalances = Map<String, TokenBalanceData>();
-    if (connected != null) {
-      final data = ModalRoute.of(context).settings.arguments as Map;
-      final String token = data["token"];
-      for (int i = 0; i < networkNames.length; i++) {
-        final element = networkNames[i];
-        final data = await widget.service.plugin.sdk.webView.evalJavascript(
-            'xcm.getBalances("$element", "${widget.service.keyring.current.address}", ["$token","L$token"])');
-        if (data != null) {
-          final balance = List.of(data)[0];
-          if (balance != null) {
-            final balanceData = TokenBalanceData(
-                tokenNameId: balance['tokenNameId'],
-                amount: balance['amount'],
-                decimals: balance['decimals'],
-                symbol: token,
-                name: token,
-                currencyId: {'Token': token});
-            balances[element] = balanceData;
-          }
-          final lbalance = List.of(data)[1];
-          if (lbalance != null) {
-            final balanceData = TokenBalanceData(
-                tokenNameId: lbalance['tokenNameId'],
-                amount: lbalance['amount'],
-                decimals: lbalance['decimals'],
-                symbol: "L$token",
-                name: "L$token",
-                currencyId: {'Token': "L$token"});
-            lpBalances[element] = balanceData;
-          }
-        }
-      }
-    }
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final String token = data["token"];
+    Map<String, TokenBalanceData> balances =
+        await TokenStakingApi.getBalance(widget.service, networkNames, token);
+
+    Map<String, TokenBalanceData> lpBalances = await TokenStakingApi.getBalance(
+        widget.service, networkNames, "L$token");
     setState(() {
       _connecting = true;
       _balances = balances;
@@ -102,6 +73,16 @@ class _TokenStakingState extends State<TokenStaking> {
                 margin: EdgeInsets.fromLTRB(16, 16, 0, 16),
                 child: PluginPageTitleTaps(
                   names: [token, "L$token"],
+                  isReadDot: [
+                    (_balances?.values ?? [])
+                            .toList()
+                            .indexWhere((element) => element.isCacheChange) >=
+                        0,
+                    (_lBalances?.values ?? [])
+                            .toList()
+                            .indexWhere((element) => element.isCacheChange) >=
+                        0
+                  ],
                   itemPadding:
                       EdgeInsets.symmetric(vertical: 3, horizontal: 40),
                   activeTab: _tab,
@@ -133,13 +114,13 @@ class _TokenStakingState extends State<TokenStaking> {
                                 ? _balances[_balances.keys.toList()[index]]
                                 : _lBalances[_lBalances.keys.toList()[index]];
                             return TokenItemView(
-                              plugin.basic.name,
-                              plugin.basic.icon,
-                              balance,
-                              _tab == 1 ? token : "L$token",
-                              key:
-                                  Key("${plugin.basic.name}-${balance.symbol}"),
-                            );
+                                plugin.basic.name,
+                                plugin.basic.icon,
+                                balance,
+                                _tab == 1 ? token : "L$token",
+                                widget.service,
+                                key: Key(
+                                    "${plugin.basic.name}-${balance.symbol}"));
                           },
                           separatorBuilder: (BuildContext context, int index) =>
                               Padding(
@@ -159,13 +140,15 @@ class _TokenStakingState extends State<TokenStaking> {
 }
 
 class TokenItemView extends StatefulWidget {
-  TokenItemView(this.name, this.icon, this.balance, this.convertToKen,
+  TokenItemView(
+      this.name, this.icon, this.balance, this.convertToKen, this.service,
       {Key key})
       : super(key: key);
   String name;
   String convertToKen;
   Widget icon;
   TokenBalanceData balance;
+  AppService service;
 
   @override
   State<TokenItemView> createState() => _TokenItemViewState();
@@ -210,9 +193,25 @@ class _TokenItemViewState extends State<TokenItemView> {
                           )
                         ],
                       ),
-                      Text(
-                          "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals)} ${widget.balance.symbol}",
-                          style: style)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals)} ${widget.balance.symbol}",
+                              style: style),
+                          Visibility(
+                              visible: widget.balance.isCacheChange,
+                              child: Container(
+                                width: 9,
+                                height: 9,
+                                margin:
+                                    EdgeInsets.only(right: 1, top: 1, left: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4.5),
+                                    color: Theme.of(context).errorColor),
+                              ))
+                        ],
+                      )
                     ],
                   )),
               Visibility(
@@ -251,12 +250,25 @@ class _TokenItemViewState extends State<TokenItemView> {
                             minSize: 25,
                             active: true,
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(ConverToPage.route, arguments: {
-                                "balance": widget.balance,
-                                "fromNetwork": widget.name,
-                                "convertToKen": widget.convertToKen
-                              });
+                              if (widget.name ==
+                                  widget.service.plugin.basic.name) {
+                                if (widget.convertToKen.startsWith("L")) {
+                                  //to mint
+                                  Navigator.of(context).popAndPushNamed(
+                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                } else {
+                                  //to redeem
+                                  Navigator.of(context).popAndPushNamed(
+                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
+                                }
+                              } else {
+                                Navigator.of(context)
+                                    .pushNamed(ConverToPage.route, arguments: {
+                                  "balance": widget.balance,
+                                  "fromNetwork": widget.name,
+                                  "convertToKen": widget.convertToKen
+                                });
+                              }
                             },
                           ),
                         ],
