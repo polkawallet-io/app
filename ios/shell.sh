@@ -22,26 +22,10 @@ build_path=${project_path}/build
 exportIpaPath=${project_path}/IPADir/${development_mode}
 
 
-echo "请输入你想要输出的数字? [ 1:app-store 2:ad-hoc] "
-
-##
-read number
-while([[ $number != 1 ]] && [[ $number != 2 ]])
-do
-echo "错误!只能输入1或者2！！！"
-echo "输入你想要输出的数字? [ 1:app-store 2:ad-hoc] "
-read number
-done
-
-if [ $number == 1 ];then
+# app-store
 development_mode=Release
 exportOptionsPlistPath=${project_path}/exportAppstore.plist
 exportIpaPath=${project_path}/IPADir/${development_mode}
-else
-development_mode=Release
-exportOptionsPlistPath=${project_path}/exportTest.plist
-exportIpaPath=${project_path}/IPADir/${development_mode}
-fi
 
 
 # echo '======* 正在清理工程 *======'
@@ -85,20 +69,8 @@ xcodebuild -exportArchive -archivePath ${build_path}/${project_name}.xcarchive \
 -exportOptionsPlist ${exportOptionsPlistPath} \
 -quiet || exit
 
-if [ $number == 1 ];then
 echo '======* 构建app并上传appStore成功 *======'
 rm -r $build_path
-exit 1
-
-elif [ -e $exportIpaPath/$scheme_name.ipa ]; then
-echo "======* ipa包已导出:$exportIpaPath/$scheme_name.ipa *======"
-open $exportIpaPath
-rm -r $build_path
-
-else
-echo '======* ipa包导出失败 *======'
-exit 1
-fi
 
 # if [ $number == 2 ];then
 # echo ''
