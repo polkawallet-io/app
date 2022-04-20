@@ -694,7 +694,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ConverToPage.route: (_) => ConverToPage(_service),
       CrosschainTransferPage.route: (_) => CrosschainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
-      EcosystemPage.route: (_) => EcosystemPage(),
+      EcosystemPage.route: (_) => EcosystemPage(_service),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/service/index.dart';
@@ -148,15 +149,47 @@ class _CompletedPageState extends State<CompletedPage> {
                                               PluginColorsDark.headline1,
                                           title:
                                               "${dic['ecosystem.convertTo']} $convertToKen",
-                                          onPressed: () {
+                                          onPressed: () async {
                                             if (convertToKen.startsWith("L")) {
                                               //to mint
-                                              Navigator.of(context).popAndPushNamed(
-                                                  "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                              final res = await Navigator.of(
+                                                      context)
+                                                  .pushNamed(
+                                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                              if (res != null) {
+                                                Navigator.of(context)
+                                                    .popAndPushNamed(
+                                                        EcosystemPage.route,
+                                                        arguments: {
+                                                      "balance": balance,
+                                                      "convertNetwork": widget
+                                                          .service
+                                                          .plugin
+                                                          .basic
+                                                          .name,
+                                                      "type": "minted"
+                                                    });
+                                              }
                                             } else {
                                               //to redeem
-                                              Navigator.of(context).popAndPushNamed(
-                                                  "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
+                                              final res = await Navigator.of(
+                                                      context)
+                                                  .pushNamed(
+                                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
+                                              if (res != null) {
+                                                Navigator.of(context)
+                                                    .popAndPushNamed(
+                                                        EcosystemPage.route,
+                                                        arguments: {
+                                                      "balance": balance,
+                                                      "convertNetwork": widget
+                                                          .service
+                                                          .plugin
+                                                          .basic
+                                                          .name,
+                                                      "type": "redeemed"
+                                                    });
+                                              }
                                             }
                                           },
                                         ),

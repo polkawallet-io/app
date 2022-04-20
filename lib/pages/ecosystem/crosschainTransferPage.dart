@@ -517,6 +517,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                         "balance": balance,
                                         "convertNetwork": _chainTo ??
                                             widget.service.plugin.basic.name,
+                                        "type": "transferred"
                                       });
                                 }
                               }

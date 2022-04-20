@@ -81,8 +81,11 @@ const Map<String, String> zhPublic = {
   'ecosystem.backList': '返回列表',
   'ecosystem.ecosystem': '生态',
   'ecosystem.transactionCompleted': '交易完成',
-  'ecosystem.msg1': '已被转入',
+  'ecosystem.msg1': '已被',
   'ecosystem.msg2': '网络',
+  'ecosystem.transferred': '转入',
+  'ecosystem.redeemed': '提取至',
+  'ecosystem.minted': '生成至',
   'ecosystem.seeTransaction': '查看交易明细',
   'ecosystem.inTransiting': '传输中'
 };

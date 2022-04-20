@@ -1,5 +1,6 @@
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
+import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -257,8 +258,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                                   CrosschainTransferPage.route,
                                   arguments: {
                                     "balance": widget.balance,
-                                    "fromNetwork": widget.name,
-                                    "convertToKen": widget.convertToKen
+                                    "fromNetwork": widget.name
                                   });
                             },
                           ),
@@ -272,17 +272,37 @@ class _TokenItemViewState extends State<TokenItemView> {
                             fontSize: 12,
                             minSize: 25,
                             active: true,
-                            onPressed: () {
+                            onPressed: () async {
                               if (widget.name ==
                                   widget.service.plugin.basic.name) {
                                 if (widget.convertToKen.startsWith("L")) {
                                   //to mint
-                                  Navigator.of(context).pushNamed(
+                                  final res = await Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                  if (res != null) {
+                                    Navigator.of(context).pushNamed(
+                                        EcosystemPage.route,
+                                        arguments: {
+                                          "balance": widget.balance,
+                                          "convertNetwork":
+                                              widget.service.plugin.basic.name,
+                                          "type": "minted"
+                                        });
+                                  }
                                 } else {
                                   //to redeem
-                                  Navigator.of(context).pushNamed(
+                                  final res = await Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
+                                  if (res != null) {
+                                    Navigator.of(context).pushNamed(
+                                        EcosystemPage.route,
+                                        arguments: {
+                                          "balance": widget.balance,
+                                          "convertNetwork":
+                                              widget.service.plugin.basic.name,
+                                          "type": "redeemed"
+                                        });
+                                  }
                                 }
                               } else {
                                 Navigator.of(context)

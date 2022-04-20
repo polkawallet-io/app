@@ -1,4 +1,6 @@
+import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
+import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -7,9 +9,15 @@ import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_sdk/utils/app.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:polkawallet_ui/utils/index.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 
 class EcosystemPage extends StatelessWidget {
-  const EcosystemPage({Key key}) : super(key: key);
+  EcosystemPage(this.service, {Key key}) : super(key: key);
+  AppService service;
 
   static final String route = '/ecosystem/ecosystem';
 
@@ -19,6 +27,10 @@ class EcosystemPage extends StatelessWidget {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
     final convertNetwork = data["convertNetwork"];
+    final type = data["type"];
+    final banner = service.store.settings.adBanners['ecosystem'] as List;
+    final index = banner.indexWhere(
+        (element) => element["network"] == service.plugin.basic.name);
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text(dic['ecosystem.ecosystem']),
@@ -44,7 +56,7 @@ class EcosystemPage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 77, vertical: 10),
                     child: Text(
-                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)} ${balance.symbol} ${dic['ecosystem.msg1']} ${convertNetwork} ${dic['ecosystem.msg2']}",
+                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)} ${balance.symbol} ${dic['ecosystem.msg1']} ${dic['ecosystem.$type']} $convertNetwork ${dic['ecosystem.msg2']}",
                       style: Theme.of(context)
                           .textTheme
                           .headline5
@@ -70,7 +82,9 @@ class EcosystemPage extends StatelessWidget {
                                     route.settings.name == TokenStaking.route),
                           ),
                           PluginOutlinedButtonSmall(
-                            content: dic['ecosystem.seeTransaction'],
+                            content: type == "transferred"
+                                ? dic['ecosystem.seeTransaction']
+                                : dic['ecosystem.crosschainTransfer'],
                             padding: EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 2),
                             margin: EdgeInsets.zero,
@@ -78,11 +92,71 @@ class EcosystemPage extends StatelessWidget {
                             fontSize: 16,
                             minSize: 34,
                             active: true,
-                            onPressed: () => Navigator.of(context).popUntil(
-                                (route) =>
-                                    route.settings.name == TokenStaking.route),
+                            onPressed: () {
+                              if (type == "transferred") {
+                                String networkName = service.plugin.basic.name;
+                                if (service.plugin.basic.isTestNet) {
+                                  networkName =
+                                      '${networkName.split('-')[0]}-testnet';
+                                }
+                                final snLink =
+                                    'https://$networkName.subscan.io/account/${service.keyring.current.address}';
+                                UI.launchURL(snLink);
+                                Navigator.of(context).pop();
+                              } else {
+                                Navigator.of(context).popAndPushNamed(
+                                    CrosschainTransferPage.route,
+                                    arguments: {
+                                      "balance": balance,
+                                      "fromNetwork": convertNetwork
+                                    });
+                              }
+                            },
                           ),
                         ],
+                      )),
+                  Visibility(
+                      visible: index >= 0,
+                      child: Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(top: 20),
+                        child: index >= 0
+                            ? GestureDetector(
+                                child: CachedNetworkImage(
+                                  width: double.infinity,
+                                  imageUrl: banner[index]['banner'],
+                                  placeholder: (context, url) =>
+                                      PluginLoadingWidget(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
+                                onTap: () {
+                                  final e = banner[index];
+                                  if (e['isRoute'] == true) {
+                                    final route = e['route'] as String;
+                                    final network = e['routeNetwork'] as String;
+                                    final args = e['routeArgs'] as Map;
+                                    if (network != service.plugin.basic.name) {
+                                      service.plugin.appUtils.switchNetwork(
+                                        network,
+                                        pageRoute:
+                                            PageRouteParams(route, args: args),
+                                      );
+                                    } else {
+                                      Navigator.of(context)
+                                          .pushNamed(route, arguments: args);
+                                    }
+                                  } else if (e['isDapp'] == true) {
+                                    Navigator.of(context).pushNamed(
+                                      DAppWrapperPage.route,
+                                      arguments: e['link'],
+                                    );
+                                  } else {
+                                    UI.launchURL(e['link']);
+                                  }
+                                },
+                              )
+                            : Container(),
                       ))
                 ],
               )),
