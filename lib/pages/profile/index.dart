@@ -137,8 +137,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: double.infinity,
                           height: double.infinity,
                           padding: EdgeInsets.only(right: 1, bottom: 1),
-                          child: Image.asset("assets/images/message.png",
-                              width: 24.h)),
+                          child: Center(
+                            child: Image.asset("assets/images/message.png",
+                                width: 24.h),
+                          )),
                       Visibility(
                           visible:
                               communityUnreadNumber + systemUnreadNumber > 0,

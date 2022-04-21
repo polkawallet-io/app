@@ -591,7 +591,7 @@ class _AssetsState extends State<AssetsPage> {
       ),
       actions: <Widget>[
         Container(
-            margin: EdgeInsets.only(right: 4.w),
+            margin: EdgeInsets.only(right: 6.w),
             child: v3.PopupMenuButton(
                 offset: Offset(-12, 52),
                 color: Theme.of(context).cardColor,
