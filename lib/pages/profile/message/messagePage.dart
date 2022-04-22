@@ -121,7 +121,7 @@ class _MessagePageState extends State<MessagePage> {
                 } else {
                   datas.addAll(widget.service.store.settings.systemMessages);
                 }
-                datas.sort((left, right) => left.time.compareTo(right.time));
+                datas.sort((left, right) => right.time.compareTo(left.time));
                 return ListView.builder(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     itemCount: datas.length,
