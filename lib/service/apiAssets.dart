@@ -29,14 +29,24 @@ class ApiAssets {
   }
 
   Future<void> fetchMarketPrices() async {
-    final Map res = await WalletApi.getTokenPrices();
+    final res = await Future.wait([
+      WalletApi.getTokenPrices(),
+      WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name)
+    ]);
     final Map<String, double> prices = {
       'KUSD': 1.0,
       'AUSD': 1.0,
       'USDT': 1.0,
     };
-    if (res != null && res['prices'] != null) {
-      prices.addAll(Map<String, double>.from(res['prices']));
+    if (res[0]['prices'] != null) {
+      prices.addAll(Map<String, double>.from(res[0]['prices']));
+    }
+    if (res[1]['data'] != null) {
+      final tokenData = res[1]['data']['detail'] as Map;
+      prices.addAll({
+        tokenData.keys.toList()[0]:
+            double.tryParse(tokenData.values.toList()[0]['price'].toString())
+      });
     }
 
     apiRoot.store.assets.setMarketPrices(prices);

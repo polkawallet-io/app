@@ -235,6 +235,38 @@ class WalletApi {
     return {};
   }
 
+  static Future<Map> getTokenPriceFromSubScan(String network) async {
+    final url =
+        'https://${network.toLowerCase()}.api.subscan.io/api/scan/token';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  //$=>￥
+  static Future<Map> getRate() async {
+    final url = '$_endpoint/price-server/rate';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return {};
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return {};
+    }
+  }
+
   static Future<List> getMessage(String _type, String _languageCode) async {
     try {
       Response res = await get(
