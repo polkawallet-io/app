@@ -1,18 +1,18 @@
 import 'package:app/service/index.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
-import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class MessagePage extends StatefulWidget {
   MessagePage(this.service, {Key key}) : super(key: key);

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
@@ -127,8 +126,10 @@ class _AssetsState extends State<AssetsPage> {
         if (widget.service.plugin.basic.name == para_chain_name_karura) {
           final symbol =
               (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-          Navigator.of(context).pushNamed('/assets/token/transfer',
-              arguments: {'tokenNameId': symbol});
+          Navigator.of(context).pushNamed('/assets/token/transfer', arguments: {
+            'tokenNameId': symbol,
+            'address': data.address.address
+          });
           return;
         }
         Navigator.of(context).pushNamed(
