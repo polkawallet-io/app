@@ -67,4 +67,7 @@ const Map<String, String> zhPublic = {
   'event.0415.8': '跨链转帐',
   'event.0415.9': '参与 Liquid Staking',
   'event.0415.10': '参与债仓挖矿',
+  'hub.staking': '质押',
+  'hub.cover.tokenStaking':
+      '提供您在当前生态中所有网络上分布的资产显示，您可以选择进行跨链转账，或是通过HOMA赋予其流动性，从而参加更多生态项目。',
 };

@@ -12,6 +12,7 @@ import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/pluginPage.dart';
@@ -683,6 +684,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       MessagePage.route: (_) => MessagePage(_service),
 
       PluginPage.route: (_) => PluginPage(_service),
+
+      //ecosystem
+      TokenStaking.route: (_) => TokenStaking(),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),

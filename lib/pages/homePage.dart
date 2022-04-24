@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
+import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -165,6 +166,79 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  MetaHubItem buildMetaHubEcosystem() {
+    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    var token = "dot";
+    if (widget.service.plugin.basic.name == relay_chain_name_ksm ||
+        widget.service.plugin.basic.name == para_chain_name_karura ||
+        widget.service.plugin.basic.name == para_chain_name_bifrost ||
+        widget.service.plugin.basic.name == para_chain_name_statemine) {
+      token = "ksm";
+    }
+    return MetaHubItem(
+        "${token.toUpperCase()} ${dic['hub.staking']}",
+        GestureDetector(
+          child: Column(children: [
+            Expanded(
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/public/hub_token_staking.png'),
+                  Container(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      dic['hub.cover.tokenStaking'],
+                      textAlign: TextAlign.justify,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontSize: 14, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            )),
+            Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(36, 255, 255, 255),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  dic['hub.enter'],
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                      fontSize: 20, color: Theme.of(context).errorColor),
+                ))
+          ]),
+          onTap: () {
+            if (token == "dot") {
+              if (widget.service.plugin.basic.name != para_chain_name_acala) {
+                widget.service.plugin.appUtils.switchNetwork(
+                  para_chain_name_acala,
+                  pageRoute: PageRouteParams(TokenStaking.route,
+                      args: {"token": token}),
+                );
+                return;
+              }
+            } else {
+              if (widget.service.plugin.basic.name != para_chain_name_karura) {
+                widget.service.plugin.appUtils.switchNetwork(
+                  para_chain_name_karura,
+                  pageRoute: PageRouteParams(TokenStaking.route,
+                      args: {"token": token}),
+                );
+                return;
+              }
+            }
+            Navigator.of(context).pushNamed(
+              TokenStaking.route,
+              arguments: {"token": token},
+            );
+          },
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<HomeNavItem> pages = [
@@ -195,6 +269,7 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
+      items.add(buildMetaHubEcosystem());
       pluginPages.forEach((element) {
         if (element.isAdapter) {
           items.add(MetaHubItem(element.text, element.content));
