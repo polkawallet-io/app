@@ -67,4 +67,9 @@ const Map<String, String> zhPublic = {
   'event.0415.8': '跨链转帐',
   'event.0415.9': '参与 Liquid Staking',
   'event.0415.10': '参与债仓挖矿',
+  'hub.cover.browser': '使用您的 Polkawallet 帐户浏览不同网络的网站。您可以通过”最近使用“功能直接进入特定网页。',
+  'hub.broswer': '浏览器',
+  'hub.broswer.welcome': '欢迎来到波卡钱包浏览器\n随时随地浏览任何网页',
+  'hub.broswer.search': '搜索或输入url....',
+  'hub.broswer.latest': '最近'
 };

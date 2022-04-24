@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
+import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
@@ -165,6 +166,50 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  MetaHubItem buildMetaHubBrowser() {
+    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    return MetaHubItem(
+        dic['hub.broswer'],
+        GestureDetector(
+          child: Column(children: [
+            Expanded(
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/public/hub_browser.png'),
+                  Container(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      dic['hub.cover.browser'],
+                      textAlign: TextAlign.justify,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontSize: 14, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            )),
+            Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(36, 255, 255, 255),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  dic['hub.enter'],
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                      fontSize: 20, color: Theme.of(context).errorColor),
+                ))
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed(BrowserPage.route);
+          },
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<HomeNavItem> pages = [
@@ -195,6 +240,7 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
+      items.add(buildMetaHubBrowser());
       pluginPages.forEach((element) {
         if (element.isAdapter) {
           items.add(MetaHubItem(element.text, element.content));

@@ -74,4 +74,11 @@ const Map<String, String> enPublic = {
   'event.0415.8': 'Cross-Chain Transfer',
   'event.0415.9': 'Go Liquid Staking',
   'event.0415.10': 'Join Collateral Staking',
+  'hub.cover.browser':
+      'Browsing the website of different network by using your accounts from Polkawallet. You can entry the specific web directly through the feature “lastest”.',
+  'hub.broswer': 'Broswer',
+  'hub.broswer.welcome':
+      'Welcome to Polkawallet browser\nNavigate any network, anywhere, anytime',
+  'hub.broswer.search': 'Search or enter url....',
+  'hub.broswer.latest': 'Latest'
 };
