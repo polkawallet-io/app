@@ -46,23 +46,42 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   String _error1;
   bool _isMax = false;
   String _chainTo;
+  List<String> _chainToList;
 
   String _fee;
 
   @override
   void initState() {
     super.initState();
-    _chainTo = widget.service.plugin.basic.name;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getTxFee();
+      final data = ModalRoute.of(context).settings.arguments as Map;
+      final fromNetwork = data["fromNetwork"];
+      final TokenBalanceData balance = data["balance"];
+      var plugin;
+      if (widget.service.plugin is PluginKarura) {
+        plugin = widget.service.plugin as PluginKarura;
+      } else if (widget.service.plugin is PluginAcala) {
+        plugin = widget.service.plugin as PluginAcala;
+      }
+
+      final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+      final tokenXcmConfig = List<String>.from(
+          (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
+      final to = [widget.service.plugin.basic.name, ...tokenXcmConfig];
+      to.removeWhere((element) => element == fromNetwork);
+      setState(() {
+        _chainToList = to;
+        _chainTo = to.length > 0 ? to[0] : null;
+      });
     });
   }
 
   void _onSetMax(BigInt max, int decimals) {
     setState(() {
       _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
-
+      _error1 = null;
       _isMax = true;
     });
   }
@@ -92,6 +111,14 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
 
       final xcmParams = await _getXcmParams(
           Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
+      var plugin;
+      if (widget.service.plugin is PluginKarura) {
+        plugin = widget.service.plugin as PluginKarura;
+      } else if (widget.service.plugin is PluginAcala) {
+        plugin = widget.service.plugin as PluginAcala;
+      }
+      final fromIcon =
+          plugin.store.assets.crossChainIcons[fromNetwork] as String;
       if (xcmParams != null) {
         return XcmTxConfirmParams(
             txTitle:
@@ -133,7 +160,9 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
             },
             params: xcmParams['params'],
             chainFrom: fromNetwork,
-            chainFromIcon: Container(), //todo chainFromIcon
+            chainFromIcon: fromIcon.contains('.svg')
+                ? SvgPicture.network(fromIcon)
+                : Image.network(fromIcon),
             feeToken: balance.symbol,
             isPlugin: true);
       }
@@ -244,48 +273,50 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     final subTitleStyle = TextStyle(fontSize: 12, height: 1);
     final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
         fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
-    return Observer(builder: (_) {
-      var plugin;
-      if (widget.service.plugin is PluginKarura) {
-        plugin = widget.service.plugin as PluginKarura;
-      } else if (widget.service.plugin is PluginAcala) {
-        plugin = widget.service.plugin as PluginAcala;
-      }
+    return PluginScaffold(
+        appBar: PluginAppBar(
+          title: Text(dic['ecosystem.crosschainTransfer']),
+          centerTitle: true,
+        ),
+        body: Observer(builder: (_) {
+          if (_chainToList == null || _chainToList.length == 0) {
+            return Container();
+          }
+          var plugin;
+          if (widget.service.plugin is PluginKarura) {
+            plugin = widget.service.plugin as PluginKarura;
+          } else if (widget.service.plugin is PluginAcala) {
+            plugin = widget.service.plugin as PluginAcala;
+          }
 
-      final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-      final tokenXcmConfig = List<String>.from(
-          (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
-      final crossChainIcons = Map<String, Widget>.from(
-          plugin.store.assets.crossChainIcons.map((k, v) => MapEntry(
-              k.toUpperCase(),
-              (v as String).contains('.svg')
-                  ? SvgPicture.network(v)
-                  : Image.network(v))));
+          final tokensConfig =
+              plugin.store.setting.remoteConfig['tokens'] ?? {};
+          final crossChainIcons = Map<String, Widget>.from(
+              plugin.store.assets.crossChainIcons.map((k, v) => MapEntry(
+                  k.toUpperCase(),
+                  (v as String).contains('.svg')
+                      ? SvgPicture.network(v)
+                      : Image.network(v))));
 
-      final destChainName = _chainTo;
+          final destChainName = _chainTo;
 
-      final destExistDeposit =
-          Fmt.balanceInt(xcm_send_fees[destChainName]['existentialDeposit']);
-      final destFee = Fmt.balanceInt(xcm_send_fees[destChainName]['fee']);
+          final destExistDeposit = Fmt.balanceInt(
+              xcm_send_fees[destChainName]['existentialDeposit']);
+          final destFee = Fmt.balanceInt(xcm_send_fees[destChainName]['fee']);
 
-      final existDeposit = Fmt.balanceInt(
-          ((widget.service.plugin.networkConst['balances'] ??
-                      {})['existentialDeposit'] ??
-                  0)
-              .toString());
+          final existDeposit = Fmt.balanceInt(
+              ((widget.service.plugin.networkConst['balances'] ??
+                          {})['existentialDeposit'] ??
+                      0)
+                  .toString());
 
-      final isFromKar = fromNetwork == plugin_name_karura;
-      final sendFee =
-          List.of((tokensConfig['xcmSendFee'] ?? {})[destChainName] ?? []);
+          final isFromKar = fromNetwork == plugin_name_karura;
+          final sendFee =
+              List.of((tokensConfig['xcmSendFee'] ?? {})[destChainName] ?? []);
 
-      final sendFeeAmount =
-          sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
-      return PluginScaffold(
-          appBar: PluginAppBar(
-            title: Text(dic['ecosystem.crosschainTransfer']),
-            centerTitle: true,
-          ),
-          body: SafeArea(
+          final sendFeeAmount =
+              sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
+          return SafeArea(
               child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -326,7 +357,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     _selectChain(context, 0, crossChainIcons,
-                                        [plugin.basic.name, ...tokenXcmConfig]);
+                                        _chainToList);
                                   },
                                   behavior: HitTestBehavior.opaque,
                                   child: Row(
@@ -349,7 +380,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                 ),
                               ),
                               PluginInputBalance(
-                                margin: EdgeInsets.only(top: 24, bottom: 24),
+                                margin: EdgeInsets.only(
+                                    top: 24, bottom: _error1 == null ? 24 : 2),
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
@@ -371,6 +403,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                 onClear: () {
                                   setState(() {
                                     _error1 = null;
+                                    _amountCtrl.text = "";
                                     _isMax = false;
                                   });
                                 },
@@ -518,8 +551,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                             },
                           )),
                     ],
-                  ))));
-    });
+                  )));
+        }));
   }
 }
 

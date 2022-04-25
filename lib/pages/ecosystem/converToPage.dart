@@ -5,6 +5,7 @@ import 'package:app/pages/ecosystem/transitingWidget.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
@@ -71,6 +72,14 @@ class _ConverToPageState extends State<ConverToPage> {
       if (xcmParams != null) {
         final convertToKen = data["convertToKen"];
         final fromNetwork = data["fromNetwork"];
+        var plugin;
+        if (widget.service.plugin is PluginKarura) {
+          plugin = widget.service.plugin as PluginKarura;
+        } else if (widget.service.plugin is PluginAcala) {
+          plugin = widget.service.plugin as PluginAcala;
+        }
+        final fromIcon =
+            plugin.store.assets.crossChainIcons[fromNetwork] as String;
         return XcmTxConfirmParams(
             txTitle:
                 "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
@@ -112,7 +121,9 @@ class _ConverToPageState extends State<ConverToPage> {
             },
             params: xcmParams['params'],
             chainFrom: fromNetwork,
-            chainFromIcon: Container(), //todo chainFromIcon
+            chainFromIcon: fromIcon.contains('.svg')
+                ? SvgPicture.network(fromIcon)
+                : Image.network(fromIcon),
             feeToken: balance.symbol,
             isPlugin: true,
             waitingWidget: TransitingWidget(
