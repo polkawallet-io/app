@@ -111,10 +111,9 @@ class _BrowserPageState extends State<BrowserPage> {
                         title: dic['hub.broswer.latest'],
                         backgroundColor: PluginColorsDark.headline1,
                       ),
-                      Icon(
-                        Icons.keyboard_arrow_right,
-                        color: PluginColorsDark.headline1,
-                        size: 20,
+                      Image.asset(
+                        "assets/images/browser_latest.png",
+                        height: 10,
                       )
                     ],
                   ),
