@@ -686,7 +686,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       PluginPage.route: (_) => PluginPage(_service),
 
       //browser
-      BrowserPage.route: (_) => BrowserPage(),
+      BrowserPage.route: (_) => BrowserPage(_service),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/service/walletApi.dart';
+import 'package:app/store/types/dappData.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
@@ -54,6 +55,19 @@ abstract class _SettingsStore with Store {
 
   @observable
   int systemUnreadNumber = 0;
+
+  @observable
+  List<dynamic> dappAllTags = [];
+
+  @observable
+  List<dynamic> dapps = [];
+
+  Future<void> initDapps() async {
+    final dappConfig = await WalletApi.getDappsConfig();
+    print(dappConfig);
+    dappAllTags = dappConfig["allTag"];
+    dapps = dappConfig["datas"];
+  }
 
   Future<void> initMessage(String _languageCode) async {
     final dataCommunity = await WalletApi.getMessage("contents", _languageCode);

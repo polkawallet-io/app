@@ -1,12 +1,16 @@
+import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class BrowserPage extends StatefulWidget {
-  BrowserPage({Key key}) : super(key: key);
+  BrowserPage(this.service, {Key key}) : super(key: key);
+  final AppService service;
 
   static final String route = '/browser';
 
@@ -15,9 +19,18 @@ class BrowserPage extends StatefulWidget {
 }
 
 class _BrowserPageState extends State<BrowserPage> {
+  int _tag = 0;
+
   @override
   Widget build(BuildContext context) {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    final dapps = _tag == 0
+        ? widget.service.store.settings.dapps
+        : widget.service.store.settings.dapps
+            .where((e) => e["tag"]
+                .join(" #")
+                .contains(widget.service.store.settings.dappAllTags[_tag - 1]))
+            .toList();
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text(dic['hub.broswer']),
@@ -99,9 +112,11 @@ class _BrowserPageState extends State<BrowserPage> {
                 ],
               ),
             ),
-            Container(
+            Expanded(
+                child: Container(
               margin: EdgeInsets.only(left: 16, top: 20, right: 16, bottom: 24),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,15 +136,134 @@ class _BrowserPageState extends State<BrowserPage> {
                       width: double.infinity,
                       padding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+                      margin: EdgeInsets.only(bottom: 25),
                       decoration: BoxDecoration(
                           color: Color(0xFFFFFFFF).withAlpha(18),
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(8),
                               topRight: Radius.circular(8),
-                              bottomRight: Radius.circular(8))))
+                              bottomRight: Radius.circular(8)))),
+                  PluginTextTag(
+                    padding: EdgeInsets.zero,
+                    title: "Fast Pass",
+                    backgroundColor: PluginColorsDark.headline1,
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(top: 14, bottom: 18),
+                      height: 22,
+                      width: double.infinity,
+                      child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              Container(width: 6),
+                          itemCount:
+                              widget.service.store.settings.dappAllTags.length +
+                                  1,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                                onTap: () {
+                                  if (_tag != index) {
+                                    setState(() {
+                                      _tag = index;
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                    child: Text(
+                                      index == 0
+                                          ? "all"
+                                          : widget.service.store.settings
+                                              .dappAllTags[index - 1],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          ?.copyWith(
+                                              fontSize: 10,
+                                              fontWeight: _tag == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              color: _tag == index
+                                                  ? Colors.black
+                                                  : PluginColorsDark.headline1),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 7, vertical: 3),
+                                    decoration: BoxDecoration(
+                                        color: _tag == index
+                                            ? PluginColorsDark.primary
+                                            : Color(0xFFFFFFFF).withAlpha(43),
+                                        borderRadius:
+                                            BorderRadius.circular(6))));
+                          })),
+                  Expanded(
+                      child: GridView.builder(
+                          itemCount: dapps.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16.0,
+                                  crossAxisSpacing: 18.0,
+                                  childAspectRatio: 170.0 / 48),
+                          itemBuilder: (BuildContext context, int index) {
+                            final dapp = dapps[index];
+                            return GestureDetector(
+                                onTap: () => Navigator.of(context).pushNamed(
+                                      DAppWrapperPage.route,
+                                      arguments: dapp['detailUrl'],
+                                    ),
+                                child: Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Color(0x24FFFFFF),
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                          width: 32,
+                                          height: 32,
+                                          margin: EdgeInsets.only(right: 8),
+                                          child: (dapp["icon"] as String)
+                                                  .contains('.svg')
+                                              ? SvgPicture.network(dapp["icon"])
+                                              : Image.network(dapp["icon"])),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            dapp["name"],
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                ?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: PluginColorsDark
+                                                        .headline1),
+                                          ),
+                                          Expanded(
+                                              child: Text(
+                                                  "#${dapp["tag"].join(" #")}",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline5
+                                                      ?.copyWith(
+                                                          fontSize: 10,
+                                                          color:
+                                                              PluginColorsDark
+                                                                  .headline1))),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ));
+                          }))
                 ],
               ),
-            )
+            ))
           ],
         )));
   }

@@ -144,6 +144,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setupJPush();
       _setupWssNotifyTimer();
+      widget.service.store.settings.initDapps();
     });
   }
 
