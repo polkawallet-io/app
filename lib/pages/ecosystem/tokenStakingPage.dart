@@ -5,6 +5,7 @@ import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -15,7 +16,6 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:flutter_svg/svg.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
@@ -31,8 +31,6 @@ class _TokenStakingState extends State<TokenStaking> {
   int _tab = 0;
 
   bool _connecting = false;
-  Map<String, TokenBalanceData> _balances;
-  Map<String, TokenBalanceData> _lBalances;
 
   final Map<String, List<String>> _networkNames = {
     "KSM": ["kusama", "moonriver", "bifrost", "parallel heiko"],
@@ -45,16 +43,14 @@ class _TokenStakingState extends State<TokenStaking> {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
 
-    Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
+    await TokenStakingApi.getBalance(
         widget.service, _networkNames[token], token);
 
-    Map<String, TokenBalanceData> lpBalances = await TokenStakingApi.getBalance(
+    await TokenStakingApi.getBalance(
         widget.service, _networkNames["L$token"], "L$token");
 
     setState(() {
       _connecting = true;
-      _balances = balances;
-      _lBalances = lpBalances;
     });
   }
 
@@ -63,6 +59,11 @@ class _TokenStakingState extends State<TokenStaking> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getBalance();
     });
+    TokenStakingApi.refresh = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
     super.initState();
   }
 
@@ -71,6 +72,9 @@ class _TokenStakingState extends State<TokenStaking> {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
+
+    final _balances = TokenStakingApi.balances[token];
+    final _lBalances = TokenStakingApi.balances["L$token"];
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text("$token ${dic['hub.staking']}"),

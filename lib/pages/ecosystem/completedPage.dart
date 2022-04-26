@@ -6,8 +6,6 @@ import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -36,7 +34,8 @@ class _CompletedPageState extends State<CompletedPage> {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
     Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
-        widget.service, networkNames, balance.symbol);
+        widget.service, networkNames, balance.symbol,
+        isCachaChange: false);
 
     setState(() {
       _connecting = true;

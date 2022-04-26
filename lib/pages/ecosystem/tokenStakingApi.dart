@@ -6,8 +6,14 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class TokenStakingApi {
+  static Map<String, Map<String, TokenBalanceData>> balances =
+      Map<String, Map<String, TokenBalanceData>>();
+
+  static Function refresh;
+
   static Future<Map<String, TokenBalanceData>> getBalance(
-      AppService service, List<String> networkNames, String token) async {
+      AppService service, List<String> networkNames, String token,
+      {bool isCachaChange = true}) async {
     final connected = await service.plugin.sdk.webView
         .evalJavascript('xcm.connectFromChain(${json.encode(networkNames)})');
     if (connected != null) {
@@ -31,7 +37,8 @@ class TokenStakingApi {
                 currencyId: {'Token': token},
                 detailPageRoute: "/assets/token/detail",
                 isCacheChange: cacheTokenStakingAssets == null ||
-                        cacheTokenStakingAssets["$element-$token"] == null
+                        cacheTokenStakingAssets["$element-$token"] == null ||
+                        isCachaChange == false
                     ? false
                     : cacheTokenStakingAssets["$element-$token"]['amount'] !=
                         balance['amount']);
@@ -56,7 +63,8 @@ class TokenStakingApi {
       if (cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
               null &&
           cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
-              balance.amount) {
+              balance.amount &&
+          isCachaChange) {
         balance.isCacheChange = true;
       }
       cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
@@ -64,9 +72,20 @@ class TokenStakingApi {
 
       service.assets.setTokenStakingAssets(
           service.keyring.current.pubKey, cacheTokenStakingAssets);
-      return Map<String, TokenBalanceData>()
+
+      final datas = Map<String, TokenBalanceData>()
         ..addAll({service.plugin.basic.name: balance})
         ..addAll(balances);
+
+      if (TokenStakingApi.balances[token] == null) {
+        TokenStakingApi.balances[token] = datas;
+      } else {
+        TokenStakingApi.balances[token].addAll(datas);
+      }
+      if (!isCachaChange && TokenStakingApi.refresh != null) {
+        TokenStakingApi.refresh();
+      }
+      return datas;
     }
     return null;
   }
