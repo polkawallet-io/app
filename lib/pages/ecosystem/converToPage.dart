@@ -52,13 +52,13 @@ class _ConverToPageState extends State<ConverToPage> {
     });
   }
 
-  void _onSetMax(BigInt max, int decimals) {
-    setState(() {
-      _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
-      _getTxFee(_amountCtrl.text);
-      _isMax = true;
-    });
-  }
+  // void _onSetMax(BigInt max, int decimals) {
+  //   setState(() {
+  //     _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
+  //     _getTxFee(_amountCtrl.text);
+  //     _isMax = true;
+  //   });
+  // }
 
   Future<XcmTxConfirmParams> _getTxParams() async {
     if (_error1 == null && _amountCtrl.text.trim().length > 0) {
@@ -268,10 +268,10 @@ class _ConverToPageState extends State<ConverToPage> {
                     titleTag:
                         "${dic['ecosystem.bringTo']} ${widget.service.plugin.basic.name}",
                     inputCtrl: _amountCtrl,
-                    onSetMax: (Fmt.balanceInt(balance.amount) ?? BigInt.zero) >
-                            BigInt.zero
-                        ? (max) => _onSetMax(max, balance.decimals)
-                        : null,
+                    // onSetMax: (Fmt.balanceInt(balance.amount) ?? BigInt.zero) >
+                    //         BigInt.zero
+                    //     ? (max) => _onSetMax(max, balance.decimals)
+                    //     : null,
                     onInputChange: (v) {
                       var error = _validateAmount(
                           v, Fmt.balanceInt(balance.amount), balance.decimals);

@@ -4,9 +4,9 @@ import 'package:app/common/consts.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:app/utils/i18n/index.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -14,21 +14,21 @@ import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_plugin_laminar/pages/currencySelectPage.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginTagCard.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
+import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTagCard.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_sdk/api/types/txInfoData.dart';
-import 'package:polkawallet_ui/components/currencyWithIcon.dart';
-import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
-import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
-import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 
 class CrosschainTransferPage extends StatefulWidget {
   CrosschainTransferPage(this.service, {Key key}) : super(key: key);
@@ -44,7 +44,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   TextEditingController _amountCtrl = TextEditingController();
 
   String _error1;
-  bool _isMax = false;
   String _chainTo;
   List<String> _chainToList;
 
@@ -78,14 +77,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     });
   }
 
-  void _onSetMax(BigInt max, int decimals) {
-    setState(() {
-      _amountCtrl.text = Fmt.bigIntToDouble(max, decimals).toStringAsFixed(6);
-      _error1 = null;
-      _isMax = true;
-    });
-  }
-
   String _validateAmount(String value, BigInt available, int decimals) {
     final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
 
@@ -95,7 +86,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
       return error;
     }
     BigInt input = Fmt.tokenInt(v, decimals);
-    if (!_isMax && input > available) {
+    if (input > available) {
       return dic['amount.low'];
     }
     return null;
@@ -300,19 +291,29 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
 
           final destChainName = _chainTo;
 
-          final destExistDeposit = Fmt.balanceInt(
-              xcm_send_fees[destChainName]['existentialDeposit']);
-          final destFee = Fmt.balanceInt(xcm_send_fees[destChainName]['fee']);
-
-          final existDeposit = Fmt.balanceInt(
-              ((widget.service.plugin.networkConst['balances'] ??
-                          {})['existentialDeposit'] ??
-                      0)
-                  .toString());
-
           final isFromKar = fromNetwork == plugin_name_karura;
+
+          final tokenXcmInfo = (tokensConfig['xcmInfo'] ??
+                  {})[isFromKar ? destChainName : fromNetwork] ??
+              {};
+
+          final isTokenFromStateMine =
+              balance.src != null && balance.src['Parachain'] == '1,000';
+
+          final destExistDeposit = isFromKar
+              ? Fmt.balanceInt(
+                  (tokenXcmInfo[balance.symbol] ?? {})['existentialDeposit'])
+              : Fmt.balanceInt(balance.minBalance);
+          final existDeposit = Fmt.balanceInt(plugin
+              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
+          final destFee = isFromKar
+              ? isTokenFromStateMine
+                  ? BigInt.zero
+                  : Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['fee'])
+              : Fmt.balanceInt(
+                  (tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
           final sendFee =
-              List.of((tokensConfig['xcmSendFee'] ?? {})[destChainName] ?? []);
+              List.of((tokenXcmInfo[balance.symbol] ?? {})['sendFee'] ?? []);
 
           final sendFeeAmount =
               sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
@@ -385,11 +386,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
-                                onSetMax: (Fmt.balanceInt(balance.amount) ??
-                                            BigInt.zero) >
-                                        BigInt.zero
-                                    ? (max) => _onSetMax(max, balance.decimals)
-                                    : null,
                                 onInputChange: (v) {
                                   var error = _validateAmount(
                                       v,
@@ -397,14 +393,12 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                       balance.decimals);
                                   setState(() {
                                     _error1 = error;
-                                    _isMax = false;
                                   });
                                 },
                                 onClear: () {
                                   setState(() {
                                     _error1 = null;
                                     _amountCtrl.text = "";
-                                    _isMax = false;
                                   });
                                 },
                                 balance: balance,

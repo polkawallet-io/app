@@ -29,6 +29,7 @@ class TokenStakingApi {
                 symbol: token,
                 name: token,
                 currencyId: {'Token': token},
+                detailPageRoute: "/assets/token/detail",
                 isCacheChange: cacheTokenStakingAssets == null ||
                         cacheTokenStakingAssets["$element-$token"] == null
                     ? false
