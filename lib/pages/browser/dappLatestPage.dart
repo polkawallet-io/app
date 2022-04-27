@@ -1,8 +1,10 @@
 import 'package:app/pages/browser/broswerApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -22,6 +24,29 @@ class DappLatestPage extends StatefulWidget {
 class _DappLatestPageState extends State<DappLatestPage> {
   bool _isdelete = false;
 
+  Future<bool> _showCupertinoDialog(String message) async {
+    final bool res = await showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return CupertinoAlertDialog(
+            content: Text(message),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(I18n.of(context)
+                    .getDic(i18n_full_dic_karura, 'common')['cancel']),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              CupertinoDialogAction(
+                child: Text(I18n.of(context)
+                    .getDic(i18n_full_dic_karura, 'common')['ok']),
+                onPressed: () => Navigator.of(context).pop(true),
+              )
+            ],
+          );
+        });
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
@@ -37,7 +62,7 @@ class _DappLatestPageState extends State<DappLatestPage> {
         },
         child: PluginScaffold(
             appBar: PluginAppBar(
-              title: Text(dic['hub.broswer.latest']),
+              title: Text(dic['hub.browser.latest']),
               centerTitle: true,
               leading: PluginIconButton(
                 icon: SvgPicture.asset(
@@ -60,15 +85,19 @@ class _DappLatestPageState extends State<DappLatestPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         GestureDetector(
-                            onTap: () {
-                              BrowserApi.deleteAllLatest(widget.service);
-                              setState(() {
-                                _isdelete = true;
-                              });
+                            onTap: () async {
+                              final bool res = await _showCupertinoDialog(
+                                  dic['hub.browser.clearAllMessage']);
+                              if (res) {
+                                BrowserApi.deleteAllLatest(widget.service);
+                                setState(() {
+                                  _isdelete = true;
+                                });
+                              }
                             },
                             child: Container(
                                 child: Text(
-                                  dic['hub.broswer.clearAll'],
+                                  dic['hub.browser.clearAll'],
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline5
@@ -141,16 +170,21 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                         ),
                                       ),
                                       endActionPane: ActionPane(
-                                        extentRatio: 0.2,
+                                        extentRatio: 0.15,
                                         motion: ScrollMotion(),
                                         children: [
                                           SlidableAction(
-                                            onPressed: (context) {
-                                              BrowserApi.deleteLatest(
-                                                  e, widget.service);
-                                              setState(() {
-                                                _isdelete = true;
-                                              });
+                                            onPressed: (context) async {
+                                              final bool res =
+                                                  await _showCupertinoDialog(dic[
+                                                      'hub.browser.clearMessage']);
+                                              if (res) {
+                                                BrowserApi.deleteLatest(
+                                                    e, widget.service);
+                                                setState(() {
+                                                  _isdelete = true;
+                                                });
+                                              }
                                             },
                                             backgroundColor:
                                                 PluginColorsDark.primary,

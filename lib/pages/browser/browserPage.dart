@@ -1,4 +1,5 @@
 import 'package:app/pages/browser/broswerApi.dart';
+import 'package:app/pages/browser/browserSearch.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -8,6 +9,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
+import 'package:app/pages/browser/search.dart' as search;
 
 class BrowserPage extends StatefulWidget {
   BrowserPage(this.service, {Key key}) : super(key: key);
@@ -35,7 +37,7 @@ class _BrowserPageState extends State<BrowserPage> {
     var dappLatests = BrowserApi.getDappLatest(widget.service);
     return PluginScaffold(
         appBar: PluginAppBar(
-          title: Text(dic['hub.broswer']),
+          title: Text(dic['hub.browser']),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -61,7 +63,7 @@ class _BrowserPageState extends State<BrowserPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${dic['hub.broswer'].toUpperCase()}",
+                          "${dic['hub.browser'].toUpperCase()}",
                           style: Theme.of(context)
                               .textTheme
                               .headline1
@@ -72,7 +74,7 @@ class _BrowserPageState extends State<BrowserPage> {
                         ),
                         Padding(
                             padding: EdgeInsets.only(top: 5),
-                            child: Text(dic['hub.broswer.welcome'],
+                            child: Text(dic['hub.browser.welcome'],
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context)
                                     .textTheme
@@ -81,33 +83,41 @@ class _BrowserPageState extends State<BrowserPage> {
                                         color: PluginColorsDark.headline1,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600))),
-                        Container(
-                          margin: EdgeInsets.only(left: 34, right: 34, top: 11),
-                          padding: EdgeInsets.all(10),
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Color(0x80FFFFFF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: Text(dic['hub.broswer.search'],
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          ?.copyWith(
-                                            color: PluginColorsDark.headline1,
-                                            fontSize: 14,
-                                          ))),
-                              Icon(
-                                Icons.search,
-                                color: PluginColorsDark.headline1,
-                                size: 20,
-                              )
-                            ],
-                          ),
-                        )
+                        GestureDetector(
+                            onTap: () {
+                              search.showSearch(
+                                  context: context,
+                                  delegate: SearchBarDelegate());
+                            },
+                            child: Container(
+                              margin:
+                                  EdgeInsets.only(left: 34, right: 34, top: 11),
+                              padding: EdgeInsets.all(10),
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Color(0x80FFFFFF),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: Text(dic['hub.browser.search'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5
+                                              ?.copyWith(
+                                                color:
+                                                    PluginColorsDark.headline1,
+                                                fontSize: 14,
+                                              ))),
+                                  Icon(
+                                    Icons.search,
+                                    color: PluginColorsDark.headline1,
+                                    size: 20,
+                                  )
+                                ],
+                              ),
+                            ))
                       ],
                     ),
                   )
@@ -128,7 +138,7 @@ class _BrowserPageState extends State<BrowserPage> {
                           children: [
                             PluginTextTag(
                               padding: EdgeInsets.zero,
-                              title: dic['hub.broswer.latest'],
+                              title: dic['hub.browser.latest'],
                               backgroundColor: PluginColorsDark.headline1,
                             ),
                             GestureDetector(
@@ -207,7 +217,7 @@ class _BrowserPageState extends State<BrowserPage> {
                       ])),
                   PluginTextTag(
                     padding: EdgeInsets.zero,
-                    title: "Fast Pass",
+                    title: dic['hub.browser.fastPass'],
                     backgroundColor: PluginColorsDark.headline1,
                   ),
                   Container(

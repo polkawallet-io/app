@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> {
   MetaHubItem buildMetaHubBrowser() {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     return MetaHubItem(
-        dic['hub.broswer'],
+        dic['hub.browser'],
         GestureDetector(
           child: Column(children: [
             Expanded(
