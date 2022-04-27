@@ -71,5 +71,6 @@ const Map<String, String> zhPublic = {
   'hub.broswer': '浏览器',
   'hub.broswer.welcome': '欢迎来到波卡钱包浏览器\n随时随地浏览任何网页',
   'hub.broswer.search': '搜索或输入url....',
-  'hub.broswer.latest': '最近'
+  'hub.broswer.latest': '最近',
+  'hub.broswer.clearAll': '删除所有'
 };

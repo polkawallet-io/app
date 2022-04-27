@@ -64,7 +64,6 @@ abstract class _SettingsStore with Store {
 
   Future<void> initDapps() async {
     final dappConfig = await WalletApi.getDappsConfig();
-    print(dappConfig);
     dappAllTags = dappConfig["allTag"];
     dapps = dappConfig["datas"];
   }

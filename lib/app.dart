@@ -13,6 +13,7 @@ import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
+import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/pluginPage.dart';
@@ -687,6 +688,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       //browser
       BrowserPage.route: (_) => BrowserPage(_service),
+      DappLatestPage.route: (_) => DappLatestPage(_service),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),

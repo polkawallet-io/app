@@ -80,5 +80,6 @@ const Map<String, String> enPublic = {
   'hub.broswer.welcome':
       'Welcome to Polkawallet browser\nNavigate any network, anywhere, anytime',
   'hub.broswer.search': 'Search or enter url....',
-  'hub.broswer.latest': 'Latest'
+  'hub.broswer.latest': 'Latest',
+  'hub.broswer.clearAll': 'Clear All'
 };
