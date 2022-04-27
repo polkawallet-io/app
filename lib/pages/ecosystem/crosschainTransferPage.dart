@@ -54,7 +54,6 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getTxFee();
       final data = ModalRoute.of(context).settings.arguments as Map;
       final fromNetwork = data["fromNetwork"];
       final TokenBalanceData balance = data["balance"];
@@ -74,6 +73,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
         _chainToList = to;
         _chainTo = to.length > 0 ? to[0] : null;
       });
+
+      _getTxFee();
     });
   }
 
@@ -111,6 +112,15 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
       final fromIcon =
           plugin.store.assets.crossChainIcons[fromNetwork] as String;
       if (xcmParams != null) {
+        var plugin;
+        if (widget.service.plugin is PluginKarura) {
+          plugin = widget.service.plugin as PluginKarura;
+        } else if (widget.service.plugin is PluginAcala) {
+          plugin = widget.service.plugin as PluginAcala;
+        }
+        final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+        final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+            {})['nativeToken'];
         return XcmTxConfirmParams(
             txTitle:
                 '${dicAcala['transfer']} ${balance.symbol} (${dicAcala['cross.xcm']})',
@@ -154,7 +164,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
                 : Image.network(fromIcon),
-            feeToken: balance.symbol,
+            feeToken: feeToken,
             isPlugin: true);
       }
     }
@@ -317,6 +327,15 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
 
           final sendFeeAmount =
               sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
+
+          final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+              {})['nativeToken'];
+
+          final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
+          final nativeTokenDecimals =
+              widget.service.plugin.networkState.tokenDecimals[widget
+                  .service.plugin.networkState.tokenSymbol
+                  .indexOf(nativeToken)];
           return SafeArea(
               child: Padding(
                   padding: EdgeInsets.all(16),
@@ -514,7 +533,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeToken',
                                             style: infoValueStyle),
                                       ],
                                     ),
@@ -536,6 +555,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                       EcosystemPage.route,
                                       arguments: {
                                         "balance": balance,
+                                        "transferBalance":
+                                            _amountCtrl.text.trim(),
                                         "convertNetwork": _chainTo ??
                                             widget.service.plugin.basic.name,
                                         "type": "transferred"

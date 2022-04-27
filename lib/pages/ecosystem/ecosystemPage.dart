@@ -29,6 +29,7 @@ class EcosystemPage extends StatelessWidget {
     final convertNetwork = data["convertNetwork"];
     final type = data["type"];
     final banner = service.store.settings.adBanners['ecosystem'] as List;
+    final transferBalance = data["transferBalance"] ?? "";
     final index = banner.indexWhere(
         (element) => element["network"] == service.plugin.basic.name);
     return PluginScaffold(
@@ -56,7 +57,7 @@ class EcosystemPage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 77, vertical: 10),
                     child: Text(
-                      "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(balance.amount), balance.decimals)} ${balance.symbol} ${dic['ecosystem.msg1']} ${dic['ecosystem.$type']} $convertNetwork ${dic['ecosystem.msg2']}",
+                      "${Fmt.priceFloorFormatter(double.parse(transferBalance))} ${balance.symbol} ${dic['ecosystem.msg1']} ${dic['ecosystem.$type']} $convertNetwork ${dic['ecosystem.msg2']}",
                       style: Theme.of(context)
                           .textTheme
                           .headline5
