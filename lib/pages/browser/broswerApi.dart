@@ -14,6 +14,10 @@ class BrowserApi {
     service.store.storage.write(_dappSearchKey, dappSearch);
   }
 
+  static deleteAllSearchHistory(AppService service) {
+    service.store.storage.write(_dappSearchKey, []);
+  }
+
   static List<String> getDappSearchHistory(AppService service) {
     final dappSearch = service.store.storage.read(_dappSearchKey);
     if (dappSearch != null) {

@@ -100,7 +100,10 @@ class SearchBarDelegate extends SearchDelegate<String> {
                       .headline5
                       ?.copyWith(color: PluginColorsDark.headline1)),
               GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    BrowserApi.deleteAllSearchHistory(service);
+                    this.buildSuggestions(context);
+                  },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 18, vertical: 2),
                     decoration: BoxDecoration(
