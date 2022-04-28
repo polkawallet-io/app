@@ -75,5 +75,6 @@ const Map<String, String> zhPublic = {
   'hub.browser.clearAll': '删除所有',
   'hub.browser.fastPass': '快速入口',
   'hub.browser.clearAllMessage': '您确定要清除所有浏览历史记录吗？您以后无法恢复。',
-  'hub.browser.clearMessage': '您确定要从浏览历史记录中删除该项吗?'
+  'hub.browser.clearMessage': '您确定要从浏览历史记录中删除该项吗?',
+  'hub.browser.searchingHistory': '搜索历史',
 };

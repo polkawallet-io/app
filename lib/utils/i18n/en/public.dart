@@ -86,5 +86,6 @@ const Map<String, String> enPublic = {
   'hub.browser.clearAllMessage':
       'Are you sure you want to clear all the browsing history? You can not recover it later.',
   'hub.browser.clearMessage':
-      'Are you sure you want to delete the item from browsing history?'
+      'Are you sure you want to delete the item from browsing history?',
+  'hub.browser.searchingHistory': 'Searching History',
 };
