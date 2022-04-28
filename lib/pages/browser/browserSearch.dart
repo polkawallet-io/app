@@ -68,7 +68,6 @@ class SearchBarDelegate extends SearchDelegate<String> {
     );
   }
 
-  // 输入时的推荐及搜索结果
   @override
   Widget buildSuggestions(BuildContext context) {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
@@ -102,7 +101,9 @@ class SearchBarDelegate extends SearchDelegate<String> {
               GestureDetector(
                   onTap: () {
                     BrowserApi.deleteAllSearchHistory(service);
-                    this.buildSuggestions(context);
+                    if (this.refersh != null) {
+                      this.refersh();
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 18, vertical: 2),
@@ -129,34 +130,39 @@ class SearchBarDelegate extends SearchDelegate<String> {
           ),
           itemCount: suggestionList.length,
           itemBuilder: (context, index) {
-            print(query.length);
-            return ListTile(
-              title: RichText(
-                  text: TextSpan(
-                children: [
-                  TextSpan(
-                      text: suggestionList[index].substring(
-                          0, indexStart.length > 0 ? indexStart[index] : 0),
-                      style: Theme.of(context).textTheme.headline6?.copyWith(
-                          fontSize: 14, color: PluginColorsDark.headline1)),
-                  TextSpan(
-                      text: suggestionList[index].substring(
-                          indexStart.length > 0 ? indexStart[index] : 0,
-                          indexStart.length > 0
-                              ? indexStart[index] + query.length
-                              : 0),
-                      style: Theme.of(context).textTheme.headline6?.copyWith(
-                          fontSize: 14, color: PluginColorsDark.primary)),
-                  TextSpan(
-                      text: suggestionList[index].substring(
-                          indexStart.length > 0
-                              ? indexStart[index] + query.length
-                              : 0,
-                          suggestionList[index].length),
-                      style: Theme.of(context).textTheme.headline6?.copyWith(
-                          fontSize: 14, color: PluginColorsDark.headline1))
-                ],
-              )),
+            return GestureDetector(
+              child: Container(
+                height: 38,
+                color: Color(0xFFFFFFFF).withAlpha(25),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                alignment: Alignment.centerLeft,
+                child: RichText(
+                    text: TextSpan(
+                  children: [
+                    TextSpan(
+                        text: suggestionList[index].substring(
+                            0, indexStart.length > 0 ? indexStart[index] : 0),
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                            fontSize: 14, color: PluginColorsDark.headline1)),
+                    TextSpan(
+                        text: suggestionList[index].substring(
+                            indexStart.length > 0 ? indexStart[index] : 0,
+                            indexStart.length > 0
+                                ? indexStart[index] + query.length
+                                : 0),
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                            fontSize: 14, color: PluginColorsDark.primary)),
+                    TextSpan(
+                        text: suggestionList[index].substring(
+                            indexStart.length > 0
+                                ? indexStart[index] + query.length
+                                : 0,
+                            suggestionList[index].length),
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                            fontSize: 14, color: PluginColorsDark.headline1))
+                  ],
+                )),
+              ),
               onTap: () {
                 query = suggestionList[index];
                 // Scaffold.of(context).showSnackBar(SnackBar(content: Text(query)));

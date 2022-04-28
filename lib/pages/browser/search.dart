@@ -307,6 +307,8 @@ abstract class SearchDelegate<T> {
       ..pop(result);
   }
 
+  VoidCallback refersh;
+
   /// The hint text that is shown in the search field when it is empty.
   ///
   /// If this value is set to null, the value of
@@ -475,6 +477,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
     widget.delegate._currentBodyNotifier.addListener(_onSearchBodyChanged);
     focusNode.addListener(_onFocusChanged);
     widget.delegate._focusNode = focusNode;
+    widget.delegate.refersh = _onQueryChanged;
   }
 
   @override
@@ -508,6 +511,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       widget.delegate._currentBodyNotifier.addListener(_onSearchBodyChanged);
       oldWidget.delegate._focusNode = null;
       widget.delegate._focusNode = focusNode;
+      widget.delegate.refersh = _onQueryChanged;
     }
   }
 
