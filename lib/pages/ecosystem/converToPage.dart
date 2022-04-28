@@ -80,6 +80,9 @@ class _ConverToPageState extends State<ConverToPage> {
         }
         final fromIcon =
             plugin.store.assets.crossChainIcons[fromNetwork] as String;
+        final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+        final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+            {})['nativeToken'];
         return XcmTxConfirmParams(
             txTitle:
                 "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
@@ -124,7 +127,7 @@ class _ConverToPageState extends State<ConverToPage> {
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
                 : Image.network(fromIcon),
-            feeToken: balance.symbol,
+            feeToken: feeToken,
             isPlugin: true,
             waitingWidget: TransitingWidget(
                 fromNetwork, widget.service.plugin.basic.name, balance.symbol));
@@ -221,10 +224,41 @@ class _ConverToPageState extends State<ConverToPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
     final fromNetwork = data["fromNetwork"];
     final convertToKen = data["convertToKen"];
+
+    var plugin;
+    if (widget.service.plugin is PluginKarura) {
+      plugin = widget.service.plugin as PluginKarura;
+    } else if (widget.service.plugin is PluginAcala) {
+      plugin = widget.service.plugin as PluginAcala;
+    }
+
+    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+
+    final tokenXcmInfo = (tokensConfig['xcmInfo'] ?? {})[fromNetwork] ?? {};
+
+    final destExistDeposit = Fmt.balanceInt(balance.minBalance);
+    final destFee =
+        Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
+
+    final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
+    final nativeTokenDecimals = widget
+            .service.plugin.networkState.tokenDecimals[
+        widget.service.plugin.networkState.tokenSymbol.indexOf(nativeToken)];
+
+    final feeToken =
+        ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {})['nativeToken'];
+
+    final labelStyle = Theme.of(context)
+        .textTheme
+        .headline4
+        ?.copyWith(color: PluginColorsDark.headline1);
+    final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
+        fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
 
     return PluginScaffold(
         appBar: PluginAppBar(
@@ -311,41 +345,60 @@ class _ConverToPageState extends State<ConverToPage> {
                         width: double.infinity,
                         child: PluginLoadingWidget(),
                       )),
-                  Text(
-                    I18n.of(context).getDic(
-                        i18n_full_dic_karura, 'acala')['homa.redeem.receive'],
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        ?.copyWith(color: PluginColorsDark.headline1),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(right: 40),
+                            child: Text(dicAcala['cross.exist'],
+                                style: labelStyle)),
+                      ),
+                      Expanded(
+                          flex: 0,
+                          child: Text(
+                              '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                              style: infoValueStyle)),
+                    ],
                   ),
-                  InfoItemRow(
-                    Fmt.priceCeilBigInt(
-                        Fmt.balanceInt(_receiver), balance.decimals,
-                        lengthMax: 6),
-                    balance.symbol,
-                    labelStyle: Theme.of(context).textTheme.headline5?.copyWith(
-                        color: PluginColorsDark.headline1,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                    contentStyle: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        ?.copyWith(color: PluginColorsDark.headline1),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child:
+                                Text(dicAcala['cross.fee'], style: labelStyle),
+                          ),
+                        ),
+                        Text(
+                          '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                          style: infoValueStyle,
+                        )
+                      ],
+                    ),
                   ),
-                  InfoItemRow(
-                    I18n.of(context)
-                        .getDic(i18n_full_dic_karura, 'acala')['transfer.fee'],
-                    '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                    labelStyle: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        ?.copyWith(color: PluginColorsDark.headline1),
-                    contentStyle: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        ?.copyWith(color: PluginColorsDark.headline1),
-                  ),
+                  Visibility(
+                      visible: _fee != null,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dicAcala['transfer.fee'],
+                                    style: labelStyle),
+                              ),
+                            ),
+                            Text(
+                                '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeToken',
+                                style: infoValueStyle),
+                          ],
+                        ),
+                      )),
                 ],
               ))),
               Padding(

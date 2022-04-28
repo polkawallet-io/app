@@ -29,6 +29,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 
 class CrosschainTransferPage extends StatefulWidget {
   CrosschainTransferPage(this.service, {Key key}) : super(key: key);
@@ -48,6 +49,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
   List<String> _chainToList;
 
   String _fee;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -200,6 +203,9 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     if (_fee != null && !reload) {
       return _fee;
     }
+    setState(() {
+      _isLoading = true;
+    });
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
 
@@ -226,6 +232,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     if (mounted) {
       setState(() {
         _fee = fee;
+        _isLoading = false;
       });
     }
     return fee;
@@ -432,6 +439,12 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                   child: PluginAddressFormItem(
                                     label: dic['ecosystem.destinationAccount'],
                                     account: widget.service.keyring.current,
+                                  )),
+                              Visibility(
+                                  visible: _isLoading,
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: PluginLoadingWidget(),
                                   )),
                               Row(
                                 children: [
