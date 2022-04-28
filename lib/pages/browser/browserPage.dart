@@ -87,7 +87,14 @@ class _BrowserPageState extends State<BrowserPage> {
                             onTap: () {
                               search.showSearch(
                                   context: context,
-                                  delegate: SearchBarDelegate());
+                                  delegate: SearchBarDelegate(widget.service,
+                                      searchFieldLabel:
+                                          dic['hub.browser.search'],
+                                      searchFieldStyle: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          ?.copyWith(
+                                              color: Color(0x80FFFFFF))));
                             },
                             child: Container(
                               margin:

@@ -6,6 +6,21 @@ import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class BrowserApi {
   static final _dappLatestKey = 'dapp_latest';
+  static final _dappSearchKey = 'dapp_search';
+
+  static addDappSearchHistory(AppService service, String searchString) {
+    final dappSearch = getDappSearchHistory(service);
+    dappSearch.add(searchString);
+    service.store.storage.write(_dappSearchKey, dappSearch);
+  }
+
+  static List<String> getDappSearchHistory(AppService service) {
+    final dappSearch = service.store.storage.read(_dappSearchKey);
+    if (dappSearch != null) {
+      return List<String>.from(dappSearch);
+    }
+    return [];
+  }
 
   static openBrowser(BuildContext context, dynamic dapp, AppService service) {
     var dappLatest = getDappLatestStore(service);

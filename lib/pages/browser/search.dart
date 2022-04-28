@@ -575,18 +575,46 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         child: PluginScaffold(
           appBar: PluginAppBar(
             leading: widget.delegate.buildLeading(context),
-            title: TextField(
-              controller: widget.delegate._queryTextController,
-              focusNode: focusNode,
-              style: theme.textTheme.headline6,
-              textInputAction: widget.delegate.textInputAction,
-              keyboardType: widget.delegate.keyboardType,
-              onSubmitted: (String _) {
-                widget.delegate.showResults(context);
-              },
-              decoration: InputDecoration(hintText: searchFieldLabel),
+            title: Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Color(0x24FFFFFF),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    decoration: InputDecoration(
+                        isDense: true,
+                        hintText: searchFieldLabel,
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero),
+                    controller: widget.delegate._queryTextController,
+                    focusNode: focusNode,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline5
+                        ?.copyWith(color: Colors.white),
+                    textInputAction: widget.delegate.textInputAction,
+                    keyboardType: widget.delegate.keyboardType,
+                    onSubmitted: (String _) {
+                      widget.delegate.showResults(context);
+                    },
+                  )),
+                  GestureDetector(
+                      onTap: () {
+                        widget.delegate.showResults(context);
+                      },
+                      child: Container(
+                        child: Icon(Icons.search, color: Colors.white),
+                      ))
+                ],
+              ),
             ),
             actions: widget.delegate.buildActions(context),
+            isShowLeading: false,
+            centerTitle: false,
             // bottom: widget.delegate.buildBottom(context),
           ),
           body: AnimatedSwitcher(

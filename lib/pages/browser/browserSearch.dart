@@ -1,36 +1,65 @@
+import 'package:app/pages/browser/broswerApi.dart';
 import 'package:app/pages/browser/search.dart';
+import 'package:app/service/index.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 
 class SearchBarDelegate extends SearchDelegate<String> {
-  // 搜索条右侧的按钮执行方法，我们在这里方法里放入一个clear图标。 当点击图片时，清空搜索的内容。
+  final AppService service;
+
+  final String searchFieldLabel;
+
+  final TextStyle searchFieldStyle;
+
+  final InputDecorationTheme searchFieldDecorationTheme;
+
+  final TextInputType keyboardType;
+
+  final TextInputAction textInputAction;
+
+  SearchBarDelegate(
+    this.service, {
+    this.searchFieldLabel,
+    this.searchFieldStyle,
+    this.searchFieldDecorationTheme,
+    this.keyboardType,
+    this.textInputAction = TextInputAction.search,
+  }) : super(
+            searchFieldLabel: searchFieldLabel,
+            searchFieldStyle: searchFieldStyle,
+            searchFieldDecorationTheme: searchFieldDecorationTheme,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          // 清空搜索内容
-          query = "";
-        },
-      )
+      GestureDetector(
+          onTap: () => close(context, ""),
+          child: Center(
+              child: Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Text(
+                    I18n.of(context)
+                        .getDic(i18n_full_dic_karura, 'common')['cancel'],
+                    style: Theme.of(context).textTheme.headline4?.copyWith(
+                        color: PluginColorsDark.headline1,
+                        fontWeight: FontWeight.w600),
+                  ))))
     ];
   }
 
-  // 搜索栏左侧的图标和功能，点击时关闭整个搜索页面
   @override
   Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-          icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
-      onPressed: () {
-        close(context, "");
-      },
-    );
+    return null;
   }
 
   // 搜索到内容了
   @override
   Widget buildResults(BuildContext context) {
+    BrowserApi.addDappSearchHistory(service, query);
     return Container(
       child: Center(
         child: Text("搜索的结果：$query"),
@@ -41,54 +70,57 @@ class SearchBarDelegate extends SearchDelegate<String> {
   // 输入时的推荐及搜索结果
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? recentList
-        : searchList.where((input) => input.contains(query)).toList();
-    print(query);
+    final searchHistory = BrowserApi.getDappSearchHistory(service);
+    List<String> suggestionList = [];
+    List<int> indexStart = [];
+    if (query.isNotEmpty) {
+      searchHistory.forEach((element) {
+        if (element.contains(query)) {
+          suggestionList.add(element);
+          indexStart.add(element.indexOf(query));
+        }
+      });
+    } else {
+      suggestionList = searchHistory;
+    }
+    print(suggestionList);
     return ListView.builder(
       itemCount: suggestionList.length,
       itemBuilder: (context, index) {
-        // 创建一个富文本，匹配的内容特别显示
+        print(query.length);
         return ListTile(
           title: RichText(
               text: TextSpan(
-            text: suggestionList[index].substring(0, query.length),
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             children: [
               TextSpan(
-                  text: suggestionList[index].substring(query.length),
-                  style: TextStyle(color: Colors.grey))
+                  text: suggestionList[index].substring(
+                      0, indexStart.length > 0 ? indexStart[index] : 0),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 14, color: PluginColorsDark.headline1)),
+              TextSpan(
+                  text: suggestionList[index].substring(
+                      indexStart.length > 0 ? indexStart[index] : 0,
+                      indexStart.length > 0
+                          ? indexStart[index] + query.length
+                          : 0),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 14, color: PluginColorsDark.primary)),
+              TextSpan(
+                  text: suggestionList[index].substring(
+                      indexStart.length > 0
+                          ? indexStart[index] + query.length
+                          : 0,
+                      suggestionList[index].length),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 14, color: PluginColorsDark.headline1))
             ],
           )),
           onTap: () {
             query = suggestionList[index];
-            Scaffold.of(context).showSnackBar(SnackBar(content: Text(query)));
+            // Scaffold.of(context).showSnackBar(SnackBar(content: Text(query)));
           },
         );
       },
     );
   }
 }
-
-///================= 模拟后台数据 ========================
-const searchList = [
-  "搜索结果数据1-aa",
-  "搜索结果数据2-bb",
-  "搜索结果数据3-cc",
-  "搜索结果数据4-dd",
-  "搜索结果数据5-ee",
-  "搜索结果数据6-ff",
-  "搜索结果数据7-gg",
-  "搜索结果数据8-hh"
-];
-
-const recentList = [
-  "推荐结果1-ii",
-  "推荐结果2-jj",
-  "推荐结果3-kk",
-  "推荐结果4-ll",
-  "推荐结果5-mm",
-  "推荐结果6-nn",
-  "推荐结果7-oo",
-  "推荐结果8-pp",
-];
