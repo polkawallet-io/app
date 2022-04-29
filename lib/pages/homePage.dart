@@ -183,7 +183,8 @@ class _HomePageState extends State<HomePage> {
                 child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Image.asset('assets/images/public/hub_token_staking.png'),
+                  Image.asset(
+                      'assets/images/public/hub_token_staking_$token.png'),
                   Container(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
