@@ -9,9 +9,12 @@ class BrowserApi {
   static final _dappSearchKey = 'dapp_search';
 
   static addDappSearchHistory(AppService service, String searchString) {
-    final dappSearch = getDappSearchHistory(service);
-    dappSearch.add(searchString);
-    service.store.storage.write(_dappSearchKey, dappSearch);
+    if (searchString.trim().isNotEmpty) {
+      final dappSearch = getDappSearchHistory(service);
+      dappSearch.remove(searchString);
+      dappSearch.add(searchString);
+      service.store.storage.write(_dappSearchKey, dappSearch);
+    }
   }
 
   static deleteAllSearchHistory(AppService service) {
@@ -21,7 +24,7 @@ class BrowserApi {
   static List<String> getDappSearchHistory(AppService service) {
     final dappSearch = service.store.storage.read(_dappSearchKey);
     if (dappSearch != null) {
-      return List<String>.from(dappSearch);
+      return List<String>.from(dappSearch).reversed.toList();
     }
     return [];
   }
@@ -33,7 +36,7 @@ class BrowserApi {
 
     Navigator.of(context).pushNamed(
       DAppWrapperPage.route,
-      arguments: dapp['detailUrl'],
+      arguments: {"url": dapp['detailUrl'], "isPlugin": true},
     );
   }
 

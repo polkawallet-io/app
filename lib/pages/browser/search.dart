@@ -309,6 +309,8 @@ abstract class SearchDelegate<T> {
 
   VoidCallback refersh;
 
+  T result;
+
   /// The hint text that is shown in the search field when it is empty.
   ///
   /// If this value is set to null, the value of
@@ -575,58 +577,63 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       namesRoute: true,
       label: routeName,
       child: Theme(
-        data: theme,
-        child: PluginScaffold(
-          appBar: PluginAppBar(
-            leading: widget.delegate.buildLeading(context),
-            title: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Color(0x24FFFFFF),
-                borderRadius: BorderRadius.circular(8),
+          data: theme,
+          child: WillPopScope(
+            child: PluginScaffold(
+              appBar: PluginAppBar(
+                leading: widget.delegate.buildLeading(context),
+                title: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0x24FFFFFF),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: TextField(
+                        decoration: InputDecoration(
+                            isDense: true,
+                            hintText: searchFieldLabel,
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero),
+                        controller: widget.delegate._queryTextController,
+                        focusNode: focusNode,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            ?.copyWith(color: Colors.white),
+                        textInputAction: widget.delegate.textInputAction,
+                        keyboardType: widget.delegate.keyboardType,
+                        onSubmitted: (String _) {
+                          widget.delegate.showResults(context);
+                        },
+                      )),
+                      GestureDetector(
+                          onTap: () {
+                            widget.delegate.showResults(context);
+                          },
+                          child: Container(
+                            child: Icon(Icons.search, color: Colors.white),
+                          ))
+                    ],
+                  ),
+                ),
+                actions: widget.delegate.buildActions(context),
+                isShowLeading: false,
+                centerTitle: false,
+                // bottom: widget.delegate.buildBottom(context),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: TextField(
-                    decoration: InputDecoration(
-                        isDense: true,
-                        hintText: searchFieldLabel,
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero),
-                    controller: widget.delegate._queryTextController,
-                    focusNode: focusNode,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        ?.copyWith(color: Colors.white),
-                    textInputAction: widget.delegate.textInputAction,
-                    keyboardType: widget.delegate.keyboardType,
-                    onSubmitted: (String _) {
-                      widget.delegate.showResults(context);
-                    },
-                  )),
-                  GestureDetector(
-                      onTap: () {
-                        widget.delegate.showResults(context);
-                      },
-                      child: Container(
-                        child: Icon(Icons.search, color: Colors.white),
-                      ))
-                ],
+              body: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: body,
               ),
             ),
-            actions: widget.delegate.buildActions(context),
-            isShowLeading: false,
-            centerTitle: false,
-            // bottom: widget.delegate.buildBottom(context),
-          ),
-          body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: body,
-          ),
-        ),
-      ),
+            onWillPop: () {
+              widget.delegate.close(context, widget.delegate.result);
+              return Future.value(false);
+            },
+          )),
     );
   }
 }

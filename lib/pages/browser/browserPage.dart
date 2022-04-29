@@ -84,8 +84,8 @@ class _BrowserPageState extends State<BrowserPage> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600))),
                         GestureDetector(
-                            onTap: () {
-                              search.showSearch(
+                            onTap: () async {
+                              final result = await search.showSearch(
                                   context: context,
                                   delegate: SearchBarDelegate(widget.service,
                                       searchFieldLabel:
@@ -95,6 +95,9 @@ class _BrowserPageState extends State<BrowserPage> {
                                           .headline5
                                           ?.copyWith(
                                               color: Color(0x80FFFFFF))));
+                              if (result != null) {
+                                setState(() {});
+                              }
                             },
                             child: Container(
                               margin:
