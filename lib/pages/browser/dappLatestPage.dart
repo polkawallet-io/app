@@ -133,11 +133,13 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                                 height: 32,
                                                 margin:
                                                     EdgeInsets.only(right: 10),
-                                                child: (e["icon"] as String)
-                                                        .contains('.svg')
-                                                    ? SvgPicture.network(
-                                                        e["icon"])
-                                                    : Image.network(e["icon"])),
+                                                child: ClipOval(
+                                                    child: (e["icon"] as String)
+                                                            .contains('.svg')
+                                                        ? SvgPicture.network(
+                                                            e["icon"])
+                                                        : Image.network(
+                                                            e["icon"]))),
                                             Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,

@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/components/listTail.dart';
 
 class SearchBarDelegate extends SearchDelegate<String> {
   final AppService service;
@@ -75,127 +76,136 @@ class SearchBarDelegate extends SearchDelegate<String> {
       });
       dapps = _dapps;
     }
-    return ListView.separated(
-        padding: EdgeInsets.all(16),
-        separatorBuilder: (context, index) => Container(height: 8),
-        itemCount: dapps.length,
-        itemBuilder: (context, index) {
-          final e = dapps[index];
-          return GestureDetector(
-              onTap: () {
-                BrowserApi.openBrowser(context, e, service);
-                this.result = "rrue";
-              },
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: PluginColorsDark.cardColor,
-                    borderRadius: BorderRadius.circular(4)),
-                child: Row(
-                  children: [
-                    Container(
-                        width: 32,
-                        height: 32,
-                        margin: EdgeInsets.only(right: 10),
-                        child: (e["icon"] as String).contains('.svg')
-                            ? SvgPicture.network(e["icon"])
-                            : Image.network(e["icon"])),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return dapps.length == 0
+        ? ListTail(
+            isEmpty: true,
+            isLoading: false,
+            color: PluginColorsDark.headline1,
+          )
+        : ListView.separated(
+            padding: EdgeInsets.all(16),
+            separatorBuilder: (context, index) => Container(height: 8),
+            itemCount: dapps.length,
+            itemBuilder: (context, index) {
+              final e = dapps[index];
+              return GestureDetector(
+                  onTap: () {
+                    BrowserApi.openBrowser(context, e, service);
+                    this.result = "rrue";
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: PluginColorsDark.cardColor,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Row(
                       children: [
-                        RichText(
-                            text: TextSpan(
+                        Container(
+                            width: 32,
+                            height: 32,
+                            margin: EdgeInsets.only(right: 10),
+                            child: ClipOval(
+                                child: (e["icon"] as String).contains('.svg')
+                                    ? SvgPicture.network(e["icon"])
+                                    : Image.network(e["icon"]))),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextSpan(
-                                text: e["name"].substring(
-                                    0,
-                                    e['nameIndex'] != null
-                                        ? e['nameIndex']
-                                        : 0),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: PluginColorsDark.headline1,
-                                        height: 1.0)),
-                            TextSpan(
-                                text: e["name"].substring(
-                                    e['nameIndex'] != null ? e['nameIndex'] : 0,
-                                    e['nameIndex'] != null
-                                        ? e['nameIndex'] + query.length
-                                        : 0),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: PluginColorsDark.primary,
-                                        height: 1.0)),
-                            TextSpan(
-                                text: e["name"].substring(
-                                    e['nameIndex'] != null
-                                        ? e['nameIndex'] + query.length
-                                        : 0,
-                                    e["name"].length),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: PluginColorsDark.headline1,
-                                        height: 1.0))
+                            RichText(
+                                text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: e["name"].substring(
+                                        0,
+                                        e['nameIndex'] != null
+                                            ? e['nameIndex']
+                                            : 0),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline5
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: PluginColorsDark.headline1,
+                                            height: 1.0)),
+                                TextSpan(
+                                    text: e["name"].substring(
+                                        e['nameIndex'] != null
+                                            ? e['nameIndex']
+                                            : 0,
+                                        e['nameIndex'] != null
+                                            ? e['nameIndex'] + query.length
+                                            : 0),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline5
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: PluginColorsDark.primary,
+                                            height: 1.0)),
+                                TextSpan(
+                                    text: e["name"].substring(
+                                        e['nameIndex'] != null
+                                            ? e['nameIndex'] + query.length
+                                            : 0,
+                                        e["name"].length),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline5
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: PluginColorsDark.headline1,
+                                            height: 1.0))
+                              ],
+                            )),
+                            RichText(
+                                text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: e["detailUrl"].substring(
+                                        0,
+                                        e['detailIndex'] != null
+                                            ? e['detailIndex']
+                                            : 0),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            fontSize: 10,
+                                            color: PluginColorsDark.green)),
+                                TextSpan(
+                                    text: e["detailUrl"].substring(
+                                        e['detailIndex'] != null
+                                            ? e['detailIndex']
+                                            : 0,
+                                        e['detailIndex'] != null
+                                            ? e['detailIndex'] + query.length
+                                            : 0),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            fontSize: 10,
+                                            color: PluginColorsDark.primary)),
+                                TextSpan(
+                                    text: e["detailUrl"].substring(
+                                        e['detailIndex'] != null
+                                            ? e['detailIndex'] + query.length
+                                            : 0,
+                                        e["detailUrl"].length),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            fontSize: 10,
+                                            color: PluginColorsDark.green))
+                              ],
+                            )),
                           ],
-                        )),
-                        RichText(
-                            text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: e["detailUrl"].substring(
-                                    0,
-                                    e['detailIndex'] != null
-                                        ? e['detailIndex']
-                                        : 0),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                        fontSize: 10,
-                                        color: PluginColorsDark.green)),
-                            TextSpan(
-                                text: e["detailUrl"].substring(
-                                    e['detailIndex'] != null
-                                        ? e['detailIndex']
-                                        : 0,
-                                    e['detailIndex'] != null
-                                        ? e['detailIndex'] + query.length
-                                        : 0),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                        fontSize: 10,
-                                        color: PluginColorsDark.primary)),
-                            TextSpan(
-                                text: e["detailUrl"].substring(
-                                    e['detailIndex'] != null
-                                        ? e['detailIndex'] + query.length
-                                        : 0,
-                                    e["detailUrl"].length),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                        fontSize: 10,
-                                        color: PluginColorsDark.green))
-                          ],
-                        )),
+                        )
                       ],
-                    )
-                  ],
-                ),
-              ));
-        });
+                    ),
+                  ));
+            });
   }
 
   @override

@@ -203,12 +203,16 @@ class _BrowserPageState extends State<BrowserPage> {
                                                     height: 50,
                                                     margin: EdgeInsets.only(
                                                         bottom: 5),
-                                                    child: (e["icon"] as String)
-                                                            .contains('.svg')
-                                                        ? SvgPicture.network(
-                                                            e["icon"])
-                                                        : Image.network(
-                                                            e["icon"])),
+                                                    child: ClipOval(
+                                                        child: (e["icon"]
+                                                                    as String)
+                                                                .contains(
+                                                                    '.svg')
+                                                            ? SvgPicture
+                                                                .network(
+                                                                    e["icon"])
+                                                            : Image.network(
+                                                                e["icon"]))),
                                                 Text(
                                                   e["name"],
                                                   style: Theme.of(context)
@@ -305,10 +309,13 @@ class _BrowserPageState extends State<BrowserPage> {
                                           width: 32,
                                           height: 32,
                                           margin: EdgeInsets.only(right: 8),
-                                          child: (dapp["icon"] as String)
-                                                  .contains('.svg')
-                                              ? SvgPicture.network(dapp["icon"])
-                                              : Image.network(dapp["icon"])),
+                                          child: ClipOval(
+                                              child: (dapp["icon"] as String)
+                                                      .contains('.svg')
+                                                  ? SvgPicture.network(
+                                                      dapp["icon"])
+                                                  : Image.network(
+                                                      dapp["icon"]))),
                                       Expanded(
                                           child: Column(
                                         crossAxisAlignment:
