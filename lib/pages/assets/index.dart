@@ -83,22 +83,22 @@ class _AssetsState extends State<AssetsPage> {
     });
   }
 
-  Future<dynamic> _fetchAnnouncements() async {
-    final res = await WalletApi.getAnnouncements();
-    if (res == null) return;
+  // Future<dynamic> _fetchAnnouncements() async {
+  //   final res = await WalletApi.getAnnouncements();
+  //   if (res == null) return;
 
-    _announcements = res;
-    var index = _announcements.indexWhere((element) {
-      return element["plugin"] == widget.service.plugin.basic.name;
-    });
-    if (index == -1) {
-      final i =
-          _announcements.indexWhere((element) => element["plugin"] == "all");
-      return i == -1 ? null : _announcements[i];
-    } else {
-      return _announcements[index];
-    }
-  }
+  //   _announcements = res;
+  //   var index = _announcements.indexWhere((element) {
+  //     return element["plugin"] == widget.service.plugin.basic.name;
+  //   });
+  //   if (index == -1) {
+  //     final i =
+  //         _announcements.indexWhere((element) => element["plugin"] == "all");
+  //     return i == -1 ? null : _announcements[i];
+  //   } else {
+  //     return _announcements[index];
+  //   }
+  // }
 
   Future<void> _updateMarketPrices() async {
     widget.service.assets.fetchMarketPrices();

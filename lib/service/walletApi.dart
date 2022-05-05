@@ -159,19 +159,19 @@ class WalletApi {
         '$_jsCodeStorageVersionKey$networkName', version.toString());
   }
 
-  static Future<List> getAnnouncements() async {
-    try {
-      Response res = await get(getUrl(_endpoint, '/announce.json'));
-      if (res == null) {
-        return null;
-      } else {
-        return jsonDecode(utf8.decode(res.bodyBytes));
-      }
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
+  // static Future<List> getAnnouncements() async {
+  //   try {
+  //     Response res = await get(getUrl(_endpoint, '/announce.json'));
+  //     if (res == null) {
+  //       return null;
+  //     } else {
+  //       return jsonDecode(utf8.decode(res.bodyBytes));
+  //     }
+  //   } catch (err) {
+  //     print(err);
+  //     return null;
+  //   }
+  // }
 
   static Future<Map> getTokenPrices() async {
     final url =
