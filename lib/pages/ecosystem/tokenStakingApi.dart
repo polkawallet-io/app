@@ -12,7 +12,7 @@ class TokenStakingApi {
   static Function refresh;
 
   static Future<Map<String, TokenBalanceData>> getBalance(
-      AppService service, List<String> networkNames, String token,
+      AppService service, List<dynamic> networkNames, String token,
       {bool isCachaChange = true}) async {
     final connected = await service.plugin.sdk.webView
         .evalJavascript('xcm.connectFromChain(${json.encode(networkNames)})');

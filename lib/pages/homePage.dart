@@ -175,6 +175,9 @@ class _HomePageState extends State<HomePage> {
         widget.service.plugin.basic.name == para_chain_name_statemine) {
       token = "KSM";
     }
+    if (!widget.service.store.settings.tokenStakingConfig["onStart"][token]) {
+      return null;
+    }
     return MetaHubItem(
         "${token.toUpperCase()} ${dic['hub.staking']}",
         GestureDetector(
@@ -270,7 +273,10 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
-      items.add(buildMetaHubEcosystem());
+      final ecosystemItem = buildMetaHubEcosystem();
+      if (ecosystemItem != null) {
+        items.add(buildMetaHubEcosystem());
+      }
       pluginPages.forEach((element) {
         if (element.isAdapter) {
           items.add(MetaHubItem(element.text, element.content));

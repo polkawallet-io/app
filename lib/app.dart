@@ -560,6 +560,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
 
       _startPlugin(service);
+
+      WalletApi.getTokenStakingConfig().then((value) {
+        print("getTokenStakingConfig======$value");
+        _store.settings.setTokenStakingConfig(value);
+      });
     }
 
     return _keyring.allAccounts.length;

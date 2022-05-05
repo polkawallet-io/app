@@ -103,6 +103,22 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$tokenStakingConfigAtom =
+      Atom(name: '_SettingsStore.tokenStakingConfig');
+
+  @override
+  Map<dynamic, dynamic> get tokenStakingConfig {
+    _$tokenStakingConfigAtom.reportRead();
+    return super.tokenStakingConfig;
+  }
+
+  @override
+  set tokenStakingConfig(Map value) {
+    _$tokenStakingConfigAtom.reportWrite(value, super.tokenStakingConfig, () {
+      super.tokenStakingConfig = value;
+    });
+  }
+
   final _$setCommunityMessagesAsyncAction =
       AsyncAction('_SettingsStore.setCommunityMessages');
 
@@ -137,6 +153,15 @@ mixin _$SettingsStore on _SettingsStore, Store {
   Future<void> setSystemUnreadNumber(int data) {
     return _$setSystemUnreadNumberAsyncAction
         .run(() => super.setSystemUnreadNumber(data));
+  }
+
+  final _$setTokenStakingConfigAsyncAction =
+      AsyncAction('_SettingsStore.setTokenStakingConfig');
+
+  @override
+  Future<void> setTokenStakingConfig(Map data) {
+    return _$setTokenStakingConfigAsyncAction
+        .run(() => super.setTokenStakingConfig(data));
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');

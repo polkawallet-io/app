@@ -32,22 +32,15 @@ class _TokenStakingState extends State<TokenStaking> {
 
   bool _connecting = false;
 
-  final Map<String, List<String>> _networkNames = {
-    "KSM": ["kusama", "moonriver", "bifrost", "parallel heiko"],
-    "LKSM": ["bifrost", "parallel heiko"],
-    "DOT": ["polkadot", "kusama"],
-    "LDOT": ["polkadot"]
-  };
-
   _getBalance() async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
 
-    await TokenStakingApi.getBalance(
-        widget.service, _networkNames[token], token);
+    await TokenStakingApi.getBalance(widget.service,
+        widget.service.store.settings.tokenStakingConfig[token], token);
 
-    await TokenStakingApi.getBalance(
-        widget.service, _networkNames["L$token"], "L$token");
+    await TokenStakingApi.getBalance(widget.service,
+        widget.service.store.settings.tokenStakingConfig["L$token"], "L$token");
 
     setState(() {
       _connecting = true;

@@ -56,6 +56,20 @@ abstract class _SettingsStore with Store {
   @observable
   int systemUnreadNumber = 0;
 
+  @observable
+  Map<dynamic, dynamic> tokenStakingConfig = {
+    "onStart": {"KSM": true, "DOT": false},
+    "KSM": ["kusama", "moonriver", "bifrost", "parallel heiko"],
+    "LKSM": ["bifrost", "parallel heiko"],
+    "DOT": ["polkadot", "kusama"],
+    "LDOT": ["polkadot"]
+  };
+
+  @action
+  Future<void> setTokenStakingConfig(Map data) async {
+    tokenStakingConfig = data;
+  }
+
   Future<void> initMessage(String _languageCode) async {
     final dataCommunity = await WalletApi.getMessage("contents", _languageCode);
     final dataSystem = await WalletApi.getMessage("announces", _languageCode);
