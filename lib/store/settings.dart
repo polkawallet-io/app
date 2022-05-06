@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
@@ -207,6 +208,9 @@ abstract class _SettingsStore with Store {
   Future<List> getXcmEnabledChains(String pluginName) async {
     if (_xcmEnabledChains == null) {
       _xcmEnabledChains = await WalletApi.getXcmEnabledConfig();
+    }
+    if (pluginName == relay_chain_name_dot) {
+      return _xcmEnabledChains['$pluginName-xcm'] ?? [];
     }
     return _xcmEnabledChains[pluginName] ?? [];
   }

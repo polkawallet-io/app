@@ -9,7 +9,6 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
-import 'package:app/service/walletApi.dart';
 import 'package:app/utils/InstrumentWidget.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -123,7 +122,8 @@ class _AssetsState extends State<AssetsPage> {
       }
 
       if (data.type == QRCodeResultType.address) {
-        if (widget.service.plugin.basic.name == para_chain_name_karura) {
+        if (widget.service.plugin.basic.name == para_chain_name_karura ||
+            widget.service.plugin.basic.name == para_chain_name_acala) {
           final symbol =
               (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
           Navigator.of(context).pushNamed('/assets/token/transfer', arguments: {
