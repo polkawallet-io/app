@@ -184,6 +184,17 @@ class _TokenItemViewState extends State<TokenItemView> {
         .textTheme
         .headline4
         ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white);
+
+    var plugin;
+    if (widget.service.plugin is PluginKarura) {
+      plugin = widget.service.plugin as PluginKarura;
+    } else if (widget.service.plugin is PluginAcala) {
+      plugin = widget.service.plugin as PluginAcala;
+    }
+
+    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+    final tokenXcmConfig = List<String>.from(
+        (tokensConfig['xcm'] ?? {})[widget.balance.tokenNameId] ?? []);
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
@@ -242,23 +253,25 @@ class _TokenItemViewState extends State<TokenItemView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          PluginOutlinedButtonSmall(
-                            content: dic['ecosystem.crosschainTransfer'],
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 2),
-                            color: PluginColorsDark.primary,
-                            fontSize: 12,
-                            minSize: 25,
-                            active: true,
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  CrosschainTransferPage.route,
-                                  arguments: {
-                                    "balance": widget.balance,
-                                    "fromNetwork": widget.name
-                                  });
-                            },
-                          ),
+                          Visibility(
+                              visible: tokenXcmConfig.length > 0,
+                              child: PluginOutlinedButtonSmall(
+                                content: dic['ecosystem.crosschainTransfer'],
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 7, vertical: 2),
+                                color: PluginColorsDark.primary,
+                                fontSize: 12,
+                                minSize: 25,
+                                active: true,
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed(
+                                      CrosschainTransferPage.route,
+                                      arguments: {
+                                        "balance": widget.balance,
+                                        "fromNetwork": widget.name
+                                      });
+                                },
+                              )),
                           PluginOutlinedButtonSmall(
                             content:
                                 "${dic['ecosystem.convertTo']} ${widget.convertToKen}",
@@ -272,15 +285,23 @@ class _TokenItemViewState extends State<TokenItemView> {
                             onPressed: () async {
                               if (widget.name ==
                                   widget.service.plugin.basic.name) {
+                                final convertBalance = widget
+                                    .service.plugin.noneNativeTokensAll
+                                    .firstWhere((element) =>
+                                        element.symbol == widget.convertToKen);
                                 if (widget.convertToKen.startsWith("L")) {
                                   //to mint
                                   final res = await Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
                                   if (res != null) {
+                                    convertBalance.amount = Fmt.tokenInt(
+                                            res, convertBalance.decimals)
+                                        .toString();
                                     Navigator.of(context).pushNamed(
                                         EcosystemPage.route,
                                         arguments: {
-                                          "balance": widget.balance,
+                                          "balance": convertBalance,
+                                          "transferBalance": res,
                                           "convertNetwork":
                                               widget.service.plugin.basic.name,
                                           "type": "minted"
@@ -291,10 +312,14 @@ class _TokenItemViewState extends State<TokenItemView> {
                                   final res = await Navigator.of(context).pushNamed(
                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
                                   if (res != null) {
+                                    convertBalance.amount = Fmt.tokenInt(
+                                            res, convertBalance.decimals)
+                                        .toString();
                                     Navigator.of(context).pushNamed(
                                         EcosystemPage.route,
                                         arguments: {
-                                          "balance": widget.balance,
+                                          "balance": convertBalance,
+                                          "transferBalance": res,
                                           "convertNetwork":
                                               widget.service.plugin.basic.name,
                                           "type": "redeemed"

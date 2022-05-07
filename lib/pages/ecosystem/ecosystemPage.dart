@@ -2,6 +2,8 @@ import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -32,6 +34,17 @@ class EcosystemPage extends StatelessWidget {
     final transferBalance = data["transferBalance"] ?? "";
     final index = banner.indexWhere(
         (element) => element["network"] == service.plugin.basic.name);
+
+    var plugin;
+    if (service.plugin is PluginKarura) {
+      plugin = service.plugin as PluginKarura;
+    } else if (service.plugin is PluginAcala) {
+      plugin = service.plugin as PluginAcala;
+    }
+
+    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
+    final tokenXcmConfig = List<String>.from(
+        (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text(dic['ecosystem.ecosystem']),
@@ -82,38 +95,42 @@ class EcosystemPage extends StatelessWidget {
                                 (route) =>
                                     route.settings.name == TokenStaking.route),
                           ),
-                          PluginOutlinedButtonSmall(
-                            content: type == "transferred"
-                                ? dic['ecosystem.seeTransaction']
-                                : dic['ecosystem.crosschainTransfer'],
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 2),
-                            margin: EdgeInsets.zero,
-                            color: PluginColorsDark.primary,
-                            fontSize: 16,
-                            minSize: 34,
-                            active: true,
-                            onPressed: () {
-                              if (type == "transferred") {
-                                String networkName = service.plugin.basic.name;
-                                if (service.plugin.basic.isTestNet) {
-                                  networkName =
-                                      '${networkName.split('-')[0]}-testnet';
-                                }
-                                final snLink =
-                                    'https://$networkName.subscan.io/account/${service.keyring.current.address}';
-                                UI.launchURL(snLink);
-                                Navigator.of(context).pop();
-                              } else {
-                                Navigator.of(context).popAndPushNamed(
-                                    CrosschainTransferPage.route,
-                                    arguments: {
-                                      "balance": balance,
-                                      "fromNetwork": convertNetwork
-                                    });
-                              }
-                            },
-                          ),
+                          Visibility(
+                              visible: type == "transferred" ||
+                                  tokenXcmConfig.length > 0,
+                              child: PluginOutlinedButtonSmall(
+                                content: type == "transferred"
+                                    ? dic['ecosystem.seeTransaction']
+                                    : dic['ecosystem.crosschainTransfer'],
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 7, vertical: 2),
+                                margin: EdgeInsets.zero,
+                                color: PluginColorsDark.primary,
+                                fontSize: 16,
+                                minSize: 34,
+                                active: true,
+                                onPressed: () {
+                                  if (type == "transferred") {
+                                    String networkName =
+                                        service.plugin.basic.name;
+                                    if (service.plugin.basic.isTestNet) {
+                                      networkName =
+                                          '${networkName.split('-')[0]}-testnet';
+                                    }
+                                    final snLink =
+                                        'https://$networkName.subscan.io/account/${service.keyring.current.address}';
+                                    UI.launchURL(snLink);
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    Navigator.of(context).popAndPushNamed(
+                                        CrosschainTransferPage.route,
+                                        arguments: {
+                                          "balance": balance,
+                                          "fromNetwork": convertNetwork
+                                        });
+                                  }
+                                },
+                              )),
                         ],
                       )),
                   Visibility(

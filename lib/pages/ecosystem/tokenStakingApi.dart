@@ -58,8 +58,9 @@ class TokenStakingApi {
         plugin = service.plugin as PluginAcala;
       }
 
-      final balance = await plugin.service.assets
-          .updateTokenBalances(balances.values.toList()[0]);
+      final balance = await plugin.service.assets.updateTokenBalances(service
+          .plugin.noneNativeTokensAll
+          .firstWhere((element) => element.symbol == token));
       if (cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
               null &&
           cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=

@@ -285,7 +285,7 @@ class WalletApi {
   static Future<Map> getTokenStakingConfig() async {
     try {
       Response res =
-          await get(getUrl(_endpoint, '/config/tokenStakingConfig.json'));
+          await get(getUrl(_configEndpoint, '/config/tokenStakingConfig.json'));
       if (res == null) {
         return null;
       } else {

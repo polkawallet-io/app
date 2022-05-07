@@ -149,6 +149,13 @@ class _CompletedPageState extends State<CompletedPage> {
                                           title:
                                               "${dic['ecosystem.convertTo']} $convertToKen",
                                           onPressed: () async {
+                                            final convertBalance = widget
+                                                .service
+                                                .plugin
+                                                .noneNativeTokensAll
+                                                .firstWhere((element) =>
+                                                    element.symbol ==
+                                                    convertToKen);
                                             if (convertToKen.startsWith("L")) {
                                               //to mint
                                               final res = await Navigator.of(
@@ -156,11 +163,16 @@ class _CompletedPageState extends State<CompletedPage> {
                                                   .pushNamed(
                                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
                                               if (res != null) {
+                                                convertBalance
+                                                    .amount = Fmt.tokenInt(res,
+                                                        convertBalance.decimals)
+                                                    .toString();
                                                 Navigator.of(context)
                                                     .popAndPushNamed(
                                                         EcosystemPage.route,
                                                         arguments: {
-                                                      "balance": balance,
+                                                      "balance": convertBalance,
+                                                      "transferBalance": res,
                                                       "convertNetwork": widget
                                                           .service
                                                           .plugin
@@ -176,11 +188,16 @@ class _CompletedPageState extends State<CompletedPage> {
                                                   .pushNamed(
                                                       "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
                                               if (res != null) {
+                                                convertBalance
+                                                    .amount = Fmt.tokenInt(res,
+                                                        convertBalance.decimals)
+                                                    .toString();
                                                 Navigator.of(context)
                                                     .popAndPushNamed(
                                                         EcosystemPage.route,
                                                         arguments: {
-                                                      "balance": balance,
+                                                      "balance": convertBalance,
+                                                      "transferBalance": res,
                                                       "convertNetwork": widget
                                                           .service
                                                           .plugin

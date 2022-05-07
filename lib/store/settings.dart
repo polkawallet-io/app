@@ -59,10 +59,10 @@ abstract class _SettingsStore with Store {
   @observable
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": false},
-    "KSM": ["kusama", "moonriver", "bifrost", "parallel heiko"],
-    "LKSM": ["bifrost", "parallel heiko"],
-    "DOT": ["polkadot", "kusama"],
-    "LDOT": ["polkadot"]
+    "KSM": ["kusama", "bifrost", "parallel heiko"],
+    "LKSM": ["parallel heiko"],
+    "DOT": ["polkadot"],
+    "LDOT": []
   };
 
   @action

@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
@@ -217,7 +218,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
     final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
 
     String fee = '0';
-    if (fromNetwork == plugin_name_karura) {
+    if (fromNetwork == plugin_name_karura || fromNetwork == plugin_name_acala) {
       final feeData = await widget.service.plugin.sdk.api.tx
           .estimateFees(txInfo, xcmParams['params']);
       fee = feeData.partialFee.toString();
