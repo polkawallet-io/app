@@ -284,7 +284,7 @@ class WalletApi {
 
   static Future<Map> getDappsConfig() async {
     try {
-      Response res = await get(getUrl(_endpoint, '/wallet/dapps.json'));
+      Response res = await get(getUrl(_endpoint, '/config/dapps.json'));
       if (res == null) {
         return null;
       } else {
