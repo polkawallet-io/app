@@ -1,3 +1,7 @@
+# [3.2.5-beta] - 20220509
+- Support polkadot xcm cross-chain
+- add liquid staking.
+
 # [3.2.4-beta] - 20210428
 - karura/acala plugin: add incentive end time
 - add message module

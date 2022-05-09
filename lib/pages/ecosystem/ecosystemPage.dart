@@ -45,6 +45,8 @@ class EcosystemPage extends StatelessWidget {
     final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
     final tokenXcmConfig = List<String>.from(
         (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
+    final tokenXcmFromConfig = List<String>.from(
+        (tokensConfig['xcmFrom'] ?? {})[balance.tokenNameId] ?? []);
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text(dic['ecosystem.ecosystem']),
@@ -97,7 +99,12 @@ class EcosystemPage extends StatelessWidget {
                           ),
                           Visibility(
                               visible: type == "transferred" ||
-                                  tokenXcmConfig.length > 0,
+                                  (tokenXcmConfig.length > 0 &&
+                                      convertNetwork ==
+                                          service.plugin.basic.name) ||
+                                  (tokenXcmFromConfig.length > 0 &&
+                                      convertNetwork !=
+                                          service.plugin.basic.name),
                               child: PluginOutlinedButtonSmall(
                                 content: type == "transferred"
                                     ? dic['ecosystem.seeTransaction']

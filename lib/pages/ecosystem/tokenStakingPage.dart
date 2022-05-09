@@ -195,6 +195,8 @@ class _TokenItemViewState extends State<TokenItemView> {
     final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
     final tokenXcmConfig = List<String>.from(
         (tokensConfig['xcm'] ?? {})[widget.balance.tokenNameId] ?? []);
+    final tokenXcmFromConfig = List<String>.from(
+        (tokensConfig['xcmFrom'] ?? {})[widget.balance.tokenNameId] ?? []);
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
@@ -254,7 +256,12 @@ class _TokenItemViewState extends State<TokenItemView> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Visibility(
-                              visible: tokenXcmConfig.length > 0,
+                              visible: (tokenXcmConfig.length > 0 &&
+                                      widget.name ==
+                                          widget.service.plugin.basic.name) ||
+                                  (tokenXcmFromConfig.length > 0 &&
+                                      widget.name !=
+                                          widget.service.plugin.basic.name),
                               child: PluginOutlinedButtonSmall(
                                 content: dic['ecosystem.crosschainTransfer'],
                                 padding: EdgeInsets.symmetric(
@@ -272,70 +279,80 @@ class _TokenItemViewState extends State<TokenItemView> {
                                       });
                                 },
                               )),
-                          PluginOutlinedButtonSmall(
-                            content:
-                                "${dic['ecosystem.convertTo']} ${widget.convertToKen}",
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 2),
-                            margin: EdgeInsets.zero,
-                            color: PluginColorsDark.headline1,
-                            fontSize: 12,
-                            minSize: 25,
-                            active: true,
-                            onPressed: () async {
-                              if (widget.name ==
-                                  widget.service.plugin.basic.name) {
-                                final convertBalance = widget
-                                    .service.plugin.noneNativeTokensAll
-                                    .firstWhere((element) =>
-                                        element.symbol == widget.convertToKen);
-                                if (widget.convertToKen.startsWith("L")) {
-                                  //to mint
-                                  final res = await Navigator.of(context).pushNamed(
-                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
-                                  if (res != null) {
-                                    convertBalance.amount = Fmt.tokenInt(
-                                            res, convertBalance.decimals)
-                                        .toString();
+                          Visibility(
+                              visible: widget.name ==
+                                      widget.service.plugin.basic.name ||
+                                  (tokenXcmFromConfig.length > 0 &&
+                                      widget.name !=
+                                          widget.service.plugin.basic.name),
+                              child: PluginOutlinedButtonSmall(
+                                content:
+                                    "${dic['ecosystem.convertTo']} ${widget.convertToKen}",
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 7, vertical: 2),
+                                margin: EdgeInsets.zero,
+                                color: PluginColorsDark.headline1,
+                                fontSize: 12,
+                                minSize: 25,
+                                active: true,
+                                onPressed: () async {
+                                  if (widget.name ==
+                                      widget.service.plugin.basic.name) {
+                                    final convertBalance = widget
+                                        .service.plugin.noneNativeTokensAll
+                                        .firstWhere((element) =>
+                                            element.symbol ==
+                                            widget.convertToKen);
+                                    if (widget.convertToKen.startsWith("L")) {
+                                      //to mint
+                                      final res = await Navigator.of(context)
+                                          .pushNamed(
+                                              "/${widget.service.plugin.basic.name.toLowerCase()}/homa/mint");
+                                      if (res != null) {
+                                        convertBalance.amount = Fmt.tokenInt(
+                                                res, convertBalance.decimals)
+                                            .toString();
+                                        Navigator.of(context).pushNamed(
+                                            EcosystemPage.route,
+                                            arguments: {
+                                              "balance": convertBalance,
+                                              "transferBalance": res,
+                                              "convertNetwork": widget
+                                                  .service.plugin.basic.name,
+                                              "type": "minted"
+                                            });
+                                      }
+                                    } else {
+                                      //to redeem
+                                      final res = await Navigator.of(context)
+                                          .pushNamed(
+                                              "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
+                                      if (res != null) {
+                                        convertBalance.amount = Fmt.tokenInt(
+                                                res, convertBalance.decimals)
+                                            .toString();
+                                        Navigator.of(context).pushNamed(
+                                            EcosystemPage.route,
+                                            arguments: {
+                                              "balance": convertBalance,
+                                              "transferBalance": res,
+                                              "convertNetwork": widget
+                                                  .service.plugin.basic.name,
+                                              "type": "redeemed"
+                                            });
+                                      }
+                                    }
+                                  } else {
                                     Navigator.of(context).pushNamed(
-                                        EcosystemPage.route,
+                                        ConverToPage.route,
                                         arguments: {
-                                          "balance": convertBalance,
-                                          "transferBalance": res,
-                                          "convertNetwork":
-                                              widget.service.plugin.basic.name,
-                                          "type": "minted"
+                                          "balance": widget.balance,
+                                          "fromNetwork": widget.name,
+                                          "convertToKen": widget.convertToKen
                                         });
                                   }
-                                } else {
-                                  //to redeem
-                                  final res = await Navigator.of(context).pushNamed(
-                                      "/${widget.service.plugin.basic.name.toLowerCase()}/homa/redeem");
-                                  if (res != null) {
-                                    convertBalance.amount = Fmt.tokenInt(
-                                            res, convertBalance.decimals)
-                                        .toString();
-                                    Navigator.of(context).pushNamed(
-                                        EcosystemPage.route,
-                                        arguments: {
-                                          "balance": convertBalance,
-                                          "transferBalance": res,
-                                          "convertNetwork":
-                                              widget.service.plugin.basic.name,
-                                          "type": "redeemed"
-                                        });
-                                  }
-                                }
-                              } else {
-                                Navigator.of(context)
-                                    .pushNamed(ConverToPage.route, arguments: {
-                                  "balance": widget.balance,
-                                  "fromNetwork": widget.name,
-                                  "convertToKen": widget.convertToKen
-                                });
-                              }
-                            },
-                          ),
+                                },
+                              )),
                         ],
                       )))
             ],
