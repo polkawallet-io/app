@@ -34,6 +34,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:rive/rive.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class AssetsPage extends StatefulWidget {
   AssetsPage(
@@ -738,329 +739,347 @@ class _AssetsState extends State<AssetsPage> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: buildAppBar(),
-          body: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
-                child: instrumentIndex == 0 ||
-                        widget.service.plugin.getAggregatedAssetsWidget(
-                                onSwitchBack: null,
-                                onSwitchHideBalance: null) ==
-                            null
-                    ? InstrumentWidget(
-                        _instrumentDatas(),
-                        gradienColors: _gradienColors(),
-                        switchDefi: widget.service.plugin
-                                .getAggregatedAssetsWidget(
-                                    onSwitchBack: null,
-                                    onSwitchHideBalance: null) !=
-                            null,
-                        onSwitchChange: () {
-                          setState(() {
-                            instrumentIndex = 1;
-                          });
-                        },
-                        onSwitchHideBalance: () {
-                          widget.service.store.settings.setIsHideBalance(
-                              !widget.service.store.settings.isHideBalance);
-                        },
-                        enabled: widget.connectedNode != null,
-                        hideBalance:
-                            widget.service.store.settings.isHideBalance,
-                        priceCurrency:
-                            widget.service.store.settings.priceCurrency,
-                        key: Key(
-                            "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
-                      )
-                    : widget.service.plugin.getAggregatedAssetsWidget(
-                        onSwitchBack: () {
-                          setState(() {
-                            instrumentIndex = 0;
-                          });
-                        },
-                        onSwitchHideBalance: () {
-                          widget.service.store.settings.setIsHideBalance(
-                              !widget.service.store.settings.isHideBalance);
-                        },
-                        priceCurrency:
-                            widget.service.store.settings.priceCurrency,
-                        rate:
-                            widget.service.store.settings.priceCurrency == "CNY"
-                                ? _rate
-                                : 1.0,
-                        hideBalance:
-                            widget.service.store.settings.isHideBalance),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                child: AdBanner(widget.service, widget.connectedNode),
-              ),
-              // Container(
-              //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
-              //   child: RoundedButton(
-              //     text: 'DApps Test',
-              //     onPressed: () =>
-              //         Navigator.of(context).pushNamed(DAppsTestPage.route),
-              //   ),
-              // ),
-              widget.service.plugin.basic.isTestNet
-                  ? Padding(
-                      padding: EdgeInsets.only(top: 5.h),
+          body: CustomRefreshIndicator(
+              edgeOffset: 16,
+              key: _refreshKey,
+              onRefresh: _updateBalances,
+              child: ListView(children: [
+                StickyHeader(
+                    header: Container(),
+                    content: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
+                          child: instrumentIndex == 0 ||
+                                  widget.service.plugin
+                                          .getAggregatedAssetsWidget(
+                                              onSwitchBack: null,
+                                              onSwitchHideBalance: null) ==
+                                      null
+                              ? InstrumentWidget(
+                                  _instrumentDatas(),
+                                  gradienColors: _gradienColors(),
+                                  switchDefi: widget.service.plugin
+                                          .getAggregatedAssetsWidget(
+                                              onSwitchBack: null,
+                                              onSwitchHideBalance: null) !=
+                                      null,
+                                  onSwitchChange: () {
+                                    setState(() {
+                                      instrumentIndex = 1;
+                                    });
+                                  },
+                                  onSwitchHideBalance: () {
+                                    widget.service.store.settings
+                                        .setIsHideBalance(!widget.service.store
+                                            .settings.isHideBalance);
+                                  },
+                                  enabled: widget.connectedNode != null,
+                                  hideBalance: widget
+                                      .service.store.settings.isHideBalance,
+                                  priceCurrency: widget
+                                      .service.store.settings.priceCurrency,
+                                  key: Key(
+                                      "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
+                                )
+                              : widget.service.plugin.getAggregatedAssetsWidget(
+                                  onSwitchBack: () {
+                                    setState(() {
+                                      instrumentIndex = 0;
+                                    });
+                                  },
+                                  onSwitchHideBalance: () {
+                                    widget.service.store.settings
+                                        .setIsHideBalance(!widget.service.store
+                                            .settings.isHideBalance);
+                                  },
+                                  priceCurrency: widget
+                                      .service.store.settings.priceCurrency,
+                                  rate: widget.service.store.settings
+                                              .priceCurrency ==
+                                          "CNY"
+                                      ? _rate
+                                      : 1.0,
+                                  hideBalance: widget
+                                      .service.store.settings.isHideBalance),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                          child: AdBanner(widget.service, widget.connectedNode),
+                        ),
+                        // Container(
+                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                        //   child: RoundedButton(
+                        //     text: 'DApps Test',
+                        //     onPressed: () =>
+                        //         Navigator.of(context).pushNamed(DAppsTestPage.route),
+                        //   ),
+                        // ),
+                        widget.service.plugin.basic.isTestNet
+                            ? Padding(
+                                padding: EdgeInsets.only(top: 5.h),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: TextTag(
+                                      I18n.of(context).getDic(i18n_full_dic_app,
+                                          'assets')['assets.warn'],
+                                      color: Colors.deepOrange,
+                                      fontSize: 12,
+                                      margin: EdgeInsets.all(0),
+                                      padding: EdgeInsets.all(8),
+                                    ))
+                                  ],
+                                ),
+                              )
+                            : Container(height: 0.h),
+                        // FutureBuilder(
+                        //   future: _fetchAnnouncements(),
+                        //   builder: (_, AsyncSnapshot<dynamic> snapshot) {
+                        //     final String lang =
+                        //         I18n.of(context).locale.toString().contains('zh')
+                        //             ? 'zh'
+                        //             : 'en';
+                        //     if (!snapshot.hasData || snapshot.data == null) {
+                        //       return Container();
+                        //     }
+                        //     int level = snapshot.data['level'];
+                        //     final Map announce = snapshot.data[lang];
+                        //     return GestureDetector(
+                        //       child: Container(
+                        //         margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
+                        //         child: Row(
+                        //           children: <Widget>[
+                        //             Expanded(
+                        //               child: TextTag(
+                        //                 announce['title'],
+                        //                 padding:
+                        //                     EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
+                        //                 color: level == 0
+                        //                     ? Colors.blue
+                        //                     : level == 1
+                        //                         ? Colors.yellow
+                        //                         : Colors.red,
+                        //               ),
+                        //             )
+                        //           ],
+                        //         ),
+                        //       ),
+                        //       onTap: () {
+                        //         Navigator.of(context).pushNamed(
+                        //           AnnouncementPage.route,
+                        //           arguments: AnnouncePageParams(
+                        //             title: announce['title'],
+                        //             link: announce['link'],
+                        //           ),
+                        //         );
+                        //       },
+                        //     );
+                        //   },
+                        // ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                          child: Divider(height: 1),
+                        ),
+                      ],
+                    )),
+                StickyHeader(
+                    header: Container(
+                      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       child: Row(
                         children: [
-                          Expanded(
-                              child: TextTag(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'assets')['assets.warn'],
-                            color: Colors.deepOrange,
-                            fontSize: 12,
-                            margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.all(8),
-                          ))
+                          BorderedTitle(
+                            title: I18n.of(context)
+                                .getDic(i18n_full_dic_app, 'assets')['assets'],
+                          ),
+                          Visibility(
+                              visible:
+                                  (widget.service.plugin.noneNativeTokensAll ??
+                                              [])
+                                          .length >
+                                      0,
+                              child: Expanded(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  v3.IconButton(
+                                    onPressed: () => Navigator.of(context)
+                                        .pushNamed(ManageAssetsPage.route),
+                                    icon: Icon(
+                                      Icons.menu,
+                                      color: Theme.of(context).disabledColor,
+                                      size: 20,
+                                    ),
+                                  )
+                                ],
+                              )))
                         ],
                       ),
-                    )
-                  : Container(height: 0.h),
-              // FutureBuilder(
-              //   future: _fetchAnnouncements(),
-              //   builder: (_, AsyncSnapshot<dynamic> snapshot) {
-              //     final String lang =
-              //         I18n.of(context).locale.toString().contains('zh')
-              //             ? 'zh'
-              //             : 'en';
-              //     if (!snapshot.hasData || snapshot.data == null) {
-              //       return Container();
-              //     }
-              //     int level = snapshot.data['level'];
-              //     final Map announce = snapshot.data[lang];
-              //     return GestureDetector(
-              //       child: Container(
-              //         margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
-              //         child: Row(
-              //           children: <Widget>[
-              //             Expanded(
-              //               child: TextTag(
-              //                 announce['title'],
-              //                 padding:
-              //                     EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
-              //                 color: level == 0
-              //                     ? Colors.blue
-              //                     : level == 1
-              //                         ? Colors.yellow
-              //                         : Colors.red,
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //       ),
-              //       onTap: () {
-              //         Navigator.of(context).pushNamed(
-              //           AnnouncementPage.route,
-              //           arguments: AnnouncePageParams(
-              //             title: announce['title'],
-              //             link: announce['link'],
-              //           ),
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
-              Container(
-                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
-                child: Divider(height: 1),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
-                child: Row(
-                  children: [
-                    BorderedTitle(
-                      title: I18n.of(context)
-                          .getDic(i18n_full_dic_app, 'assets')['assets'],
                     ),
-                    Visibility(
-                        visible:
-                            (widget.service.plugin.noneNativeTokensAll ?? [])
-                                    .length >
-                                0,
-                        child: Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            v3.IconButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pushNamed(ManageAssetsPage.route),
-                              icon: Icon(
-                                Icons.menu,
-                                color: Theme.of(context).disabledColor,
-                                size: 20,
-                              ),
-                            )
-                          ],
-                        )))
-                  ],
-                ),
-              ),
-              Expanded(
-                  child: Container(
-                child: CustomRefreshIndicator(
-                  edgeOffset: 16,
-                  key: _refreshKey,
-                  onRefresh: _updateBalances,
-                  child: ListView(
-                    physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 6.h, top: 3.h),
-                    children: [
-                      RoundedCard(
-                        margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Container(
-                                width: 48.w,
-                                alignment: Alignment.centerLeft,
-                                child: TokenIcon(
-                                  symbol,
-                                  widget.service.plugin.tokenIcons,
-                                ),
-                              ),
-                              title: Text(
-                                symbol,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    .copyWith(fontWeight: FontWeight.w600),
-                              ),
-                              trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                      balancesInfo != null &&
-                                              balancesInfo.freeBalance != null
-                                          ? widget.service.store.settings
-                                                  .isHideBalance
-                                              ? "******"
-                                              : Fmt.priceFloorBigInt(
-                                                  Fmt.balanceTotal(
-                                                      balancesInfo),
-                                                  decimals,
-                                                  lengthFixed: 4)
-                                          : '--.--',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          .copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: balancesInfo
-                                                          ?.isFromCache ==
-                                                      false
-                                                  ? Theme.of(context)
-                                                      .textSelectionTheme
-                                                      .selectionColor
-                                                  : Theme.of(context)
-                                                      .dividerColor)),
-                                  Text(
-                                    widget.service.store.settings.isHideBalance
-                                        ? "******"
-                                        : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
+                    content: Container(
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(bottom: 6.h, top: 3.h),
+                        children: [
+                          RoundedCard(
+                            margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  leading: Container(
+                                    width: 48.w,
+                                    alignment: Alignment.centerLeft,
+                                    child: TokenIcon(
+                                      symbol,
+                                      widget.service.plugin.tokenIcons,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    symbol,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline6
-                                        .copyWith(fontFamily: "TitilliumWeb"),
+                                        .headline5
+                                        .copyWith(fontWeight: FontWeight.w600),
                                   ),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(context, AssetPage.route);
-                              },
-                            ),
-                            Visibility(
-                                visible: tokens != null && tokens.length > 0,
-                                child: Column(
-                                  children:
-                                      (tokens ?? []).map((TokenBalanceData i) {
-                                    // we can use token price form plugin or from market
-                                    final price = i.price ??
-                                        widget.service.store.assets
-                                            .marketPrices[i.symbol] ??
-                                        0.0;
-                                    return TokenItem(
-                                      i,
-                                      i.decimals,
-                                      isFromCache: isTokensFromCache,
-                                      detailPageRoute: i.detailPageRoute,
-                                      marketPrice: price *
-                                          (widget.service.store.settings
-                                                      .priceCurrency ==
-                                                  "CNY"
-                                              ? _rate
-                                              : 1.0),
-                                      icon: TokenIcon(
-                                        widget.service.plugin.basic.name ==
-                                                para_chain_name_statemine
-                                            ? i.id
-                                            : i.symbol,
-                                        widget.service.plugin.tokenIcons,
-                                        symbol: i.symbol,
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                          balancesInfo != null &&
+                                                  balancesInfo.freeBalance !=
+                                                      null
+                                              ? widget.service.store.settings
+                                                      .isHideBalance
+                                                  ? "******"
+                                                  : Fmt.priceFloorBigInt(
+                                                      Fmt
+                                                          .balanceTotal(
+                                                              balancesInfo),
+                                                      decimals,
+                                                      lengthFixed: 4)
+                                              : '--.--',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5
+                                              .copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: balancesInfo
+                                                              ?.isFromCache ==
+                                                          false
+                                                      ? Theme.of(context)
+                                                          .textSelectionTheme
+                                                          .selectionColor
+                                                      : Theme.of(context)
+                                                          .dividerColor)),
+                                      Text(
+                                        widget.service.store.settings
+                                                .isHideBalance
+                                            ? "******"
+                                            : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6
+                                            .copyWith(
+                                                fontFamily: "TitilliumWeb"),
                                       ),
-                                      isHideBalance: widget
-                                          .service.store.settings.isHideBalance,
-                                      priceCurrency: widget
-                                          .service.store.settings.priceCurrency,
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, AssetPage.route);
+                                  },
+                                ),
+                                Visibility(
+                                    visible:
+                                        tokens != null && tokens.length > 0,
+                                    child: Column(
+                                      children: (tokens ?? [])
+                                          .map((TokenBalanceData i) {
+                                        // we can use token price form plugin or from market
+                                        final price = i.price ??
+                                            widget.service.store.assets
+                                                .marketPrices[i.symbol] ??
+                                            0.0;
+                                        return TokenItem(
+                                          i,
+                                          i.decimals,
+                                          isFromCache: isTokensFromCache,
+                                          detailPageRoute: i.detailPageRoute,
+                                          marketPrice: price *
+                                              (widget.service.store.settings
+                                                          .priceCurrency ==
+                                                      "CNY"
+                                                  ? _rate
+                                                  : 1.0),
+                                          icon: TokenIcon(
+                                            widget.service.plugin.basic.name ==
+                                                    para_chain_name_statemine
+                                                ? i.id
+                                                : i.symbol,
+                                            widget.service.plugin.tokenIcons,
+                                            symbol: i.symbol,
+                                          ),
+                                          isHideBalance: widget.service.store
+                                              .settings.isHideBalance,
+                                          priceCurrency: widget.service.store
+                                              .settings.priceCurrency,
+                                        );
+                                      }).toList(),
+                                    )),
+                                Visibility(
+                                  visible: extraTokens == null ||
+                                      extraTokens.length == 0,
+                                  child: Column(
+                                      children: (extraTokens ?? [])
+                                          .map((ExtraTokenData i) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 16.h),
+                                          child: BorderedTitle(
+                                            title: i.title,
+                                          ),
+                                        ),
+                                        Column(
+                                          children: i.tokens
+                                              .map((e) => TokenItem(
+                                                    e,
+                                                    e.decimals,
+                                                    isFromCache:
+                                                        isTokensFromCache,
+                                                    detailPageRoute:
+                                                        e.detailPageRoute,
+                                                    icon: widget.service.plugin
+                                                        .tokenIcons[e.symbol],
+                                                    isHideBalance: widget
+                                                        .service
+                                                        .store
+                                                        .settings
+                                                        .isHideBalance,
+                                                    priceCurrency: widget
+                                                        .service
+                                                        .store
+                                                        .settings
+                                                        .priceCurrency,
+                                                  ))
+                                              .toList(),
+                                        )
+                                      ],
                                     );
-                                  }).toList(),
-                                )),
-                            Visibility(
-                              visible: extraTokens == null ||
-                                  extraTokens.length == 0,
-                              child: Column(
-                                  children: (extraTokens ?? [])
-                                      .map((ExtraTokenData i) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 16.h),
-                                      child: BorderedTitle(
-                                        title: i.title,
-                                      ),
-                                    ),
-                                    Column(
-                                      children: i.tokens
-                                          .map((e) => TokenItem(
-                                                e,
-                                                e.decimals,
-                                                isFromCache: isTokensFromCache,
-                                                detailPageRoute:
-                                                    e.detailPageRoute,
-                                                icon: widget.service.plugin
-                                                    .tokenIcons[e.symbol],
-                                                isHideBalance: widget
-                                                    .service
-                                                    .store
-                                                    .settings
-                                                    .isHideBalance,
-                                                priceCurrency: widget
-                                                    .service
-                                                    .store
-                                                    .settings
-                                                    .priceCurrency,
-                                              ))
-                                          .toList(),
-                                    )
-                                  ],
-                                );
-                              }).toList()),
-                            )
-                          ],
-                        ),
+                                  }).toList()),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              )),
-            ],
-          ),
+                    ))
+              ])),
         );
       },
     );
