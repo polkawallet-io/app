@@ -86,7 +86,7 @@ const Map<String, String> enPublic = {
   'ecosystem.mintMessage1': 'The pool has met the cap, unable to mint',
   'ecosystem.mintMessage2': 'temporarily.',
   'event.0415.1':
-      'The 1 million aUSD Tsunami liquidity program is about to begin on Karura!!',
+      'The 1 million aUSD Tsunami liquidity program is in progress on Karura!!',
   'event.0415.2': 'Following the steps to participate:',
   'event.0415.3': 'Send KSM to Karura\'s parachain.',
   'event.0415.4': 'Join the liquid staking and mint LKSM.',
@@ -97,4 +97,16 @@ const Map<String, String> enPublic = {
   'event.0415.8': 'Cross-Chain Transfer',
   'event.0415.9': 'Go Liquid Staking',
   'event.0415.10': 'Join Collateral Staking',
+  'event.0515.1':
+      'The 1 million aUSD Tsunami liquidity program is in progress on Acala!!',
+  'event.0515.2': 'Following the steps to participate:',
+  'event.0515.3': 'Send DOT to Acala\'s parachain.',
+  'event.0515.4': 'Join the liquid staking and mint LDOT.',
+  'event.0515.5': 'Currently 14.5% LDOT Staking APY (rewards in DOT)',
+  'event.0515.6': 'Stake your LDOT and earn rewards!',
+  'event.0515.7':
+      'Earn another potential 10% APY on your DOT staking in aUSD rewards',
+  'event.0515.8': 'Cross-Chain Transfer',
+  'event.0515.9': 'Go Liquid Staking',
+  'event.0515.10': 'Join Collateral Staking',
 };
