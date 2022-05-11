@@ -821,50 +821,6 @@ class _AssetsState extends State<AssetsPage> {
                       ),
                     )
                   : Container(height: 0.h),
-              // FutureBuilder(
-              //   future: _fetchAnnouncements(),
-              //   builder: (_, AsyncSnapshot<dynamic> snapshot) {
-              //     final String lang =
-              //         I18n.of(context).locale.toString().contains('zh')
-              //             ? 'zh'
-              //             : 'en';
-              //     if (!snapshot.hasData || snapshot.data == null) {
-              //       return Container();
-              //     }
-              //     int level = snapshot.data['level'];
-              //     final Map announce = snapshot.data[lang];
-              //     return GestureDetector(
-              //       child: Container(
-              //         margin: EdgeInsets.fromLTRB(16.w, 5.h, 16.w, 0),
-              //         child: Row(
-              //           children: <Widget>[
-              //             Expanded(
-              //               child: TextTag(
-              //                 announce['title'],
-              //                 padding:
-              //                     EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
-              //                 color: level == 0
-              //                     ? Colors.blue
-              //                     : level == 1
-              //                         ? Colors.yellow
-              //                         : Colors.red,
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //       ),
-              //       onTap: () {
-              //         Navigator.of(context).pushNamed(
-              //           AnnouncementPage.route,
-              //           arguments: AnnouncePageParams(
-              //             title: announce['title'],
-              //             link: announce['link'],
-              //           ),
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
               Container(
                 margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                 child: Divider(height: 1),

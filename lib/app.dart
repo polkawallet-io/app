@@ -44,6 +44,7 @@ import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
+import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
@@ -641,6 +642,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       GuidePage.route: (_) => GuidePage(),
       AcalaBridgePage.route: (_) => AcalaBridgePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
+      StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) =>
