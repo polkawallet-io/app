@@ -67,7 +67,9 @@ abstract class _SettingsStore with Store {
 
   @action
   Future<void> setTokenStakingConfig(Map data) async {
-    tokenStakingConfig = data;
+    if (data != null) {
+      tokenStakingConfig = data;
+    }
   }
 
   Future<void> initMessage(String _languageCode) async {
