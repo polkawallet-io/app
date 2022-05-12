@@ -79,6 +79,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/walletExtensionConnectPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -622,6 +623,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             txDisabledCalls: _service.store.settings
                 .getDisabledCalls(_service.plugin.basic.name),
           ),
+      WalletExtensionConnectPage.route: (_) => WalletExtensionConnectPage(),
       WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
