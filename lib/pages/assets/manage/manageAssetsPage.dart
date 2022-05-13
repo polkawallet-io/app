@@ -1,9 +1,12 @@
 import 'package:app/common/consts.dart';
+import 'package:app/pages/assets/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
@@ -28,6 +31,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
   bool _hide0 = false;
   String _filter = '';
   Map<String, bool> _tokenVisible = {};
+
+  int _assetsTypeIndex = 0;
 
   Future<void> _onSave() async {
     final config = Map<String, bool>.of(_tokenVisible);
@@ -122,6 +127,20 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
     ];
     list.addAll(widget.service.plugin.noneNativeTokensAll);
 
+    if (_assetsTypeIndex != 0) {
+      var type = "Token";
+      if (assetsType[_assetsTypeIndex] == "Cross-chain") {
+        type = "ForeignAsset";
+      } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+        type = "TaigaAsset";
+      } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
+        type = "DexShare";
+      } else if (assetsType[_assetsTypeIndex] == "ERC-20") {
+        type = "Erc20";
+      }
+      list.retainWhere((element) => element.type == type);
+    }
+
     list.retainWhere((token) =>
         token.symbol.toUpperCase().contains(_filter) ||
         (token.name ?? '').toUpperCase().contains(_filter) ||
@@ -189,34 +208,91 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                 )),
             Container(
               margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
-              child: GestureDetector(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: _hide0
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).disabledColor,
-                      size: 14,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: _hide0
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).disabledColor,
+                          size: 14,
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 4, right: 16),
+                          child: Text(
+                            dic['manage.hide'],
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                .copyWith(
+                                    fontFamily: 'SF_Pro',
+                                    color: _hide0
+                                        ? Theme.of(context).primaryColor
+                                        : colorGrey),
+                          ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      margin: EdgeInsets.only(left: 4, right: 16),
-                      child: Text(
-                        dic['manage.hide'],
-                        style: Theme.of(context).textTheme.headline5.copyWith(
-                            fontFamily: 'SF_Pro',
-                            color: _hide0
-                                ? Theme.of(context).primaryColor
-                                : colorGrey),
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  setState(() {
-                    _hide0 = !_hide0;
-                  });
-                },
+                    onTap: () {
+                      setState(() {
+                        _hide0 = !_hide0;
+                      });
+                    },
+                  ),
+                  Visibility(
+                      visible: widget.service.plugin.basic.name ==
+                              plugin_name_karura ||
+                          widget.service.plugin.basic.name == plugin_name_acala,
+                      child: GestureDetector(
+                        child: Image.asset(
+                          "assets/images/icon_assetsType.png",
+                          width: 28,
+                        ),
+                        onTap: () {
+                          final dic = I18n.of(context)
+                              .getDic(i18n_full_dic_ui, 'common');
+                          showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return CupertinoActionSheet(
+                                actions: <Widget>[
+                                  ...assetsType.map((element) {
+                                    final index = assetsType.indexOf(element);
+                                    return CupertinoActionSheetAction(
+                                      onPressed: () {
+                                        if (index != _assetsTypeIndex) {
+                                          setState(() {
+                                            _assetsTypeIndex = index;
+                                          });
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        element,
+                                        style: TextStyle(
+                                            color: index == _assetsTypeIndex
+                                                ? Color(0xFFFE0000)
+                                                : Color(0xFF007AFE)),
+                                      ),
+                                    );
+                                  }).toList()
+                                ],
+                                cancelButton: CupertinoActionSheetAction(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(dic['cancel']),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ))
+                ],
               ),
             ),
             Expanded(

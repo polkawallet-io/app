@@ -18,6 +18,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -34,6 +36,17 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:rive/rive.dart';
+import 'package:sticky_headers/sticky_headers.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+
+final assetsType = [
+  "All",
+  "Native",
+  "ERC-20",
+  "Cross-chain",
+  "LP Tokens",
+  "Tiga token"
+];
 
 class AssetsPage extends StatefulWidget {
   AssetsPage(
@@ -69,6 +82,8 @@ class _AssetsState extends State<AssetsPage> {
   int instrumentIndex = 0;
 
   double _rate = 1.0;
+
+  int _assetsTypeIndex = 0;
 
   Future<void> _updateBalances() async {
     if (widget.connectedNode == null) return;
@@ -735,288 +750,419 @@ class _AssetsState extends State<AssetsPage> {
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
         }
 
+        if (widget.service.plugin.basic.name != plugin_name_karura &&
+            widget.service.plugin.basic.name != plugin_name_acala) {
+          _assetsTypeIndex = 0;
+        }
+
+        if (_assetsTypeIndex != 0) {
+          var type = "Token";
+          if (assetsType[_assetsTypeIndex] == "Cross-chain") {
+            type = "ForeignAsset";
+          } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+            type = "TaigaAsset";
+          } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
+            type = "DexShare";
+          } else if (assetsType[_assetsTypeIndex] == "ERC-20") {
+            type = "Erc20";
+          }
+          tokens.retainWhere((element) => element.type == type);
+        }
+
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: buildAppBar(),
-          body: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
-                child: instrumentIndex == 0 ||
-                        widget.service.plugin.getAggregatedAssetsWidget(
-                                onSwitchBack: null,
-                                onSwitchHideBalance: null) ==
-                            null
-                    ? InstrumentWidget(
-                        _instrumentDatas(),
-                        gradienColors: _gradienColors(),
-                        switchDefi: widget.service.plugin
-                                .getAggregatedAssetsWidget(
-                                    onSwitchBack: null,
-                                    onSwitchHideBalance: null) !=
-                            null,
-                        onSwitchChange: () {
-                          setState(() {
-                            instrumentIndex = 1;
-                          });
-                        },
-                        onSwitchHideBalance: () {
-                          widget.service.store.settings.setIsHideBalance(
-                              !widget.service.store.settings.isHideBalance);
-                        },
-                        enabled: widget.connectedNode != null,
-                        hideBalance:
-                            widget.service.store.settings.isHideBalance,
-                        priceCurrency:
-                            widget.service.store.settings.priceCurrency,
-                        key: Key(
-                            "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
-                      )
-                    : widget.service.plugin.getAggregatedAssetsWidget(
-                        onSwitchBack: () {
-                          setState(() {
-                            instrumentIndex = 0;
-                          });
-                        },
-                        onSwitchHideBalance: () {
-                          widget.service.store.settings.setIsHideBalance(
-                              !widget.service.store.settings.isHideBalance);
-                        },
-                        priceCurrency:
-                            widget.service.store.settings.priceCurrency,
-                        rate:
-                            widget.service.store.settings.priceCurrency == "CNY"
-                                ? _rate
-                                : 1.0,
-                        hideBalance:
-                            widget.service.store.settings.isHideBalance),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                child: AdBanner(widget.service, widget.connectedNode),
-              ),
-              // Container(
-              //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
-              //   child: RoundedButton(
-              //     text: 'DApps Test',
-              //     onPressed: () =>
-              //         Navigator.of(context).pushNamed(DAppsTestPage.route),
-              //   ),
-              // ),
-              widget.service.plugin.basic.isTestNet
-                  ? Padding(
-                      padding: EdgeInsets.only(top: 5.h),
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: TextTag(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'assets')['assets.warn'],
-                            color: Colors.deepOrange,
-                            fontSize: 12,
-                            margin: EdgeInsets.all(0),
-                            padding: EdgeInsets.all(8),
-                          ))
-                        ],
-                      ),
-                    )
-                  : Container(height: 0.h),
-              Container(
-                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
-                child: Divider(height: 1),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
-                child: Row(
-                  children: [
-                    BorderedTitle(
-                      title: I18n.of(context)
-                          .getDic(i18n_full_dic_app, 'assets')['assets'],
-                    ),
-                    Visibility(
-                        visible:
-                            (widget.service.plugin.noneNativeTokensAll ?? [])
-                                    .length >
-                                0,
-                        child: Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            v3.IconButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pushNamed(ManageAssetsPage.route),
-                              icon: Icon(
-                                Icons.menu,
-                                color: Theme.of(context).disabledColor,
-                                size: 20,
-                              ),
-                            )
-                          ],
-                        )))
-                  ],
-                ),
-              ),
-              Expanded(
-                  child: Container(
-                child: CustomRefreshIndicator(
-                  edgeOffset: 16,
-                  key: _refreshKey,
-                  onRefresh: _updateBalances,
-                  child: ListView(
-                    physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 6.h, top: 3.h),
-                    children: [
-                      RoundedCard(
-                        margin: EdgeInsets.only(left: 16.w, right: 16.w),
+          body: CustomRefreshIndicator(
+              edgeOffset: 16,
+              key: _refreshKey,
+              onRefresh: _updateBalances,
+              child: ListView(children: [
+                StickyHeader(
+                    header: Container(),
+                    content: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
+                          child: instrumentIndex == 0 ||
+                                  widget.service.plugin
+                                          .getAggregatedAssetsWidget(
+                                              onSwitchBack: null,
+                                              onSwitchHideBalance: null) ==
+                                      null
+                              ? InstrumentWidget(
+                                  _instrumentDatas(),
+                                  gradienColors: _gradienColors(),
+                                  switchDefi: widget.service.plugin
+                                          .getAggregatedAssetsWidget(
+                                              onSwitchBack: null,
+                                              onSwitchHideBalance: null) !=
+                                      null,
+                                  onSwitchChange: () {
+                                    setState(() {
+                                      instrumentIndex = 1;
+                                    });
+                                  },
+                                  onSwitchHideBalance: () {
+                                    widget.service.store.settings
+                                        .setIsHideBalance(!widget.service.store
+                                            .settings.isHideBalance);
+                                  },
+                                  enabled: widget.connectedNode != null,
+                                  hideBalance: widget
+                                      .service.store.settings.isHideBalance,
+                                  priceCurrency: widget
+                                      .service.store.settings.priceCurrency,
+                                  key: Key(
+                                      "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
+                                )
+                              : widget.service.plugin.getAggregatedAssetsWidget(
+                                  onSwitchBack: () {
+                                    setState(() {
+                                      instrumentIndex = 0;
+                                    });
+                                  },
+                                  onSwitchHideBalance: () {
+                                    widget.service.store.settings
+                                        .setIsHideBalance(!widget.service.store
+                                            .settings.isHideBalance);
+                                  },
+                                  priceCurrency: widget
+                                      .service.store.settings.priceCurrency,
+                                  rate: widget.service.store.settings
+                                              .priceCurrency ==
+                                          "CNY"
+                                      ? _rate
+                                      : 1.0,
+                                  hideBalance: widget
+                                      .service.store.settings.isHideBalance),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                          child: AdBanner(widget.service, widget.connectedNode),
+                        ),
+                        // Container(
+                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                        //   child: RoundedButton(
+                        //     text: 'DApps Test',
+                        //     onPressed: () =>
+                        //         Navigator.of(context).pushNamed(DAppsTestPage.route),
+                        //   ),
+                        // ),
+                        widget.service.plugin.basic.isTestNet
+                            ? Padding(
+                                padding: EdgeInsets.only(top: 5.h),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: TextTag(
+                                      I18n.of(context).getDic(i18n_full_dic_app,
+                                          'assets')['assets.warn'],
+                                      color: Colors.deepOrange,
+                                      fontSize: 12,
+                                      margin: EdgeInsets.all(0),
+                                      padding: EdgeInsets.all(8),
+                                    ))
+                                  ],
+                                ),
+                              )
+                            : Container(height: 0.h),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+                          child: Divider(height: 1),
+                        ),
+                      ],
+                    )),
+                StickyHeader(
+                    header: Container(
+                        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         child: Column(
                           children: [
-                            ListTile(
-                              leading: Container(
-                                width: 48.w,
-                                alignment: Alignment.centerLeft,
-                                child: TokenIcon(
-                                  symbol,
-                                  widget.service.plugin.tokenIcons,
+                            Row(
+                              children: [
+                                BorderedTitle(
+                                  title: I18n.of(context).getDic(
+                                      i18n_full_dic_app, 'assets')['assets'],
                                 ),
-                              ),
-                              title: Text(
-                                symbol,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    .copyWith(fontWeight: FontWeight.w600),
-                              ),
-                              trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                      balancesInfo != null &&
-                                              balancesInfo.freeBalance != null
-                                          ? widget.service.store.settings
-                                                  .isHideBalance
-                                              ? "******"
-                                              : Fmt.priceFloorBigInt(
-                                                  Fmt.balanceTotal(
-                                                      balancesInfo),
-                                                  decimals,
-                                                  lengthFixed: 4)
-                                          : '--.--',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          .copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: balancesInfo
-                                                          ?.isFromCache ==
-                                                      false
-                                                  ? Theme.of(context)
-                                                      .textSelectionTheme
-                                                      .selectionColor
-                                                  : Theme.of(context)
-                                                      .dividerColor)),
-                                  Text(
-                                    widget.service.store.settings.isHideBalance
-                                        ? "******"
-                                        : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        .copyWith(fontFamily: "TitilliumWeb"),
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(context, AssetPage.route);
-                              },
+                                Visibility(
+                                    visible: (widget.service.plugin
+                                                    .noneNativeTokensAll ??
+                                                [])
+                                            .length >
+                                        0,
+                                    child: Expanded(
+                                        child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        v3.IconButton(
+                                          onPressed: () => Navigator.of(context)
+                                              .pushNamed(
+                                                  ManageAssetsPage.route),
+                                          icon: Icon(
+                                            Icons.menu,
+                                            color:
+                                                Theme.of(context).disabledColor,
+                                            size: 20,
+                                          ),
+                                        )
+                                      ],
+                                    )))
+                              ],
                             ),
                             Visibility(
-                                visible: tokens != null && tokens.length > 0,
-                                child: Column(
-                                  children:
-                                      (tokens ?? []).map((TokenBalanceData i) {
-                                    // we can use token price form plugin or from market
-                                    final price = i.price ??
-                                        widget.service.store.assets
-                                            .marketPrices[i.symbol] ??
-                                        0.0;
-                                    return TokenItem(
-                                      i,
-                                      i.decimals,
-                                      isFromCache: isTokensFromCache,
-                                      detailPageRoute: i.detailPageRoute,
-                                      marketPrice: price *
-                                          (widget.service.store.settings
-                                                      .priceCurrency ==
-                                                  "CNY"
-                                              ? _rate
-                                              : 1.0),
-                                      icon: TokenIcon(
-                                        widget.service.plugin.basic.name ==
-                                                para_chain_name_statemine
-                                            ? i.id
-                                            : i.symbol,
-                                        widget.service.plugin.tokenIcons,
-                                        symbol: i.symbol,
-                                      ),
-                                      isHideBalance: widget
-                                          .service.store.settings.isHideBalance,
-                                      priceCurrency: widget
-                                          .service.store.settings.priceCurrency,
-                                    );
-                                  }).toList(),
-                                )),
-                            Visibility(
-                              visible: extraTokens == null ||
-                                  extraTokens.length == 0,
-                              child: Column(
-                                  children: (extraTokens ?? [])
-                                      .map((ExtraTokenData i) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 16.h),
-                                      child: BorderedTitle(
-                                        title: i.title,
-                                      ),
-                                    ),
-                                    Column(
-                                      children: i.tokens
-                                          .map((e) => TokenItem(
-                                                e,
-                                                e.decimals,
-                                                isFromCache: isTokensFromCache,
-                                                detailPageRoute:
-                                                    e.detailPageRoute,
-                                                icon: widget.service.plugin
-                                                    .tokenIcons[e.symbol],
-                                                isHideBalance: widget
-                                                    .service
-                                                    .store
-                                                    .settings
-                                                    .isHideBalance,
-                                                priceCurrency: widget
-                                                    .service
-                                                    .store
-                                                    .settings
-                                                    .priceCurrency,
-                                              ))
-                                          .toList(),
-                                    )
-                                  ],
-                                );
-                              }).toList()),
-                            )
+                                visible: widget.service.plugin.basic.name ==
+                                        plugin_name_karura ||
+                                    widget.service.plugin.basic.name ==
+                                        plugin_name_acala,
+                                child: Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    margin: EdgeInsets.only(top: 8),
+                                    child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (context, index) {
+                                          return CupertinoButton(
+                                            padding: EdgeInsets.all(0),
+                                            onPressed: () {
+                                              setState(() {
+                                                _assetsTypeIndex = index;
+                                              });
+                                            },
+                                            child: Container(
+                                              height: 24,
+                                              width: 65,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    _assetsTypeIndex == index
+                                                        ? null
+                                                        : BorderRadius.all(
+                                                            Radius.circular(
+                                                                6.0)),
+                                                color: _assetsTypeIndex == index
+                                                    ? Colors.transparent
+                                                    : Colors.white,
+                                                border: _assetsTypeIndex ==
+                                                        index
+                                                    ? null
+                                                    : Border.all(
+                                                        color:
+                                                            Color(0xFF979797),
+                                                        width: 0.2,
+                                                      ),
+                                                image: _assetsTypeIndex == index
+                                                    ? DecorationImage(
+                                                        image: AssetImage(
+                                                            'assets/images/icon_select_btn.png'),
+                                                        fit: BoxFit.fill,
+                                                      )
+                                                    : null,
+                                                boxShadow: _assetsTypeIndex ==
+                                                        index
+                                                    ? []
+                                                    : [
+                                                        BoxShadow(
+                                                          offset: Offset(1, 1),
+                                                          blurRadius: 1,
+                                                          spreadRadius: 0,
+                                                          color:
+                                                              Color(0x30000000),
+                                                        ),
+                                                      ],
+                                              ),
+                                              child: Center(
+                                                child: Text(assetsType[index],
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .button
+                                                        ?.copyWith(
+                                                            color:
+                                                                _assetsTypeIndex ==
+                                                                        index
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black,
+                                                            fontSize: 10)),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) =>
+                                            Container(width: 9),
+                                        itemCount: assetsType.length)))
                           ],
-                        ),
+                        )),
+                    content: Container(
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(bottom: 6.h, top: 3.h),
+                        children: [
+                          RoundedCard(
+                            margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                            child: Column(
+                              children: [
+                                Visibility(
+                                    visible: _assetsTypeIndex == 0 ||
+                                        _assetsTypeIndex == 1,
+                                    child: ListTile(
+                                      leading: Container(
+                                        width: 48.w,
+                                        alignment: Alignment.centerLeft,
+                                        child: TokenIcon(
+                                          symbol,
+                                          widget.service.plugin.tokenIcons,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        symbol,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            .copyWith(
+                                                fontWeight: FontWeight.w600),
+                                      ),
+                                      trailing: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                              balancesInfo != null &&
+                                                      balancesInfo.freeBalance !=
+                                                          null
+                                                  ? widget
+                                                          .service
+                                                          .store
+                                                          .settings
+                                                          .isHideBalance
+                                                      ? "******"
+                                                      : Fmt.priceFloorBigInt(
+                                                          Fmt.balanceTotal(
+                                                              balancesInfo),
+                                                          decimals,
+                                                          lengthFixed: 4)
+                                                  : '--.--',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: balancesInfo?.isFromCache ==
+                                                              false
+                                                          ? Theme.of(context)
+                                                              .textSelectionTheme
+                                                              .selectionColor
+                                                          : Theme.of(context)
+                                                              .dividerColor)),
+                                          Text(
+                                            widget.service.store.settings
+                                                    .isHideBalance
+                                                ? "******"
+                                                : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline6
+                                                .copyWith(
+                                                    fontFamily: "TitilliumWeb"),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, AssetPage.route);
+                                      },
+                                    )),
+                                Visibility(
+                                    visible:
+                                        tokens != null && tokens.length > 0,
+                                    child: Column(
+                                      children: (tokens ?? [])
+                                          .map((TokenBalanceData i) {
+                                        // we can use token price form plugin or from market
+                                        final price = i.price ??
+                                            widget.service.store.assets
+                                                .marketPrices[i.symbol] ??
+                                            0.0;
+                                        return TokenItem(
+                                          i,
+                                          i.decimals,
+                                          isFromCache: isTokensFromCache,
+                                          detailPageRoute: i.detailPageRoute,
+                                          marketPrice: price *
+                                              (widget.service.store.settings
+                                                          .priceCurrency ==
+                                                      "CNY"
+                                                  ? _rate
+                                                  : 1.0),
+                                          icon: TokenIcon(
+                                            widget.service.plugin.basic.name ==
+                                                    para_chain_name_statemine
+                                                ? i.id
+                                                : i.symbol,
+                                            widget.service.plugin.tokenIcons,
+                                            symbol: i.symbol,
+                                          ),
+                                          isHideBalance: widget.service.store
+                                              .settings.isHideBalance,
+                                          priceCurrency: widget.service.store
+                                              .settings.priceCurrency,
+                                        );
+                                      }).toList(),
+                                    )),
+                                Visibility(
+                                  visible: extraTokens == null ||
+                                      extraTokens.length == 0,
+                                  child: Column(
+                                      children: (extraTokens ?? [])
+                                          .map((ExtraTokenData i) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 16.h),
+                                          child: BorderedTitle(
+                                            title: i.title,
+                                          ),
+                                        ),
+                                        Column(
+                                          children: i.tokens
+                                              .map((e) => TokenItem(
+                                                    e,
+                                                    e.decimals,
+                                                    isFromCache:
+                                                        isTokensFromCache,
+                                                    detailPageRoute:
+                                                        e.detailPageRoute,
+                                                    icon: widget.service.plugin
+                                                        .tokenIcons[e.symbol],
+                                                    isHideBalance: widget
+                                                        .service
+                                                        .store
+                                                        .settings
+                                                        .isHideBalance,
+                                                    priceCurrency: widget
+                                                        .service
+                                                        .store
+                                                        .settings
+                                                        .priceCurrency,
+                                                  ))
+                                              .toList(),
+                                        )
+                                      ],
+                                    );
+                                  }).toList()),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              )),
-            ],
-          ),
+                    ))
+              ])),
         );
       },
     );
