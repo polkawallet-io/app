@@ -334,7 +334,9 @@ class _AssetPageState extends State<AssetPage> {
                             text: dic['v3.send'],
                             onPressed: () {
                               if (widget.service.plugin.basic.name ==
-                                  para_chain_name_karura) {
+                                      para_chain_name_karura ||
+                                  widget.service.plugin.basic.name ==
+                                      para_chain_name_acala) {
                                 final symbol = (widget.service.plugin
                                         .networkState.tokenSymbol ??
                                     [''])[0];

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.2.4+3242
+version: 3.2.6+3262
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -96,6 +96,7 @@ dependencies:
   card_swiper: ^2.0.3
   simple_shadow: ^0.2.0
   liquid_progress_indicator: ^0.4.0
+  sticky_headers: ^0.2.0
 
 dependency_overrides:
   polkawallet_plugin_kusama:

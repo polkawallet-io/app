@@ -179,12 +179,6 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        // todo: remove this after polkadot xcm alive
-        if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-            _chainTo.basic.name == para_chain_name_acala) {
-          return _getDotAcalaBridgeTxParams();
-        }
-
         final isFromXTokensParaChain = _isFromXTokensParaChain();
         final isToParaChain = _isToParaChain();
 
@@ -204,12 +198,6 @@ class _TransferPageState extends State<TransferPage> {
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
-        final isV1XCM = await widget.service.plugin.sdk.webView.evalJavascript(
-            'api.createType(api.tx.$txModule.$txCall.meta.args[0].toJSON()["type"]).defKeys.includes("V1")',
-            wrapPromise: false);
-        final is9100 = await widget.service.plugin.sdk.webView.evalJavascript(
-            'api.tx.$txModule.$txCall.meta.args.length === 5',
-            wrapPromise: false);
 
         String destPubKey = _accountTo.pubKey;
         // we need to decode address for the pubKey here
@@ -272,22 +260,12 @@ class _TransferPageState extends State<TransferPage> {
                   : {'amount': amount}
             }
           ];
-          paramsX = isV1XCM
-              ? is9100
-                  ? [
-                      {'V0': dest},
-                      {'V0': beneficiary},
-                      {'V0': assets},
-                      0,
-                      "Unlimited"
-                    ]
-                  : [
-                      {'V0': dest},
-                      {'V0': beneficiary},
-                      {'V0': assets},
-                      0
-                    ]
-              : [dest, beneficiary, assets, xcm_dest_weight_ksm];
+          paramsX = [
+            {'V0': dest},
+            {'V0': beneficiary},
+            {'V0': assets},
+            0
+          ];
         }
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
@@ -491,14 +469,6 @@ class _TransferPageState extends State<TransferPage> {
             ),
             onPressed: () async {
               if (e.basic.name != _chainTo.basic.name) {
-                // todo: remove this after polkadot xcm alive
-                final isAcalaBridge = widget.service.plugin.basic.name ==
-                        relay_chain_name_polkadot &&
-                    e.basic.name == para_chain_name_acala;
-                if (isAcalaBridge) {
-                  await _showAcalaBridgeAlert();
-                }
-
                 // set ss58 of _chainTo so we can get according address
                 // from AddressInputField
                 widget.service.keyring.setSS58(e.basic.ss58);
@@ -511,9 +481,6 @@ class _TransferPageState extends State<TransferPage> {
 
                   if (e.basic.name != widget.service.plugin.basic.name) {
                     _accountTo = widget.service.keyring.current;
-                  }
-                  if (isAcalaBridge) {
-                    _keepAlive = true;
                   }
                 });
 
@@ -568,12 +535,6 @@ class _TransferPageState extends State<TransferPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
     if (!res) {
-      // todo: remove this after polkadot xcm alive
-      if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-          _chainTo?.basic?.name == para_chain_name_acala) {
-        return;
-      }
-
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
@@ -660,12 +621,6 @@ class _TransferPageState extends State<TransferPage> {
         }
         _chainTo = widget.service.plugin;
       });
-
-      // todo: remove this after polkadot xcm alive
-      if (widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-          args?.chainTo == para_chain_name_acala) {
-        _showAcalaBridgeAlert();
-      }
     });
   }
 
@@ -703,11 +658,6 @@ class _TransferPageState extends State<TransferPage> {
         final destChainName = _chainTo?.basic?.name ?? 'karura';
         final isCrossChain = widget.service.plugin.basic.name != destChainName;
 
-        // todo: remove this after polkadot xcm alive
-        final isAcalaBridge =
-            widget.service.plugin.basic.name == relay_chain_name_polkadot &&
-                _chainTo?.basic?.name == para_chain_name_acala;
-
         final existDeposit = Fmt.balanceInt(
             ((widget.service.plugin.networkConst['balances'] ??
                         {})['existentialDeposit'] ??
@@ -730,19 +680,17 @@ class _TransferPageState extends State<TransferPage> {
               systemOverlayStyle: SystemUiOverlayStyle.dark,
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
-              actions: isAcalaBridge
-                  ? null
-                  : <Widget>[
-                      v3.IconButton(
-                          margin: EdgeInsets.only(right: 8),
-                          icon: SvgPicture.asset(
-                            'assets/images/scan.svg',
-                            color: Theme.of(context).cardColor,
-                            width: 20,
-                          ),
-                          onPressed: _onScan,
-                          isBlueBg: true)
-                    ],
+              actions: <Widget>[
+                v3.IconButton(
+                    margin: EdgeInsets.only(right: 8),
+                    icon: SvgPicture.asset(
+                      'assets/images/scan.svg',
+                      color: Theme.of(context).cardColor,
+                      width: 20,
+                    ),
+                    onPressed: _onScan,
+                    isBlueBg: true)
+              ],
               leading: BackBtn()),
           body: SafeArea(
             child: Column(
@@ -763,41 +711,29 @@ class _TransferPageState extends State<TransferPage> {
                                   AddressFormItem(
                                       widget.service.keyring.current),
                                   Container(height: 8.h),
-                                  Visibility(
-                                      visible: isAcalaBridge,
-                                      child: Text(dic['address'] ?? '',
-                                          style: labelStyle)),
-                                  Visibility(
-                                      visible: isAcalaBridge,
-                                      child: AddressFormItem(
-                                          widget.service.keyring.current)),
                                   Form(
                                     key: _formKey,
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Visibility(
-                                          visible: !isAcalaBridge,
-                                          child: AddressTextFormField(
-                                            widget.service.plugin.sdk.api,
-                                            _accountOptions,
-                                            labelText: dic['cross.to'],
-                                            labelStyle: labelStyle,
-                                            hintText: dic['address'],
-                                            initialValue: _accountTo,
-                                            // formKey: _formKey,
-                                            onChanged: (KeyPairData acc) async {
-                                              final accValid =
-                                                  await _checkAccountTo(acc);
-                                              setState(() {
-                                                _accountTo = acc;
-                                                _accountToError = accValid;
-                                              });
-                                            },
-                                            key: ValueKey<KeyPairData>(
-                                                _accountTo),
-                                          ),
+                                        AddressTextFormField(
+                                          widget.service.plugin.sdk.api,
+                                          _accountOptions,
+                                          labelText: dic['cross.to'],
+                                          labelStyle: labelStyle,
+                                          hintText: dic['address'],
+                                          initialValue: _accountTo,
+                                          onChanged: (KeyPairData acc) async {
+                                            final accValid =
+                                                await _checkAccountTo(acc);
+                                            setState(() {
+                                              _accountTo = acc;
+                                              _accountToError = accValid;
+                                            });
+                                          },
+                                          key:
+                                              ValueKey<KeyPairData>(_accountTo),
                                         ),
                                         Visibility(
                                             visible: _accountToError != null,
@@ -849,10 +785,6 @@ class _TransferPageState extends State<TransferPage> {
                                             }
                                             final input =
                                                 Fmt.tokenInt(v, decimals);
-                                            if (isAcalaBridge &&
-                                                input < destExistDeposit) {
-                                              return dic['dot.bridge.min'];
-                                            }
                                             final feeLeft = available -
                                                 input -
                                                 (_keepAlive

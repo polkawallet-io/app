@@ -14,6 +14,11 @@ import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
+import 'package:app/pages/ecosystem/completedPage.dart';
+import 'package:app/pages/ecosystem/converToPage.dart';
+import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
+import 'package:app/pages/ecosystem/ecosystemPage.dart';
+import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/homePage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/pluginPage.dart';
@@ -41,6 +46,7 @@ import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
+import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
 import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
@@ -75,6 +81,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/walletExtensionConnectPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -557,6 +564,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
 
       _startPlugin(service);
+
+      WalletApi.getTokenStakingConfig().then((value) {
+        _store.settings.setTokenStakingConfig(value);
+      });
     }
 
     return _keyring.allAccounts.length;
@@ -614,6 +625,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             txDisabledCalls: _service.store.settings
                 .getDisabledCalls(_service.plugin.basic.name),
           ),
+      WalletExtensionConnectPage.route: (_) => WalletExtensionConnectPage(),
       WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
@@ -633,6 +645,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       GuidePage.route: (_) => GuidePage(),
       AcalaBridgePage.route: (_) => AcalaBridgePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
+      StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 
       /// account
       CreateAccountEntryPage.route: (_) =>
@@ -689,6 +702,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       //browser
       BrowserPage.route: (_) => BrowserPage(_service),
       DappLatestPage.route: (_) => DappLatestPage(_service),
+      //ecosystem
+      TokenStaking.route: (_) => TokenStaking(_service),
+      ConverToPage.route: (_) => ConverToPage(_service),
+      CrosschainTransferPage.route: (_) => CrosschainTransferPage(_service),
+      CompletedPage.route: (_) => CompletedPage(_service),
+      EcosystemPage.route: (_) => EcosystemPage(_service),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),

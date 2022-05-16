@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/dappData.dart';
 import 'package:app/store/types/messageData.dart';
@@ -62,10 +63,25 @@ abstract class _SettingsStore with Store {
   @observable
   List<dynamic> dapps = [];
 
+  Map<dynamic, dynamic> tokenStakingConfig = {
+    "onStart": {"KSM": true, "DOT": false},
+    "KSM": ["kusama", "bifrost", "parallel heiko"],
+    "LKSM": ["parallel heiko"],
+    "DOT": ["polkadot"],
+    "LDOT": []
+  };
+
   Future<void> initDapps() async {
     final dappConfig = await WalletApi.getDappsConfig();
     dappAllTags = dappConfig["allTag"];
     dapps = dappConfig["datas"];
+  }
+
+  @action
+  Future<void> setTokenStakingConfig(Map data) async {
+    if (data != null) {
+      tokenStakingConfig = data;
+    }
   }
 
   Future<void> initMessage(String _languageCode) async {
@@ -220,6 +236,9 @@ abstract class _SettingsStore with Store {
   Future<List> getXcmEnabledChains(String pluginName) async {
     if (_xcmEnabledChains == null) {
       _xcmEnabledChains = await WalletApi.getXcmEnabledConfig();
+    }
+    if (pluginName == relay_chain_name_dot) {
+      return _xcmEnabledChains['$pluginName-xcm'] ?? [];
     }
     return _xcmEnabledChains[pluginName] ?? [];
   }
