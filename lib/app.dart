@@ -81,7 +81,6 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
-import 'package:polkawallet_ui/pages/walletExtensionConnectPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -625,7 +624,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             txDisabledCalls: _service.store.settings
                 .getDisabledCalls(_service.plugin.basic.name),
           ),
-      WalletExtensionConnectPage.route: (_) => WalletExtensionConnectPage(),
       WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
       QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
@@ -652,7 +650,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           CreateAccountEntryPage(_service.plugin),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
-      DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring),
+      DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring,
+          getPassword: _service.account.getPassword),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>
           ImportAccountFormMnemonic(_service),
