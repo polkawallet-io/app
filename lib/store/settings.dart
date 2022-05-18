@@ -22,6 +22,7 @@ abstract class _SettingsStore with Store {
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
+  final String localStorageDAppAuthUrlsKey = 'dAppAuthUrls';
 
   @observable
   String localeCode = '';
@@ -299,5 +300,19 @@ abstract class _SettingsStore with Store {
 
   void setPluginsConfig(Map value) {
     pluginsConfig = value ?? {};
+  }
+
+  void updateDAppAuth(String url) {
+    final authed = (storage.read(localStorageDAppAuthUrlsKey) as Map) ?? {};
+    authed[url] = true;
+    storage.write(localStorageDAppAuthUrlsKey, authed);
+  }
+
+  bool checkDAppAuth(String url) {
+    final authed = storage.read(localStorageDAppAuthUrlsKey) as Map;
+    if (authed != null) {
+      return authed[url] ?? false;
+    }
+    return false;
   }
 }

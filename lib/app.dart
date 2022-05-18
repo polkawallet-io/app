@@ -648,8 +648,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           CreateAccountEntryPage(_service.plugin),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
-      DAppWrapperPage.route: (_) => DAppWrapperPage(_service.plugin, _keyring,
-          getPassword: _service.account.getPassword),
+      DAppWrapperPage.route: (_) => DAppWrapperPage(
+            _service.plugin,
+            _keyring,
+            getPassword: _service.account.getPassword,
+            checkAuth: _store.settings.checkDAppAuth,
+            updateAuth: _store.settings.updateDAppAuth,
+          ),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>
           ImportAccountFormMnemonic(_service),
