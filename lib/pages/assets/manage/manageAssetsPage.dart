@@ -76,8 +76,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
       final Map<String, bool> defaultVisibleMap = {nativeToken: true};
 
       if (widget.service.store.assets.customAssets.keys.length == 0) {
-        final defaultList =
-            widget.service.plugin.balances.tokens.map((e) => e.symbol).toList();
+        final defaultList = widget.service.plugin.defaultTokens.toList();
         defaultList.forEach((token) {
           defaultVisibleMap[token] = true;
         });
