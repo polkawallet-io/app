@@ -109,4 +109,18 @@ const Map<String, String> enPublic = {
   'event.0515.8': 'Cross-Chain Transfer',
   'event.0515.9': 'Go Liquid Staking',
   'event.0515.10': 'Join Collateral Staking',
+  'hub.cover.browser':
+      'Browsing the website of different network by using your accounts from Polkawallet. You can entry the specific web directly through the feature “lastest”.',
+  'hub.browser': 'Broswer',
+  'hub.browser.welcome':
+      'Welcome to Polkawallet browser\nNavigate any network, anywhere, anytime',
+  'hub.browser.search': 'Search or enter url....',
+  'hub.browser.latest': 'Latest',
+  'hub.browser.clearAll': 'Clear All',
+  'hub.browser.fastPass': 'Fast Pass',
+  'hub.browser.clearAllMessage':
+      'Are you sure you want to clear all the browsing history? You can not recover it later.',
+  'hub.browser.clearMessage':
+      'Are you sure you want to delete the item from browsing history?',
+  'hub.browser.searchingHistory': 'Searching History',
 };
