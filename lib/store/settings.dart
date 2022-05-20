@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/store/types/dappData.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
@@ -58,6 +59,11 @@ abstract class _SettingsStore with Store {
   int systemUnreadNumber = 0;
 
   @observable
+  List<dynamic> dappAllTags = [];
+
+  @observable
+  List<dynamic> dapps = [];
+
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": false},
     "KSM": ["kusama", "bifrost", "parallel heiko"],
@@ -65,6 +71,12 @@ abstract class _SettingsStore with Store {
     "DOT": ["polkadot"],
     "LDOT": []
   };
+
+  Future<void> initDapps() async {
+    final dappConfig = await WalletApi.getDappsConfig();
+    dappAllTags = dappConfig["allTag"];
+    dapps = dappConfig["datas"];
+  }
 
   @action
   Future<void> setTokenStakingConfig(Map data) async {

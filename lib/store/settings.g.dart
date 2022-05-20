@@ -103,6 +103,36 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$dappAllTagsAtom = Atom(name: '_SettingsStore.dappAllTags');
+
+  @override
+  List<dynamic> get dappAllTags {
+    _$dappAllTagsAtom.reportRead();
+    return super.dappAllTags;
+  }
+
+  @override
+  set dappAllTags(List<dynamic> value) {
+    _$dappAllTagsAtom.reportWrite(value, super.dappAllTags, () {
+      super.dappAllTags = value;
+    });
+  }
+
+  final _$dappsAtom = Atom(name: '_SettingsStore.dapps');
+
+  @override
+  List<dynamic> get dapps {
+    _$dappsAtom.reportRead();
+    return super.dapps;
+  }
+
+  @override
+  set dapps(List<dynamic> value) {
+    _$dappsAtom.reportWrite(value, super.dapps, () {
+      super.dapps = value;
+    });
+  }
+
   final _$tokenStakingConfigAtom =
       Atom(name: '_SettingsStore.tokenStakingConfig');
 

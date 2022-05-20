@@ -282,6 +282,20 @@ class WalletApi {
     }
   }
 
+  static Future<Map> getDappsConfig() async {
+    try {
+      Response res = await get(getUrl(_configEndpoint, '/config/dapps.json'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
   static Future<Map> getTokenStakingConfig() async {
     try {
       Response res =

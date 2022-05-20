@@ -139,6 +139,7 @@ dependency_overrides:
   flutter_markdown: ^0.6.9+1
   cached_network_image: ^3.2.0
   flutter_html: ^2.2.1
+  flutter_slidable: ^1.2.0
 
 
 dev_dependencies:
