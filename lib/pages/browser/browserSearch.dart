@@ -8,6 +8,7 @@ import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class SearchBarDelegate extends SearchDelegate<String> {
   final AppService service;
@@ -61,6 +62,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
+    print("buildResults====");
     BrowserApi.addDappSearchHistory(service, query);
     var dapps = service.store.settings.dapps;
     if (query.trim().isNotEmpty) {
@@ -75,6 +77,17 @@ class SearchBarDelegate extends SearchDelegate<String> {
         }
       });
       dapps = _dapps;
+    }
+    if (dapps.length == 0 && query.trim().length > 0) {
+      final url = query.startsWith("http") ? query : "https://$query";
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pushNamed(
+          DAppWrapperPage.route,
+          arguments: {"url": url, "isPlugin": true},
+        );
+      });
+      query = "";
+      showResults(context);
     }
     return dapps.length == 0
         ? ListTail(

@@ -1,4 +1,8 @@
-# [3.2.6-beta] - 20220513
+# [3.2.7-beta] - 20220525
+- add dapps
+- karura/acala plugin:add cdp multiply
+  
+- # [3.2.6-beta] - 20220513
 - token refactoring
 - erc20 support
 - Ldot composite earnings mining guidance

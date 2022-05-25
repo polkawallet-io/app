@@ -1317,7 +1317,7 @@ packages:
     source: hosted
     version: "1.10.0"
   sticky_headers:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sticky_headers
       url: "https://pub.dartlang.org"
