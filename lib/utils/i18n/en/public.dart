@@ -62,8 +62,31 @@ const Map<String, String> enPublic = {
   'banner.invalid.info': 'You need to update to the latest version, continue?',
   'os.invalid':
       'The OS environment of this device does NOT support Polkawallet running',
+  'hub.staking': 'Staking',
+  'hub.cover.tokenStaking':
+      'Provide your assets allocated on different networks in the ecosystem. You can send your assets through cross-chain transfer, or endow the liquidity to your assets through HOMA, so as to participate in more ecological projects.',
+  'ecosystem.on': 'On',
+  'ecosystem.convertTo': 'Convert to',
+  'ecosystem.crosschainTransfer': 'Crosschain Transfer',
+  'ecosystem.from': 'From',
+  'ecosystem.bringTo': 'Bring to',
+  'ecosystem.destinationAccount': 'Destination account',
+  'ecosystem.to': 'To',
+  'ecosystem.completed': 'Completed',
+  'ecosystem.backList': 'Back to List',
+  'ecosystem.ecosystem': 'Ecosystem',
+  'ecosystem.transactionCompleted': 'Transaction Completed',
+  'ecosystem.msg1': 'has been',
+  'ecosystem.msg2': 'network',
+  'ecosystem.transferred': 'transferred to',
+  'ecosystem.redeemed': 'redeemed on',
+  'ecosystem.minted': 'minted on',
+  'ecosystem.seeTransaction': 'See Transaction',
+  'ecosystem.inTransiting': 'In Transiting',
+  'ecosystem.mintMessage1': 'The pool has met the cap, unable to mint',
+  'ecosystem.mintMessage2': 'temporarily.',
   'event.0415.1':
-      'The 1 million aUSD Tsunami liquidity program is about to begin on Karura!!',
+      'The 1 million aUSD Tsunami liquidity program is in progress on Karura!!',
   'event.0415.2': 'Following the steps to participate:',
   'event.0415.3': 'Send KSM to Karura\'s parachain.',
   'event.0415.4': 'Join the liquid staking and mint LKSM.',
@@ -74,4 +97,30 @@ const Map<String, String> enPublic = {
   'event.0415.8': 'Cross-Chain Transfer',
   'event.0415.9': 'Go Liquid Staking',
   'event.0415.10': 'Join Collateral Staking',
+  'event.0515.1':
+      'The 1 million aUSD Tsunami liquidity program is in progress on Acala!!',
+  'event.0515.2': 'Following the steps to participate:',
+  'event.0515.3': 'Send DOT to Acala\'s parachain.',
+  'event.0515.4': 'Join the liquid staking and mint LDOT.',
+  'event.0515.5': 'Currently 14.5% LDOT Staking APY (rewards in DOT)',
+  'event.0515.6': 'Stake your LDOT and earn rewards!',
+  'event.0515.7':
+      'Earn another potential 10% APY on your DOT staking in aUSD rewards',
+  'event.0515.8': 'Cross-Chain Transfer',
+  'event.0515.9': 'Go Liquid Staking',
+  'event.0515.10': 'Join Collateral Staking',
+  'hub.cover.browser':
+      'Browsing the website of different network by using your accounts from Polkawallet. You can entry the specific web directly through the feature “lastest”.',
+  'hub.browser': 'Broswer',
+  'hub.browser.welcome':
+      'Welcome to Polkawallet browser\nNavigate any network, anywhere, anytime',
+  'hub.browser.search': 'Search or enter url....',
+  'hub.browser.latest': 'Latest',
+  'hub.browser.clearAll': 'Clear All',
+  'hub.browser.fastPass': 'Fast Pass',
+  'hub.browser.clearAllMessage':
+      'Are you sure you want to clear all the browsing history? You can not recover it later.',
+  'hub.browser.clearMessage':
+      'Are you sure you want to delete the item from browsing history?',
+  'hub.browser.searchingHistory': 'Searching History',
 };

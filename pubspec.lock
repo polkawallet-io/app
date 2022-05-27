@@ -489,13 +489,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_markdown:
-    dependency: "direct overridden"
-    description:
-      name: flutter_markdown
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.9+1"
   flutter_math_fork:
     dependency: transitive
     description:
@@ -538,6 +531,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0+2"
+  flutter_slidable:
+    dependency: "direct overridden"
+    description:
+      name: flutter_slidable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   flutter_staggered_grid_view:
     dependency: transitive
     description:
@@ -803,7 +803,7 @@ packages:
     source: hosted
     version: "4.1.4"
   liquid_progress_indicator:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       name: liquid_progress_indicator
       url: "https://pub.dartlang.org"
@@ -816,13 +816,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  markdown:
-    dependency: transitive
-    description:
-      name: markdown
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.1"
   matcher:
     dependency: transitive
     description:
@@ -1022,10 +1015,12 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
-    version: "0.4.4"
+      path: "."
+      ref: "812d08edc2af15f1c4907b4bbe6999a20e6b985f"
+      resolved-ref: "812d08edc2af15f1c4907b4bbe6999a20e6b985f"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
+    version: "0.4.6"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -1065,17 +1060,21 @@ packages:
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_karura"
-      relative: true
-    source: path
-    version: "0.4.4"
+      path: "."
+      ref: cd55c3be640237b6749fda52a88501d8bfac3427
+      resolved-ref: cd55c3be640237b6749fda52a88501d8bfac3427
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
+    source: git
+    version: "0.4.6"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
-    version: "0.4.4"
+      path: "."
+      ref: "0d793bdbd95a76a3088b161d325de87a5db9da1d"
+      resolved-ref: "0d793bdbd95a76a3088b161d325de87a5db9da1d"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
+    version: "0.4.6"
   polkawallet_plugin_laminar:
     dependency: "direct main"
     description:
@@ -1097,24 +1096,26 @@ packages:
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
-      relative: true
-    source: path
-    version: "0.4.4"
+      path: "."
+      ref: e2a9fc66914153a24b18a99c99b9895e96837c3f
+      resolved-ref: e2a9fc66914153a24b18a99c99b9895e96837c3f
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
+    source: git
+    version: "0.4.6"
   polkawallet_sdk:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.4.5"
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.6"
   polkawallet_ui:
     dependency: "direct overridden"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.4.5"
+      name: polkawallet_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.6"
   pool:
     dependency: transitive
     description:
@@ -1310,7 +1311,7 @@ packages:
     source: hosted
     version: "1.10.0"
   sticky_headers:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sticky_headers
       url: "https://pub.dartlang.org"

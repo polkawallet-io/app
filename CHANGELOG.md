@@ -1,3 +1,17 @@
+# [3.2.7-beta] - 20220525
+- add dapps
+- karura/acala plugin:add cdp multiply
+  
+# [3.2.6-beta] - 20220513
+- token refactoring
+- erc20 support
+- Ldot composite earnings mining guidance
+- Asset optimization
+
+# [3.2.5-beta] - 20220509
+- Support polkadot xcm cross-chain
+- add liquid staking.
+
 # [3.2.4-beta] - 20210428
 - karura/acala plugin: add incentive end time
 - add message module

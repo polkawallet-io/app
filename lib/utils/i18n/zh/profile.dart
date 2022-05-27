@@ -110,7 +110,7 @@ const Map<String, String> zhProfile = {
   'recovery.recovered': '已恢复账户',
   'recovery.proxy': '代理账户',
   'message': '消息',
-  'message.readAll': '阅读所有',
+  'message.readAll': '全部已读',
   'message.community': '社区推送',
   'message.system': '系统消息',
   'message.polkawalletTeam': '波卡钱包团队'

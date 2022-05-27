@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:app/store/types/dappData.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
@@ -21,6 +23,7 @@ abstract class _SettingsStore with Store {
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
+  final String localStorageDAppAuthUrlsKey = 'dAppAuthUrls';
 
   @observable
   String localeCode = '';
@@ -54,6 +57,33 @@ abstract class _SettingsStore with Store {
 
   @observable
   int systemUnreadNumber = 0;
+
+  @observable
+  List<dynamic> dappAllTags = [];
+
+  @observable
+  List<dynamic> dapps = [];
+
+  Map<dynamic, dynamic> tokenStakingConfig = {
+    "onStart": {"KSM": true, "DOT": false},
+    "KSM": ["kusama", "bifrost", "parallel heiko"],
+    "LKSM": ["parallel heiko"],
+    "DOT": ["polkadot"],
+    "LDOT": []
+  };
+
+  Future<void> initDapps() async {
+    final dappConfig = await WalletApi.getDappsConfig();
+    dappAllTags = dappConfig["allTag"];
+    dapps = dappConfig["datas"];
+  }
+
+  @action
+  Future<void> setTokenStakingConfig(Map data) async {
+    if (data != null) {
+      tokenStakingConfig = data;
+    }
+  }
 
   Future<void> initMessage(String _languageCode) async {
     final dataCommunity = await WalletApi.getMessage("contents", _languageCode);
@@ -208,6 +238,9 @@ abstract class _SettingsStore with Store {
     if (_xcmEnabledChains == null) {
       _xcmEnabledChains = await WalletApi.getXcmEnabledConfig();
     }
+    if (pluginName == relay_chain_name_dot) {
+      return _xcmEnabledChains['$pluginName-xcm'] ?? [];
+    }
     return _xcmEnabledChains[pluginName] ?? [];
   }
 
@@ -279,5 +312,19 @@ abstract class _SettingsStore with Store {
 
   void setPluginsConfig(Map value) {
     pluginsConfig = value ?? {};
+  }
+
+  void updateDAppAuth(String url) {
+    final authed = (storage.read(localStorageDAppAuthUrlsKey) as Map) ?? {};
+    authed[url] = true;
+    storage.write(localStorageDAppAuthUrlsKey, authed);
+  }
+
+  bool checkDAppAuth(String url) {
+    final authed = storage.read(localStorageDAppAuthUrlsKey) as Map;
+    if (authed != null) {
+      return authed[url] ?? false;
+    }
+    return false;
   }
 }

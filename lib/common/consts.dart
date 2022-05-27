@@ -79,11 +79,7 @@ const xcm_send_fees = {
     'existentialDeposit': '100000000',
   },
   para_chain_name_acala: {
-    'fee': '0',
-    'existentialDeposit': '10000000000',
-  },
-  para_chain_name_bifrost: {
-    'fee': '4800000000',
+    'fee': '4285630',
     'existentialDeposit': '100000000',
   },
 };
