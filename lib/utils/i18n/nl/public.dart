@@ -111,7 +111,7 @@ const Map<String, String> enPublic = {
   'event.0515.10': 'Join Collateral Staking',
   'hub.cover.browser':
       'Browsing the website of different network by using your accounts from Polkawallet. You can entry the specific web directly through the feature “lastest”.',
-  'hub.browser': 'Broswer',
+  'hub.browser': 'Browser',
   'hub.browser.welcome':
       'Welcome to Polkawallet browser\nNavigate any network, anywhere, anytime',
   'hub.browser.search': 'Search or enter url....',
