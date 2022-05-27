@@ -121,7 +121,6 @@ dependency_overrides:
        url: https://github.com/google/charts
        path: charts_flutter
   flutter_svg: ^1.0.3
-  liquid_progress_indicator: ^0.4.0
   webview_flutter: ^3.0.4
   cached_network_image: ^3.2.0
   flutter_html: ^2.2.1
