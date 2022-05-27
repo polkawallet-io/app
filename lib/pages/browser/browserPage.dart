@@ -1,4 +1,4 @@
-import 'package:app/pages/browser/broswerApi.dart';
+import 'package:app/pages/browser/browserApi.dart';
 import 'package:app/pages/browser/browserSearch.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/service/index.dart';
