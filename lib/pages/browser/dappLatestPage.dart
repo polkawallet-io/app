@@ -1,4 +1,4 @@
-import 'package:app/pages/browser/broswerApi.dart';
+import 'package:app/pages/browser/browserApi.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
