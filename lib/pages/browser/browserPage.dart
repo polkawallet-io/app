@@ -191,8 +191,9 @@ class _BrowserPageState extends State<BrowserPage> {
                                       return GestureDetector(
                                           onTap: () {
                                             BrowserApi.openBrowser(
-                                                context, e, widget.service);
-                                            setState(() {});
+                                                    context, e, widget.service)
+                                                .then(
+                                                    (value) => setState(() {}));
                                           },
                                           child: Container(
                                             child: Column(
@@ -291,8 +292,8 @@ class _BrowserPageState extends State<BrowserPage> {
                             return GestureDetector(
                                 onTap: () {
                                   BrowserApi.openBrowser(
-                                      context, dapp, widget.service);
-                                  setState(() {});
+                                          context, dapp, widget.service)
+                                      .then((value) => setState(() {}));
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(8),
