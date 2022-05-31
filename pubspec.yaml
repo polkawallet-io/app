@@ -125,6 +125,7 @@ dependency_overrides:
   cached_network_image: ^3.2.0
   flutter_html: ^2.2.1
   flutter_slidable: ^1.2.0
+  permission_handler: ^9.0.2
 
 
 dev_dependencies:
