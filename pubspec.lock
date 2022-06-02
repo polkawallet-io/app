@@ -971,12 +971,12 @@ packages:
     source: hosted
     version: "1.11.1"
   permission_handler:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.0.2"
+    version: "7.2.0"
   permission_handler_platform_interface:
     dependency: transitive
     description:
