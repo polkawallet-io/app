@@ -443,10 +443,11 @@ class ErrorMessage extends StatelessWidget {
       child: error == null
           ? null
           : Row(children: [
-              Text(
+              Expanded(
+                  child: Text(
                 error,
                 style: TextStyle(fontSize: 12, color: Colors.red),
-              )
+              ))
             ]),
     );
   }

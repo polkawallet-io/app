@@ -1,3 +1,16 @@
+# [3.2.8-beta] - 20220602
+- karura new xcm #122
+- acala new xcm #121 #143
+- polkadot/kusama/statemine sdk polkadot.js upgrade ^8.5.1 #128
+- UI details tweaking #132
+- Optimized opening dAPP history refresh logic #139
+- Dot staking 全部解绑提示英文需换行，并限制 #141
+- Tx error message parsing #142
+- Vault adjust tx upgrade #146
+- Restake on STAKING stats panel #135
+- Filter(staked/all)earn-LP staking #81
+- EARN-Sort function #147
+
 # [3.2.7-beta] - 20220525
 - add dapps
 - karura/acala plugin:add cdp multiply

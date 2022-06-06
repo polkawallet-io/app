@@ -29,12 +29,13 @@ class BrowserApi {
     return [];
   }
 
-  static openBrowser(BuildContext context, dynamic dapp, AppService service) {
+  static Future openBrowser(
+      BuildContext context, dynamic dapp, AppService service) async {
     var dappLatest = getDappLatestStore(service);
     dappLatest.addAll({dapp["name"]: DateTime.now().toString()});
     service.store.storage.write(_dappLatestKey, dappLatest);
 
-    Navigator.of(context).pushNamed(
+    return await Navigator.of(context).pushNamed(
       DAppWrapperPage.route,
       arguments: {"url": dapp['detailUrl'], "isPlugin": true},
     );
