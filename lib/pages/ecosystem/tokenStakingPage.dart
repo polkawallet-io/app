@@ -10,6 +10,7 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
@@ -19,7 +20,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
-  AppService service;
+  final AppService service;
 
   static final String route = '/ecosystem/tokenStaking';
 
@@ -49,9 +50,6 @@ class _TokenStakingState extends State<TokenStaking> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getBalance();
-    });
     TokenStakingApi.refresh = () {
       if (mounted) {
         setState(() {});
@@ -76,6 +74,8 @@ class _TokenStakingState extends State<TokenStaking> {
         body: SafeArea(
           child: Column(
             children: [
+              ConnectionChecker(widget.service.plugin,
+                  onConnected: _getBalance),
               Container(
                 margin: EdgeInsets.fromLTRB(16, 16, 0, 16),
                 child: PluginPageTitleTaps(
@@ -164,11 +164,11 @@ class TokenItemView extends StatefulWidget {
       this.name, this.icon, this.balance, this.convertToKen, this.service,
       {Key key})
       : super(key: key);
-  String name;
-  String convertToKen;
-  Widget icon;
-  TokenBalanceData balance;
-  AppService service;
+  final String name;
+  final String convertToKen;
+  final Widget icon;
+  final TokenBalanceData balance;
+  final AppService service;
 
   @override
   State<TokenItemView> createState() => _TokenItemViewState();
