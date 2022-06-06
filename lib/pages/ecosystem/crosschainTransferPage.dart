@@ -365,59 +365,46 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              PluginTextTag(
-                                backgroundColor: PluginColorsDark.headline3,
-                                title: dic['ecosystem.from'],
-                              ),
-                              Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 16),
-                                  decoration: BoxDecoration(
-                                      color: Color(0x0FFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(4),
-                                          topRight: Radius.circular(4),
-                                          bottomRight: Radius.circular(4))),
-                                  child: Text(
-                                    fromNetwork,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline5
-                                        ?.copyWith(
-                                            color: Color(0xFFFFFFFF)
-                                                .withAlpha(102)),
-                                  )),
-                              PluginTagCard(
-                                margin: EdgeInsets.only(top: 24),
-                                titleTag: dic['ecosystem.to'],
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 16),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _selectChain(context, 0, crossChainIcons,
-                                        _chainToList);
-                                  },
-                                  behavior: HitTestBehavior.opaque,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        destChainName,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            ?.copyWith(
+                              ChainSelected(dic['ecosystem.from'], fromNetwork),
+                              isFromKar
+                                  ? PluginTagCard(
+                                      margin: EdgeInsets.only(top: 24),
+                                      titleTag: dic['ecosystem.to'],
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _selectChain(context, 0,
+                                              crossChainIcons, _chainToList);
+                                        },
+                                        behavior: HitTestBehavior.opaque,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              destChainName,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  ?.copyWith(
+                                                      color: PluginColorsDark
+                                                          .headline1),
+                                            ),
+                                            Icon(
+                                                Icons
+                                                    .keyboard_arrow_down_rounded,
                                                 color:
-                                                    PluginColorsDark.headline1),
+                                                    PluginColorsDark.headline1)
+                                          ],
+                                        ),
                                       ),
-                                      Icon(Icons.keyboard_arrow_down_rounded,
-                                          color: PluginColorsDark.headline1)
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    )
+                                  : Container(
+                                      margin: EdgeInsets.only(top: 24),
+                                      child: ChainSelected(
+                                          dic['ecosystem.to'], destChainName),
+                                    ),
                               PluginInputBalance(
                                 margin: EdgeInsets.only(
                                     top: 24, bottom: _error1 == null ? 24 : 2),
@@ -625,6 +612,39 @@ class ChainSelector extends StatelessWidget {
           },
         );
       }).toList(),
+    );
+  }
+}
+
+class ChainSelected extends StatelessWidget {
+  ChainSelected(this.title, this.fromNetwork);
+  final String title;
+  final String fromNetwork;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        PluginTextTag(
+          backgroundColor: PluginColorsDark.headline3,
+          title: title,
+        ),
+        Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            decoration: BoxDecoration(
+                color: Color(0x0FFFFFFF),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                    bottomRight: Radius.circular(4))),
+            child: Text(
+              fromNetwork,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5
+                  ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
+            )),
+      ],
     );
   }
 }
