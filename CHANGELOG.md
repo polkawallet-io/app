@@ -1,3 +1,10 @@
+# [3.2.9-beta] - 20220606
+1. 修复 DOT/KSM Staking 发送交易问题 #154
+2. 切换网络操作增加确认弹窗 #131
+3. tDOT 名称修复 #155
+4. assets 列表管理页面 native token 显示 symbol #156
+5. DOT/KSM Staking cross-chain 选择 #158 + destED 修复
+
 # [3.2.8-beta] - 20220602
 - karura new xcm #122
 - acala new xcm #121 #143
