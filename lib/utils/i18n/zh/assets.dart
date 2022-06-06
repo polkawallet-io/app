@@ -100,6 +100,7 @@ const Map<String, String> zhAssets = {
   'v3.myDefi': '我的DeFi',
   'v3.send': '发送',
   'v3.changeNetwork': '切换网络',
+  'v3.changeNetwork.confirm': '是否切换网络至',
   'v3.changeNetwork.ing': '正在切换至',
   'v3.my': '我的',
   'v3.tap': '切换',

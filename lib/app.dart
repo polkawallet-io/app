@@ -403,6 +403,40 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final isNetworkChanged = networkName != _service.plugin.basic.name;
 
     if (isNetworkChanged) {
+      final confirmed = await showCupertinoDialog(
+          context: _homePageContext,
+          builder: (BuildContext context) {
+            final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+            return CupertinoAlertDialog(
+              title: Text(dic['v3.changeNetwork']),
+              content: Container(
+                margin: EdgeInsets.only(top: 24, bottom: 24),
+                child: Text(
+                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ?'),
+              ),
+              actions: [
+                CupertinoButton(
+                  child: Text(
+                    I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['cancel'],
+                    style: TextStyle(
+                        color: Theme.of(context).unselectedWidgetColor),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                CupertinoButton(
+                  child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                    style: TextStyle(
+                        color: Theme.of(context).toggleableActiveColor),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            );
+          });
+      if (!confirmed) return;
+
       // display a dialog while changing network
       showCupertinoDialog(
           context: _homePageContext,
@@ -709,7 +743,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       //ecosystem
       TokenStaking.route: (_) => TokenStaking(_service),
       ConverToPage.route: (_) => ConverToPage(_service),
-      CrosschainTransferPage.route: (_) => CrosschainTransferPage(_service),
+      CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
 

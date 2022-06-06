@@ -122,7 +122,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           decimals: widget.service.plugin.networkState.tokenDecimals[0],
           id: widget.service.plugin.networkState.tokenSymbol[0],
           symbol: widget.service.plugin.networkState.tokenSymbol[0],
-          name: '${widget.service.plugin.basic.name} ${dic['manage.native']}')
+          name: widget.service.plugin.networkState.tokenSymbol[0],
+          fullName:
+              '${widget.service.plugin.basic.name} ${dic['manage.native']}')
     ];
     list.addAll(widget.service.plugin.noneNativeTokensAll);
 

@@ -24,25 +24,25 @@ import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTagCard.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 
-class CrosschainTransferPage extends StatefulWidget {
-  CrosschainTransferPage(this.service, {Key key}) : super(key: key);
-  AppService service;
+class CrossChainTransferPage extends StatefulWidget {
+  CrossChainTransferPage(this.service, {Key key}) : super(key: key);
+  final AppService service;
 
   static final String route = '/ecosystem/crosschainTransfer';
 
   @override
-  State<CrosschainTransferPage> createState() => _CrosschainTransferPageState();
+  State<CrossChainTransferPage> createState() => _CrossChainTransferPageState();
 }
 
-class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
+class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
   TextEditingController _amountCtrl = TextEditingController();
 
   String _error1;
@@ -123,8 +123,18 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
           plugin = widget.service.plugin as PluginAcala;
         }
         final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-        final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-            {})['nativeToken'];
+        final feeTokenSymbol =
+            ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+                {})['nativeToken'];
+        final feeToken = (fromNetwork == para_chain_name_acala ||
+                fromNetwork == para_chain_name_karura)
+            ? TokenBalanceData(
+                symbol: plugin.networkState.tokenSymbol[0],
+                decimals: plugin.networkState.tokenDecimals[0],
+              )
+            : plugin.store.assets.allTokens.firstWhere((e) =>
+                e.symbol.toUpperCase() ==
+                feeTokenSymbol.toString().toUpperCase());
         return XcmTxConfirmParams(
             txTitle:
                 '${dicAcala['transfer']} ${balance.symbol} (${dicAcala['cross.xcm']})',
@@ -336,8 +346,9 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
           final sendFeeAmount =
               sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
 
-          final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-              {})['nativeToken'];
+          final feeTokenSymbol =
+              ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+                  {})['nativeToken'];
 
           final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
           final nativeTokenDecimals =
@@ -547,7 +558,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeToken',
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeTokenSymbol',
                                             style: infoValueStyle),
                                       ],
                                     ),

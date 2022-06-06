@@ -130,7 +130,7 @@ class EcosystemPage extends StatelessWidget {
                                     Navigator.of(context).pop();
                                   } else {
                                     Navigator.of(context).popAndPushNamed(
-                                        CrosschainTransferPage.route,
+                                        CrossChainTransferPage.route,
                                         arguments: {
                                           "balance": balance,
                                           "fromNetwork": convertNetwork

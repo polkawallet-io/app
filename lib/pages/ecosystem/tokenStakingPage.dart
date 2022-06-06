@@ -272,7 +272,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                                 active: true,
                                 onPressed: () {
                                   Navigator.of(context).pushNamed(
-                                      CrosschainTransferPage.route,
+                                      CrossChainTransferPage.route,
                                       arguments: {
                                         "balance": widget.balance,
                                         "fromNetwork": widget.name
