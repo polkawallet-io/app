@@ -1,17 +1,17 @@
 buildscript {
-    ext.kotlin_version = '1.4.30'
+    ext.kotlin_version = '1.6.10'
     repositories {
         google()
         jcenter()
         mavenCentral()
         // hms
-        maven { url 'http://developer.huawei.com/repo/'}
+        maven { url 'https://developer.huawei.com/repo/'}
         // fcm
         maven { url "https://maven.google.com" }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.8'
         // classpath 'com.huawei.agconnect:agcp:1.4.1.300'
@@ -24,7 +24,7 @@ allprojects {
         mavenCentral()
         jcenter()
         // hms
-        maven { url 'http://developer.huawei.com/repo/'}
+        maven { url 'https://developer.huawei.com/repo/'}
         // fcm
         maven { url "https://maven.google.com" }
     }

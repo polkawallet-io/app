@@ -115,12 +115,12 @@ class ApiAccount {
       '$_biometricPasswordKey$pubKey',
       options:
           StorageFileInitOptions(authenticationValidityDurationSeconds: 30),
-      androidPromptInfo: AndroidPromptInfo(
-        title:
-            I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock.bio'],
-        negativeButton:
-            I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel'],
-      ),
+      // androidPromptInfo: AndroidPromptInfo(
+      //   title:
+      //       I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock.bio'],
+      //   negativeButton:
+      //       I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel'],
+      // ),
     );
   }
 
