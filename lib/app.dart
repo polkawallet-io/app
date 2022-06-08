@@ -891,7 +891,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       },
       child: ScreenUtilInit(
           designSize: Size(390, 844),
-          builder: () => MaterialApp(
+          builder: (_, __) => MaterialApp(
                 title: 'Polkawallet',
                 builder: (context, widget) {
                   return MediaQuery(
