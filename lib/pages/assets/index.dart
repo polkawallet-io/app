@@ -45,7 +45,7 @@ final assetsType = [
   "ERC-20",
   "Cross-chain",
   "LP Tokens",
-  "Tiga token"
+  "Taiga token"
 ];
 
 class AssetsPage extends StatefulWidget {
@@ -759,7 +759,7 @@ class _AssetsState extends State<AssetsPage> {
           var type = "Token";
           if (assetsType[_assetsTypeIndex] == "Cross-chain") {
             type = "ForeignAsset";
-          } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+          } else if (assetsType[_assetsTypeIndex] == "Taiga token") {
             type = "TaigaAsset";
           } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
             type = "DexShare";

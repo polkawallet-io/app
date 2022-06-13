@@ -132,7 +132,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
       var type = "Token";
       if (assetsType[_assetsTypeIndex] == "Cross-chain") {
         type = "ForeignAsset";
-      } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+      } else if (assetsType[_assetsTypeIndex] == "Taiga token") {
         type = "TaigaAsset";
       } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
         type = "DexShare";
