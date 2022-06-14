@@ -108,7 +108,9 @@ const Map<String, String> enAssets = {
   'v3.myDefi': 'My DeFi',
   'v3.send': 'Send',
   'v3.changeNetwork': 'Change Network',
-  'v3.changeNetwork.confirm': 'Switch network to',
+  'v3.changeNetwork.confirm': 'You will switch to the',
+  'v3.changeNetwork.confirm.2':
+      'network for the next move, it will take a few seconds.',
   'v3.changeNetwork.ing': 'Changing to',
   'v3.my': 'My',
   'v3.tap': 'TAP',
