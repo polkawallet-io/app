@@ -147,7 +147,6 @@ class _BrowserPageState extends State<BrowserPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             PluginTextTag(
-                              padding: EdgeInsets.zero,
                               title: dic['hub.browser.latest'],
                               backgroundColor: PluginColorsDark.headline1,
                             ),
@@ -227,7 +226,6 @@ class _BrowserPageState extends State<BrowserPage> {
                                     })))
                       ])),
                   PluginTextTag(
-                    padding: EdgeInsets.zero,
                     title: dic['hub.browser.fastPass'],
                     backgroundColor: PluginColorsDark.headline1,
                   ),
