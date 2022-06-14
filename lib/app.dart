@@ -414,9 +414,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             return CupertinoAlertDialog(
               title: Text(dic['v3.changeNetwork']),
               content: Container(
-                margin: EdgeInsets.only(top: 24, bottom: 24),
+                margin: EdgeInsets.only(top: 8),
                 child: Text(
-                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ?'),
+                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
               ),
               actions: [
                 CupertinoButton(
