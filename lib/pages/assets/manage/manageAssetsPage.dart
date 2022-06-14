@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -175,7 +176,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                     dic['manage.save'],
                     style: TextStyle(
                       color: Theme.of(context).cardColor,
-                      fontSize: 12,
+                      fontSize: UI.getTextSize(12, context),
                       fontFamily: 'TitilliumWeb',
                       fontWeight: FontWeight.w600,
                     ),
@@ -328,7 +329,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                     ? Text('$id${list[i].fullName}',
                                         maxLines: 2,
                                         style: TextStyle(
-                                            fontSize: 10,
+                                            fontSize:
+                                                UI.getTextSize(10, context),
                                             fontWeight: FontWeight.w300,
                                             color: Color(0xFF565554),
                                             fontFamily: "SF_Pro"))

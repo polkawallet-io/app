@@ -90,7 +90,7 @@ class EcosystemPage extends StatelessWidget {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 2),
                             color: PluginColorsDark.headline1,
-                            fontSize: 16,
+                            fontSize: UI.getTextSize(16, context),
                             minSize: 34,
                             active: true,
                             onPressed: () => Navigator.of(context).popUntil(
@@ -113,7 +113,7 @@ class EcosystemPage extends StatelessWidget {
                                     horizontal: 7, vertical: 2),
                                 margin: EdgeInsets.zero,
                                 color: PluginColorsDark.primary,
-                                fontSize: 16,
+                                fontSize: UI.getTextSize(16, context),
                                 minSize: 34,
                                 active: true,
                                 onPressed: () {

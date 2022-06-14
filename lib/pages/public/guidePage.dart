@@ -1,6 +1,6 @@
 import 'package:app/pages/homePage.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
@@ -51,10 +51,8 @@ class _GuidePageState extends State<GuidePage> {
                     child: Text(
                       dic['guide.$_pageIndex'],
                       textAlign: TextAlign.start,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline1
-                          .copyWith(fontSize: 28, height: 1.15),
+                      style: Theme.of(context).textTheme.headline1.copyWith(
+                          fontSize: UI.getTextSize(28, context), height: 1.15),
                     )),
                 Padding(
                     padding: EdgeInsets.only(left: 27),

@@ -24,6 +24,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.plugins, this.connectedNode,
@@ -184,10 +185,9 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       dic['hub.cover.browser'],
                       textAlign: TextAlign.justify,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4
-                          .copyWith(fontSize: 14, color: Colors.white),
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                          fontSize: UI.getTextSize(14, context),
+                          color: Colors.white),
                     ),
                   )
                 ],
@@ -203,7 +203,8 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   dic['hub.enter'],
                   style: Theme.of(context).textTheme.headline1.copyWith(
-                      fontSize: 20, color: Theme.of(context).errorColor),
+                      fontSize: UI.getTextSize(20, context),
+                      color: Theme.of(context).errorColor),
                 ))
           ]),
           onTap: () {
@@ -239,10 +240,9 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       dic['hub.cover.tokenStaking'],
                       textAlign: TextAlign.justify,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4
-                          .copyWith(fontSize: 14, color: Colors.white),
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                          fontSize: UI.getTextSize(14, context),
+                          color: Colors.white),
                     ),
                   )
                 ],
@@ -258,7 +258,8 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   dic['hub.enter'],
                   style: Theme.of(context).textTheme.headline1.copyWith(
-                      fontSize: 20, color: Theme.of(context).errorColor),
+                      fontSize: UI.getTextSize(20, context),
+                      color: Theme.of(context).errorColor),
                 ))
           ]),
           onTap: () {
@@ -357,7 +358,9 @@ class _HomePageState extends State<HomePage> {
                                         .textTheme
                                         .headline4
                                         .copyWith(
-                                            fontSize: 14, color: Colors.white),
+                                            fontSize:
+                                                UI.getTextSize(14, context),
+                                            color: Colors.white),
                                   ),
                                 )
                               ],
@@ -377,7 +380,7 @@ class _HomePageState extends State<HomePage> {
                                     .textTheme
                                     .headline1
                                     .copyWith(
-                                        fontSize: 20,
+                                        fontSize: UI.getTextSize(20, context),
                                         color: Theme.of(context).errorColor),
                               ))
                         ]

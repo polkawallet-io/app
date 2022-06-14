@@ -64,8 +64,8 @@ class _AboutPage extends State<AboutPage> {
         widget.service.plugin.basic.name,
         widget.service.plugin.basic.jsCodeVersion);
     final colorGray = Theme.of(context).unselectedWidgetColor;
-    final labelStyle = TextStyle(fontSize: 16);
-    final contentStyle = TextStyle(fontSize: 14, color: colorGray);
+    final contentStyle =
+        TextStyle(fontSize: UI.getTextSize(14, context), color: colorGray);
 
     final pagePadding = 16.w;
     return Scaffold(

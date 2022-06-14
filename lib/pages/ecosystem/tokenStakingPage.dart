@@ -17,6 +17,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
@@ -267,7 +268,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 7, vertical: 2),
                                 color: PluginColorsDark.primary,
-                                fontSize: 12,
+                                fontSize: UI.getTextSize(12, context),
                                 minSize: 25,
                                 active: true,
                                 onPressed: () {
@@ -292,7 +293,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                                     horizontal: 7, vertical: 2),
                                 margin: EdgeInsets.zero,
                                 color: PluginColorsDark.headline1,
-                                fontSize: 12,
+                                fontSize: UI.getTextSize(12, context),
                                 minSize: 25,
                                 active: true,
                                 onPressed: () async {

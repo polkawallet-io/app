@@ -16,6 +16,7 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class CompletedPage extends StatefulWidget {
   CompletedPage(this.service, {Key key}) : super(key: key);
@@ -99,7 +100,7 @@ class _CompletedPageState extends State<CompletedPage> {
                                 .textTheme
                                 .headline2
                                 ?.copyWith(
-                                    fontSize: 36,
+                                    fontSize: UI.getTextSize(36, context),
                                     fontWeight: FontWeight.bold,
                                     color: PluginColorsDark.headline1),
                           ),

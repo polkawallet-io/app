@@ -25,6 +25,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class RecoverySettingPage extends StatefulWidget {
   RecoverySettingPage(this.service);
@@ -322,7 +323,7 @@ class _RecoveryInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-    TextStyle titleStyle = TextStyle(fontSize: 16);
+    TextStyle titleStyle = TextStyle(fontSize: UI.getTextSize(16, context));
     TextStyle valueStyle = Theme.of(context).textTheme.headline4;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,7 +408,7 @@ class RecoveryFriendList extends StatelessWidget {
                     Fmt.address(e.address),
                     style: TextStyle(
                       color: Theme.of(context).unselectedWidgetColor,
-                      fontSize: 13,
+                      fontSize: UI.getTextSize(13, context),
                     ),
                   ),
                 ],

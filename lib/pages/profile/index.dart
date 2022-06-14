@@ -186,7 +186,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: Text(UI.accountName(context, acc),
                                         style: TextStyle(
                                             color: Color(0xFF565554),
-                                            fontSize: 20,
+                                            fontSize:
+                                                UI.getTextSize(20, context),
                                             fontFamily: 'TitilliumWeb',
                                             fontWeight: FontWeight.w600)),
                                     onTap: _manageAccount,
@@ -197,7 +198,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       Text(
                                         Fmt.address(acc.address) ?? '',
                                         style: TextStyle(
-                                            fontSize: 16, color: grey),
+                                            fontSize:
+                                                UI.getTextSize(16, context),
+                                            color: grey),
                                       ),
                                       GestureDetector(
                                           child: Container(

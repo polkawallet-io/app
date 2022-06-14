@@ -1,6 +1,6 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
@@ -126,7 +126,10 @@ class _InfoItem extends StatelessWidget {
               title: button,
               onPressed: onClick,
               height: 40,
-              style: Theme.of(context).textTheme.button.copyWith(fontSize: 14),
+              style: Theme.of(context)
+                  .textTheme
+                  .button
+                  .copyWith(fontSize: UI.getTextSize(14, context)),
             ),
           )
         ],

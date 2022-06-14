@@ -37,7 +37,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 final assetsType = [
   "All",
@@ -858,7 +858,7 @@ class _AssetsState extends State<AssetsPage> {
                                       I18n.of(context).getDic(i18n_full_dic_app,
                                           'assets')['assets.warn'],
                                       color: Colors.deepOrange,
-                                      fontSize: 12,
+                                      fontSize: UI.getTextSize(12, context),
                                       margin: EdgeInsets.all(0),
                                       padding: EdgeInsets.all(8),
                                     ))
@@ -982,7 +982,10 @@ class _AssetsState extends State<AssetsPage> {
                                                                         .white
                                                                     : Colors
                                                                         .black,
-                                                            fontSize: 10)),
+                                                            fontSize:
+                                                                UI.getTextSize(
+                                                                    10,
+                                                                    context))),
                                               ),
                                             ),
                                           );

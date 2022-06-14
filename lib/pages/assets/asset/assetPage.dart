@@ -273,7 +273,8 @@ class _AssetPageState extends State<AssetPage> {
       appBar: AppBar(
         title: Text(
           symbol,
-          style: TextStyle(fontSize: 20, color: Colors.black87),
+          style: TextStyle(
+              fontSize: UI.getTextSize(20, context), color: Colors.black87),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -573,7 +574,7 @@ class BalanceCard extends StatelessWidget {
                         Fmt.token(balance, decimals, length: 8),
                         style: TextStyle(
                             color: titleColor,
-                            fontSize: 20,
+                            fontSize: UI.getTextSize(20, context),
                             letterSpacing: -0.8,
                             fontWeight: FontWeight.w600,
                             fontFamily: "TitilliumWeb"),
@@ -610,7 +611,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                     priceItemBuild(
                         SvgPicture.asset(
                           'assets/images/locked_icon.svg',
@@ -623,7 +625,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                     priceItemBuild(
                         SvgPicture.asset(
                           'assets/images/reversed_icon.svg',
@@ -636,7 +639,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                   ],
                 ),
                 flex: 1,
@@ -668,7 +672,8 @@ class BalanceCard extends StatelessWidget {
     return datas;
   }
 
-  Widget priceItemBuild(Widget icon, String title, String price, Color color) {
+  Widget priceItemBuild(Widget icon, String title, String price, Color color,
+      BuildContext context) {
     return Padding(
         padding: EdgeInsets.symmetric(vertical: 3),
         child: Row(
@@ -683,7 +688,7 @@ class BalanceCard extends StatelessWidget {
               title,
               style: TextStyle(
                   color: color,
-                  fontSize: 12,
+                  fontSize: UI.getTextSize(12, context),
                   fontWeight: FontWeight.w600,
                   fontFamily: "TitilliumWeb"),
             ),
@@ -693,7 +698,7 @@ class BalanceCard extends StatelessWidget {
                 textAlign: TextAlign.end,
                 style: TextStyle(
                     color: color,
-                    fontSize: 12,
+                    fontSize: UI.getTextSize(12, context),
                     fontWeight: FontWeight.w400,
                     fontFamily: "TitilliumWeb"),
               ),

@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:app/pages/browser/search.dart' as search;
+import 'package:polkawallet_ui/utils/index.dart';
 
 class BrowserPage extends StatefulWidget {
   BrowserPage(this.service, {Key key}) : super(key: key);
@@ -69,7 +70,7 @@ class _BrowserPageState extends State<BrowserPage> {
                               .headline1
                               ?.copyWith(
                                   color: PluginColorsDark.headline1,
-                                  fontSize: 26,
+                                  fontSize: UI.getTextSize(26, context),
                                   fontWeight: FontWeight.bold),
                         ),
                         Padding(
@@ -81,7 +82,7 @@ class _BrowserPageState extends State<BrowserPage> {
                                     .headline5
                                     ?.copyWith(
                                         color: PluginColorsDark.headline1,
-                                        fontSize: 12,
+                                        fontSize: UI.getTextSize(12, context),
                                         fontWeight: FontWeight.w600))),
                         GestureDetector(
                             onTap: () async {
@@ -118,7 +119,8 @@ class _BrowserPageState extends State<BrowserPage> {
                                               ?.copyWith(
                                                 color:
                                                     PluginColorsDark.headline1,
-                                                fontSize: 14,
+                                                fontSize:
+                                                    UI.getTextSize(12, context),
                                               ))),
                                   Icon(
                                     Icons.search,
@@ -218,7 +220,9 @@ class _BrowserPageState extends State<BrowserPage> {
                                                           color:
                                                               PluginColorsDark
                                                                   .headline1,
-                                                          fontSize: 12),
+                                                          fontSize:
+                                                              UI.getTextSize(
+                                                                  12, context)),
                                                 )
                                               ],
                                             ),
@@ -259,7 +263,8 @@ class _BrowserPageState extends State<BrowserPage> {
                                           .textTheme
                                           .headline5
                                           ?.copyWith(
-                                              fontSize: 10,
+                                              fontSize:
+                                                  UI.getTextSize(12, context),
                                               fontWeight: _tag == index
                                                   ? FontWeight.w600
                                                   : FontWeight.w400,
@@ -332,7 +337,8 @@ class _BrowserPageState extends State<BrowserPage> {
                                                   .textTheme
                                                   .headline5
                                                   ?.copyWith(
-                                                      fontSize: 10,
+                                                      fontSize: UI.getTextSize(
+                                                          10, context),
                                                       color: PluginColorsDark
                                                           .headline1)),
                                         ],

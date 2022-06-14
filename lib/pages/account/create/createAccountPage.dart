@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class CreateAccountPage extends StatefulWidget {
   CreateAccountPage(this.service);
@@ -90,7 +91,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   dic['create.warn9'],
                   style: TextStyle(
                     color: Colors.red,
-                    fontSize: 18,
+                    fontSize: UI.getTextSize(18, context),
                     fontFamily: 'TitilliumWeb',
                     fontWeight: FontWeight.w400,
                   ),

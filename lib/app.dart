@@ -150,7 +150,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           elevation: 0,
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),
-              fontSize: 18,
+              fontSize: UI.getTextSize(18, context, locale: _locale),
               fontFamily: 'TitilliumWeb',
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
@@ -158,52 +158,52 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
-              fontSize: 30,
+              fontSize: UI.getTextSize(30, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
               fontFamily: "TitilliumWeb"),
           headline2: TextStyle(
-            fontSize: 22,
+            fontSize: UI.getTextSize(22, context, locale: _locale),
           ),
           headline3: TextStyle(
-              fontSize: 20,
+              fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
               fontFamily: "TitilliumWeb"),
           headline4: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 16,
+            fontSize: UI.getTextSize(16, context, locale: _locale),
             fontFamily: 'TitilliumWeb',
             fontWeight: FontWeight.w400,
           ),
           headline5: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 14,
+            fontSize: UI.getTextSize(14, context, locale: _locale),
             fontFamily: 'TitilliumWeb',
             fontWeight: FontWeight.w400,
           ),
           headline6: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 12,
+            fontSize: UI.getTextSize(12, context, locale: _locale),
             fontFamily: 'SF_Pro',
             fontWeight: FontWeight.w400,
           ),
           bodyText1: TextStyle(
-              fontSize: 16,
+              fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w400,
               color: Color(0xFF565554),
               fontFamily: "SF_Pro"),
           bodyText2: TextStyle(
-              fontSize: 16,
+              fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w300,
               color: Color(0xFF565554),
               fontFamily: "SF_Pro"),
           caption: TextStyle(
-              fontSize: 12,
+              fontSize: UI.getTextSize(12, context, locale: _locale),
               fontWeight: FontWeight.w600,
               fontFamily: "TitilliumWeb"),
           button: TextStyle(
-              fontSize: 18,
+              fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Colors.white,
               fontFamily: "TitilliumWeb")),
@@ -226,6 +226,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
     setState(() {
       _locale = res;
+      _theme = _getAppTheme(
+        _service.plugin.basic.primaryColor,
+        secondaryColor: _service.plugin.basic.gradientColor,
+      );
       if (_locale != null) {
         _service.store.settings.initMessage((_locale).languageCode);
       }
@@ -562,10 +566,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       setState(() {
         _store = store;
         _service = service;
-        _theme = _getAppTheme(
-          service.plugin.basic.primaryColor,
-          secondaryColor: service.plugin.basic.gradientColor,
-        );
       });
 
       if (store.settings.localeCode.isNotEmpty) {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:rive/rive.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class TransitingWidget extends StatefulWidget {
   TransitingWidget(this.fromNetwork, this.toNetwork, this.token, {Key key})
@@ -32,7 +33,7 @@ class _TransitingWidgetState extends State<TransitingWidget> {
             Text(
               "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.inTransiting']} ...",
               style: Theme.of(context).textTheme.headline1?.copyWith(
-                  fontSize: 36,
+                  fontSize: UI.getTextSize(36, context),
                   fontWeight: FontWeight.bold,
                   color: PluginColorsDark.headline1),
             ),
@@ -52,7 +53,7 @@ class _TransitingWidgetState extends State<TransitingWidget> {
                                 .textTheme
                                 .headline3
                                 ?.copyWith(
-                                    fontSize: 20,
+                                    fontSize: UI.getTextSize(20, context),
                                     fontWeight: FontWeight.w600,
                                     color: PluginColorsDark.primary),
                           ))),
@@ -76,7 +77,7 @@ class _TransitingWidgetState extends State<TransitingWidget> {
                       child: Text(
                         "${widget.token} on ${widget.toNetwork}",
                         style: Theme.of(context).textTheme.headline3?.copyWith(
-                            fontSize: 20,
+                            fontSize: UI.getTextSize(20, context),
                             fontWeight: FontWeight.w600,
                             color: PluginColorsDark.headline1),
                       )),

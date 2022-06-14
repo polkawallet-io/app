@@ -22,6 +22,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class ConverToPage extends StatefulWidget {
   ConverToPage(this.service, {Key key}) : super(key: key);
@@ -448,7 +449,8 @@ class ErrorMessage extends StatelessWidget {
               Expanded(
                   child: Text(
                 error,
-                style: TextStyle(fontSize: 12, color: Colors.red),
+                style: TextStyle(
+                    fontSize: UI.getTextSize(12, context), color: Colors.red),
               ))
             ]),
     );

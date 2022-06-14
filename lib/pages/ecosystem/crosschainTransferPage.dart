@@ -5,7 +5,7 @@ import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -289,7 +289,8 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
         .textTheme
         .headline4
         ?.copyWith(color: PluginColorsDark.headline1);
-    final subTitleStyle = TextStyle(fontSize: 12, height: 1);
+    final subTitleStyle =
+        TextStyle(fontSize: UI.getTextSize(12, context), height: 1);
     final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
         fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
     return PluginScaffold(

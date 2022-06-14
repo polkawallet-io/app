@@ -156,7 +156,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     Text(UI.accountName(context, acc),
                         style: TextStyle(
                             color: Color(0xFF565554),
-                            fontSize: 20,
+                            fontSize: UI.getTextSize(20, context),
                             fontFamily: 'TitilliumWeb',
                             fontWeight: FontWeight.w600)),
                     Row(
@@ -166,7 +166,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                         Text(
                           Fmt.address(acc.address) ?? '',
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: UI.getTextSize(16, context),
                               color: Theme.of(context).unselectedWidgetColor),
                         ),
                         GestureDetector(
