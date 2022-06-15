@@ -12,11 +12,6 @@ class TokenStakingApi {
   static Future<Map<String, TokenBalanceData>> getBalance(
       AppService service, List<dynamic> networkNames, String token,
       {bool isCachaChange = true}) async {
-    if (networkNames.length == 0) {
-      TokenStakingApi.balances[token] = {};
-      return {};
-    }
-
     var plugin;
     if (service.plugin is PluginKarura) {
       plugin = service.plugin as PluginKarura;
@@ -26,6 +21,12 @@ class TokenStakingApi {
 
     final TokenBalanceData currentPluginBalance =
         plugin.store.assets.tokenBalanceMap[token];
+    if (networkNames.length == 0) {
+      TokenStakingApi.balances[token] = {
+        service.plugin.basic.name: currentPluginBalance
+      };
+      return {service.plugin.basic.name: currentPluginBalance};
+    }
 
     Map<String, TokenBalanceData> balances = Map<String, TokenBalanceData>();
     var cacheTokenStakingAssets =
