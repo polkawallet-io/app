@@ -258,32 +258,37 @@ class _TokenItemViewState extends State<TokenItemView> {
                         children: [
                           Padding(
                             child: SizedBox(
-                                child: widget.icon, height: 32, width: 32),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(32),
+                                    child: widget.icon),
+                                height: 32,
+                                width: 32),
                             padding: EdgeInsets.only(right: 10),
                           ),
                           Text(
-                            "${dic['ecosystem.on']} ${widget.name}",
+                            widget.name,
                             style: style,
                           )
                         ],
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Stack(
+                        alignment: Alignment.topRight,
                         children: [
-                          Text(
-                              "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals)} ${widget.balance.symbol}",
-                              style: style),
+                          Padding(
+                              padding: EdgeInsets.only(right: 3),
+                              child: Text(
+                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals)} ${widget.balance.symbol}",
+                                  style: style)),
                           Visibility(
-                              visible: widget.balance.isCacheChange,
-                              child: Container(
-                                width: 9,
-                                height: 9,
-                                margin:
-                                    EdgeInsets.only(right: 1, top: 1, left: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4.5),
-                                    color: Theme.of(context).errorColor),
-                              ))
+                            visible: widget.balance.isCacheChange,
+                            child: Container(
+                              width: 9,
+                              height: 9,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4.5),
+                                  color: Theme.of(context).errorColor),
+                            ),
+                          )
                         ],
                       )
                     ],
