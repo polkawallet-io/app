@@ -32,10 +32,12 @@ class TokenStakingApi {
     var cacheTokenStakingAssets =
         service.assets.getTokenStakingAssets(service.keyring.current.pubKey) ??
             Map<String, dynamic>();
-    final fromChainBalances = await Future.wait(networkNames
-        .map((e) => service.plugin.sdk.webView.evalJavascript(
-            'xcm.getBalances("$e", "${service.keyring.current.address}", ["$token"])'))
-        .toList());
+    final balanceQuery = networkNames
+        .map((e) =>
+            'xcm.getBalances("$e", "${service.keyring.current.address}", ["$token"])')
+        .join(',');
+    final fromChainBalances = await service.plugin.sdk.webView
+        .evalJavascript('Promise.all([$balanceQuery])');
     for (int i = 0; i < networkNames.length; i++) {
       final element = networkNames[i];
       final data = fromChainBalances[i];
