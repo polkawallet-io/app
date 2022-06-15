@@ -174,27 +174,40 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                         ),
                                       ),
                                       endActionPane: ActionPane(
-                                        extentRatio: 0.15,
+                                        extentRatio: 0.12,
                                         motion: ScrollMotion(),
                                         children: [
-                                          SlidableAction(
-                                            onPressed: (context) async {
-                                              final bool res =
-                                                  await _showCupertinoDialog(dic[
-                                                      'hub.browser.clearMessage']);
-                                              if (res) {
-                                                BrowserApi.deleteLatest(
-                                                    e, widget.service);
-                                                setState(() {
-                                                  _isdelete = true;
-                                                });
-                                              }
-                                            },
-                                            backgroundColor:
-                                                PluginColorsDark.primary,
-                                            foregroundColor: Colors.black,
-                                            icon: Icons.delete,
-                                          ),
+                                          Expanded(
+                                              child: GestureDetector(
+                                                  onTap: () async {
+                                                    final bool res =
+                                                        await _showCupertinoDialog(
+                                                            dic['hub.browser.clearMessage']);
+                                                    if (res) {
+                                                      BrowserApi.deleteLatest(
+                                                          e, widget.service);
+                                                      setState(() {
+                                                        _isdelete = true;
+                                                      });
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 2),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  4)),
+                                                      color: PluginColorsDark
+                                                          .primary,
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                          Icons.delete_outline,
+                                                          color: Colors.black),
+                                                    ),
+                                                  ))),
                                         ],
                                       ));
                                 }))
