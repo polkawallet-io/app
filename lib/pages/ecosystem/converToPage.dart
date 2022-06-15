@@ -244,7 +244,8 @@ class _ConverToPageState extends State<ConverToPage> {
 
     final tokenXcmInfo = (tokensConfig['xcmInfo'] ?? {})[fromNetwork] ?? {};
 
-    final destExistDeposit = Fmt.balanceInt(balance.minBalance);
+    final destExistDeposit = Fmt.balanceInt(
+        plugin.store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
     final destFee =
         Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
 

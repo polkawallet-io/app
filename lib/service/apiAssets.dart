@@ -53,14 +53,14 @@ class ApiAssets {
       'AUSD': 1.0,
       'USDT': 1.0,
     };
-    if (res[1]['data'] != null) {
+    if ((res[1] ?? {})['data'] != null) {
       final tokenData = res[1]['data']['detail'] as Map;
       prices.addAll({
         tokenData.keys.toList()[0]:
             double.tryParse(tokenData.values.toList()[0]['price'].toString())
       });
     }
-    if (res[0]['prices'] != null) {
+    if ((res[0] ?? {})['prices'] != null) {
       prices.addAll(Map<String, double>.from(res[0]['prices']));
     }
 

@@ -5,7 +5,6 @@ import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,6 +30,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
   CrossChainTransferPage(this.service, {Key key}) : super(key: key);
@@ -329,12 +329,12 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
           final isTokenFromStateMine =
               balance.src != null && balance.src['Parachain'] == '1,000';
 
+          final existDeposit = Fmt.balanceInt(plugin
+              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
           final destExistDeposit = isFromKar
               ? Fmt.balanceInt(
                   (tokenXcmInfo[balance.symbol] ?? {})['existentialDeposit'])
-              : Fmt.balanceInt(balance.minBalance);
-          final existDeposit = Fmt.balanceInt(plugin
-              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
+              : existDeposit;
           final destFee = isFromKar
               ? isTokenFromStateMine
                   ? BigInt.zero
