@@ -92,7 +92,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: UI.getTextSize(18, context),
-                    fontFamily: 'TitilliumWeb',
+                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
