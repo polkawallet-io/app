@@ -402,7 +402,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                 style: TextStyle(
                                   color: Theme.of(context).cardColor,
                                   fontSize: UI.getTextSize(12, context),
-                                  fontFamily: 'TitilliumWeb',
+                                  fontFamily:
+                                      UI.getFontFamily('TitilliumWeb', context),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

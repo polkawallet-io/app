@@ -1,3 +1,4 @@
+import 'package:app/pages/homePage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -8,8 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.service, this.changeLang, this.changeNode);
@@ -25,8 +27,7 @@ class SettingsPage extends StatefulWidget {
 class _Settings extends State<SettingsPage> {
   final _langOptions = ['', 'en', 'zh'];
   final _priceCurrencyOptions = ['USD', 'CNY'];
-
-  int _selectedPriceCurrency = 0;
+  bool _isLoading = false;
 
   String _getLang(String code) {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
@@ -76,6 +77,14 @@ class _Settings extends State<SettingsPage> {
               widget.changeLang(code == ''
                   ? Localizations.localeOf(context).toString()
                   : code);
+              setState(() {
+                _isLoading = true;
+              });
+              Future.delayed(Duration(seconds: 1), () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    HomePage.route, (route) => false,
+                    arguments: {"tab": 0});
+              });
             }
             return true;
           },
@@ -109,9 +118,6 @@ class _Settings extends State<SettingsPage> {
           onWillPop: () async {
             final currency = _priceCurrencyOptions[selected];
             if (currency != cached) {
-              setState(() {
-                _selectedPriceCurrency = selected;
-              });
               widget.service.store.settings.setPriceCurrency(currency);
             }
             return true;
@@ -124,58 +130,71 @@ class _Settings extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(dic['setting']), centerTitle: true, leading: BackBtn()),
-      body: Observer(
-        builder: (_) {
-          final hideBalanceTip = widget.service.store.settings.isHideBalance
-              ? dic['setting.currency.tip']
-              : '';
-          final currencyTip =
-              widget.service.store.settings.priceCurrency == 'CNY'
-                  ? ' (${dic['setting.currency.tip']})'
-                  : '';
-          return SafeArea(
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: RoundedCard(
-                margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
-                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
-                child: Column(
-                  children: <Widget>[
-                    SettingsPageListItem(
-                      label: dic['setting.balance.hide'],
-                      subtitle: hideBalanceTip.isEmpty ? null : hideBalanceTip,
-                      content: v3.CupertinoSwitch(
-                        value: widget.service.store.settings.isHideBalance,
-                        onChanged: (v) =>
-                            widget.service.store.settings.setIsHideBalance(v),
+    return _isLoading
+        ? Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Center(
+              child: PluginLoadingWidget(),
+            ),
+          )
+        : Scaffold(
+            appBar: AppBar(
+                title: Text(dic['setting']),
+                centerTitle: true,
+                leading: BackBtn()),
+            body: Observer(
+              builder: (_) {
+                final hideBalanceTip =
+                    widget.service.store.settings.isHideBalance
+                        ? dic['setting.currency.tip']
+                        : '';
+                final currencyTip =
+                    widget.service.store.settings.priceCurrency == 'CNY'
+                        ? ' (${dic['setting.currency.tip']})'
+                        : '';
+                return SafeArea(
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: RoundedCard(
+                      margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+                      padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                      child: Column(
+                        children: <Widget>[
+                          SettingsPageListItem(
+                            label: dic['setting.balance.hide'],
+                            subtitle:
+                                hideBalanceTip.isEmpty ? null : hideBalanceTip,
+                            content: v3.CupertinoSwitch(
+                              value:
+                                  widget.service.store.settings.isHideBalance,
+                              onChanged: (v) => widget.service.store.settings
+                                  .setIsHideBalance(v),
+                            ),
+                          ),
+                          Divider(height: 24.h),
+                          SettingsPageListItem(
+                            label: dic['setting.currency'],
+                            subtitle: _getPriceCurrency(widget
+                                    .service.store.settings.priceCurrency) +
+                                currencyTip,
+                            onTap: _onCurrencyTap,
+                          ),
+                          Divider(height: 24.h),
+                          SettingsPageListItem(
+                            label: dic['setting.lang'],
+                            subtitle: _getLang(
+                                widget.service.store.settings.localeCode),
+                            onTap: _onLanguageTap,
+                          ),
+                        ],
                       ),
                     ),
-                    Divider(height: 24.h),
-                    SettingsPageListItem(
-                      label: dic['setting.currency'],
-                      subtitle: _getPriceCurrency(
-                              widget.service.store.settings.priceCurrency) +
-                          currencyTip,
-                      onTap: _onCurrencyTap,
-                    ),
-                    Divider(height: 24.h),
-                    SettingsPageListItem(
-                      label: dic['setting.lang'],
-                      subtitle:
-                          _getLang(widget.service.store.settings.localeCode),
-                      onTap: _onLanguageTap,
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
-    );
   }
 }

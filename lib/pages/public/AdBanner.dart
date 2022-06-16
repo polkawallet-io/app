@@ -190,7 +190,10 @@ class _AdBannerState extends State<AdBanner> {
               itemBuilder: (BuildContext context, int index) {
                 return widgets[index];
               },
-              pagination: SwiperPagination(margin: EdgeInsets.zero),
+              pagination: SwiperPagination(
+                  margin: EdgeInsets.zero,
+                  builder: DotSwiperPaginationBuilder(
+                      activeColor: Theme.of(context).toggleableActiveColor)),
             ),
           );
     // });

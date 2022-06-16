@@ -157,7 +157,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
                         style: TextStyle(
                             color: Color(0xFF565554),
                             fontSize: UI.getTextSize(20, context),
-                            fontFamily: 'TitilliumWeb',
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context),
                             fontWeight: FontWeight.w600)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -251,7 +252,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
                           dic['delete'],
                           style: TextStyle(
                             color: Colors.red,
-                            fontFamily: 'TitilliumWeb',
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context),
                             fontWeight: FontWeight.w400,
                           ),
                           textAlign: TextAlign.center,

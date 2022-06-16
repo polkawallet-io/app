@@ -62,6 +62,7 @@ const Map<String, String> zhProfile = {
   'update': '检查更新',
   'update.latest': '您的应用已是最新版本。',
   'update.up': '发现新版本，立即更新吗？',
+  'update.now': '立即更新',
   'update.start': '等待连接...',
   'update.download': '正在下载...',
   'update.download.check': '请在后台任务中查看下载进度',

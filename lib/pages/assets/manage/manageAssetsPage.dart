@@ -177,7 +177,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                     style: TextStyle(
                       color: Theme.of(context).cardColor,
                       fontSize: UI.getTextSize(12, context),
-                      fontFamily: 'TitilliumWeb',
+                      fontFamily: UI.getFontFamily('TitilliumWeb', context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -231,7 +231,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                 .textTheme
                                 .headline5
                                 .copyWith(
-                                    fontFamily: 'SF_Pro',
+                                    fontFamily:
+                                        UI.getFontFamily('SF_Pro', context),
                                     color: _hide0
                                         ? Theme.of(context).primaryColor
                                         : colorGrey),
@@ -333,7 +334,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                                 UI.getTextSize(10, context),
                                             fontWeight: FontWeight.w300,
                                             color: Color(0xFF565554),
-                                            fontFamily: "SF_Pro"))
+                                            fontFamily: UI.getFontFamily(
+                                                'SF_Pro', context)))
                                     : null,
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,

@@ -188,7 +188,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                             color: Color(0xFF565554),
                                             fontSize:
                                                 UI.getTextSize(20, context),
-                                            fontFamily: 'TitilliumWeb',
+                                            fontFamily: UI.getFontFamily(
+                                                'TitilliumWeb', context),
                                             fontWeight: FontWeight.w600)),
                                     onTap: _manageAccount,
                                   ),

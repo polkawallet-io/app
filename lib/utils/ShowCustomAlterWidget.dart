@@ -34,7 +34,7 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
                           color: Color(0xFF007AFE),
                           fontSize: UI.getTextSize(17, context),
                           fontWeight: FontWeight.w400,
-                          fontFamily: "SF_Pro")),
+                          fontFamily: UI.getFontFamily('SF_Pro', context))),
                 ))
             .toList(),
       ],
@@ -47,7 +47,7 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
                 color: Color(0xFF007AFE),
                 fontSize: UI.getTextSize(17, context),
                 fontWeight: FontWeight.w500,
-                fontFamily: "SF_Pro")),
+                fontFamily: UI.getFontFamily('SF_Pro', context))),
       ),
     );
   }

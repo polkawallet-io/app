@@ -212,7 +212,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                         fontSize: UI.getTextSize(10, context),
                         fontWeight: FontWeight.w300,
                         color: Color(0xFF565554),
-                        fontFamily: "SF_Pro")),
+                        fontFamily: UI.getFontFamily('SF_Pro', context))),
                 trailing: Image.asset(
                   "assets/images/${isCurrent ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
                   fit: BoxFit.contain,

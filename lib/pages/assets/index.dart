@@ -1069,7 +1069,10 @@ class _AssetsState extends State<AssetsPage> {
                                                 .textTheme
                                                 .headline6
                                                 .copyWith(
-                                                    fontFamily: "TitilliumWeb"),
+                                                    fontFamily:
+                                                        UI.getFontFamily(
+                                                            'TitilliumWeb',
+                                                            context)),
                                           ),
                                         ],
                                       ),
@@ -1232,10 +1235,9 @@ class TokenItem extends StatelessWidget {
                       isHideBalance
                           ? "******"
                           : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          .copyWith(fontFamily: "TitilliumWeb"),
+                      style: Theme.of(context).textTheme.headline6.copyWith(
+                          fontFamily:
+                              UI.getFontFamily('TitilliumWeb', context)),
                     )
                   : Container(height: 0, width: 8),
             ],

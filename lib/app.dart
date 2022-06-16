@@ -151,7 +151,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),
               fontSize: UI.getTextSize(18, context, locale: _locale),
-              fontFamily: 'TitilliumWeb',
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale),
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       hoverColor: secondaryColor,
@@ -161,7 +162,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontSize: UI.getTextSize(30, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline2: TextStyle(
             fontSize: UI.getTextSize(22, context, locale: _locale),
           ),
@@ -169,44 +171,49 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline4: TextStyle(
             color: Color(0xFF565554),
             fontSize: UI.getTextSize(16, context, locale: _locale),
-            fontFamily: 'TitilliumWeb',
+            fontFamily:
+                UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline5: TextStyle(
             color: Color(0xFF565554),
             fontSize: UI.getTextSize(14, context, locale: _locale),
-            fontFamily: 'TitilliumWeb',
+            fontFamily:
+                UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline6: TextStyle(
             color: Color(0xFF565554),
             fontSize: UI.getTextSize(12, context, locale: _locale),
-            fontFamily: 'SF_Pro',
+            fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           bodyText1: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w400,
               color: Color(0xFF565554),
-              fontFamily: "SF_Pro"),
+              fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           bodyText2: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w300,
               color: Color(0xFF565554),
-              fontFamily: "SF_Pro"),
+              fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           caption: TextStyle(
               fontSize: UI.getTextSize(12, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           button: TextStyle(
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Colors.white,
-              fontFamily: "TitilliumWeb")),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale))),
     );
   }
 

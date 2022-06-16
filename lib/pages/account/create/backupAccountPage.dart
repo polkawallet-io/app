@@ -283,7 +283,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
                   fontSize: UI.getTextSize(16, context),
-                  fontFamily: 'TitilliumWeb',
+                  fontFamily: UI.getFontFamily('TitilliumWeb', context),
                   fontWeight: FontWeight.w600,
                 ),
               ),

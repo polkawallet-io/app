@@ -143,7 +143,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context).settings.arguments as Map;
+      if (args != null && args['tab'] != null) {
+        setState(() {
+          _tabIndex = args['tab'];
+        });
+      }
       _setupJPush();
       _setupWssNotifyTimer();
       widget.service.store.settings.initDapps();

@@ -894,8 +894,11 @@ class _TransferPageState extends State<TransferPage> {
                                                                     .getTextSize(
                                                                         12,
                                                                         context),
-                                                                fontFamily:
-                                                                    'TitilliumWeb',
+                                                                fontFamily: polkawallet_ui
+                                                                    .UI
+                                                                    .getFontFamily(
+                                                                        'TitilliumWeb',
+                                                                        context),
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
@@ -950,7 +953,11 @@ class _TransferPageState extends State<TransferPage> {
                                                           .UI
                                                           .getTextSize(
                                                               12, context),
-                                                      fontFamily: 'SF_Pro',
+                                                      fontFamily: polkawallet_ui
+                                                          .UI
+                                                          .getFontFamily(
+                                                              'SF_Pro',
+                                                              context),
                                                     ),
                                                   ),
                                                 ],
@@ -1085,7 +1092,9 @@ class _TransferPageState extends State<TransferPage> {
                                                   color: Color(0xBF565554),
                                                   fontSize: polkawallet_ui.UI
                                                       .getTextSize(12, context),
-                                                  fontFamily: 'SF_Pro',
+                                                  fontFamily: polkawallet_ui.UI
+                                                      .getFontFamily(
+                                                          'SF_Pro', context),
                                                 ),
                                               ),
                                             ],

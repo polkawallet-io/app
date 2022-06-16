@@ -67,7 +67,8 @@ class _MessagePageState extends State<MessagePage> {
                         style: TextStyle(
                           color: Theme.of(context).cardColor,
                           fontSize: polkawallet_ui.UI.getTextSize(12, context),
-                          fontFamily: 'TitilliumWeb',
+                          fontFamily: polkawallet_ui.UI
+                              .getFontFamily('TitilliumWeb', context),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
