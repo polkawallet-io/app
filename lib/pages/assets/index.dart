@@ -115,7 +115,8 @@ class _AssetsState extends State<AssetsPage> {
   // }
 
   Future<void> _updateMarketPrices() async {
-    widget.service.assets.fetchMarketPrices();
+    widget.service.assets
+        .fetchMarketPrices(widget.service.plugin.networkState.tokenSymbol);
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
