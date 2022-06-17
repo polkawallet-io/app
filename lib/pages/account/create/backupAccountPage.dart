@@ -65,9 +65,25 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
         final mnemonics = widget.service.store.account.newAccount.key ?? '';
         return Scaffold(
           appBar: AppBar(
-              title: Text(dic['create']),
-              centerTitle: true,
-              leading: BackBtn()),
+            title: Text(dic['create']),
+            centerTitle: true,
+            leading: BackBtn(),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  _generateAccount();
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(
+                    Icons.refresh,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+            ],
+          ),
           body: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
