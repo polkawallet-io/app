@@ -10,8 +10,8 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:rive/src/widgets/rive_animation.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.service, this.changeLang, this.changeNode);
@@ -80,7 +80,7 @@ class _Settings extends State<SettingsPage> {
               setState(() {
                 _isLoading = true;
               });
-              Future.delayed(Duration(seconds: 1), () {
+              Future.delayed(Duration(milliseconds: 1500), () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     HomePage.route, (route) => false,
                     arguments: {"tab": 0});
@@ -136,7 +136,13 @@ class _Settings extends State<SettingsPage> {
             height: double.infinity,
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
-              child: PluginLoadingWidget(),
+              child: Container(
+                  margin: EdgeInsets.only(bottom: 100),
+                  width: 150,
+                  child: RiveAnimation.asset(
+                    'assets/images/public/switchLanguage.riv',
+                    fit: BoxFit.contain,
+                  )),
             ),
           )
         : Scaffold(

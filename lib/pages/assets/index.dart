@@ -35,9 +35,9 @@ import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 
 final assetsType = [
   "All",
@@ -536,6 +536,7 @@ class _AssetsState extends State<AssetsPage> {
                     },
                     child: Container(
                       color: Colors.transparent,
+                      margin: EdgeInsets.only(top: 2),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,

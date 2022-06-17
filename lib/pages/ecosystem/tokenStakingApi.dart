@@ -12,7 +12,6 @@ class TokenStakingApi {
   static Future<Map<String, TokenBalanceData>> getBalance(
       AppService service, List<dynamic> networkNames, String token,
       {bool isCachaChange = true}) async {
-    print(networkNames);
     var plugin;
     if (service.plugin is PluginKarura) {
       plugin = service.plugin as PluginKarura;
