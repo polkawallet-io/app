@@ -1,11 +1,11 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class StakingKSMGuide extends StatelessWidget {
   StakingKSMGuide(this.service);
@@ -37,12 +37,8 @@ class StakingKSMGuide extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Color.fromARGB(16, 0, 0, 0),
                   borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(dic['event.0415.1'], style: greyStyle),
-                  Text(dic['event.0415.2'], style: greyStyle)
-                ],
+              child: Row(
+                children: [Text(dic['event.0415.2'], style: greyStyle)],
               ),
             ),
             RoundedCard(
