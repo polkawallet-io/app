@@ -6,9 +6,9 @@ import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class SearchBarDelegate extends SearchDelegate<String> {
@@ -63,7 +63,6 @@ class SearchBarDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    print("buildResults====");
     BrowserApi.addDappSearchHistory(service, query);
     var dapps = service.store.settings.dapps;
     if (query.trim().isNotEmpty) {
