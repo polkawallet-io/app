@@ -26,7 +26,9 @@ class ApiAssets {
     Map res = await apiRoot.subScan.fetchTransfersAsync(
       acc.address,
       page,
-      network: apiRoot.plugin.basic.name,
+      network: apiRoot.plugin.basic.name == 'bifrost'
+          ? 'bifrost-kusama'
+          : apiRoot.plugin.basic.name,
     );
 
     if (page == 0) {
