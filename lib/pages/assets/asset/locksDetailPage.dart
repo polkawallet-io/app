@@ -15,6 +15,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -190,9 +191,17 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final claimableAmount = Fmt.priceFloorBigInt(_claimable, decimals);
     return Scaffold(
       appBar: AppBar(
-          title: Text('${dic['unlock']} ($symbol)'),
-          centerTitle: true,
-          leading: BackBtn()),
+        title: Text('${dic['unlock']} ($symbol)'),
+        centerTitle: true,
+        leading: BackBtn(),
+        actions: [
+          PluginAccountInfoAction(
+            widget.service.keyring,
+            iconDefaultColor: Color(0xFFE4E4E3),
+            hasShadow: true,
+          )
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
