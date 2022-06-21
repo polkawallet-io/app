@@ -20,6 +20,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
@@ -111,6 +112,7 @@ class _TokenStakingState extends State<TokenStaking> {
         appBar: PluginAppBar(
           title: Text("$token ${dic['hub.staking']}"),
           centerTitle: true,
+          actions: [PluginAccountInfoAction(widget.service.keyring)],
         ),
         body: SafeArea(
           child: Column(

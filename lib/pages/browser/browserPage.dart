@@ -11,6 +11,7 @@ import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:app/pages/browser/search.dart' as search;
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 
 class BrowserPage extends StatefulWidget {
   BrowserPage(this.service, {Key key}) : super(key: key);
@@ -40,6 +41,7 @@ class _BrowserPageState extends State<BrowserPage> {
         appBar: PluginAppBar(
           title: Text(dic['hub.browser']),
           centerTitle: true,
+          actions: [PluginAccountInfoAction(widget.service.keyring)],
         ),
         body: SafeArea(
             child: Column(
