@@ -2,7 +2,6 @@ import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
@@ -15,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -273,7 +273,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                             .copyWith(
                                                 fontSize:
                                                     UI.getTextSize(18, context),
-                                                color: Color(0xFFE46B41),
+                                                color: Theme.of(context)
+                                                    .errorColor,
                                                 fontWeight: FontWeight.w600),
                                       )
                                     : Container(),
@@ -314,7 +315,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                                 .copyWith(
                                                     fontSize: UI.getTextSize(
                                                         18, context),
-                                                    color: Color(0xFFE46B41),
+                                                    color: Theme.of(context)
+                                                        .errorColor,
                                                     fontWeight:
                                                         FontWeight.w600),
                                           )

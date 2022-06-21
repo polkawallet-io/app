@@ -135,21 +135,22 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   PageRouteParams _autoRoutingParams;
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
+    final textColor = Color(0xFF565554);
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFF5F3F0),
+      scaffoldBackgroundColor: Color(0xFFF5F3F1),
       dividerColor: Color(0xFFD4D4D4),
       cardColor: Colors.white,
-      toggleableActiveColor: Color(0xFF768FE1),
-      errorColor: Color(0xFFE46B41),
+      toggleableActiveColor: Color(0xFF7D97EE),
+      errorColor: Color(0xFFFA7243),
       unselectedWidgetColor: Color(0xFF858380),
       textSelectionTheme:
-          TextSelectionThemeData(selectionColor: Color(0xFF565554)),
+          TextSelectionThemeData(selectionColor: textColor),
       appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFFF5F3F0),
           elevation: 0,
           titleTextStyle: TextStyle(
-              color: Color(0xFF565554),
+              color: textColor,
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale),
@@ -161,7 +162,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           headline1: TextStyle(
               fontSize: UI.getTextSize(30, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline2: TextStyle(
@@ -170,25 +171,25 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           headline3: TextStyle(
               fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline4: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(16, context, locale: _locale),
             fontFamily:
                 UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline5: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(14, context, locale: _locale),
             fontFamily:
                 UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline6: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(12, context, locale: _locale),
             fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale),
             fontWeight: FontWeight.w400,
@@ -196,16 +197,17 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           bodyText1: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w400,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           bodyText2: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w300,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           caption: TextStyle(
               fontSize: UI.getTextSize(12, context, locale: _locale),
               fontWeight: FontWeight.w600,
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           button: TextStyle(
