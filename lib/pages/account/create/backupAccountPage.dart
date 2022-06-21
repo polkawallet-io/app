@@ -13,6 +13,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -183,7 +184,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                           child: Text(
                             dic['backup.reset'],
                             style: TextStyle(
-                                fontSize: 14,
+                                fontSize: UI.getTextSize(14, context),
                                 color: Theme.of(context).errorColor),
                           ),
                         ),
@@ -281,8 +282,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                 e,
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
-                  fontSize: 16,
-                  fontFamily: 'TitilliumWeb',
+                  fontSize: UI.getTextSize(16, context),
+                  fontFamily: UI.getFontFamily('TitilliumWeb', context),
                   fontWeight: FontWeight.w600,
                 ),
               ),

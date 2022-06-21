@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/PluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class DappLatestPage extends StatefulWidget {
   DappLatestPage(this.service, {Key key}) : super(key: key);
@@ -102,7 +103,7 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                       .textTheme
                                       .headline5
                                       ?.copyWith(
-                                          fontSize: 12,
+                                          fontSize: UI.getTextSize(12, context),
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black),
                                 ),
@@ -160,7 +161,10 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                                         .textTheme
                                                         .headline6
                                                         ?.copyWith(
-                                                            fontSize: 10,
+                                                            fontSize:
+                                                                UI.getTextSize(
+                                                                    10,
+                                                                    context),
                                                             color:
                                                                 PluginColorsDark
                                                                     .green))
@@ -170,27 +174,40 @@ class _DappLatestPageState extends State<DappLatestPage> {
                                         ),
                                       ),
                                       endActionPane: ActionPane(
-                                        extentRatio: 0.15,
+                                        extentRatio: 0.12,
                                         motion: ScrollMotion(),
                                         children: [
-                                          SlidableAction(
-                                            onPressed: (context) async {
-                                              final bool res =
-                                                  await _showCupertinoDialog(dic[
-                                                      'hub.browser.clearMessage']);
-                                              if (res) {
-                                                BrowserApi.deleteLatest(
-                                                    e, widget.service);
-                                                setState(() {
-                                                  _isdelete = true;
-                                                });
-                                              }
-                                            },
-                                            backgroundColor:
-                                                PluginColorsDark.primary,
-                                            foregroundColor: Colors.black,
-                                            icon: Icons.delete,
-                                          ),
+                                          Expanded(
+                                              child: GestureDetector(
+                                                  onTap: () async {
+                                                    final bool res =
+                                                        await _showCupertinoDialog(
+                                                            dic['hub.browser.clearMessage']);
+                                                    if (res) {
+                                                      BrowserApi.deleteLatest(
+                                                          e, widget.service);
+                                                      setState(() {
+                                                        _isdelete = true;
+                                                      });
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 2),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  4)),
+                                                      color: PluginColorsDark
+                                                          .primary,
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                          Icons.delete_outline,
+                                                          color: Colors.black),
+                                                    ),
+                                                  ))),
                                         ],
                                       ));
                                 }))

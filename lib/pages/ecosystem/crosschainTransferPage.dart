@@ -5,7 +5,6 @@ import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,25 +23,26 @@ import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTagCard.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
-class CrosschainTransferPage extends StatefulWidget {
-  CrosschainTransferPage(this.service, {Key key}) : super(key: key);
-  AppService service;
+class CrossChainTransferPage extends StatefulWidget {
+  CrossChainTransferPage(this.service, {Key key}) : super(key: key);
+  final AppService service;
 
   static final String route = '/ecosystem/crosschainTransfer';
 
   @override
-  State<CrosschainTransferPage> createState() => _CrosschainTransferPageState();
+  State<CrossChainTransferPage> createState() => _CrossChainTransferPageState();
 }
 
-class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
+class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
   TextEditingController _amountCtrl = TextEditingController();
 
   String _error1;
@@ -123,8 +123,18 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
           plugin = widget.service.plugin as PluginAcala;
         }
         final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-        final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-            {})['nativeToken'];
+        final feeTokenSymbol =
+            ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+                {})['nativeToken'];
+        final feeToken = (fromNetwork == para_chain_name_acala ||
+                fromNetwork == para_chain_name_karura)
+            ? TokenBalanceData(
+                symbol: plugin.networkState.tokenSymbol[0],
+                decimals: plugin.networkState.tokenDecimals[0],
+              )
+            : plugin.store.assets.allTokens.firstWhere((e) =>
+                e.symbol.toUpperCase() ==
+                feeTokenSymbol.toString().toUpperCase());
         return XcmTxConfirmParams(
             txTitle:
                 '${dicAcala['transfer']} ${balance.symbol} (${dicAcala['cross.xcm']})',
@@ -279,7 +289,8 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
         .textTheme
         .headline4
         ?.copyWith(color: PluginColorsDark.headline1);
-    final subTitleStyle = TextStyle(fontSize: 12, height: 1);
+    final subTitleStyle =
+        TextStyle(fontSize: UI.getTextSize(12, context), height: 1);
     final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
         fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
     return PluginScaffold(
@@ -318,12 +329,12 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
           final isTokenFromStateMine =
               balance.src != null && balance.src['Parachain'] == '1,000';
 
+          final existDeposit = Fmt.balanceInt(plugin
+              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
           final destExistDeposit = isFromKar
               ? Fmt.balanceInt(
                   (tokenXcmInfo[balance.symbol] ?? {})['existentialDeposit'])
-              : Fmt.balanceInt(balance.minBalance);
-          final existDeposit = Fmt.balanceInt(plugin
-              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
+              : existDeposit;
           final destFee = isFromKar
               ? isTokenFromStateMine
                   ? BigInt.zero
@@ -336,8 +347,9 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
           final sendFeeAmount =
               sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
 
-          final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-              {})['nativeToken'];
+          final feeTokenSymbol =
+              ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+                  {})['nativeToken'];
 
           final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
           final nativeTokenDecimals =
@@ -354,59 +366,46 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              PluginTextTag(
-                                backgroundColor: PluginColorsDark.headline3,
-                                title: dic['ecosystem.from'],
-                              ),
-                              Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 16),
-                                  decoration: BoxDecoration(
-                                      color: Color(0x0FFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(4),
-                                          topRight: Radius.circular(4),
-                                          bottomRight: Radius.circular(4))),
-                                  child: Text(
-                                    fromNetwork,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline5
-                                        ?.copyWith(
-                                            color: Color(0xFFFFFFFF)
-                                                .withAlpha(102)),
-                                  )),
-                              PluginTagCard(
-                                margin: EdgeInsets.only(top: 24),
-                                titleTag: dic['ecosystem.to'],
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 16),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _selectChain(context, 0, crossChainIcons,
-                                        _chainToList);
-                                  },
-                                  behavior: HitTestBehavior.opaque,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        destChainName,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            ?.copyWith(
+                              ChainSelected(dic['ecosystem.from'], fromNetwork),
+                              isFromKar
+                                  ? PluginTagCard(
+                                      margin: EdgeInsets.only(top: 24),
+                                      titleTag: dic['ecosystem.to'],
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _selectChain(context, 0,
+                                              crossChainIcons, _chainToList);
+                                        },
+                                        behavior: HitTestBehavior.opaque,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              destChainName,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  ?.copyWith(
+                                                      color: PluginColorsDark
+                                                          .headline1),
+                                            ),
+                                            Icon(
+                                                Icons
+                                                    .keyboard_arrow_down_rounded,
                                                 color:
-                                                    PluginColorsDark.headline1),
+                                                    PluginColorsDark.headline1)
+                                          ],
+                                        ),
                                       ),
-                                      Icon(Icons.keyboard_arrow_down_rounded,
-                                          color: PluginColorsDark.headline1)
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    )
+                                  : Container(
+                                      margin: EdgeInsets.only(top: 24),
+                                      child: ChainSelected(
+                                          dic['ecosystem.to'], destChainName),
+                                    ),
                               PluginInputBalance(
                                 margin: EdgeInsets.only(
                                     top: 24, bottom: _error1 == null ? 24 : 2),
@@ -547,7 +546,7 @@ class _CrosschainTransferPageState extends State<CrosschainTransferPage> {
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeToken',
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeTokenSymbol',
                                             style: infoValueStyle),
                                       ],
                                     ),
@@ -614,6 +613,39 @@ class ChainSelector extends StatelessWidget {
           },
         );
       }).toList(),
+    );
+  }
+}
+
+class ChainSelected extends StatelessWidget {
+  ChainSelected(this.title, this.fromNetwork);
+  final String title;
+  final String fromNetwork;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        PluginTextTag(
+          backgroundColor: PluginColorsDark.headline3,
+          title: title,
+        ),
+        Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            decoration: BoxDecoration(
+                color: Color(0x0FFFFFFF),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
+                    bottomRight: Radius.circular(4))),
+            child: Text(
+              fromNetwork,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5
+                  ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
+            )),
+      ],
     );
   }
 }

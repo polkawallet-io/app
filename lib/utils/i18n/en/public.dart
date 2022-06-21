@@ -65,7 +65,6 @@ const Map<String, String> enPublic = {
   'hub.staking': 'Staking',
   'hub.cover.tokenStaking':
       'Provide your assets allocated on different networks in the ecosystem. You can send your assets through cross-chain transfer, or endow the liquidity to your assets through HOMA, so as to participate in more ecological projects.',
-  'ecosystem.on': 'On',
   'ecosystem.convertTo': 'Convert to',
   'ecosystem.crosschainTransfer': 'Crosschain Transfer',
   'ecosystem.from': 'From',
@@ -90,10 +89,9 @@ const Map<String, String> enPublic = {
   'event.0415.2': 'Following the steps to participate:',
   'event.0415.3': 'Send KSM to Karura\'s parachain.',
   'event.0415.4': 'Join the liquid staking and mint LKSM.',
-  'event.0415.5': 'Currently 19.92% LKSM Staking APY (rewards in KSM)',
+  'event.0415.5': 'Currently 22.44% LKSM Staking APY (rewards in KSM)',
   'event.0415.6': 'Stake your LKSM and earn rewards!',
-  'event.0415.7':
-      'Earn another potential 10% APY on your KSM staking in aUSD rewards',
+  'event.0415.7': 'Earn another potential 10% APY on your KSM staking',
   'event.0415.8': 'Cross-Chain Transfer',
   'event.0415.9': 'Go Liquid Staking',
   'event.0415.10': 'Join Collateral Staking',
@@ -102,10 +100,9 @@ const Map<String, String> enPublic = {
   'event.0515.2': 'Following the steps to participate:',
   'event.0515.3': 'Send DOT to Acala\'s parachain.',
   'event.0515.4': 'Join the liquid staking and mint LDOT.',
-  'event.0515.5': 'Currently 14.5% LDOT Staking APY (rewards in DOT)',
+  'event.0515.5': 'Currently 14.78% LDOT Staking APY (rewards in DOT)',
   'event.0515.6': 'Stake your LDOT and earn rewards!',
-  'event.0515.7':
-      'Earn another potential 10% APY on your DOT staking in aUSD rewards',
+  'event.0515.7': 'Earn another potential 10% APY on your DOT staking',
   'event.0515.8': 'Cross-Chain Transfer',
   'event.0515.9': 'Go Liquid Staking',
   'event.0515.10': 'Join Collateral Staking',

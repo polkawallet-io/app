@@ -64,6 +64,7 @@ const Map<String, String> enProfile = {
   'update': 'Check Update',
   'update.latest': 'Your App is the newest version.',
   'update.up': 'New version found, update now?',
+  'update.now': 'Update Now',
   'update.start': 'Connecting...',
   'update.download': 'Downloading...',
   'update.download.check':

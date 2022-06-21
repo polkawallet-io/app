@@ -6,9 +6,10 @@ import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class SearchBarDelegate extends SearchDelegate<String> {
   final AppService service;
@@ -62,7 +63,6 @@ class SearchBarDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    print("buildResults====");
     BrowserApi.addDappSearchHistory(service, query);
     var dapps = service.store.settings.dapps;
     if (query.trim().isNotEmpty) {
@@ -182,7 +182,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                                         .textTheme
                                         .headline6
                                         ?.copyWith(
-                                            fontSize: 10,
+                                            fontSize:
+                                                UI.getTextSize(10, context),
                                             color: PluginColorsDark.green)),
                                 TextSpan(
                                     text: e["detailUrl"].substring(
@@ -196,7 +197,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                                         .textTheme
                                         .headline6
                                         ?.copyWith(
-                                            fontSize: 10,
+                                            fontSize:
+                                                UI.getTextSize(10, context),
                                             color: PluginColorsDark.primary)),
                                 TextSpan(
                                     text: e["detailUrl"].substring(
@@ -208,7 +210,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                                         .textTheme
                                         .headline6
                                         ?.copyWith(
-                                            fontSize: 10,
+                                            fontSize:
+                                                UI.getTextSize(10, context),
                                             color: PluginColorsDark.green))
                               ],
                             )),
@@ -269,7 +272,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                     ),
                     child: Text(dic['hub.browser.clearAll'],
                         style: Theme.of(context).textTheme.headline5?.copyWith(
-                            color: PluginColorsDark.primary, fontSize: 12)),
+                            color: PluginColorsDark.primary,
+                            fontSize: UI.getTextSize(12, context))),
                   ))
             ],
           ),
@@ -295,7 +299,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                         text: suggestionList[index].substring(
                             0, indexStart.length > 0 ? indexStart[index] : 0),
                         style: Theme.of(context).textTheme.headline6?.copyWith(
-                            fontSize: 14, color: PluginColorsDark.headline1)),
+                            fontSize: UI.getTextSize(14, context),
+                            color: PluginColorsDark.headline1)),
                     TextSpan(
                         text: suggestionList[index].substring(
                             indexStart.length > 0 ? indexStart[index] : 0,
@@ -303,7 +308,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                                 ? indexStart[index] + query.length
                                 : 0),
                         style: Theme.of(context).textTheme.headline6?.copyWith(
-                            fontSize: 14, color: PluginColorsDark.primary)),
+                            fontSize: UI.getTextSize(14, context),
+                            color: PluginColorsDark.primary)),
                     TextSpan(
                         text: suggestionList[index].substring(
                             indexStart.length > 0
@@ -311,7 +317,8 @@ class SearchBarDelegate extends SearchDelegate<String> {
                                 : 0,
                             suggestionList[index].length),
                         style: Theme.of(context).textTheme.headline6?.copyWith(
-                            fontSize: 14, color: PluginColorsDark.headline1))
+                            fontSize: UI.getTextSize(14, context),
+                            color: PluginColorsDark.headline1))
                   ],
                 )),
               ),

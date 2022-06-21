@@ -24,6 +24,7 @@ import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart' as polkawallet_ui;
 
 class TransferPageParams {
   TransferPageParams({
@@ -888,9 +889,16 @@ class _TransferPageState extends State<TransferPage> {
                                                                 color: Theme.of(
                                                                         context)
                                                                     .cardColor,
-                                                                fontSize: 12,
-                                                                fontFamily:
-                                                                    'TitilliumWeb',
+                                                                fontSize: polkawallet_ui
+                                                                    .UI
+                                                                    .getTextSize(
+                                                                        12,
+                                                                        context),
+                                                                fontFamily: polkawallet_ui
+                                                                    .UI
+                                                                    .getFontFamily(
+                                                                        'TitilliumWeb',
+                                                                        context),
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
@@ -941,8 +949,15 @@ class _TransferPageState extends State<TransferPage> {
                                                     dic['amount.exist.msg'],
                                                     style: TextStyle(
                                                       color: Color(0xBF565554),
-                                                      fontSize: 12,
-                                                      fontFamily: 'SF_Pro',
+                                                      fontSize: polkawallet_ui
+                                                          .UI
+                                                          .getTextSize(
+                                                              12, context),
+                                                      fontFamily: polkawallet_ui
+                                                          .UI
+                                                          .getFontFamily(
+                                                              'SF_Pro',
+                                                              context),
                                                     ),
                                                   ),
                                                 ],
@@ -1008,7 +1023,9 @@ class _TransferPageState extends State<TransferPage> {
                                               Text(
                                                 dic['amount.exist.msg'],
                                                 style: TextStyle(
-                                                    fontSize: 12,
+                                                    fontSize: polkawallet_ui.UI
+                                                        .getTextSize(
+                                                            12, context),
                                                     fontWeight:
                                                         FontWeight.w200),
                                               ),
@@ -1073,8 +1090,11 @@ class _TransferPageState extends State<TransferPage> {
                                                 dic['transfer.alive.msg'],
                                                 style: TextStyle(
                                                   color: Color(0xBF565554),
-                                                  fontSize: 12,
-                                                  fontFamily: 'SF_Pro',
+                                                  fontSize: polkawallet_ui.UI
+                                                      .getTextSize(12, context),
+                                                  fontFamily: polkawallet_ui.UI
+                                                      .getFontFamily(
+                                                          'SF_Pro', context),
                                                 ),
                                               ),
                                             ],

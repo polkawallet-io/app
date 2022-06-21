@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class NodeSelectPage extends StatefulWidget {
   NodeSelectPage(this.service, this.plugins, this.changeNetwork, {Key key})
@@ -138,7 +139,8 @@ class NodeSelectItem extends StatelessWidget {
             title: Text(
                 "${plugin.basic.name[0].toUpperCase()}${plugin.basic.name.substring(1)}",
                 style: Theme.of(context).textTheme.headline4.copyWith(
-                    fontWeight: FontWeight.w600, fontFamily: "SF_Pro")),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: UI.getFontFamily('SF_Pro', context))),
             isSelect: isExpansion,
             onTap: () {
               networkOnTap(index);

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class ShowCustomAlterWidget extends StatefulWidget {
   final Function(String) confirmCallback;
@@ -32,9 +32,9 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
                   child: Text(e,
                       style: TextStyle(
                           color: Color(0xFF007AFE),
-                          fontSize: 17,
+                          fontSize: UI.getTextSize(17, context),
                           fontWeight: FontWeight.w400,
-                          fontFamily: "SF_Pro")),
+                          fontFamily: UI.getFontFamily('SF_Pro', context))),
                 ))
             .toList(),
       ],
@@ -45,9 +45,9 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
         child: Text(widget.cancel,
             style: TextStyle(
                 color: Color(0xFF007AFE),
-                fontSize: 17,
+                fontSize: UI.getTextSize(17, context),
                 fontWeight: FontWeight.w500,
-                fontFamily: "SF_Pro")),
+                fontFamily: UI.getFontFamily('SF_Pro', context))),
       ),
     );
   }

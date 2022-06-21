@@ -37,7 +37,11 @@ class BrowserApi {
 
     return await Navigator.of(context).pushNamed(
       DAppWrapperPage.route,
-      arguments: {"url": dapp['detailUrl'], "isPlugin": true},
+      arguments: {
+        "url": dapp['detailUrl'],
+        "isPlugin": true,
+        "icon": dapp["icon"]
+      },
     );
   }
 

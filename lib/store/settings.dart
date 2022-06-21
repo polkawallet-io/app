@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
-import 'package:app/store/types/dappData.dart';
 import 'package:app/store/types/messageData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
@@ -66,10 +65,10 @@ abstract class _SettingsStore with Store {
 
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": false},
-    "KSM": ["kusama", "bifrost", "parallel heiko"],
-    "LKSM": ["parallel heiko"],
+    "KSM": ["kusama", "bifrost", "calamari"],
+    "LKSM": ["parallel heiko", "calamari", "turing"],
     "DOT": ["polkadot"],
-    "LDOT": []
+    "LDOT": ["parallel"]
   };
 
   Future<void> initDapps() async {
@@ -217,9 +216,9 @@ abstract class _SettingsStore with Store {
 
   Future<double> getRate() async {
     if (_rate < 0) {
-      final data = await WalletApi.getTokenPrices();
-      if (data != null && data['rate'] != null) {
-        _rate = (data['rate'] as num).toDouble();
+      final data = await WalletApi.getRate();
+      if (data != null && data['data'] != null) {
+        _rate = (data['data']['rate'] as num).toDouble();
       } else {
         _rate = 1;
       }

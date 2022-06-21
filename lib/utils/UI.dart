@@ -83,82 +83,251 @@ class AppUI {
       builder: (BuildContext context) {
         List versionInfo = versions[platform]['info']
             [I18n.of(context).locale.toString().contains('zh') ? 'zh' : 'en'];
-        return CupertinoAlertDialog(
-          title: Text('v$showLatestBeta'),
-          content: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 12, bottom: 8),
-                child:
-                    Text(needUpdate ? dic['update.up'] : dic['update.latest']),
-              ),
-              Visibility(
-                  visible: needUpdate,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: versionInfo
-                        .map((e) => Text('- $e', textAlign: TextAlign.left))
-                        .toList(),
-                  ))
-            ],
-          ),
-          actions: <Widget>[
-            CupertinoButton(
-              child: Text(I18n.of(context)
-                  .getDic(i18n_full_dic_ui, 'common')['cancel']),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                if (needUpdate &&
-                    versionCodeMin > await Utils.getBuildNumber()) {
-                  exit(0);
-                }
-              },
-            ),
-            CupertinoButton(
-              child: Text(
-                  I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                if (!needUpdate) {
-                  return;
-                }
-                if (Platform.isIOS) {
-                  // go to ios download page
-                  UI.launchURL(versions[platform]['store-url']);
-                } else if (Platform.isAndroid) {
-                  if (buildTarget == BuildTargets.playStore) {
-                    // go to google play page
-                    UI.launchURL(versions[platform]['store-url']);
-                    return;
-                  }
-                  // download apk
-                  // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
-                  try {
-                    UpdateApp.updateApp(
-                        url: versions['android']['url'], appleId: "1520301768");
-                    showCupertinoDialog(
-                        context: context,
-                        builder: (BuildContext ctx) {
-                          return CupertinoAlertDialog(
-                            title: Text(dic['update.download']),
-                            content: Text(dic['update.download.check']),
-                            actions: [
-                              CupertinoButton(
-                                child: Text(I18n.of(context)
-                                    .getDic(i18n_full_dic_ui, 'common')['ok']),
-                                onPressed: () => Navigator.of(ctx).pop(),
+        return WillPopScope(
+            onWillPop: () async {
+              if (needUpdate && versionCodeMin > await Utils.getBuildNumber()) {
+                exit(0);
+              }
+              return true;
+            },
+            child: Container(
+                margin: EdgeInsets.only(left: 48, right: 48),
+                padding: EdgeInsets.only(bottom: 50),
+                child: Center(
+                    child: Stack(
+                  alignment: AlignmentDirectional.topCenter,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: needUpdate ? 105 : 106),
+                      padding: EdgeInsets.only(
+                          top: needUpdate ? 92 : 69,
+                          bottom: 20,
+                          left: 19,
+                          right: 19),
+                      width: double.infinity,
+                      height: (MediaQuery.of(context).size.width - 96) /
+                          294 *
+                          (needUpdate ? 421 : 298),
+                      decoration: BoxDecoration(
+                        color: needUpdate ? Colors.transparent : Colors.white,
+                        gradient: needUpdate
+                            ? null
+                            : LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [0.03, 0.3],
+                                colors: [
+                                  Color(0xFFFDF1EB),
+                                  Color(0xFFFFFFFF),
+                                ],
                               ),
-                            ],
-                          );
-                        });
-                  } catch (e) {
-                    print('Failed to make OTA update. Details: $e');
-                  }
-                }
-              },
-            ),
-          ],
-        );
+                        borderRadius: needUpdate
+                            ? null
+                            : const BorderRadius.only(
+                                topLeft: Radius.circular(60),
+                                topRight: Radius.circular(60),
+                                bottomLeft: Radius.circular(20),
+                                bottomRight: Radius.circular(20)),
+                        image: needUpdate
+                            ? DecorationImage(
+                                image: AssetImage(
+                                    "assets/images/update_app_bg.png"))
+                            : null,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'V ${showLatestBeta.split("-")[0]}',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline3
+                                ?.copyWith(
+                                    fontSize: UI.getTextSize(28, context)),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.only(bottom: 24),
+                              child: Text(
+                                '- ${showLatestBeta.split("-")[1]}',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    ?.copyWith(
+                                        fontSize: UI.getTextSize(18, context)),
+                              )),
+                          Expanded(
+                              child: needUpdate
+                                  ? SingleChildScrollView(
+                                      child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: versionInfo
+                                          .map((e) => Padding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: 12, left: 14),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    margin:
+                                                        EdgeInsets.only(top: 5),
+                                                    decoration: BoxDecoration(
+                                                        color: Theme.of(context)
+                                                            .toggleableActiveColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5)),
+                                                  ),
+                                                  Expanded(
+                                                      child: Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 9),
+                                                          child: Text(
+                                                            e,
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline4,
+                                                          ))),
+                                                ],
+                                              )))
+                                          .toList(),
+                                    ))
+                                  : Padding(
+                                      padding:
+                                          EdgeInsets.only(bottom: 12, left: 14),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 10,
+                                            height: 10,
+                                            margin: EdgeInsets.only(top: 5),
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .toggleableActiveColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(5)),
+                                          ),
+                                          Expanded(
+                                              child: Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 9),
+                                                  child: Text(
+                                                    dic['update.latest'],
+                                                    textAlign: TextAlign.left,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline4,
+                                                  ))),
+                                        ],
+                                      ))),
+                          Visibility(
+                              visible: needUpdate,
+                              child: Padding(
+                                  padding: EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    dic['update.up'],
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            fontSize:
+                                                UI.getTextSize(14, context)),
+                                  ))),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                if (!needUpdate) {
+                                  return;
+                                }
+                                if (Platform.isIOS) {
+                                  // go to ios download page
+                                  UI.launchURL(versions[platform]['store-url']);
+                                } else if (Platform.isAndroid) {
+                                  if (buildTarget == BuildTargets.playStore) {
+                                    // go to google play page
+                                    UI.launchURL(
+                                        versions[platform]['store-url']);
+                                    return;
+                                  }
+                                  // download apk
+                                  // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
+                                  try {
+                                    UpdateApp.updateApp(
+                                        url: versions['android']['url'],
+                                        appleId: "1520301768");
+                                    showCupertinoDialog(
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return CupertinoAlertDialog(
+                                            title: Text(dic['update.download']),
+                                            content: Text(
+                                                dic['update.download.check']),
+                                            actions: [
+                                              CupertinoButton(
+                                                child: Text(I18n.of(context)
+                                                    .getDic(i18n_full_dic_ui,
+                                                        'common')['ok']),
+                                                onPressed: () =>
+                                                    Navigator.of(ctx).pop(),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  } catch (e) {
+                                    print(
+                                        'Failed to make OTA update. Details: $e');
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 45, vertical: 7),
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).toggleableActiveColor,
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Text(
+                                  needUpdate
+                                      ? dic['update.now']
+                                      : I18n.of(context).getDic(
+                                          i18n_full_dic_ui, 'common')['ok'],
+                                  style: Theme.of(context).textTheme.button,
+                                ),
+                              ))
+                        ],
+                      ),
+                    ),
+                    Image.asset(
+                      "assets/images/update_app_icon${needUpdate ? '' : '2'}.png",
+                      width: needUpdate ? 116 : 200,
+                    ),
+                    GestureDetector(
+                        onTap: () async {
+                          Navigator.of(context).pop();
+                          if (needUpdate &&
+                              versionCodeMin > await Utils.getBuildNumber()) {
+                            exit(0);
+                          }
+                        },
+                        child: Container(
+                            margin: EdgeInsets.only(
+                                top: 134, left: needUpdate ? 212 : 230),
+                            child: Image.asset(
+                                "assets/images/update_app_delete.png",
+                                width: 24))),
+                  ],
+                ))));
       },
     );
   }

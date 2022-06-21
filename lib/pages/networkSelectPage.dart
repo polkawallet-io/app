@@ -209,10 +209,10 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 subtitle: Text('$accIndex${Fmt.address(address)}',
                     maxLines: 2,
                     style: TextStyle(
-                        fontSize: 10,
+                        fontSize: UI.getTextSize(10, context),
                         fontWeight: FontWeight.w300,
                         color: Color(0xFF565554),
-                        fontFamily: "SF_Pro")),
+                        fontFamily: UI.getFontFamily('SF_Pro', context))),
                 trailing: Image.asset(
                   "assets/images/${isCurrent ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
                   fit: BoxFit.contain,
@@ -470,7 +470,7 @@ class _CommunityPluginNote extends StatelessWidget {
                 dic['plugin.note'] +
                     pluginName.toUpperCase() +
                     dic['plugin.team'],
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: UI.getTextSize(12, context)),
               )),
               SvgPicture.asset('assets/images/public/github_logo.svg',
                   width: 16),

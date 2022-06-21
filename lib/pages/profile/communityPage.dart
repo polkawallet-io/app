@@ -46,8 +46,6 @@ class _CommunityPage extends State<CommunityPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final colorGray = Theme.of(context).unselectedWidgetColor;
-    final labelStyle = TextStyle(fontSize: 16);
-    final contentStyle = TextStyle(fontSize: 14, color: colorGray);
     final pagePadding = 16.w;
     return Scaffold(
       appBar: AppBar(

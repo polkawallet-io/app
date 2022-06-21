@@ -1,21 +1,20 @@
-import 'dart:convert';
-
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingApi.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
-import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
-import 'package:polkawallet_ui/utils/consts.dart';
-import 'package:polkawallet_sdk/plugin/store/balances.dart';
-import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class CompletedPage extends StatefulWidget {
   CompletedPage(this.service, {Key key}) : super(key: key);
@@ -99,7 +98,7 @@ class _CompletedPageState extends State<CompletedPage> {
                                 .textTheme
                                 .headline2
                                 ?.copyWith(
-                                    fontSize: 36,
+                                    fontSize: UI.getTextSize(36, context),
                                     fontWeight: FontWeight.bold,
                                     color: PluginColorsDark.headline1),
                           ),
@@ -108,13 +107,13 @@ class _CompletedPageState extends State<CompletedPage> {
                             child: Column(
                               children: [
                                 InfoItemRow(
-                                  "${dic['ecosystem.on']} ${widget.service.plugin.basic.name}",
+                                  widget.service.plugin.basic.name,
                                   "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(currentBalance.amount), currentBalance.decimals)} ${currentBalance.symbol}",
                                   labelStyle: style,
                                   contentStyle: style,
                                 ),
                                 InfoItemRow(
-                                  "${dic['ecosystem.on']} $fromNetwork",
+                                  fromNetwork,
                                   "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(_balances[fromNetwork].amount), balance.decimals)} ${balance.symbol}",
                                   labelStyle: style,
                                   contentStyle: style,

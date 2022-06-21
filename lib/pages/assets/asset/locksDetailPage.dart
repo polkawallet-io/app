@@ -2,7 +2,7 @@ import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
@@ -264,12 +264,15 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                         labelStyle: Theme.of(context)
                                             .textTheme
                                             .headline5
-                                            .copyWith(fontSize: 18),
+                                            .copyWith(
+                                                fontSize: UI.getTextSize(
+                                                    18, context)),
                                         contentStyle: Theme.of(context)
                                             .textTheme
                                             .headline5
                                             .copyWith(
-                                                fontSize: 18,
+                                                fontSize:
+                                                    UI.getTextSize(18, context),
                                                 color: Color(0xFFE46B41),
                                                 fontWeight: FontWeight.w600),
                                       )
@@ -309,7 +312,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                                 .textTheme
                                                 .headline5
                                                 .copyWith(
-                                                    fontSize: 18,
+                                                    fontSize: UI.getTextSize(
+                                                        18, context),
                                                     color: Color(0xFFE46B41),
                                                     fontWeight:
                                                         FontWeight.w600),
@@ -397,8 +401,9 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                     'assets')['lock.vest.claim'],
                                 style: TextStyle(
                                   color: Theme.of(context).cardColor,
-                                  fontSize: 12,
-                                  fontFamily: 'TitilliumWeb',
+                                  fontSize: UI.getTextSize(12, context),
+                                  fontFamily:
+                                      UI.getFontFamily('TitilliumWeb', context),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

@@ -9,20 +9,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/utils/consts.dart';
-import 'package:polkawallet_sdk/plugin/store/balances.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
-import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
-import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class ConverToPage extends StatefulWidget {
   ConverToPage(this.service, {Key key}) : super(key: key);
@@ -81,8 +81,11 @@ class _ConverToPageState extends State<ConverToPage> {
         final fromIcon =
             plugin.store.assets.crossChainIcons[fromNetwork] as String;
         final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-        final feeToken = ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-            {})['nativeToken'];
+        final feeTokenSymbol =
+            ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
+                {})['nativeToken'];
+        final feeToken = plugin.store.assets.allTokens.firstWhere((e) =>
+            e.symbol.toUpperCase() == feeTokenSymbol.toString().toUpperCase());
         return XcmTxConfirmParams(
             txTitle:
                 "${I18n.of(context)?.getDic(i18n_full_dic_app, 'public')['ecosystem.convertTo']} $convertToKen (1/2)",
@@ -241,7 +244,8 @@ class _ConverToPageState extends State<ConverToPage> {
 
     final tokenXcmInfo = (tokensConfig['xcmInfo'] ?? {})[fromNetwork] ?? {};
 
-    final destExistDeposit = Fmt.balanceInt(balance.minBalance);
+    final destExistDeposit = Fmt.balanceInt(
+        plugin.store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
     final destFee =
         Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
 
@@ -250,7 +254,7 @@ class _ConverToPageState extends State<ConverToPage> {
             .service.plugin.networkState.tokenDecimals[
         widget.service.plugin.networkState.tokenSymbol.indexOf(nativeToken)];
 
-    final feeToken =
+    final feeTokenSymbol =
         ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {})['nativeToken'];
 
     final labelStyle = Theme.of(context)
@@ -394,7 +398,7 @@ class _ConverToPageState extends State<ConverToPage> {
                               ),
                             ),
                             Text(
-                                '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeToken',
+                                '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeTokenSymbol',
                                 style: infoValueStyle),
                           ],
                         ),
@@ -433,7 +437,7 @@ class _ConverToPageState extends State<ConverToPage> {
 class ErrorMessage extends StatelessWidget {
   ErrorMessage(this.error, {this.margin});
   final error;
-  EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry margin;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -446,7 +450,8 @@ class ErrorMessage extends StatelessWidget {
               Expanded(
                   child: Text(
                 error,
-                style: TextStyle(fontSize: 12, color: Colors.red),
+                style: TextStyle(
+                    fontSize: UI.getTextSize(12, context), color: Colors.red),
               ))
             ]),
     );

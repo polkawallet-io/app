@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -122,7 +123,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           decimals: widget.service.plugin.networkState.tokenDecimals[0],
           id: widget.service.plugin.networkState.tokenSymbol[0],
           symbol: widget.service.plugin.networkState.tokenSymbol[0],
-          name: '${widget.service.plugin.basic.name} ${dic['manage.native']}')
+          name: widget.service.plugin.networkState.tokenSymbol[0],
+          fullName:
+              '${widget.service.plugin.basic.name} ${dic['manage.native']}')
     ];
     list.addAll(widget.service.plugin.noneNativeTokensAll);
 
@@ -130,7 +133,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
       var type = "Token";
       if (assetsType[_assetsTypeIndex] == "Cross-chain") {
         type = "ForeignAsset";
-      } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+      } else if (assetsType[_assetsTypeIndex] == "Taiga token") {
         type = "TaigaAsset";
       } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
         type = "DexShare";
@@ -173,8 +176,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                     dic['manage.save'],
                     style: TextStyle(
                       color: Theme.of(context).cardColor,
-                      fontSize: 12,
-                      fontFamily: 'TitilliumWeb',
+                      fontSize: UI.getTextSize(12, context),
+                      fontFamily: UI.getFontFamily('TitilliumWeb', context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -228,7 +231,8 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                 .textTheme
                                 .headline5
                                 .copyWith(
-                                    fontFamily: 'SF_Pro',
+                                    fontFamily:
+                                        UI.getFontFamily('SF_Pro', context),
                                     color: _hide0
                                         ? Theme.of(context).primaryColor
                                         : colorGrey),
@@ -326,10 +330,12 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                     ? Text('$id${list[i].fullName}',
                                         maxLines: 2,
                                         style: TextStyle(
-                                            fontSize: 10,
+                                            fontSize:
+                                                UI.getTextSize(10, context),
                                             fontWeight: FontWeight.w300,
                                             color: Color(0xFF565554),
-                                            fontFamily: "SF_Pro"))
+                                            fontFamily: UI.getFontFamily(
+                                                'SF_Pro', context)))
                                     : null,
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,

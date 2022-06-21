@@ -156,8 +156,9 @@ class _AccountManagePageState extends State<AccountManagePage> {
                     Text(UI.accountName(context, acc),
                         style: TextStyle(
                             color: Color(0xFF565554),
-                            fontSize: 20,
-                            fontFamily: 'TitilliumWeb',
+                            fontSize: UI.getTextSize(20, context),
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context),
                             fontWeight: FontWeight.w600)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -166,7 +167,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                         Text(
                           Fmt.address(acc.address) ?? '',
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: UI.getTextSize(16, context),
                               color: Theme.of(context).unselectedWidgetColor),
                         ),
                         GestureDetector(
@@ -251,7 +252,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
                           dic['delete'],
                           style: TextStyle(
                             color: Colors.red,
-                            fontFamily: 'TitilliumWeb',
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context),
                             fontWeight: FontWeight.w400,
                           ),
                           textAlign: TextAlign.center,

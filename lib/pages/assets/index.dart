@@ -35,9 +35,9 @@ import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 
 final assetsType = [
   "All",
@@ -45,7 +45,7 @@ final assetsType = [
   "ERC-20",
   "Cross-chain",
   "LP Tokens",
-  "Tiga token"
+  "Taiga token"
 ];
 
 class AssetsPage extends StatefulWidget {
@@ -115,7 +115,8 @@ class _AssetsState extends State<AssetsPage> {
   // }
 
   Future<void> _updateMarketPrices() async {
-    widget.service.assets.fetchMarketPrices();
+    widget.service.assets
+        .fetchMarketPrices(widget.service.plugin.networkState.tokenSymbol);
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
@@ -536,6 +537,7 @@ class _AssetsState extends State<AssetsPage> {
                     },
                     child: Container(
                       color: Colors.transparent,
+                      margin: EdgeInsets.only(top: 2),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -759,7 +761,7 @@ class _AssetsState extends State<AssetsPage> {
           var type = "Token";
           if (assetsType[_assetsTypeIndex] == "Cross-chain") {
             type = "ForeignAsset";
-          } else if (assetsType[_assetsTypeIndex] == "Tiga token") {
+          } else if (assetsType[_assetsTypeIndex] == "Taiga token") {
             type = "TaigaAsset";
           } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
             type = "DexShare";
@@ -858,7 +860,7 @@ class _AssetsState extends State<AssetsPage> {
                                       I18n.of(context).getDic(i18n_full_dic_app,
                                           'assets')['assets.warn'],
                                       color: Colors.deepOrange,
-                                      fontSize: 12,
+                                      fontSize: UI.getTextSize(12, context),
                                       margin: EdgeInsets.all(0),
                                       padding: EdgeInsets.all(8),
                                     ))
@@ -982,7 +984,10 @@ class _AssetsState extends State<AssetsPage> {
                                                                         .white
                                                                     : Colors
                                                                         .black,
-                                                            fontSize: 10)),
+                                                            fontSize:
+                                                                UI.getTextSize(
+                                                                    10,
+                                                                    context))),
                                               ),
                                             ),
                                           );
@@ -1066,7 +1071,10 @@ class _AssetsState extends State<AssetsPage> {
                                                 .textTheme
                                                 .headline6
                                                 .copyWith(
-                                                    fontFamily: "TitilliumWeb"),
+                                                    fontFamily:
+                                                        UI.getFontFamily(
+                                                            'TitilliumWeb',
+                                                            context)),
                                           ),
                                         ],
                                       ),
@@ -1229,10 +1237,9 @@ class TokenItem extends StatelessWidget {
                       isHideBalance
                           ? "******"
                           : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          .copyWith(fontFamily: "TitilliumWeb"),
+                      style: Theme.of(context).textTheme.headline6.copyWith(
+                          fontFamily:
+                              UI.getFontFamily('TitilliumWeb', context)),
                     )
                   : Container(height: 0, width: 8),
             ],

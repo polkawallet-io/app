@@ -48,8 +48,9 @@ class ExportResultPage extends StatelessWidget {
                           I18n.of(context)
                               .getDic(i18n_full_dic_ui, 'common')['copy'],
                           style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'TitilliumWeb',
+                              fontSize: UI.getTextSize(14, context),
+                              fontFamily:
+                                  UI.getFontFamily('TitilliumWeb', context),
                               color: Theme.of(context).toggleableActiveColor),
                         ),
                       ),
@@ -92,8 +93,9 @@ class ExportResultPage extends StatelessWidget {
                                   I18n.of(context).getDic(
                                       i18n_full_dic_ui, 'common')['copy'],
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'TitilliumWeb',
+                                      fontSize: UI.getTextSize(14, context),
+                                      fontFamily: UI.getFontFamily(
+                                          'TitilliumWeb', context),
                                       color: Theme.of(context)
                                           .toggleableActiveColor),
                                 ),

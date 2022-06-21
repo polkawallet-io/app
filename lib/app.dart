@@ -150,63 +150,70 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           elevation: 0,
           titleTextStyle: TextStyle(
               color: Color(0xFF565554),
-              fontSize: 18,
-              fontFamily: 'TitilliumWeb',
+              fontSize: UI.getTextSize(18, context, locale: _locale),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale),
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       hoverColor: secondaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
-              fontSize: 30,
+              fontSize: UI.getTextSize(30, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline2: TextStyle(
-            fontSize: 22,
+            fontSize: UI.getTextSize(22, context, locale: _locale),
           ),
           headline3: TextStyle(
-              fontSize: 20,
+              fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Color(0xFF565554),
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline4: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 16,
-            fontFamily: 'TitilliumWeb',
+            fontSize: UI.getTextSize(16, context, locale: _locale),
+            fontFamily:
+                UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline5: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 14,
-            fontFamily: 'TitilliumWeb',
+            fontSize: UI.getTextSize(14, context, locale: _locale),
+            fontFamily:
+                UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline6: TextStyle(
             color: Color(0xFF565554),
-            fontSize: 12,
-            fontFamily: 'SF_Pro',
+            fontSize: UI.getTextSize(12, context, locale: _locale),
+            fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           bodyText1: TextStyle(
-              fontSize: 16,
+              fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w400,
               color: Color(0xFF565554),
-              fontFamily: "SF_Pro"),
+              fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           bodyText2: TextStyle(
-              fontSize: 16,
+              fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w300,
               color: Color(0xFF565554),
-              fontFamily: "SF_Pro"),
+              fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           caption: TextStyle(
-              fontSize: 12,
+              fontSize: UI.getTextSize(12, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              fontFamily: "TitilliumWeb"),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           button: TextStyle(
-              fontSize: 18,
+              fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
               color: Colors.white,
-              fontFamily: "TitilliumWeb")),
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale))),
     );
   }
 
@@ -226,6 +233,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
     setState(() {
       _locale = res;
+      _theme = _getAppTheme(
+        _service.plugin.basic.primaryColor,
+        secondaryColor: _service.plugin.basic.gradientColor,
+      );
       if (_locale != null) {
         _service.store.settings.initMessage((_locale).languageCode);
       }
@@ -403,6 +414,40 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final isNetworkChanged = networkName != _service.plugin.basic.name;
 
     if (isNetworkChanged) {
+      final confirmed = await showCupertinoDialog(
+          context: _homePageContext,
+          builder: (BuildContext context) {
+            final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+            return CupertinoAlertDialog(
+              title: Text(dic['v3.changeNetwork']),
+              content: Container(
+                margin: EdgeInsets.only(top: 8),
+                child: Text(
+                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
+              ),
+              actions: [
+                CupertinoButton(
+                  child: Text(
+                    I18n.of(context)
+                        .getDic(i18n_full_dic_ui, 'common')['cancel'],
+                    style: TextStyle(
+                        color: Theme.of(context).unselectedWidgetColor),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                CupertinoButton(
+                  child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                    style: TextStyle(
+                        color: Theme.of(context).toggleableActiveColor),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            );
+          });
+      if (!confirmed) return;
+
       // display a dialog while changing network
       showCupertinoDialog(
           context: _homePageContext,
@@ -528,10 +573,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       setState(() {
         _store = store;
         _service = service;
-        _theme = _getAppTheme(
-          service.plugin.basic.primaryColor,
-          secondaryColor: service.plugin.basic.gradientColor,
-        );
       });
 
       if (store.settings.localeCode.isNotEmpty) {
@@ -709,7 +750,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       //ecosystem
       TokenStaking.route: (_) => TokenStaking(_service),
       ConverToPage.route: (_) => ConverToPage(_service),
-      CrosschainTransferPage.route: (_) => CrosschainTransferPage(_service),
+      CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
 
@@ -857,7 +898,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       },
       child: ScreenUtilInit(
           designSize: Size(390, 844),
-          builder: () => MaterialApp(
+          builder: (_, __) => MaterialApp(
                 title: 'Polkawallet',
                 builder: (context, widget) {
                   return MediaQuery(

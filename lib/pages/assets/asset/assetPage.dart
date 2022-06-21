@@ -89,7 +89,8 @@ class _AssetPageState extends State<AssetPage> {
       _isLastPage = false;
     });
 
-    widget.service.assets.fetchMarketPrices();
+    widget.service.assets
+        .fetchMarketPrices(widget.service.plugin.networkState.tokenSymbol);
 
     await _updateData();
   }
@@ -273,7 +274,8 @@ class _AssetPageState extends State<AssetPage> {
       appBar: AppBar(
         title: Text(
           symbol,
-          style: TextStyle(fontSize: 20, color: Colors.black87),
+          style: TextStyle(
+              fontSize: UI.getTextSize(20, context), color: Colors.black87),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -573,10 +575,11 @@ class BalanceCard extends StatelessWidget {
                         Fmt.token(balance, decimals, length: 8),
                         style: TextStyle(
                             color: titleColor,
-                            fontSize: 20,
+                            fontSize: UI.getTextSize(20, context),
                             letterSpacing: -0.8,
                             fontWeight: FontWeight.w600,
-                            fontFamily: "TitilliumWeb"),
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context)),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Visibility(
@@ -610,7 +613,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                     priceItemBuild(
                         SvgPicture.asset(
                           'assets/images/locked_icon.svg',
@@ -623,7 +627,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                     priceItemBuild(
                         SvgPicture.asset(
                           'assets/images/reversed_icon.svg',
@@ -636,7 +641,8 @@ class BalanceCard extends StatelessWidget {
                           decimals,
                           lengthMax: 4,
                         ),
-                        titleColor),
+                        titleColor,
+                        context),
                   ],
                 ),
                 flex: 1,
@@ -668,7 +674,8 @@ class BalanceCard extends StatelessWidget {
     return datas;
   }
 
-  Widget priceItemBuild(Widget icon, String title, String price, Color color) {
+  Widget priceItemBuild(Widget icon, String title, String price, Color color,
+      BuildContext context) {
     return Padding(
         padding: EdgeInsets.symmetric(vertical: 3),
         child: Row(
@@ -683,9 +690,9 @@ class BalanceCard extends StatelessWidget {
               title,
               style: TextStyle(
                   color: color,
-                  fontSize: 12,
+                  fontSize: UI.getTextSize(12, context),
                   fontWeight: FontWeight.w600,
-                  fontFamily: "TitilliumWeb"),
+                  fontFamily: UI.getFontFamily('TitilliumWeb', context)),
             ),
             Expanded(
               child: Text(
@@ -693,9 +700,9 @@ class BalanceCard extends StatelessWidget {
                 textAlign: TextAlign.end,
                 style: TextStyle(
                     color: color,
-                    fontSize: 12,
+                    fontSize: UI.getTextSize(12, context),
                     fontWeight: FontWeight.w400,
-                    fontFamily: "TitilliumWeb"),
+                    fontFamily: UI.getFontFamily('TitilliumWeb', context)),
               ),
             )
           ],
@@ -739,7 +746,7 @@ class TransferListItem extends StatelessWidget {
       title: Text(
         '$title${crossChain != null ? ' ($crossChain)' : ''}',
         style: Theme.of(context).textTheme.headline5.copyWith(
-              fontFamily: 'SF_Pro',
+              fontFamily: UI.getFontFamily('SF_Pro', context),
             ),
       ),
       subtitle: Text(

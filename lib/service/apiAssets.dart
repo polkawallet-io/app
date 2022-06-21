@@ -26,7 +26,9 @@ class ApiAssets {
     Map res = await apiRoot.subScan.fetchTransfersAsync(
       acc.address,
       page,
-      network: apiRoot.plugin.basic.name,
+      network: apiRoot.plugin.basic.name == 'bifrost'
+          ? 'bifrost-kusama'
+          : apiRoot.plugin.basic.name,
     );
 
     if (page == 0) {
@@ -43,9 +45,9 @@ class ApiAssets {
     return res;
   }
 
-  Future<void> fetchMarketPrices() async {
+  Future<void> fetchMarketPrices(List<String> tokens) async {
     final res = await Future.wait([
-      WalletApi.getTokenPrices(),
+      WalletApi.getTokenPrices(tokens),
       WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name)
     ]);
     final Map<String, double> prices = {
@@ -53,15 +55,18 @@ class ApiAssets {
       'AUSD': 1.0,
       'USDT': 1.0,
     };
-    if (res[1]['data'] != null) {
+    if ((res[1] ?? {})['data'] != null) {
       final tokenData = res[1]['data']['detail'] as Map;
       prices.addAll({
         tokenData.keys.toList()[0]:
             double.tryParse(tokenData.values.toList()[0]['price'].toString())
       });
     }
-    if (res[0]['prices'] != null) {
-      prices.addAll(Map<String, double>.from(res[0]['prices']));
+
+    final serverPrice = Map<String, double>.from(res[0] ?? {});
+    serverPrice.removeWhere((_, value) => value == 0);
+    if (serverPrice.values.length > 0) {
+      prices.addAll(serverPrice);
     }
 
     apiRoot.store.assets.setMarketPrices(prices);

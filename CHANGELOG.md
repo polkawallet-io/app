@@ -1,3 +1,22 @@
+# [3.3.0-beta] - 20220620
+1. flutter upgrade 3.0.1
+2. karura - crab/turing xcm #160 #184
+3. karura/acala runtime 2070 #173
+4. karura/acala node list update - removed patract & added dwellir
+5. ui 优化(斜切角、car背景圆角统一、中文字号字体)  #189 #190 #191
+6. claim rewards amount under ED #178
+7. Pop up for update #129
+8. acala plugin defi tx history #174
+9. LKSM/LDOT APY update & banner update
+10. Search token symbol to navigate the LP pool #149
+
+# [3.2.9-beta] - 20220606
+1. 修复 DOT/KSM Staking 发送交易问题 #154
+2. 切换网络操作增加确认弹窗 #131
+3. tDOT 名称修复 #155
+4. assets 列表管理页面 native token 显示 symbol #156
+5. DOT/KSM Staking cross-chain 选择 #158 + destED 修复
+
 # [3.2.8-beta] - 20220602
 - karura new xcm #122
 - acala new xcm #121 #143

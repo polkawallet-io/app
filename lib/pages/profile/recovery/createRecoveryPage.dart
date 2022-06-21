@@ -211,12 +211,13 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                             children: [
                               Text(
                                 dic['recovery.threshold'],
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                    fontSize: UI.getTextSize(16, context)),
                               ),
                               Text(
                                 '${_threshold.toInt()} / ${_friends.length}',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: UI.getTextSize(16, context),
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -239,7 +240,7 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                       padding: EdgeInsets.only(left: 16, top: 16),
                       child: Text(
                         dic['recovery.delay'],
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: UI.getTextSize(16, context)),
                       ),
                     ),
                     Padding(
@@ -303,7 +304,9 @@ ${dic['recovery.deposit.factor']} = ${Fmt.doubleFormat(_friendDepositFactor)} $s
                                     child: Text(
                                       _delayError ?? "",
                                       style: TextStyle(
-                                          color: Colors.red, fontSize: 12),
+                                          color: Colors.red,
+                                          fontSize:
+                                              UI.getTextSize(12, context)),
                                     ))
                               ],
                             ),

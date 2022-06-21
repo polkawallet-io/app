@@ -25,7 +25,7 @@ class _JumpToLinkState extends State<JumpToLink> {
             child: Text(
               widget.text ?? widget.url,
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: UI.getTextSize(12, context),
                   color: widget.color ?? Theme.of(context).primaryColor),
             ),
           ),

@@ -170,11 +170,11 @@ class _ContactsPageState extends State<ContactsPage> {
                 leading: AddressIcon(i.address, svg: i.icon, size: 36.w),
                 title: Text(
                   UI.accountName(context, i),
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: UI.getTextSize(16, context)),
                 ),
                 subtitle: Text(
                   Fmt.address(i.address),
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: UI.getTextSize(12, context)),
                 ),
                 onTap: () => _showActions(context, i),
               ),
