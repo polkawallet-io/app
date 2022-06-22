@@ -46,6 +46,8 @@ class ApiAssets {
   }
 
   Future<void> fetchMarketPrices(List<String> tokens) async {
+    if (tokens == null) return;
+
     final res = await Future.wait([
       WalletApi.getTokenPrices(tokens),
       WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name)

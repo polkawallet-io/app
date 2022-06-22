@@ -1,6 +1,5 @@
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -24,7 +23,8 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
     final WCPairingData args = ModalRoute.of(context).settings.arguments;
-    final permissions = List.of(args.permissions.jsonrpc['methods']);
+    // TODO: fix this page to implement wallet-connect
+    // final permissions = List.of(args.permissions.jsonrpc['methods']);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +47,7 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 16, right: 16),
-                  child: WCPairingSourceInfo(args.proposer),
+                  child: WCPairingSourceInfo(args.params.proposer),
                 ),
                 Padding(
                   padding: EdgeInsets.all(16),
@@ -56,15 +56,15 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: permissions.map((e) {
-                      return Text('- $e');
-                    }).toList(),
-                  ),
-                )
+                // Padding(
+                //   padding: EdgeInsets.only(left: 24),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: permissions.map((e) {
+                //       return Text('- $e');
+                //     }).toList(),
+                //   ),
+                // )
               ]),
             ),
             Row(
