@@ -189,11 +189,11 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           children: [
             Container(
                 margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                height: 52,
                 child: v3.TextInputWidget(
                   decoration: v3.InputDecorationV3(
                     contentPadding: EdgeInsets.zero,
                     hintText: dic['manage.filter'],
+                    hintStyle: Theme.of(context).textTheme.headline4,
                     icon: Icon(
                       Icons.search,
                       color: Theme.of(context).disabledColor,
@@ -201,7 +201,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                     ),
                   ),
                   controller: _filterCtrl,
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headline4,
                   onChanged: (v) {
                     setState(() {
                       _filter = _filterCtrl.text.trim().toUpperCase();

@@ -675,7 +675,18 @@ class _TransferPageState extends State<TransferPage> {
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
-        final labelStyle = Theme.of(context).textTheme.headline4;
+        final labelStyle = Theme.of(context)
+            .textTheme
+            .headline4
+            ?.copyWith(fontWeight: FontWeight.bold);
+        final subTitleStyle = Theme.of(context)
+            .textTheme
+            .headline6
+            ?.copyWith(height: 1, fontWeight: FontWeight.w300);
+        final infoValueStyle = Theme.of(context)
+            .textTheme
+            .headline5
+            .copyWith(fontWeight: FontWeight.w600);
         return Scaffold(
           appBar: AppBar(
               systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -709,8 +720,10 @@ class _TransferPageState extends State<TransferPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(dic['from'], style: labelStyle),
-                                  AddressFormItem(
-                                      widget.service.keyring.current),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 3),
+                                      child: AddressFormItem(
+                                          widget.service.keyring.current)),
                                   Container(height: 8.h),
                                   Form(
                                     key: _formKey,
@@ -765,8 +778,10 @@ class _TransferPageState extends State<TransferPage> {
                                             suffix: GestureDetector(
                                               child: Text(dic['amount.max'],
                                                   style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: Theme.of(context)
-                                                          .primaryColor)),
+                                                          .toggleableActiveColor)),
                                               onTap: () => _setMaxAmount(
                                                   available, existAmount),
                                             ),
@@ -810,8 +825,7 @@ class _TransferPageState extends State<TransferPage> {
                                   ),
                                   Padding(
                                       padding: EdgeInsets.only(
-                                          top: 20.h, bottom: 7.h),
-                                      child: Divider(height: 1)),
+                                          top: 20.h, bottom: 7.h)),
                                   Visibility(
                                       visible: canCrossChain,
                                       child: Column(
@@ -922,78 +936,133 @@ class _TransferPageState extends State<TransferPage> {
                                 ])),
                         RoundedCard(
                           margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                          padding: EdgeInsets.zero,
                           child: Column(
                             children: [
                               Visibility(
                                   visible: isCrossChain,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 16),
+                                  child: Column(children: [
+                                    Container(
+                                      height: 47,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 40),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(dic['cross.exist'],
+                                                        style: labelStyle
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400)),
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 2),
+                                                        child: Text(
+                                                          dic['amount.exist.msg'],
+                                                          style: subTitleStyle,
+                                                        )),
+                                                  ],
+                                                )),
+                                          ),
+                                          Expanded(
+                                              flex: 0,
+                                              child: Text(
+                                                  '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline5
+                                                      .copyWith(
+                                                          fontWeight: FontWeight
+                                                              .w600))),
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(height: 1)
+                                  ])),
+                              Visibility(
+                                  visible: isCrossChain,
+                                  child: Column(children: [
+                                    Container(
+                                      height: 47,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Text(dic['cross.fee'],
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                            ),
+                                          ),
+                                          Text(
+                                              '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(height: 1)
+                                  ])),
+                              Column(children: [
+                                Container(
+                                    height: 67,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Expanded(
                                           child: Container(
                                               padding:
-                                                  EdgeInsets.only(right: 40),
+                                                  EdgeInsets.only(right: 60),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(dic['cross.exist'],
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline4),
-                                                  Text(
-                                                    dic['amount.exist.msg'],
-                                                    style: TextStyle(
-                                                      color: Color(0xBF565554),
-                                                      fontSize: polkawallet_ui
-                                                          .UI
-                                                          .getTextSize(
-                                                              12, context),
-                                                      fontFamily: polkawallet_ui
-                                                          .UI
-                                                          .getFontFamily(
-                                                              'SF_Pro',
-                                                              context),
-                                                    ),
-                                                  ),
+                                                  Text(dic['amount.exist'],
+                                                      style:
+                                                          labelStyle?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400)),
+                                                  Padding(
+                                                      padding: EdgeInsets.only(
+                                                          top: 2),
+                                                      child: Text(
+                                                        dic['amount.exist.msg'],
+                                                        style: subTitleStyle
+                                                            ?.copyWith(
+                                                                height: 1.3),
+                                                      )),
                                                 ],
                                               )),
                                         ),
-                                        Expanded(
-                                            flex: 0,
-                                            child: Text(
-                                                '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline5
-                                                    .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600))),
-                                      ],
-                                    ),
-                                  )),
-                              Visibility(
-                                  visible: isCrossChain,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 4),
-                                            child: Text(dic['cross.fee'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4),
-                                          ),
-                                        ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
+                                            '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline5
@@ -1001,76 +1070,46 @@ class _TransferPageState extends State<TransferPage> {
                                                     fontWeight:
                                                         FontWeight.w600)),
                                       ],
-                                    ),
-                                  )),
-                              Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          padding: EdgeInsets.only(right: 60),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(dic['amount.exist'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4),
-                                              Text(
-                                                dic['amount.exist.msg'],
-                                                style: TextStyle(
-                                                    fontSize: polkawallet_ui.UI
-                                                        .getTextSize(
-                                                            12, context),
-                                                    fontWeight:
-                                                        FontWeight.w200),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ),
+                                    )),
+                                Divider(height: 1)
+                              ]),
                               Visibility(
                                   visible: _fee?.partialFee != null,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 4),
-                                            child: Text(dic['amount.fee'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4),
+                                  child: Column(children: [
+                                    Container(
+                                      height: 47,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Text(dic['amount.fee'],
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                      ],
+                                          Text(
+                                              '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                        ],
+                                      ),
                                     ),
-                                  )),
+                                    Divider(height: 1)
+                                  ])),
                               Container(
-                                margin: EdgeInsets.only(top: 8),
+                                height: 67,
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -1083,20 +1122,16 @@ class _TransferPageState extends State<TransferPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(dic['transfer.alive'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4),
-                                              Text(
-                                                dic['transfer.alive.msg'],
-                                                style: TextStyle(
-                                                  color: Color(0xBF565554),
-                                                  fontSize: polkawallet_ui.UI
-                                                      .getTextSize(12, context),
-                                                  fontFamily: polkawallet_ui.UI
-                                                      .getFontFamily(
-                                                          'SF_Pro', context),
-                                                ),
-                                              ),
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                              Padding(
+                                                  padding:
+                                                      EdgeInsets.only(top: 2),
+                                                  child: Text(
+                                                    dic['transfer.alive.msg'],
+                                                    style: subTitleStyle,
+                                                  )),
                                             ],
                                           )),
                                     ),
