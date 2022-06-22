@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/textFormField.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 import 'importAccountCreatePage.dart';
 
@@ -162,7 +163,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['import.warn']),
             content: Text(dic['mnemonic.msg']),
             actions: [

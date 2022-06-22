@@ -19,6 +19,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -49,7 +50,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
           content: Container(height: 64, child: CupertinoActivityIndicator()),

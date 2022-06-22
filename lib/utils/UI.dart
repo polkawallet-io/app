@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:update_app/update_app.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class AppUI {
   static Future<void> alertWASM(
@@ -30,7 +31,8 @@ class AppUI {
     await showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
+          type: DialogType.warn,
           title: Container(),
           content: Text(errorMsg ?? msg),
           actions: <Widget>[
@@ -269,7 +271,7 @@ class AppUI {
                                     showCupertinoDialog(
                                         context: context,
                                         builder: (BuildContext ctx) {
-                                          return CupertinoAlertDialog(
+                                          return PolkawalletAlertDialog(
                                             title: Text(dic['update.download']),
                                             content: Text(
                                                 dic['update.download.check']),
@@ -346,7 +348,7 @@ class AppUI {
         final bool isOk = await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text('metadata v$jsVersionLatest'),
               content: Text(I18n.of(context)
                   .getDic(i18n_full_dic_app, 'profile')['update.js.up']),
@@ -387,7 +389,7 @@ class AppUI {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dic['update.download']),
           content: CupertinoActivityIndicator(),
         );
@@ -399,7 +401,7 @@ class AppUI {
     await showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Container(),
           content: code == null
               ? Text(dic['update.error'])
@@ -428,7 +430,7 @@ class AppUI {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(I18n.of(context)
                 .getDic(i18n_full_dic_app, 'assets')['amount.low']),
             content: Container(),

@@ -13,6 +13,7 @@ import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ContactPage extends StatefulWidget {
   ContactPage(this.service);
@@ -73,7 +74,7 @@ class _Contact extends State<ContactPage> {
           showCupertinoDialog(
             context: context,
             builder: (BuildContext context) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 title: Container(),
                 content: Text(dic['contact.exist']),
                 actions: <Widget>[

@@ -93,6 +93,7 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 const get_storage_container = 'configuration';
 
@@ -144,8 +145,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       toggleableActiveColor: Color(0xFF7D97EE),
       errorColor: Color(0xFFFA7243),
       unselectedWidgetColor: Color(0xFF858380),
-      textSelectionTheme:
-          TextSelectionThemeData(selectionColor: textColor),
+      textSelectionTheme: TextSelectionThemeData(selectionColor: textColor),
       appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFFF5F3F0),
           elevation: 0,
@@ -420,7 +420,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           context: _homePageContext,
           builder: (BuildContext context) {
             final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['v3.changeNetwork']),
               content: Container(
                 margin: EdgeInsets.only(top: 8),
@@ -456,7 +456,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           builder: (_) {
             final dic =
                 I18n.of(_homePageContext).getDic(i18n_full_dic_app, 'assets');
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['v3.changeNetwork']),
               content: Container(
                 margin: EdgeInsets.only(top: 24, bottom: 24),
@@ -511,7 +511,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       showCupertinoDialog(
           context: context,
           builder: (_) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
+              type: DialogType.warn,
               title: Text(dic['bad.warn']),
               content: Text(
                   '${Fmt.address(_keyring.current.address)} ${dic['bad.warn.info']}'),

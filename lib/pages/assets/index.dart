@@ -38,6 +38,7 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 final assetsType = [
   "All",
@@ -159,7 +160,7 @@ class _AssetsState extends State<AssetsPage> {
         showCupertinoDialog(
           context: context,
           builder: (_) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['uos.title']),
               content: Text(dic['uos.acc.invalid']),
               actions: <Widget>[
@@ -178,7 +179,7 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             content: Column(
               children: [
                 Text(dic['uos.parse']),
@@ -272,7 +273,7 @@ class _AssetsState extends State<AssetsPage> {
           final confirmed = await showCupertinoDialog(
             context: context,
             builder: (_) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 title: Text(dic['uos.title']),
                 content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,7 +321,7 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Column(children: errorMsg),
             actions: <Widget>[
@@ -342,7 +343,7 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Text(dic['uos.signing']),
           );
@@ -361,7 +362,7 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Text(err.toString()),
             actions: <Widget>[

@@ -17,6 +17,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class CreateRecoveryPage extends StatefulWidget {
   CreateRecoveryPage(this.service);
@@ -97,7 +98,7 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
         builder: (BuildContext context) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
           final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title:
                 Text('${dic['recovery.delay']} $_delay ${dic['recovery.day']}'),
             content: Text(dic['recovery.delay.warn']),

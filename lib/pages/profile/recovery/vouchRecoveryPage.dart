@@ -11,6 +11,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class VouchRecoveryPage extends StatefulWidget {
   VouchRecoveryPage(this.service);
@@ -64,7 +65,7 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(Fmt.address(address)),
             content: Text(errorMsg),
             actions: <Widget>[

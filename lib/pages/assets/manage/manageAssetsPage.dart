@@ -15,6 +15,7 @@ import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ManageAssetsPage extends StatefulWidget {
   const ManageAssetsPage(this.service);
@@ -51,7 +52,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
     await showCupertinoDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Icon(Icons.check_circle, color: Colors.lightGreen, size: 32),
           content: Text('${dic['manage.save']} ${dic['manage.save.ok']}'),
           actions: [

@@ -9,6 +9,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class CommunityPage extends StatefulWidget {
   CommunityPage(this.service);
@@ -26,7 +27,7 @@ class _CommunityPage extends State<CommunityPage> {
     showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text('Acala Wechat'),
             content: Image.asset('assets/images/public/aca_qr_wechat.jpg'),
             actions: [

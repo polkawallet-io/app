@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   ChangePasswordPage(this.service);
@@ -63,7 +64,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
     showCupertinoDialog(
       context: context,
       builder: (_) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dic['pass.success']),
           content: Text(dic['pass.success.txt']),
           actions: <Widget>[
@@ -147,7 +148,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
                                 showCupertinoDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return CupertinoAlertDialog(
+                                    return PolkawalletAlertDialog(
                                       title: Text(dic['pass.reset']),
                                       content: Text(dic['pass.reset.text']),
                                       actions: <Widget>[

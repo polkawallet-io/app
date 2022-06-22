@@ -25,6 +25,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart' as polkawallet_ui;
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -514,7 +515,7 @@ class _TransferPageState extends State<TransferPage> {
         context: context,
         builder: (_) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -539,7 +540,7 @@ class _TransferPageState extends State<TransferPage> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['note']),
             content: Text(dic['note.msg1']),
             actions: <Widget>[
@@ -558,7 +559,7 @@ class _TransferPageState extends State<TransferPage> {
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
+                        return PolkawalletAlertDialog(
                           title: Text(dic['note']),
                           content: Text(dic['note.msg2']),
                           actions: <Widget>[

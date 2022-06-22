@@ -11,6 +11,7 @@ import 'package:polkawallet_ui/components/v3/plugin/PluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class DappLatestPage extends StatefulWidget {
   DappLatestPage(this.service, {Key key}) : super(key: key);
@@ -29,7 +30,7 @@ class _DappLatestPageState extends State<DappLatestPage> {
     final bool res = await showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             content: Text(message),
             actions: <Widget>[
               CupertinoDialogAction(

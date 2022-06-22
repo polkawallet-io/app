@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -239,7 +240,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
+                        return PolkawalletAlertDialog(
+                          type: DialogType.warn,
                           title: Text(dic['import.warn']),
                           content: Text(dic['mnemonic.msg']),
                           actions: [

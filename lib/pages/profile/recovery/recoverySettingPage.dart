@@ -26,6 +26,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class RecoverySettingPage extends StatefulWidget {
   RecoverySettingPage(this.service);
@@ -106,7 +107,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Container(),
             content: Text(dic['recovery.remove.warn']),
             actions: <Widget>[

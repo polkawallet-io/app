@@ -25,6 +25,7 @@ import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.plugins, this.connectedNode,
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> {
         showCupertinoDialog(
             context: context,
             builder: (_) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 content: Text(I18n.of(context)
                     .getDic(i18n_full_dic_app, 'public')['wss.timeout']),
               );

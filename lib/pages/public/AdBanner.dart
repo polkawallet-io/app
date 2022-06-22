@@ -15,6 +15,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class AdBanner extends StatefulWidget {
   AdBanner(this.service, this.connectedNode);
@@ -45,7 +46,7 @@ class _AdBannerState extends State<AdBanner> {
         context: context,
         builder: (_) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['banner.invalid']),
             content: Text(dic['banner.invalid.info']),
             actions: [

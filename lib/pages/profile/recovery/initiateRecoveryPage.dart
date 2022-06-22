@@ -13,6 +13,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class InitiateRecoveryPage extends StatefulWidget {
   InitiateRecoveryPage(this.service);
@@ -69,7 +70,7 @@ class _InitiateRecoveryPage extends State<InitiateRecoveryPage> {
         context: context,
         builder: (BuildContext context) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(Fmt.address(_recoverable.address)),
             content: Text(dic['recovery.not.recoverable']),
             actions: <Widget>[
