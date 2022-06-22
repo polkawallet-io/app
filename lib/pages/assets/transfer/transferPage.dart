@@ -117,11 +117,6 @@ class _TransferPageState extends State<TransferPage> {
     _updateAccountTo(to.address.address, name: to.address.name);
   }
 
-  bool _isFromXTokensParaChain() {
-    return widget.service.plugin.basic.name == para_chain_name_karura ||
-        widget.service.plugin.basic.name == para_chain_name_bifrost;
-  }
-
   bool _isToParaChain() {
     return _chainTo.basic.name != relay_chain_name_ksm &&
         _chainTo.basic.name != relay_chain_name_dot &&
@@ -181,21 +176,14 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        final isFromXTokensParaChain = _isFromXTokensParaChain();
         final isToParaChain = _isToParaChain();
 
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
 
-        final txModule = isToParent
-            ? 'polkadotXcm'
-            : isFromXTokensParaChain
-                ? 'xTokens'
-                : 'xcmPallet';
+        final txModule = isToParent ? 'polkadotXcm' : 'xcmPallet';
         final txCall = isToParaChain
-            ? isFromXTokensParaChain
-                ? 'transfer'
-                : 'reserveTransferAssets'
+            ? 'limitedReserveTransferAssets'
             : 'limitedTeleportAssets';
 
         final amount =
@@ -217,58 +205,41 @@ class _TransferPageState extends State<TransferPage> {
           destPubKey = pk.keys.toList()[0];
         }
 
-        List paramsX;
-        if (isFromXTokensParaChain && isToParaChain) {
-          final dest = {
-            'parents': 1,
-            'interior': {
-              'X2': [
-                {'Parachain': _chainTo.basic.parachainId},
-                {
-                  'AccountId32': {'id': destPubKey, 'network': 'Any'}
+        /// this is KSM/DOT transfer RelayChain <-> ParaChain
+        /// paramsX: [dest, beneficiary, assets, fee_asset_item, dest_weight]
+        final dest = {
+          'X1': isToParent
+              ? {'interior': 'Here', 'parents': 1}
+              : {
+                  'interior': {
+                    'X1': {'Parachain': _chainTo.basic.parachainId}
+                  },
+                  'parents': 0
                 }
-              ]
-            }
-          };
-
-          /// this is transfer KAR from Karura to Bifrost
-          /// paramsX: [token, amount, dest, dest_weight]
-          paramsX = [
-            {'Token': symbol},
-            amount,
-            {'V1': dest},
-            xcm_dest_weight_bifrost
-          ];
-        } else {
-          /// this is KSM/DOT transfer RelayChain <-> ParaChain
-          /// paramsX: [dest, beneficiary, assets, dest_weight]
-          final dest = {
-            'X1': isToParent
-                ? 'Parent'
-                : {'Parachain': _chainTo.basic.parachainId}
-          };
-          final beneficiary = {
+        };
+        final beneficiary = {
+          'interior': {
             'X1': {
               'AccountId32': {'id': destPubKey, 'network': 'Any'}
             }
-          };
-          final assets = [
-            {
-              'ConcreteFungible': isToParent
-                  ? {
-                      'amount': amount,
-                      'id': {'X1': 'Parent'}
-                    }
-                  : {'amount': amount}
-            }
-          ];
-          paramsX = [
-            {'V0': dest},
-            {'V0': beneficiary},
-            {'V0': assets},
-            0
-          ];
-        }
+          },
+          'parents': 0
+        };
+        final assets = [
+          {
+            'fun': {'Fungible': amount},
+            'id': {
+              'Concrete': {'interior': 'Here', 'parents': isToParent ? 1 : 0}
+            },
+          }
+        ];
+        final paramsX = [
+          {'V1': dest},
+          {'V1': beneficiary},
+          {'V1': assets},
+          0,
+          'Unlimited'
+        ];
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
           module: txModule,
