@@ -4,7 +4,6 @@ import 'package:app/pages/profile/recovery/initiateRecoveryPage.dart';
 import 'package:app/pages/profile/recovery/recoverySettingPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/txData.dart';
@@ -16,6 +15,7 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class RecoveryStatePage extends StatefulWidget {
   RecoveryStatePage(this.service);
@@ -201,7 +201,7 @@ class _RecoveryStatePage extends State<RecoveryStatePage> {
                               networkState: widget.service.plugin.networkState,
                               isRescuer: true,
                               proxy: canCancel,
-                              action: CupertinoActionSheetAction(
+                              action: PolkawalletActionSheetAction(
                                 child: Text(canCancel
                                     ? dic['recovery.cancel']
                                     : dic['recovery.claim']),

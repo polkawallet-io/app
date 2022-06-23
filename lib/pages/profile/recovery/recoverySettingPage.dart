@@ -259,7 +259,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
                                         proxy: hasProxy,
                                         networkState:
                                             widget.service.plugin.networkState,
-                                        action: CupertinoActionSheetAction(
+                                        action: PolkawalletActionSheetAction(
                                           child: Text(dic['recovery.close']),
                                           onPressed: () {
                                             Navigator.of(context).pop();
