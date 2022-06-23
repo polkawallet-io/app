@@ -419,10 +419,10 @@ class _TransferPageState extends State<TransferPage> {
 
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => CupertinoActionSheet(
+      builder: (_) => PolkawalletActionSheet(
         title: Text(dic['cross.para.select']),
         actions: allPlugins.map((e) {
-          return CupertinoActionSheetAction(
+          return PolkawalletActionSheetAction(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -470,7 +470,7 @@ class _TransferPageState extends State<TransferPage> {
             },
           );
         }).toList(),
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {

@@ -262,11 +262,13 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                           showCupertinoModalPopup(
                             context: context,
                             builder: (context) {
-                              return CupertinoActionSheet(
+                              return PolkawalletActionSheet(
                                 actions: <Widget>[
                                   ...assetsType.map((element) {
                                     final index = assetsType.indexOf(element);
-                                    return CupertinoActionSheetAction(
+                                    return PolkawalletActionSheetAction(
+                                      isDefaultAction:
+                                          index == _assetsTypeIndex,
                                       onPressed: () {
                                         if (index != _assetsTypeIndex) {
                                           setState(() {
@@ -275,17 +277,11 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                         }
                                         Navigator.pop(context);
                                       },
-                                      child: Text(
-                                        element,
-                                        style: TextStyle(
-                                            color: index == _assetsTypeIndex
-                                                ? Color(0xFFFE0000)
-                                                : Color(0xFF007AFE)),
-                                      ),
+                                      child: Text(element),
                                     );
                                   }).toList()
                                 ],
-                                cancelButton: CupertinoActionSheetAction(
+                                cancelButton: PolkawalletActionSheetAction(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },

@@ -448,17 +448,17 @@ class ActiveRecovery extends StatelessWidget {
   void _showActions(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: [
           action,
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
                 I18n.of(context).getDic(i18n_full_dic_app, 'assets')['detail']),
             onPressed: () => Navigator.of(context)
                 .popAndPushNamed(TxDetailPage.route, arguments: tx),
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {

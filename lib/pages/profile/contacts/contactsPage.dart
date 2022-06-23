@@ -39,9 +39,9 @@ class _ContactsPageState extends State<ContactsPage> {
     final dic = I18n.of(pageContext).getDic(i18n_full_dic_ui, 'common');
     final res = await showCupertinoModalPopup(
       context: pageContext,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: <Widget>[
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['edit'],
               style: TextStyle(color: Colors.blueAccent),
@@ -53,7 +53,7 @@ class _ContactsPageState extends State<ContactsPage> {
               _refreshData();
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['copy'],
               style: TextStyle(color: Colors.blueAccent),
@@ -62,7 +62,7 @@ class _ContactsPageState extends State<ContactsPage> {
               Navigator.of(context).pop(1);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['delete'],
               style: TextStyle(color: Colors.red),
@@ -73,7 +73,7 @@ class _ContactsPageState extends State<ContactsPage> {
             },
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
             dic['cancel'],
             style: TextStyle(color: Colors.blueAccent),

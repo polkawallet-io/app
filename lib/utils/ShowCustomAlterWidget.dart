@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ShowCustomAlterWidget extends StatefulWidget {
   final Function(String) confirmCallback;
@@ -20,10 +21,10 @@ class ShowCustomAlterWidget extends StatefulWidget {
 class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
   @override
   Widget build(BuildContext context) {
-    return CupertinoActionSheet(
+    return PolkawalletActionSheet(
       actions: <Widget>[
         ...widget.options
-            .map((e) => CupertinoActionSheetAction(
+            .map((e) => PolkawalletActionSheetAction(
                   onPressed: () {
                     Navigator.pop(context);
 
@@ -38,7 +39,7 @@ class _ShowCustomAlterWidgetState extends State<ShowCustomAlterWidget> {
                 ))
             .toList(),
       ],
-      cancelButton: CupertinoActionSheetAction(
+      cancelButton: PolkawalletActionSheetAction(
         onPressed: () {
           Navigator.pop(context);
         },

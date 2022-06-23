@@ -26,6 +26,7 @@ import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage(this.service, this.connectedNode);
@@ -57,28 +58,28 @@ class _ProfilePageState extends State<ProfilePage> {
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: [
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.make']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoverySettingPage.route);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.init']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoveryStatePage.route);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.help']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoveryProofPage.route);
             },
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {

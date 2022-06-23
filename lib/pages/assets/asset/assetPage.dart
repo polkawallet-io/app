@@ -27,6 +27,7 @@ import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -98,9 +99,9 @@ class _AssetPageState extends State<AssetPage> {
   void _showAction() async {
     showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: <Widget>[
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -128,7 +129,7 @@ class _AssetPageState extends State<AssetPage> {
             },
           ),
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {
