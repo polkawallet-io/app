@@ -18,6 +18,7 @@ import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/txButton.dart';
@@ -25,7 +26,6 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart' as polkawallet_ui;
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class TransferPageParams {
   TransferPageParams({
@@ -182,9 +182,8 @@ class _TransferPageState extends State<TransferPage> {
             _chainTo.basic.name == relay_chain_name_dot;
 
         final txModule = isToParent ? 'polkadotXcm' : 'xcmPallet';
-        final txCall = isToParaChain
-            ? 'limitedReserveTransferAssets'
-            : 'limitedTeleportAssets';
+        final txCall =
+            isToParaChain ? 'reserveTransferAssets' : 'limitedTeleportAssets';
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
@@ -205,41 +204,64 @@ class _TransferPageState extends State<TransferPage> {
           destPubKey = pk.keys.toList()[0];
         }
 
-        /// this is KSM/DOT transfer RelayChain <-> ParaChain
-        /// paramsX: [dest, beneficiary, assets, fee_asset_item, dest_weight]
-        final dest = {
-          'X1': isToParent
+        List paramsX;
+        if (isToParaChain) {
+          /// this is KSM/DOT transfer RelayChain <-> Acala/Karura
+          /// paramsX: [dest, beneficiary, assets, dest_weight]
+          final dest = {
+            'X1': {'Parachain': _chainTo.basic.parachainId}
+          };
+          final beneficiary = {
+            'X1': {
+              'AccountId32': {'id': destPubKey, 'network': 'Any'}
+            }
+          };
+          final assets = [
+            {
+              'ConcreteFungible': {'amount': amount}
+            }
+          ];
+          paramsX = [
+            {'V0': dest},
+            {'V0': beneficiary},
+            {'V0': assets},
+            0
+          ];
+        } else {
+          /// this is KSM/DOT transfer RelayChain <-> ParaChain
+          /// paramsX: [dest, beneficiary, assets, fee_asset_item, dest_weight]
+          final dest = isToParent
               ? {'interior': 'Here', 'parents': 1}
               : {
                   'interior': {
                     'X1': {'Parachain': _chainTo.basic.parachainId}
                   },
                   'parents': 0
-                }
-        };
-        final beneficiary = {
-          'interior': {
-            'X1': {
-              'AccountId32': {'id': destPubKey, 'network': 'Any'}
-            }
-          },
-          'parents': 0
-        };
-        final assets = [
-          {
-            'fun': {'Fungible': amount},
-            'id': {
-              'Concrete': {'interior': 'Here', 'parents': isToParent ? 1 : 0}
+                };
+          final beneficiary = {
+            'interior': {
+              'X1': {
+                'AccountId32': {'id': destPubKey, 'network': 'Any'}
+              }
             },
-          }
-        ];
-        final paramsX = [
-          {'V1': dest},
-          {'V1': beneficiary},
-          {'V1': assets},
-          0,
-          'Unlimited'
-        ];
+            'parents': 0
+          };
+          final assets = [
+            {
+              'fun': {'Fungible': amount},
+              'id': {
+                'Concrete': {'interior': 'Here', 'parents': isToParent ? 1 : 0}
+              },
+            }
+          ];
+          paramsX = [
+            {'V1': dest},
+            {'V1': beneficiary},
+            {'V1': assets},
+            0,
+            'Unlimited'
+          ];
+        }
         return TxConfirmParams(
           txTitle: '${dic['transfer']} $symbol (${dic['cross.chain']})',
           module: txModule,

@@ -10,12 +10,12 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
