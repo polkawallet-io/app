@@ -129,6 +129,8 @@ dependency_overrides:
   flutter_html: ^2.2.1
   flutter_slidable: ^1.2.0
   platform: ^3.1.0
+  flutter_qr_scan: 
+     path: ../../coding/polkawallet/flutter_qr_reader
 
 
 dev_dependencies:

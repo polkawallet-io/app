@@ -930,14 +930,13 @@ class _TransferPageState extends State<TransferPage> {
                                 ])),
                         RoundedCard(
                           margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                          padding: EdgeInsets.zero,
+                          padding: EdgeInsets.symmetric(vertical: 6),
                           child: Column(
                             children: [
                               Visibility(
                                   visible: isCrossChain,
                                   child: Column(children: [
                                     Container(
-                                      height: 47,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 16.w),
                                       child: Row(
@@ -966,7 +965,9 @@ class _TransferPageState extends State<TransferPage> {
                                                                 top: 2),
                                                         child: Text(
                                                           dic['amount.exist.msg'],
-                                                          style: subTitleStyle,
+                                                          style: subTitleStyle
+                                                              ?.copyWith(
+                                                                  height: 1.3),
                                                         )),
                                                   ],
                                                 )),
@@ -984,13 +985,15 @@ class _TransferPageState extends State<TransferPage> {
                                         ],
                                       ),
                                     ),
-                                    Divider(height: 1)
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
                                   ])),
                               Visibility(
                                   visible: isCrossChain,
                                   child: Column(children: [
                                     Container(
-                                      height: 47,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 16.w),
                                       child: Row(
@@ -1018,11 +1021,13 @@ class _TransferPageState extends State<TransferPage> {
                                         ],
                                       ),
                                     ),
-                                    Divider(height: 1)
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
                                   ])),
                               Column(children: [
                                 Container(
-                                    height: 67,
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Row(
@@ -1065,13 +1070,14 @@ class _TransferPageState extends State<TransferPage> {
                                                         FontWeight.w600)),
                                       ],
                                     )),
-                                Divider(height: 1)
+                                Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 6),
+                                    child: Divider(height: 1))
                               ]),
                               Visibility(
                                   visible: _fee?.partialFee != null,
                                   child: Column(children: [
                                     Container(
-                                      height: 47,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 16.w),
                                       child: Row(
@@ -1099,10 +1105,12 @@ class _TransferPageState extends State<TransferPage> {
                                         ],
                                       ),
                                     ),
-                                    Divider(height: 1)
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
                                   ])),
                               Container(
-                                height: 67,
                                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -1124,7 +1132,8 @@ class _TransferPageState extends State<TransferPage> {
                                                       EdgeInsets.only(top: 2),
                                                   child: Text(
                                                     dic['transfer.alive.msg'],
-                                                    style: subTitleStyle,
+                                                    style: subTitleStyle
+                                                        ?.copyWith(height: 1.3),
                                                   )),
                                             ],
                                           )),
