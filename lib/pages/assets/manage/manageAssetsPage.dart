@@ -56,7 +56,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           title: Icon(Icons.check_circle, color: Colors.lightGreen, size: 32),
           content: Text('${dic['manage.save']} ${dic['manage.save.ok']}'),
           actions: [
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
               onPressed: () => Navigator.of(ctx).pop(),

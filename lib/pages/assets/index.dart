@@ -164,7 +164,7 @@ class _AssetsState extends State<AssetsPage> {
               title: Text(dic['uos.title']),
               content: Text(dic['uos.acc.invalid']),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['ok']),
                   onPressed: () => Navigator.of(context).pop(),
@@ -279,12 +279,13 @@ class _AssetsState extends State<AssetsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: confirmMsg),
                 actions: <Widget>[
-                  CupertinoButton(
+                  PolkawalletActionSheetAction(
                     child: Text(I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['cancel']),
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
-                  CupertinoButton(
+                  PolkawalletActionSheetAction(
+                    isDefaultAction: true,
                     child: Text(I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['ok']),
                     onPressed: () {
@@ -325,7 +326,7 @@ class _AssetsState extends State<AssetsPage> {
             title: Text(dic['uos.title']),
             content: Column(children: errorMsg),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(),
@@ -366,7 +367,7 @@ class _AssetsState extends State<AssetsPage> {
             title: Text(dic['uos.title']),
             content: Text(err.toString()),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ok']),
                 onPressed: () => Navigator.of(context).pop(),

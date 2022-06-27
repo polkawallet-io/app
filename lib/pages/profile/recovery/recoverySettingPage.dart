@@ -111,7 +111,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
             title: Container(),
             content: Text(dic['recovery.remove.warn']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () {

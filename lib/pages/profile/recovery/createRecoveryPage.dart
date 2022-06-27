@@ -103,7 +103,7 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
                 Text('${dic['recovery.delay']} $_delay ${dic['recovery.day']}'),
             content: Text(dic['recovery.delay.warn']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                   dicCommon['cancel'],
                   style: TextStyle(
@@ -114,7 +114,8 @@ class _CreateRecoveryPage extends State<CreateRecoveryPage> {
                   Navigator.of(context).pop();
                 },
               ),
-              CupertinoButton(
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
                 child: Text(dicCommon['ok']),
                 onPressed: () {
                   Navigator.of(context).pop();

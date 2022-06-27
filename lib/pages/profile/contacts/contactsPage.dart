@@ -99,11 +99,12 @@ class _ContactsPageState extends State<ContactsPage> {
               .getDic(i18n_full_dic_app, 'profile')['contact.delete.warn']),
           content: Text(UI.accountName(context, i)),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(dic['cancel']),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            CupertinoButton(
+            PolkawalletActionSheetAction(
+              isDefaultAction: true,
               child: Text(dic['ok']),
               onPressed: () async {
                 Navigator.of(context).pop();

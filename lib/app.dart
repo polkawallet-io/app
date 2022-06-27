@@ -428,20 +428,17 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
               ),
               actions: [
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(
                     I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['cancel'],
-                    style: TextStyle(
-                        color: Theme.of(context).unselectedWidgetColor),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
                 ),
-                CupertinoButton(
+                PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
-                    style: TextStyle(
-                        color: Theme.of(context).toggleableActiveColor),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
                 ),
@@ -517,7 +514,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               content: Text(
                   '${Fmt.address(_keyring.current.address)} ${dic['bad.warn.info']}'),
               actions: [
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['ok']),
                   onPressed: () => Navigator.of(context).pop(),

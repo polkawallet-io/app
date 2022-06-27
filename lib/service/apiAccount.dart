@@ -165,7 +165,7 @@ class ApiAccount {
             content: Text(I18n.of(context)
                 .getDic(i18n_full_dic_app, 'account')['biometric.msg']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(),

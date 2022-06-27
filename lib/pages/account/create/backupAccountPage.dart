@@ -79,7 +79,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                   child: Icon(
                     Icons.refresh,
                     size: 20,
-                    color: Colors.black,
+                    color: Theme.of(context).textSelectionTheme.selectionColor,
                   ),
                 ),
               )
@@ -245,7 +245,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                           title: Text(dic['import.warn']),
                           content: Text(dic['mnemonic.msg']),
                           actions: [
-                            CupertinoButton(
+                            PolkawalletActionSheetAction(
                               child: Text(dic['mnemonic.btn']),
                               onPressed: () {
                                 Navigator.of(context).pop();

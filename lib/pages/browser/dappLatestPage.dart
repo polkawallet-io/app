@@ -33,12 +33,13 @@ class _DappLatestPageState extends State<DappLatestPage> {
           return PolkawalletAlertDialog(
             content: Text(message),
             actions: <Widget>[
-              CupertinoDialogAction(
+              PolkawalletActionSheetAction(
                 child: Text(I18n.of(context)
                     .getDic(i18n_full_dic_karura, 'common')['cancel']),
                 onPressed: () => Navigator.of(context).pop(false),
               ),
-              CupertinoDialogAction(
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
                 child: Text(I18n.of(context)
                     .getDic(i18n_full_dic_karura, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(true),

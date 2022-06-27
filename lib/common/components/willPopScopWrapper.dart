@@ -22,11 +22,12 @@ class WillPopScopWrapper extends StatelessWidget {
                 builder: (context) => PolkawalletAlertDialog(
                   title: Text(dic['exit.confirm']),
                   actions: <Widget>[
-                    CupertinoButton(
+                    PolkawalletActionSheetAction(
                       onPressed: () => Navigator.of(context).pop(false),
                       child: Text(dic['cancel']),
                     ),
-                    CupertinoButton(
+                    PolkawalletActionSheetAction(
+                      isDefaultAction: true,
                       onPressed: () => Navigator.of(context).pop(true),
                       /*Navigator.of(context).pop(true)*/
                       child: Text(dic['ok']),

@@ -68,7 +68,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
           title: Text(dic['pass.success']),
           content: Text(dic['pass.success.txt']),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
               onPressed: () {
@@ -152,7 +152,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
                                       title: Text(dic['pass.reset']),
                                       content: Text(dic['pass.reset.text']),
                                       actions: <Widget>[
-                                        CupertinoButton(
+                                        PolkawalletActionSheetAction(
                                           child: Text(I18n.of(context).getDic(
                                               i18n_full_dic_ui,
                                               'common')['ok']),

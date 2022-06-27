@@ -36,7 +36,7 @@ class AppUI {
           title: Container(),
           content: Text(errorMsg ?? msg),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
               onPressed: () {
@@ -276,7 +276,7 @@ class AppUI {
                                             content: Text(
                                                 dic['update.download.check']),
                                             actions: [
-                                              CupertinoButton(
+                                              PolkawalletActionSheetAction(
                                                 child: Text(I18n.of(context)
                                                     .getDic(i18n_full_dic_ui,
                                                         'common')['ok']),
@@ -353,7 +353,7 @@ class AppUI {
               content: Text(I18n.of(context)
                   .getDic(i18n_full_dic_app, 'profile')['update.js.up']),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(dic['cancel']),
                   onPressed: () {
                     Navigator.of(context).pop(false);
@@ -362,7 +362,8 @@ class AppUI {
                     }
                   },
                 ),
-                CupertinoButton(
+                PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(dic['ok']),
                   onPressed: () {
                     Navigator.of(context).pop(true);
@@ -407,7 +408,7 @@ class AppUI {
               ? Text(dic['update.error'])
               : Text(dicCommon['success']),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(dicCommon['ok']),
               onPressed: () {
                 if (code != null) {
@@ -435,7 +436,7 @@ class AppUI {
                 .getDic(i18n_full_dic_app, 'assets')['amount.low']),
             content: Container(),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(),

@@ -69,7 +69,7 @@ class _VouchRecoveryPage extends State<VouchRecoveryPage> {
             title: Text(Fmt.address(address)),
             content: Text(errorMsg),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel'],
                   style: TextStyle(

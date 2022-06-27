@@ -102,18 +102,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ],
           ),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                 dicCommon['cancel'],
-                style:
-                    TextStyle(color: Theme.of(context).unselectedWidgetColor),
               ),
               onPressed: () => Navigator.of(context).pop(false),
             ),
-            CupertinoButton(
+            PolkawalletActionSheetAction(
+              isDefaultAction: true,
               child: Text(
                 dicCommon['ok'],
-                style: TextStyle(color: Colors.blueAccent),
               ),
               onPressed: () => Navigator.of(context).pop(true),
             ),

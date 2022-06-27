@@ -109,7 +109,7 @@ class ImportAccountAction {
               content: Text(
                   '${dic['import.invalid']} ${dic[_keyType.toString().split('.')[1]]}'),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(dicCommon['ok']),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -151,7 +151,7 @@ class ImportAccountAction {
               //   child: Text(dicCommon['cancel']),
               //   onPressed: () => Navigator.of(context).pop(true),
               // ),
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(dicCommon['ok']),
                 onPressed: () => Navigator.of(context).pop(false),
               ),

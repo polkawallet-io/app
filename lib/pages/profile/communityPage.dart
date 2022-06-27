@@ -31,7 +31,7 @@ class _CommunityPage extends State<CommunityPage> {
             title: Text('Acala Wechat'),
             content: Image.asset('assets/images/public/aca_qr_wechat.jpg'),
             actions: [
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
                   style: TextStyle(color: Colors.blueAccent),

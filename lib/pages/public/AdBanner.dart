@@ -50,7 +50,7 @@ class _AdBannerState extends State<AdBanner> {
             title: Text(dic['banner.invalid']),
             content: Text(dic['banner.invalid.info']),
             actions: [
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                   child: Text(
                     I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['cancel'],
@@ -60,7 +60,8 @@ class _AdBannerState extends State<AdBanner> {
                   onPressed: () {
                     Navigator.pop(context);
                   }),
-              CupertinoButton(
+              PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['ok']),
                   onPressed: () {

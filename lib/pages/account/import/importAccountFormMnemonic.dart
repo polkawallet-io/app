@@ -167,7 +167,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
             title: Text(dic['import.warn']),
             content: Text(dic['mnemonic.msg']),
             actions: [
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(dic['mnemonic.btn']),
                 onPressed: () {
                   Navigator.of(context).pop();

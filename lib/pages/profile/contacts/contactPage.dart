@@ -78,7 +78,7 @@ class _Contact extends State<ContactPage> {
                 title: Container(),
                 content: Text(dic['contact.exist']),
                 actions: <Widget>[
-                  CupertinoButton(
+                  PolkawalletActionSheetAction(
                     child: Text(I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['ok']),
                     onPressed: () => Navigator.of(context).pop(),
