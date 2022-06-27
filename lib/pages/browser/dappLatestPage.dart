@@ -68,9 +68,9 @@ class _DappLatestPageState extends State<DappLatestPage> {
               title: Text(dic['hub.browser.latest']),
               centerTitle: true,
               leading: PluginIconButton(
-                icon: SvgPicture.asset(
-                  "packages/polkawallet_ui/assets/images/icon_back_24.svg",
-                  color: Colors.black,
+                icon: Image.asset(
+                  "packages/polkawallet_ui/assets/images/icon_back_plugin.png",
+                  width: 9,
                 ),
                 onPressed: () {
                   if (_isdelete) {
