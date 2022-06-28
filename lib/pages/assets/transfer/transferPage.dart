@@ -674,10 +674,11 @@ class _TransferPageState extends State<TransferPage> {
             .textTheme
             .headline4
             ?.copyWith(fontWeight: FontWeight.bold);
-        final subTitleStyle = Theme.of(context)
-            .textTheme
-            .headline6
-            ?.copyWith(height: 1, fontWeight: FontWeight.w300);
+        final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
+            height: 1,
+            fontWeight: FontWeight.w300,
+            fontSize: 12,
+            color: Color(0xBF565554));
         final infoValueStyle = Theme.of(context)
             .textTheme
             .headline5
@@ -693,7 +694,7 @@ class _TransferPageState extends State<TransferPage> {
                     icon: SvgPicture.asset(
                       'assets/images/scan.svg',
                       color: Theme.of(context).cardColor,
-                      width: 23,
+                      width: 24,
                     ),
                     onPressed: _onScan,
                     isBlueBg: true)
@@ -977,12 +978,7 @@ class _TransferPageState extends State<TransferPage> {
                                               flex: 0,
                                               child: Text(
                                                   '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline5
-                                                      .copyWith(
-                                                          fontWeight: FontWeight
-                                                              .w600))),
+                                                  style: infoValueStyle)),
                                         ],
                                       ),
                                     ),
@@ -1013,12 +1009,7 @@ class _TransferPageState extends State<TransferPage> {
                                           ),
                                           Text(
                                               '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600)),
+                                              style: infoValueStyle),
                                         ],
                                       ),
                                     ),
@@ -1063,12 +1054,7 @@ class _TransferPageState extends State<TransferPage> {
                                         ),
                                         Text(
                                             '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w600)),
+                                            style: infoValueStyle),
                                       ],
                                     )),
                                 Padding(
@@ -1097,12 +1083,7 @@ class _TransferPageState extends State<TransferPage> {
                                           ),
                                           Text(
                                               '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600)),
+                                              style: infoValueStyle),
                                         ],
                                       ),
                                     ),

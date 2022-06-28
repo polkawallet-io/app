@@ -176,9 +176,11 @@ class _TokenStakingState extends State<TokenStaking> {
 
                             return TokenItemView(
                                 name,
-                                icon.contains('.svg')
-                                    ? SvgPicture.network(icon)
-                                    : Image.network(icon),
+                                icon != null
+                                    ? icon.contains('.svg')
+                                        ? SvgPicture.network(icon)
+                                        : Image.network(icon)
+                                    : Container(),
                                 balance,
                                 _tab == 1 ? token : "L$token",
                                 widget.service,
