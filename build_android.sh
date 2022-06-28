@@ -15,6 +15,9 @@ read buildNumber
 
 project_path=$(cd `dirname $0`; pwd)
 
+echo "flutter clean"
+flutter clean
+
 if [ $number == 1 ]; then
     echo "flutter build apk --release"
     flutter build apk --release

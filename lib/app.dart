@@ -763,7 +763,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final paths = uri.toString().split("polkawallet.io");
     Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
     if (paths.length > 1) {
-      var network = "karura";
+      String network;
       final pathDatas = paths[1].split("?");
       if (pathDatas.length > 1) {
         final datas = pathDatas[1].split("&");
@@ -777,7 +777,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         });
       }
 
-      if (network != _service.plugin.basic.name) {
+      if (network != null && network != _service.plugin.basic.name) {
         _switchNetwork(network,
             pageRoute: PageRouteParams(pathDatas[0], args: args));
       } else {
