@@ -119,6 +119,7 @@ class _Settings extends State<SettingsPage> {
             final currency = _priceCurrencyOptions[selected];
             if (currency != cached) {
               widget.service.store.settings.setPriceCurrency(currency);
+              setState(() {});
             }
             return true;
           },
