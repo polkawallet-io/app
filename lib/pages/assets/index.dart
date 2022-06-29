@@ -1013,8 +1013,9 @@ class _AssetsState extends State<AssetsPage> {
                                     visible: _assetsTypeIndex == 0 ||
                                         _assetsTypeIndex == 1,
                                     child: ListTile(
+                                      horizontalTitleGap: 0,
                                       leading: Container(
-                                        width: 48.w,
+                                        width: 30,
                                         alignment: Alignment.centerLeft,
                                         child: TokenIcon(
                                           symbol,
@@ -1204,9 +1205,9 @@ class TokenItem extends StatelessWidget {
       children: [
         Divider(height: 1),
         ListTile(
+          horizontalTitleGap: 0,
           leading: Container(
-            width: 48.w,
-            alignment: Alignment.centerLeft,
+            width: 30,
             child: icon ??
                 CircleAvatar(
                   child: Text(item.symbol.substring(0, 2)),
