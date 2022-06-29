@@ -1028,6 +1028,8 @@ class _AssetsState extends State<AssetsPage> {
                                             .headline5
                                             .copyWith(
                                                 fontWeight: FontWeight.w600,
+                                                color: Color(0xFF565554)
+                                                    .withAlpha(217),
                                                 fontSize: UI.getTextSize(
                                                     18, context)),
                                       ),
@@ -1218,6 +1220,7 @@ class TokenItem extends StatelessWidget {
             item.name,
             style: Theme.of(context).textTheme.headline5.copyWith(
                 fontWeight: FontWeight.w600,
+                color: Color(0xFF565554).withAlpha(217),
                 fontSize: UI.getTextSize(18, context)),
           ),
           trailing: Column(
