@@ -1013,13 +1013,12 @@ class _AssetsState extends State<AssetsPage> {
                                     visible: _assetsTypeIndex == 0 ||
                                         _assetsTypeIndex == 1,
                                     child: ListTile(
-                                      horizontalTitleGap: 0,
+                                      horizontalTitleGap: 10,
                                       leading: Container(
-                                        width: 30,
-                                        alignment: Alignment.centerLeft,
                                         child: TokenIcon(
                                           symbol,
                                           widget.service.plugin.tokenIcons,
+                                          size: 30,
                                         ),
                                       ),
                                       title: Text(
@@ -1028,7 +1027,9 @@ class _AssetsState extends State<AssetsPage> {
                                             .textTheme
                                             .headline5
                                             .copyWith(
-                                                fontWeight: FontWeight.w600),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: UI.getTextSize(
+                                                    18, context)),
                                       ),
                                       trailing: Column(
                                         mainAxisAlignment:
@@ -1115,6 +1116,7 @@ class _AssetsState extends State<AssetsPage> {
                                                 : i.symbol,
                                             widget.service.plugin.tokenIcons,
                                             symbol: i.symbol,
+                                            size: 30,
                                           ),
                                           isHideBalance: widget.service.store
                                               .settings.isHideBalance,
@@ -1205,9 +1207,8 @@ class TokenItem extends StatelessWidget {
       children: [
         Divider(height: 1),
         ListTile(
-          horizontalTitleGap: 0,
+          horizontalTitleGap: 10,
           leading: Container(
-            width: 30,
             child: icon ??
                 CircleAvatar(
                   child: Text(item.symbol.substring(0, 2)),
@@ -1215,10 +1216,9 @@ class TokenItem extends StatelessWidget {
           ),
           title: Text(
             item.name,
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.headline5.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: UI.getTextSize(18, context)),
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
