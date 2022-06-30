@@ -13,7 +13,6 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
-import 'package:polkawallet_plugin_laminar/pages/currencySelectPage.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -646,6 +645,23 @@ class ChainSelected extends StatelessWidget {
                   ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
             )),
       ],
+    );
+  }
+}
+
+class TokenIcon extends StatelessWidget {
+  TokenIcon(this.symbol, this.tokenIcons);
+  final String symbol;
+  final Map<String, Widget> tokenIcons;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: tokenIcons[symbol.toUpperCase()] ??
+          CircleAvatar(
+            child: Text(symbol.toUpperCase().substring(0, 2)),
+          ),
+      width: 32,
+      height: 32,
     );
   }
 }
