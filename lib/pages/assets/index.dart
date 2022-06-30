@@ -979,13 +979,11 @@ class _AssetsState extends State<AssetsPage> {
                                                         .textTheme
                                                         .button
                                                         ?.copyWith(
-                                                            color:
-                                                                _assetsTypeIndex ==
-                                                                        index
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black,
+                                                            color: _assetsTypeIndex ==
+                                                                    index
+                                                                ? Colors.white
+                                                                : Color(
+                                                                    0xFF565554),
                                                             fontSize:
                                                                 UI.getTextSize(
                                                                     10,
