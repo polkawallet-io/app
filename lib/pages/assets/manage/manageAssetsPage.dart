@@ -53,8 +53,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
       context: context,
       builder: (BuildContext ctx) {
         return PolkawalletAlertDialog(
-          title: Icon(Icons.check_circle, color: Colors.lightGreen, size: 32),
-          content: Text('${dic['manage.save']} ${dic['manage.save.ok']}'),
+          title: Text('${dic['manage.save']} ${dic['manage.save.ok']}'),
           actions: [
             PolkawalletActionSheetAction(
               child: Text(
