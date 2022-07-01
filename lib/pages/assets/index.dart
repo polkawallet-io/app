@@ -852,6 +852,14 @@ class _AssetsState extends State<AssetsPage> {
                         //         Navigator.of(context).pushNamed(DAppsTestPage.route),
                         //   ),
                         // ),
+                        // Container(
+                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                        //   child: RoundedButton(
+                        //     text: 'Bridge Test',
+                        //     onPressed: () => Navigator.of(context)
+                        //         .pushNamed(BridgeTestPage.route),
+                        //   ),
+                        // ),
                         widget.service.plugin.basic.isTestNet
                             ? Padding(
                                 padding: EdgeInsets.only(top: 5.h),
