@@ -30,6 +30,7 @@ import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
   CrossChainTransferPage(this.service, {Key key}) : super(key: key);
@@ -645,23 +646,6 @@ class ChainSelected extends StatelessWidget {
                   ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
             )),
       ],
-    );
-  }
-}
-
-class TokenIcon extends StatelessWidget {
-  TokenIcon(this.symbol, this.tokenIcons);
-  final String symbol;
-  final Map<String, Widget> tokenIcons;
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      child: tokenIcons[symbol.toUpperCase()] ??
-          CircleAvatar(
-            child: Text(symbol.toUpperCase().substring(0, 2)),
-          ),
-      width: 32,
-      height: 32,
     );
   }
 }
