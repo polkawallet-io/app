@@ -1,3 +1,14 @@
+# [3.3.1-beta] - 20220630
+1. Avatar (account info) on each module #183
+2. kusama/statemine xcm params update #211
+3. Multiply vault history page& detail page #193
+4. LDOT/LKSM fast redeem fix #213
+5. acala/karura loyalty end time fix #216
+6. Pop-up dialog UI update #157
+7. Built-in browser【more】enhancement #181
+8. Avatar customization #130
+9. acala lcDOT/tDOT prices update #222 #233
+
 # [3.3.0-beta] - 20220620
 1. flutter upgrade 3.0.1
 2. karura - crab/turing xcm #160 #184
