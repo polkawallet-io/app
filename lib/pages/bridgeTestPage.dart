@@ -55,8 +55,16 @@ class _BridgeTestPageState extends State<BridgeTestPage> {
     if (chainsInfo.length < 6 || chainsInfo[chainsAll[0]].id.length < 3) {
       isSuccess = false;
     }
-    final connected = await widget.sdk.api.bridge.connectFromChains();
-    if (connected.length < 2) {
+    final connected =
+        await widget.sdk.api.bridge.connectFromChains(chainsAll, nodeList: {
+      'karura': ['wss://crosschain-dev.polkawallet.io:9907']
+    });
+    if (connected.length < 1) {
+      isSuccess = false;
+    }
+    final props =
+        await widget.sdk.api.bridge.getNetworkProperties(connected[0]);
+    if (props.tokenSymbol.length < 1 || props.tokenDecimals.length < 1) {
       isSuccess = false;
     }
     final config = await widget.sdk.api.bridge.getAmountInputConfig(
