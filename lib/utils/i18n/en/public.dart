@@ -120,4 +120,15 @@ const Map<String, String> enPublic = {
   'hub.browser.clearMessage':
       'Are you sure you want to delete the item from browsing history?',
   'hub.browser.searchingHistory': 'Searching History',
+  'hub.bridge': 'Bridge',
+  'hub.to.address': 'To Address',
+  'hub.amount': 'Amount',
+  'hub.selectToken': 'SelectToken',
+  'hub.chain.select.from': 'Bridge from',
+  'hub.chain.select.to': 'Bridge to',
+  'hub.origin.transfer.fee': 'Origin Chain Transfer Fee',
+  'hub.destination.transfer.fee': 'Destination Chain Transfer Fee',
+  'hub.transfer': 'Transfer',
+  'hub.cover.bridge':
+      'A Bridge to connect different networks. You can transfer tokens across the parachains.',
 };

@@ -451,7 +451,8 @@ class ErrorMessage extends StatelessWidget {
                   child: Text(
                 error,
                 style: TextStyle(
-                    fontSize: UI.getTextSize(12, context), color: Colors.red),
+                    fontSize: UI.getTextSize(12, context),
+                    color: const Color(0xFFFF7849)),
               ))
             ]),
     );

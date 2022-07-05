@@ -12,6 +12,7 @@ import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
@@ -753,6 +754,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
+
+      //bridge
+      BridgePage.route: (_) => BridgePage(_service),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
