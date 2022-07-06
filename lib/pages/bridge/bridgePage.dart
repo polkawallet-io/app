@@ -21,14 +21,13 @@ import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
-
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
-import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 
 class BridgePage extends StatefulWidget {
   const BridgePage(this.service, {Key key}) : super(key: key);
@@ -181,8 +180,12 @@ class _BridgePageState extends State<BridgePage> {
       _loading = true;
       _fromConnecting = true;
     });
-    final connected = await widget.service.plugin.sdk.api.bridge
-        .connectFromChains([_chainFrom]);
+    final connected =
+        await widget.service.plugin.sdk.api.bridge.connectFromChains([
+      _chainFrom
+    ], nodeList: {
+      _chainFrom: ['wss://karura-rococo.aca-dev.network']
+    });
     setState(() {
       _fromConnecting = false;
     });
@@ -353,6 +356,7 @@ class _BridgePageState extends State<BridgePage> {
       BridgeTokenBalance token = _balanceMap[_token];
       final dicApp = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
 
       final tokenView = PluginFmt.tokenView(token.token);
 
@@ -369,6 +373,9 @@ class _BridgePageState extends State<BridgePage> {
             txTitle: dicApp['hub.bridge'],
             module: xcmParams.module,
             call: xcmParams.call,
+            txDisplay: {
+              dicAcala['cross.chain']: _chainTo?.toUpperCase(),
+            },
             txDisplayBold: {
               dic['amount']: Text(
                   '${Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()), lengthMax: 8)} $tokenView',
@@ -378,35 +385,21 @@ class _BridgePageState extends State<BridgePage> {
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Titillium Web SemiBold',
                       color: Colors.white)),
-              dicApp['hub.route']: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    children: [
-                      CurrencyWithIcon(
-                        _chainFrom,
-                        TokenIcon(_chainFrom, _crossChainIcons),
-                        textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            fontFamily: 'Titillium Web SemiBold'),
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(60, 0, 0, 0),
-                          child: CurrencyWithIcon(
-                            _chainTo,
-                            TokenIcon(_chainTo, _crossChainIcons),
-                            textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                fontFamily: 'Titillium Web SemiBold'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
+              dic['address']: Row(
+                children: [
+                  AddressIcon(_account.address, svg: _account.icon),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(8, 16, 0, 16),
+                      child: Text(Fmt.address(_account?.address, pad: 8),
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Titillium Web Regular',
+                              color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
             },
             params: xcmParams.params,
             chainFrom: _chainFrom,
