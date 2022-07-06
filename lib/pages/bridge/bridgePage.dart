@@ -9,7 +9,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -105,8 +104,10 @@ class _BridgePageState extends State<BridgePage> {
   /// submitting
   bool _submitting = false;
 
+  /// current balance
   TokenBalanceData _balance;
 
+  /// all icon widget
   Map<String, Widget> _crossChainIcons;
   @override
   void initState() {
@@ -204,6 +205,9 @@ class _BridgePageState extends State<BridgePage> {
             minBalance: _config.minInput,
             symbol: tokenBalance.token);
         await _getTxFee();
+        if (_amountCtrl.text.isNotEmpty) {
+          _validateAmount(_amountCtrl.text);
+        }
         setState(() {
           _loading = false;
         });
@@ -308,22 +312,30 @@ class _BridgePageState extends State<BridgePage> {
     return null;
   }
 
-  String _validateAmount(String value, BigInt available, int decimals) {
+  void _validateAmount(String value) {
     String v = value.trim();
-    final error = Fmt.validatePrice(v, context);
+    int decimals = _balance?.decimals ?? 12;
+    String error = Fmt.validatePrice(v, context);
 
     if (error != null) {
-      return error;
+      setState(() {
+        _amountError = error;
+      });
+      return;
     }
     BigInt input = Fmt.tokenInt(v, decimals);
     BigInt max = BigInt.parse(_config?.maxInput ?? '0');
     BigInt min = BigInt.parse(_config?.minInput ?? '0');
     if (input > max) {
-      return 'Max. amount ${Fmt.priceFloorBigInt(max, decimals ?? 12, lengthMax: 6)}';
+      error =
+          'Max. amount ${Fmt.priceFloorBigInt(max, decimals ?? 12, lengthMax: 6)}';
     } else if (input < min) {
-      return 'Min. amount ${Fmt.priceFloorBigInt(min, decimals ?? 12, lengthMax: 6)}';
+      error =
+          'Min. amount ${Fmt.priceFloorBigInt(min, decimals ?? 12, lengthMax: 6)}';
     }
-    return null;
+    setState(() {
+      _amountError = error;
+    });
   }
 
   Future<XcmTxConfirmParams> _getTxParams(
@@ -349,7 +361,7 @@ class _BridgePageState extends State<BridgePage> {
           _chainTo,
           _token,
           _account.address,
-          _amountCtrl.text,
+          Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals).toString(),
           token.decimals);
 
       if (xcmParams != null) {
@@ -357,9 +369,6 @@ class _BridgePageState extends State<BridgePage> {
             txTitle: dicApp['hub.bridge'],
             module: xcmParams.module,
             call: xcmParams.call,
-            // txDisplay: {
-            //   dicAcala['cross.chain']: _chainTo?.toUpperCase(),
-            // },
             txDisplayBold: {
               dic['amount']: Text(
                   '${Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()), lengthMax: 8)} $tokenView',
@@ -525,15 +534,7 @@ class _BridgePageState extends State<BridgePage> {
                                     bottom: _amountError == null ? 24 : 2),
                                 titleTag: dic['hub.amount'],
                                 inputCtrl: _amountCtrl,
-                                onInputChange: (v) {
-                                  var error = _validateAmount(
-                                      v,
-                                      Fmt.balanceInt(_balance?.amount ?? 0),
-                                      _balance?.decimals ?? 12);
-                                  setState(() {
-                                    _amountError = error;
-                                  });
-                                },
+                                onInputChange: (v) => _validateAmount(v),
                                 onTokenChange: (token) {
                                   _tokenChange(token.id);
                                 },
