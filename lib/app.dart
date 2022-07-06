@@ -13,6 +13,7 @@ import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
+import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
@@ -74,6 +75,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
@@ -94,7 +96,6 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 const get_storage_container = 'configuration';
 
@@ -760,6 +761,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
+      BridgeTestPage.route: (_) => BridgeTestPage(_service.plugin.sdk)
     };
   }
 
