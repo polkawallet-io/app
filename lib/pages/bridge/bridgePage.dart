@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:app/pages/bridge/bridgeAddressTextFormField.dart';
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
@@ -25,8 +26,10 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
-import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 
 class BridgePage extends StatefulWidget {
   const BridgePage(this.service, {Key key}) : super(key: key);
@@ -42,20 +45,23 @@ class _BridgePageState extends State<BridgePage> {
   ///All from chains
   List<String> _chainFromAll;
 
+  ///chainInfo
+  Map<String, BridgeChainData> _chainInfo;
+
   ///from ==> to chains
   final Map<String, Set<String>> _chainToMap = {};
 
   ///from-to ==> tokens
   final Map<String, Set<String>> _tokensMap = {};
 
-  ///chainInfo
-  Map<String, BridgeChainData> _chainInfo;
-
   ///destination chain fee
   BridgeAmountInputConfig _config;
 
   ///origin chain fee
   TxFeeEstimateResult _fee;
+
+  // ///origin chain props
+  // BridgeNetworkProperties _props;
 
   /// current from
   String _chainFrom;
@@ -90,8 +96,18 @@ class _BridgePageState extends State<BridgePage> {
   /// loading
   bool _loading = false;
 
+  /// isReady
+  bool _isReady = false;
+
+  /// fromConnecting
+  bool _fromConnecting = false;
+
   /// submitting
   bool _submitting = false;
+
+  TokenBalanceData _balance;
+
+  Map<String, Widget> _crossChainIcons;
   @override
   void initState() {
     super.initState();
@@ -102,8 +118,6 @@ class _BridgePageState extends State<BridgePage> {
 
   @override
   void dispose() {
-    widget.service.plugin.sdk.api.bridge
-        .unsubscribeBalances(_chainFrom, _account.address);
     widget.service.plugin.sdk.api.bridge.disconnectFromChains();
     super.dispose();
   }
@@ -129,59 +143,124 @@ class _BridgePageState extends State<BridgePage> {
       tokens.add(element.token);
       _tokensMap[element.from + element.to] = tokens;
     }
+
+    _crossChainIcons = Map<String, Widget>.from(chainInfo?.map((k, v) =>
+        MapEntry(
+            k.toUpperCase(),
+            v.icon.contains('.svg')
+                ? SvgPicture.network(v.icon)
+                : Image.network(v.icon))));
+
+    _accountOptions = widget.service.keyring.allWithContacts.toList();
+    _chainFromAll = chainFromAll;
+    _chainInfo = chainInfo;
     _account = widget.service.keyring.current;
+
+    //default current network
+    _chainFrom = chainFromAll.contains(widget.service.plugin.basic.name)
+        ? widget.service.plugin.basic.name
+        : chainFromAll.first;
+    _chainTo = _chainToMap[_chainFrom].contains('acala')
+        ? 'acala'
+        : _chainToMap[_chainFrom].contains('karura')
+            ? 'karura'
+            : _chainToMap[_chainFrom].first;
+    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
+        ? _token
+        : _tokensMap[_chainFrom + _chainTo].first;
+
     setState(() {
-      _accountOptions = widget.service.keyring.allWithContacts.toList();
-      _chainFromAll = chainFromAll;
-      _chainInfo = chainInfo;
+      _isReady = true;
     });
-    _fromChange(chainFromAll.first);
+    _loadData();
   }
 
-  void _fromChange(String from) {
-    if (_chainFrom != null) {
-      widget.service.plugin.sdk.api.bridge
-          .unsubscribeBalances(_chainFrom, _account.address);
-    }
-    widget.service.plugin.sdk.api.bridge.connectFromChains([_chainFrom]);
-    widget.service.plugin.sdk.api.bridge
-        .subscribeBalances(from, _account.address, (p0) => _updateBalance(p0));
+  Future<bool> _loadData() async {
     setState(() {
-      _chainFrom = from;
+      _loading = true;
+      _fromConnecting = true;
     });
-    _toChange(_chainToMap[_chainFrom].contains(_chainTo)
+    final connected = await widget.service.plugin.sdk.api.bridge
+        .connectFromChains([_chainFrom]);
+    setState(() {
+      _fromConnecting = false;
+    });
+    if (connected != null) {
+      // _props = await widget.service.plugin.sdk.api.bridge
+      //     .getNetworkProperties(_chainFrom);
+
+      _config = await widget.service.plugin.sdk.api.bridge
+          .getAmountInputConfig(_chainFrom, _chainTo, _token, _account.address);
+
+      widget.service.plugin.sdk.api.bridge
+          .subscribeBalances(_chainFrom, _account.address, (res) async {
+        _balanceMap = res;
+        final tokenBalance =
+            _balanceMap != null ? _balanceMap[_token.toUpperCase()] : null;
+        _balance = TokenBalanceData(
+            id: tokenBalance.token,
+            amount: tokenBalance.available,
+            decimals: tokenBalance.decimals,
+            minBalance: _config.minInput,
+            symbol: tokenBalance.token);
+        await _getTxFee();
+        setState(() {
+          _loading = false;
+        });
+        widget.service.plugin.sdk.api.bridge
+            .unsubscribeBalances(_chainFrom, _account.address);
+      });
+    }
+    return false;
+  }
+
+  void _changeChain(String from, String to) {
+    if (_chainFrom != from) _fromChange(from);
+    if (_chainTo != to) _toChange(to);
+  }
+
+  void _fromChange(String from) async {
+    _chainFrom = from;
+    _chainTo = _chainToMap[_chainFrom].contains(_chainTo)
         ? _chainTo
-        : _chainToMap[_chainFrom].first);
+        : _chainToMap[_chainFrom].first;
+    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
+        ? _token
+        : _tokensMap[_chainFrom + _chainTo].first;
+    _loadData();
   }
 
   void _toChange(String to) {
-    setState(() {
-      _chainTo = to;
-    });
-
-    _tokenChange(_tokensMap[_chainFrom + _chainTo].contains(_token)
+    _chainTo = to;
+    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
         ? _token
-        : _tokensMap[_chainFrom + _chainTo].first);
+        : _tokensMap[_chainFrom + _chainTo].first;
+    _loadData();
   }
 
   void _tokenChange(String token) {
-    setState(() {
+    if (_token != token) {
       _token = token;
-    });
-    _getFee();
+      final tokenBalance =
+          _balanceMap != null ? _balanceMap[_token.toUpperCase()] : null;
+      setState(() {
+        _balance = TokenBalanceData(
+            id: tokenBalance.token,
+            amount: tokenBalance.available,
+            decimals: tokenBalance.decimals,
+            minBalance: '0',
+            symbol: tokenBalance.token);
+      });
+      _loadData();
+    }
   }
 
-  void _getFee() async {
+  void _addressChange(KeyPairData account, String error) {
     setState(() {
-      _loading = true;
+      _account = account;
+      _accountError = error;
     });
-    BridgeAmountInputConfig config = await widget.service.plugin.sdk.api.bridge
-        .getAmountInputConfig(_chainFrom, _chainTo, _token, _account.address);
-    setState(() {
-      _config = config;
-      _loading = false;
-    });
-    _getTxFee();
+    _loadData();
   }
 
   Future<void> _getTxFee({bool reload = false}) async {
@@ -189,9 +268,8 @@ class _BridgePageState extends State<BridgePage> {
       return _fee;
     }
     BridgeTokenBalance token = _balanceMap[_token];
-    final sender = TxSenderData(widget.service.keyring.current.address,
-        widget.service.keyring.current.pubKey);
-    final xcmParams = await widget.service.plugin.sdk.api.bridge.getTxParams(
+    final sender = TxSenderData(_account.address, _account.pubKey);
+    final tx = await widget.service.plugin.sdk.api.bridge.getTxParams(
         _chainFrom,
         _chainTo,
         _token,
@@ -199,51 +277,16 @@ class _BridgePageState extends State<BridgePage> {
         '100000000',
         token.decimals);
 
-    if (xcmParams == null) return '0';
+    if (tx == null) return '0';
+    final txInfo = TxInfoData(tx.module, tx.call, sender);
+    final feeData = await widget.service.plugin.sdk.api.tx.estimateFees(
+        txInfo, tx.params,
+        rawParam: jsonEncode(tx.params), jsApi: 'bridge.getApi("$_chainFrom")');
 
-    final txInfo = TxInfoData(xcmParams.module, xcmParams.call, sender);
-
-    TxFeeEstimateResult fee;
-    if (_chainFrom == plugin_name_karura) {
-      final feeData = await widget.service.plugin.sdk.api.tx
-          .estimateFees(txInfo, xcmParams.params);
-      fee = feeData;
-    } else {
-      final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$_chainFrom"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams.params)})');
-      if (feeData != null) {
-        fee = feeData;
-      }
+    if (feeData != null) {
+      _fee = feeData;
     }
-
-    if (mounted) {
-      setState(() {
-        _fee = fee;
-      });
-    }
-  }
-
-  void _addressChange(KeyPairData account, String error) {
-    widget.service.plugin.sdk.api.bridge
-        .unsubscribeBalances(_chainFrom, _account.address);
-    widget.service.plugin.sdk.api.bridge.subscribeBalances(
-        _chainFrom, account.address, (p0) => _updateBalance(p0));
-    setState(() {
-      _account = account;
-      _accountError = error;
-    });
-    _getFee();
-  }
-
-  void _updateBalance(Map<String, BridgeTokenBalance> balance) {
-    setState(() {
-      _balanceMap = balance;
-    });
-  }
-
-  void _changeChain(String from, String to) {
-    if (_chainFrom != from) _fromChange(from);
-    if (_chainTo != to) _toChange(to);
+    return _fee;
   }
 
   Future<String> _checkBlackList(KeyPairData acc) async {
@@ -287,6 +330,7 @@ class _BridgePageState extends State<BridgePage> {
       Widget chainFromIcon, TokenBalanceData feeToken) async {
     if (_accountError == null &&
         _amountError == null &&
+        _amountCtrl.text.trim().isNotEmpty &&
         _formKey.currentState.validate() &&
         !_submitting &&
         !_loading) {
@@ -295,9 +339,9 @@ class _BridgePageState extends State<BridgePage> {
       });
 
       BridgeTokenBalance token = _balanceMap[_token];
-      final dic_app = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+      final dicApp = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+
       final tokenView = PluginFmt.tokenView(token.token);
 
       final xcmParams = await widget.service.plugin.sdk.api.bridge.getTxParams(
@@ -310,35 +354,50 @@ class _BridgePageState extends State<BridgePage> {
 
       if (xcmParams != null) {
         return XcmTxConfirmParams(
-            txTitle: dic_app['hub.bridge'],
+            txTitle: dicApp['hub.bridge'],
             module: xcmParams.module,
             call: xcmParams.call,
-            txDisplay: {
-              dicAcala['cross.chain']: _chainTo?.toUpperCase(),
-            },
+            // txDisplay: {
+            //   dicAcala['cross.chain']: _chainTo?.toUpperCase(),
+            // },
             txDisplayBold: {
               dic['amount']: Text(
                   '${Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()), lengthMax: 8)} $tokenView',
                   style: const TextStyle(
                       fontSize: 30,
+                      height: 1.5,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Titillium Web SemiBold',
                       color: Colors.white)),
-              dic['address']: Row(
-                children: [
-                  AddressIcon(_account.address, svg: _account.icon),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(8, 16, 0, 16),
-                      child: Text(Fmt.address(_account?.address, pad: 8),
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Titillium Web Regular',
-                              color: Colors.white)),
-                    ),
-                  ),
-                ],
-              ),
+              dicApp['hub.route']: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      CurrencyWithIcon(
+                        _chainFrom,
+                        TokenIcon(_chainFrom, _crossChainIcons),
+                        textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            fontFamily: 'Titillium Web SemiBold'),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(60, 0, 0, 0),
+                          child: CurrencyWithIcon(
+                            _chainTo,
+                            TokenIcon(_chainTo, _crossChainIcons),
+                            textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                fontFamily: 'Titillium Web SemiBold'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
             },
             params: xcmParams.params,
             chainFrom: _chainFrom,
@@ -349,6 +408,16 @@ class _BridgePageState extends State<BridgePage> {
       }
     }
     return null;
+  }
+
+  void _changeAccount() async {
+    var res = await Navigator.of(context).pushNamed(
+      AccountListPage.route,
+      arguments: AccountListPageParams(list: _accountOptions),
+    );
+    if (res != null) {
+      _addressChange(res, null);
+    }
   }
 
   @override
@@ -365,35 +434,26 @@ class _BridgePageState extends State<BridgePage> {
         actions: [
           PluginAccountInfoAction(
             widget.service.keyring,
-            onSelected: (index) => {},
+            onSelected: (index) => _changeAccount(),
           )
         ],
       ),
       body: Observer(builder: (_) {
-        if (_chainFromAll == null ||
-            _chainFromAll.isEmpty ||
-            _balanceMap == null) {
-          return Container();
+        if (!_isReady) {
+          return SafeArea(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              SizedBox(
+                width: double.infinity,
+                child: PluginLoadingWidget(),
+              )
+            ],
+          ));
         }
 
-        final crossChainIcons = Map<String, Widget>.from(_chainInfo?.map(
-            (k, v) => MapEntry(
-                k.toUpperCase(),
-                v.icon.contains('.svg')
-                    ? SvgPicture.network(v.icon)
-                    : Image.network(v.icon))));
-
-        TokenBalanceData balance;
         final List<TokenBalanceData> tokenBalances = [];
-        if (_balanceMap != null) {
-          final tokenBalance = _balanceMap[_token.toUpperCase()];
-          balance = TokenBalanceData(
-              id: tokenBalance.token,
-              amount: _config.maxInput,
-              decimals: tokenBalance.decimals,
-              minBalance: _config.minInput,
-              symbol: tokenBalance.token);
-
+        if (_balanceMap != null && _config != null) {
           _tokensMap[_chainFrom + _chainTo].toList().forEach((element) {
             BridgeTokenBalance bridgeTokenBalance =
                 _balanceMap.values.firstWhere((e) => e.token == element);
@@ -423,7 +483,7 @@ class _BridgePageState extends State<BridgePage> {
                           to: _chainTo,
                           chainInfo: _chainInfo,
                           onChanged: _changeChain,
-                          fromConnecting: _loading,
+                          fromConnecting: _fromConnecting,
                         ),
                         Form(
                           key: _formKey,
@@ -468,8 +528,8 @@ class _BridgePageState extends State<BridgePage> {
                                 onInputChange: (v) {
                                   var error = _validateAmount(
                                       v,
-                                      Fmt.balanceInt(balance.amount ?? 0),
-                                      balance.decimals ?? 12);
+                                      Fmt.balanceInt(_balance?.amount ?? 0),
+                                      _balance?.decimals ?? 12);
                                   setState(() {
                                     _amountError = error;
                                   });
@@ -483,7 +543,11 @@ class _BridgePageState extends State<BridgePage> {
                                     _amountCtrl.text = "";
                                   });
                                 },
-                                balance: balance,
+                                balance: _balance ??
+                                    TokenBalanceData(
+                                        decimals: 12,
+                                        symbol: _token,
+                                        amount: '0'),
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
                                 tokenOptions: tokenBalances ?? [],
                                 tokenSelectTitle: dic['hub.selectToken'],
@@ -492,54 +556,56 @@ class _BridgePageState extends State<BridgePage> {
                                 _amountError,
                                 margin: const EdgeInsets.only(bottom: 24),
                               ),
-                              Visibility(
-                                // visible: sendFee.length > 0,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 4),
-                                          child: Text(
-                                              dic['hub.origin.transfer.fee'],
-                                              style: feeStyle),
-                                        ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
+                                        child: Text(
+                                            dic['hub.origin.transfer.fee'],
+                                            style: feeStyle),
                                       ),
-                                      Visibility(
-                                          visible: _fee?.partialFee != null,
-                                          child: Text(
-                                              '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.partialFee?.toString() ?? '0'), balance?.decimals ?? 12, lengthMax: 6)} ${balance?.symbol ?? ''}',
-                                              style: feeStyle)),
-                                    ],
-                                  ),
+                                    ),
+                                    _loading
+                                        ? CupertinoActivityIndicator(
+                                            color: const Color.fromARGB(
+                                                150, 205, 205, 205),
+                                            radius: 10.h)
+                                        : Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.partialFee?.toString() ?? '0'), _balance?.decimals ?? 12, lengthMax: 6)} ${_balance?.symbol ?? ''}',
+                                            style: feeStyle),
+                                  ],
                                 ),
                               ),
-                              Visibility(
-                                visible: _config?.destFee?.isNotEmpty ?? false,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 4),
-                                          child: Text(
-                                              dic['hub.destination.transfer.fee'],
-                                              style: feeStyle),
-                                        ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
+                                        child: Text(
+                                            dic['hub.destination.transfer.fee'],
+                                            style: feeStyle),
                                       ),
-                                      Text(
-                                          '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee ?? '0'), balance?.decimals ?? 12, lengthMax: 6)} ${_config?.token ?? ''}',
-                                          style: feeStyle),
-                                    ],
-                                  ),
+                                    ),
+                                    _loading
+                                        ? CupertinoActivityIndicator(
+                                            color: const Color.fromARGB(
+                                                150, 205, 205, 205),
+                                            radius: 10.h)
+                                        : Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee ?? '0'), _balance?.decimals ?? 12, lengthMax: 6)} ${_config?.token ?? ''}',
+                                            style: feeStyle),
+                                  ],
                                 ),
                               ),
                               Padding(
@@ -551,14 +617,16 @@ class _BridgePageState extends State<BridgePage> {
                                       final params = await _getTxParams(
                                           TokenIcon(
                                             _chainFrom,
-                                            crossChainIcons,
+                                            _crossChainIcons,
                                           ),
-                                          balance);
+                                          _balance);
                                       if (params != null) {
+                                        if (!mounted) return;
                                         final res = await Navigator.of(context)
                                             .pushNamed(XcmTxConfirmPage.route,
                                                 arguments: params);
                                         if (res != null) {
+                                          if (!mounted) return;
                                           Navigator.of(context).pop(res);
                                         }
 

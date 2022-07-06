@@ -121,6 +121,7 @@ const Map<String, String> enPublic = {
       'Are you sure you want to delete the item from browsing history?',
   'hub.browser.searchingHistory': 'Searching History',
   'hub.bridge': 'Bridge',
+  'hub.route': 'Route',
   'hub.to.address': 'To Address',
   'hub.amount': 'Amount',
   'hub.selectToken': 'SelectToken',
