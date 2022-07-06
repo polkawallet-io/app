@@ -180,12 +180,8 @@ class _BridgePageState extends State<BridgePage> {
       _loading = true;
       _fromConnecting = true;
     });
-    final connected =
-        await widget.service.plugin.sdk.api.bridge.connectFromChains([
-      _chainFrom
-    ], nodeList: {
-      _chainFrom: ['wss://karura-rococo.aca-dev.network']
-    });
+    final connected = await widget.service.plugin.sdk.api.bridge
+        .connectFromChains([_chainFrom]);
     setState(() {
       _fromConnecting = false;
     });
