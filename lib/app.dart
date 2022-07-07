@@ -167,8 +167,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline2: TextStyle(
-            fontSize: UI.getTextSize(22, context, locale: _locale),
-          ),
+              fontSize: UI.getTextSize(22, context, locale: _locale),
+              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline3: TextStyle(
               fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
