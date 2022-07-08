@@ -119,5 +119,5 @@ const Map<String, String> zhPublic = {
   'hub.origin.transfer.fee': '源链转账手续费',
   'hub.destination.transfer.fee': '目的链转账手续费',
   'hub.transfer': '转账',
-  'hub.cover.bridge': '连接不同网络的桥梁。您可以跨平行链转移代币。',
+  'hub.cover.bridge': '桥接不同的网络，您可以跨平行链转移代币。',
 };

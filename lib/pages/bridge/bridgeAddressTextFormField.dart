@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/addressIcon.dart';
+import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 
 class BridgeAddressTextFormField extends StatefulWidget {
   const BridgeAddressTextFormField(this.api, this.localAccounts,
@@ -124,6 +125,7 @@ class _BridgeAddressTextFormFieldState
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       widget.tag != null ? PluginTextTag(title: widget.tag) : Container(),
@@ -138,6 +140,10 @@ class _BridgeAddressTextFormFieldState
               if (data != null && widget.onChanged != null) {
                 widget.onChanged(data);
               }
+            } else {
+              setState(() {
+                validatorError = null;
+              });
             }
             setState(() {
               this.hasFocus = hasFocus;
@@ -211,6 +217,7 @@ class _BridgeAddressTextFormFieldState
                                 )),
                             onTap: () {
                               setState(() {
+                                validatorError = dicAcala['cross.warn.info'];
                                 hasFocus = true;
                               });
                               Future.delayed(const Duration(milliseconds: 100),
@@ -299,7 +306,10 @@ class _BridgeAddressTextFormFieldState
                 ],
               ),
       ),
-      ErrorMessage(validatorError)
+      ErrorMessage(
+        validatorError,
+        margin: EdgeInsets.zero,
+      )
     ]);
   }
 }
