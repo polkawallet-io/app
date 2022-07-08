@@ -58,8 +58,8 @@ class _BridgePageState extends State<BridgePage> {
   ///origin chain fee
   TxFeeEstimateResult _fee;
 
-  // ///origin chain props
-  // BridgeNetworkProperties _props;
+  ///origin chain props
+  BridgeNetworkProperties _props;
 
   /// current from
   String _chainFrom;
@@ -180,14 +180,21 @@ class _BridgePageState extends State<BridgePage> {
       _loading = true;
       _fromConnecting = true;
     });
-    final connected = await widget.service.plugin.sdk.api.bridge
-        .connectFromChains([_chainFrom]);
+    // final connected = await widget.service.plugin.sdk.api.bridge
+    //     .connectFromChains([_chainFrom]);
+    final connected =
+        await widget.service.plugin.sdk.api.bridge.connectFromChains([
+      _chainFrom
+    ], nodeList: {
+      _chainFrom: ['wss://karura-rococo.aca-dev.network']
+    });
+
     setState(() {
       _fromConnecting = false;
     });
     if (connected != null) {
-      // _props = await widget.service.plugin.sdk.api.bridge
-      //     .getNetworkProperties(_chainFrom);
+      _props = await widget.service.plugin.sdk.api.bridge
+          .getNetworkProperties(_chainFrom);
 
       _config = await widget.service.plugin.sdk.api.bridge
           .getAmountInputConfig(_chainFrom, _chainTo, _token, _account.address);
@@ -415,6 +422,10 @@ class _BridgePageState extends State<BridgePage> {
     );
     if (res != null) {
       _addressChange(res, null);
+      widget.service.keyring.setCurrent(res);
+      widget.service.plugin.changeAccount(res);
+      widget.service.store.assets
+          .loadCache(res, widget.service.plugin.basic.name);
     }
   }
 
@@ -540,6 +551,7 @@ class _BridgePageState extends State<BridgePage> {
                                         amount: '0'),
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
                                 tokenOptions: tokenBalances ?? [],
+                                quickTokenOptions: tokenBalances ?? [],
                                 tokenSelectTitle: dic['hub.selectToken'],
                               ),
                               ErrorMessage(
@@ -567,7 +579,7 @@ class _BridgePageState extends State<BridgePage> {
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.partialFee?.toString() ?? '0'), _balance?.decimals ?? 12, lengthMax: 6)} ${_balance?.symbol ?? ''}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.partialFee?.toString() ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${_props?.tokenSymbol?.first ?? ''}',
                                             style: feeStyle),
                                   ],
                                 ),

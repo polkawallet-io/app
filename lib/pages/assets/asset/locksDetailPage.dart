@@ -199,7 +199,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
             widget.service.keyring,
             iconDefaultColor: Color(0xFFE4E4E3),
             hasShadow: true,
-            iconSize: 32.h,
+            iconSize: 30.h,
           )
         ],
       ),

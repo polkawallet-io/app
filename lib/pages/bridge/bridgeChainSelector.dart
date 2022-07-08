@@ -52,7 +52,7 @@ class BridgeChainSelector extends StatelessWidget {
             v.icon.contains('.svg')
                 ? SvgPicture.network(v.icon)
                 : Image.network(v.icon))));
-
+    options.sort();
     Navigator.of(context).push(BridgePopupRoute(
       title: index == 0
           ? dic['hub.chain.select.from']
@@ -333,7 +333,8 @@ class BridgePopupRoute<T> extends PopupRoute<T> {
                   child: Column(
                     children: [
                       Padding(
-                          padding: EdgeInsets.only(left: 20.w, right: 4.w),
+                          padding: EdgeInsets.only(
+                              left: 20.w, right: 4.w, top: 8.h, bottom: 8.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -343,6 +344,7 @@ class BridgePopupRoute<T> extends PopupRoute<T> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 18.sp,
+                                    height: 1.5,
                                     fontFamily: 'Titillium Web SemiBold'),
                               ),
                               IconButton(
@@ -354,7 +356,10 @@ class BridgePopupRoute<T> extends PopupRoute<T> {
                                   ))
                             ],
                           )),
-                      Expanded(child: child)
+                      Expanded(
+                          child: Padding(
+                              padding: EdgeInsets.only(bottom: 16.h),
+                              child: child))
                     ],
                   ),
                 ),
@@ -391,7 +396,7 @@ class ChainSelectorList extends StatelessWidget {
     return ListView(
       children: options.map((i) {
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
