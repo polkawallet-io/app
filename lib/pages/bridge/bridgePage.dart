@@ -182,12 +182,8 @@ class _BridgePageState extends State<BridgePage> {
     });
     // final connected = await widget.service.plugin.sdk.api.bridge
     //     .connectFromChains([_chainFrom]);
-    final connected =
-        await widget.service.plugin.sdk.api.bridge.connectFromChains([
-      _chainFrom
-    ], nodeList: {
-      _chainFrom: ['wss://karura-rococo.aca-dev.network']
-    });
+    final connected = await widget.service.plugin.sdk.api.bridge
+        .connectFromChains([_chainFrom]);
 
     setState(() {
       _fromConnecting = false;
@@ -475,6 +471,7 @@ class _BridgePageState extends State<BridgePage> {
             ));
           });
         }
+        final tokensAll = ['ACA', 'KAR', 'DOT', 'KSM', 'AUSD'];
 
         return SafeArea(
           child: Padding(
@@ -551,7 +548,11 @@ class _BridgePageState extends State<BridgePage> {
                                         amount: '0'),
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
                                 tokenOptions: tokenBalances ?? [],
-                                quickTokenOptions: tokenBalances ?? [],
+                                quickTokenOptions: tokenBalances
+                                        .where((element) => tokensAll.contains(
+                                            element.symbol.toUpperCase()))
+                                        .toList() ??
+                                    [],
                                 tokenSelectTitle: dic['hub.selectToken'],
                               ),
                               ErrorMessage(
