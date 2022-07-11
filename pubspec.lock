@@ -553,12 +553,12 @@ packages:
     source: hosted
     version: "2.0.6"
   flutter_qr_scan:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../coding/polkawallet/flutter_qr_reader"
-      relative: true
-    source: path
-    version: "1.0.6"
+      name: flutter_qr_scan
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -865,13 +865,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  mobile_scanner:
-    dependency: transitive
-    description:
-      name: mobile_scanner
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   mobx:
     dependency: transitive
     description:
@@ -1111,15 +1104,6 @@ packages:
       relative: true
     source: path
     version: "0.4.8"
-  polkawallet_plugin_laminar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "7950c74abe74494aed49662b37dcebdacf1013c1"
-      resolved-ref: "7950c74abe74494aed49662b37dcebdacf1013c1"
-      url: "https://github.com/polkawallet-io/polkawallet_plugin_laminar.git"
-    source: git
-    version: "0.2.8"
   polkawallet_plugin_robonomics:
     dependency: "direct main"
     description:

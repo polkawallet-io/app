@@ -23,7 +23,7 @@ class StakingKSMGuide extends StatelessWidget {
     final greyStyle = Theme.of(context).textTheme.headline5;
     return Scaffold(
       appBar: AppBar(
-        title: Text('29%+ KSM Staking'),
+        title: Text('KSM Staking'),
         centerTitle: true,
         leading: BackBtn(),
       ),
@@ -61,7 +61,7 @@ class StakingKSMGuide extends StatelessWidget {
                   _InfoItem(
                     index: '2.',
                     title: dic['event.0415.4'],
-                    subtitle: dic['event.0415.5'],
+                    subtitle: '',
                     button: dic['event.0415.9'],
                     onClick: () => _onRoute(context, '/karura/homa', {}),
                   ),
