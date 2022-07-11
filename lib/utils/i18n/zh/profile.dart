@@ -114,5 +114,6 @@ const Map<String, String> zhProfile = {
   'message.readAll': '全部已读',
   'message.community': '社区推送',
   'message.system': '系统消息',
-  'message.polkawalletTeam': '波卡钱包团队'
+  'message.polkawalletTeam': '波卡钱包团队',
+  'setting.theme.dark': '暗黑主题',
 };

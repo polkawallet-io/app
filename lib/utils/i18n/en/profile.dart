@@ -120,5 +120,6 @@ const Map<String, String> enProfile = {
   'message.readAll': 'Read All',
   'message.community': 'From Community',
   'message.system': 'From System',
-  'message.polkawalletTeam': 'Polkawallet Team'
+  'message.polkawalletTeam': 'Polkawallet Team',
+  'setting.theme.dark': 'Dark Theme',
 };

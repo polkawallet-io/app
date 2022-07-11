@@ -14,10 +14,12 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:rive/src/widgets/rive_animation.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage(this.service, this.changeLang, this.changeNode);
+  SettingsPage(
+      this.service, this.changeLang, this.changeNode, this.changeDarkTheme);
   final AppService service;
   final Function(String) changeLang;
   final Future<void> Function(NetworkParams) changeNode;
+  final Function(bool) changeDarkTheme;
   static final String route = '/profile/settings';
 
   @override
@@ -178,6 +180,18 @@ class _Settings extends State<SettingsPage> {
                                   widget.service.store.settings.isHideBalance,
                               onChanged: (v) => widget.service.store.settings
                                   .setIsHideBalance(v),
+                            ),
+                          ),
+                          Divider(height: 24.h),
+                          SettingsPageListItem(
+                            label: dic['setting.theme.dark'],
+                            subtitle:
+                                hideBalanceTip.isEmpty ? null : hideBalanceTip,
+                            content: v3.CupertinoSwitch(
+                              value: widget.service.store.settings.isDarkTheme,
+                              onChanged: (v) {
+                                widget.changeDarkTheme(v);
+                              },
                             ),
                           ),
                           Divider(height: 24.h),

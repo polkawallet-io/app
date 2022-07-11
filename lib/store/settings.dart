@@ -23,6 +23,7 @@ abstract class _SettingsStore with Store {
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
   final String localStorageDAppAuthUrlsKey = 'dAppAuthUrls';
+  final String localStorageIsDarkThemeKey = 'darkTheme';
 
   @observable
   String localeCode = '';
@@ -43,6 +44,9 @@ abstract class _SettingsStore with Store {
   Map _xcmEnabledChains;
 
   double _rate = -1;
+
+  @observable
+  bool isDarkTheme = false;
 
   @observable
   Map<String, List<MessageData>> communityMessages =
@@ -250,6 +254,7 @@ abstract class _SettingsStore with Store {
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
+      loadIsDarkTheme(),
     ]);
   }
 
@@ -325,5 +330,19 @@ abstract class _SettingsStore with Store {
       return authed[url] ?? false;
     }
     return false;
+  }
+
+  @action
+  Future<void> setIsDarkTheme(bool dark) async {
+    isDarkTheme = dark;
+    storage.write(localStorageIsDarkThemeKey, dark);
+  }
+
+  @action
+  Future<void> loadIsDarkTheme() async {
+    final stored = storage.read(localStorageIsDarkThemeKey);
+    if (stored != null) {
+      isDarkTheme = stored;
+    }
   }
 }

@@ -137,18 +137,20 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   PageRouteParams _autoRoutingParams;
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
-    final textColor = Color(0xFF565554);
+    final isDarkTheme = _store?.settings?.isDarkTheme ?? false;
+    final textColor = isDarkTheme ? Colors.white : Color(0xFF565554);
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFF5F3F1),
-      dividerColor: Color(0xFFD4D4D4),
-      cardColor: Colors.white,
+      scaffoldBackgroundColor:
+          isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
+      dividerColor: isDarkTheme ? Color(0x3BFFFFFF) : Color(0xFFD4D4D4),
+      cardColor: isDarkTheme ? Color(0xFF393A3D) : Colors.white,
       toggleableActiveColor: Color(0xFF7D97EE),
       errorColor: Color(0xFFFA7243),
       unselectedWidgetColor: Color(0xFF858380),
       textSelectionTheme: TextSelectionThemeData(selectionColor: textColor),
       appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFF5F3F0),
+          backgroundColor: isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
           elevation: 0,
           titleTextStyle: TextStyle(
               color: textColor,
@@ -246,6 +248,16 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       if (_locale != null) {
         _service.store.settings.initMessage((_locale).languageCode);
       }
+    });
+  }
+
+  void _changeDarkTheme(bool darkTheme) {
+    _service.store.settings.setIsDarkTheme(darkTheme);
+    setState(() {
+      _theme = _getAppTheme(
+        _service.plugin.basic.primaryColor,
+        secondaryColor: _service.plugin.basic.gradientColor,
+      );
     });
   }
 
@@ -733,7 +745,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ExportAccountPage.route: (_) => ExportAccountPage(_service),
       ExportResultPage.route: (_) => ExportResultPage(),
       SettingsPage.route: (_) =>
-          SettingsPage(_service, _changeLang, _changeNode),
+          SettingsPage(_service, _changeLang, _changeNode, _changeDarkTheme),
       RemoteNodeListPage.route: (_) =>
           RemoteNodeListPage(_service, _changeNode),
       CreateRecoveryPage.route: (_) => CreateRecoveryPage(_service),
