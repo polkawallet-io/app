@@ -151,7 +151,9 @@ class _ContactsPageState extends State<ContactsPage> {
             Padding(
               padding: EdgeInsets.only(right: 12.w),
               child: v3.IconButton(
-                icon: Icon(Icons.add),
+                icon: Icon(Icons.add,
+                    color:
+                        UI.isDarkTheme(context) ? Colors.black : Colors.white),
                 isBlueBg: true,
                 onPressed: () async {
                   await Navigator.of(context).pushNamed(ContactPage.route);

@@ -153,13 +153,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
                 child: Column(
                   children: [
                     AddressIcon(acc.address, svg: acc.icon, size: 60.w),
-                    Text(UI.accountName(context, acc),
-                        style: TextStyle(
-                            color: Color(0xFF565554),
-                            fontSize: UI.getTextSize(20, context),
-                            fontFamily:
-                                UI.getFontFamily('TitilliumWeb', context),
-                            fontWeight: FontWeight.w600)),
+                    Padding(
+                        padding: EdgeInsets.only(top: 5),
+                        child: Text(UI.accountName(context, acc),
+                            style: Theme.of(context).textTheme.headline3)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -251,7 +248,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
                         child: Text(
                           dic['delete'],
                           style: TextStyle(
-                            color: Colors.red,
+                            color: Theme.of(context).errorColor,
                             fontFamily:
                                 UI.getFontFamily('TitilliumWeb', context),
                             fontWeight: FontWeight.w400,

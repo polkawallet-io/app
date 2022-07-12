@@ -65,7 +65,9 @@ class _MessagePageState extends State<MessagePage> {
                       child: Text(
                         dic['message.readAll'],
                         style: TextStyle(
-                          color: Theme.of(context).cardColor,
+                          color: polkawallet_ui.UI.isDarkTheme(context)
+                              ? Colors.white
+                              : Theme.of(context).cardColor,
                           fontSize: polkawallet_ui.UI.getTextSize(12, context),
                           fontFamily: polkawallet_ui.UI
                               .getFontFamily('TitilliumWeb', context),
@@ -110,7 +112,9 @@ class _MessagePageState extends State<MessagePage> {
             ),
             Expanded(
                 child: Container(
-              color: Colors.white,
+              color: polkawallet_ui.UI.isDarkTheme(context)
+                  ? Color(0xFF393A3D)
+                  : Colors.white,
               child: Observer(builder: (_) {
                 final List<MessageData> datas = [];
                 if (_tabIndex == 0) {
@@ -174,8 +178,8 @@ class _MessagePageState extends State<MessagePage> {
                                       children: [
                                         ClipRRect(
                                             borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10)),
+                                                topLeft: Radius.circular(8),
+                                                topRight: Radius.circular(8)),
                                             child: CachedNetworkImage(
                                               width: double.infinity,
                                               imageUrl: data.urlByBanner(),

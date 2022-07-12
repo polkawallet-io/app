@@ -558,8 +558,9 @@ class _AssetsState extends State<AssetsPage> {
                                   height: 11,
                                   margin: EdgeInsets.only(right: 4),
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .toggleableActiveColor,
+                                      color: UI.isDarkTheme(context)
+                                          ? Color(0xFF82FF99)
+                                          : Color(0xFF7D97EE),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(5.5))),
                                 ),
@@ -594,7 +595,7 @@ class _AssetsState extends State<AssetsPage> {
         isBlueBg: true,
         icon: SvgPicture.asset(
           "assets/images/icon_car.svg",
-          color: Colors.white,
+          color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
           height: 22,
         ),
         onPressed: widget.service.keyring.allAccounts.length > 0
@@ -686,7 +687,9 @@ class _AssetsState extends State<AssetsPage> {
                 icon: v3.IconButton(
                   icon: Icon(
                     Icons.add,
-                    color: Theme.of(context).disabledColor,
+                    color: UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Theme.of(context).disabledColor,
                     size: 20,
                   ),
                 ))),
@@ -1034,8 +1037,6 @@ class _AssetsState extends State<AssetsPage> {
                                             .headline5
                                             .copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                color: Color(0xFF565554)
-                                                    .withAlpha(217),
                                                 fontSize: UI.getTextSize(
                                                     18, context)),
                                       ),
@@ -1226,7 +1227,6 @@ class TokenItem extends StatelessWidget {
             item.name,
             style: Theme.of(context).textTheme.headline5.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF565554).withAlpha(217),
                 fontSize: UI.getTextSize(18, context)),
           ),
           trailing: Column(

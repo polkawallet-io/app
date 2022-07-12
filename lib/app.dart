@@ -143,11 +143,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       // backgroundColor: Color(0xFFF0ECE6),
       scaffoldBackgroundColor:
           isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
-      dividerColor: isDarkTheme ? Color(0x3BFFFFFF) : Color(0xFFD4D4D4),
-      cardColor: isDarkTheme ? Color(0xFF393A3D) : Colors.white,
-      toggleableActiveColor: Color(0xFF7D97EE),
+      dividerColor: isDarkTheme ? Color(0x4BFFFFFF) : Color(0xFFD4D4D4),
+      cardColor: isDarkTheme ? Color(0xFF353638) : Colors.white,
+      toggleableActiveColor:
+          isDarkTheme ? Color(0xFFFFC952) : Color(0xFF7D97EE),
       errorColor: Color(0xFFFA7243),
-      unselectedWidgetColor: Color(0xFF858380),
+      unselectedWidgetColor: isDarkTheme ? Colors.white : Color(0xFF858380),
       textSelectionTheme: TextSelectionThemeData(selectionColor: textColor),
       appBarTheme: AppBarTheme(
           backgroundColor: isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
@@ -219,7 +220,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           button: TextStyle(
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: isDarkTheme ? Color(0xFF121212) : Colors.white,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale))),
     );

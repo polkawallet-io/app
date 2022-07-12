@@ -6,6 +6,7 @@ import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/circularProgressBar.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 import 'i18n/index.dart';
 
@@ -79,7 +80,8 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: SimpleShadow(
         child: BottomAppBar(
-          color: Color(0xFFE6E6E5),
+          color:
+              UI.isDarkTheme(context) ? Color(0xFF5D5D5D) : Color(0xFFE6E6E5),
           shape: CustomNotchedShape(context),
           child: SizedBox(height: 64, child: Row(children: children)),
         ),
@@ -137,7 +139,13 @@ class NavItem extends StatelessWidget {
           Text(
             item.text,
             style: style?.copyWith(
-                color: active ? Color(0xFF5C5C5C) : Color(0xFF9D9A98)),
+                color: active
+                    ? UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Color(0xFF5C5C5C)
+                    : UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Color(0xFF9D9A98)),
           )
         ]),
       ),
@@ -199,8 +207,14 @@ class CentralNavItem extends StatelessWidget {
                 item.text,
                 style: style?.copyWith(
                     color: active
-                        ? Theme.of(context).textSelectionTheme.selectionColor
-                        : Color(0xFF9D9A98)),
+                        ? UI.isDarkTheme(context)
+                            ? Colors.white
+                            : Theme.of(context)
+                                .textSelectionTheme
+                                .selectionColor
+                        : UI.isDarkTheme(context)
+                            ? Colors.white
+                            : Color(0xFF9D9A98)),
               ),
             ]));
   }

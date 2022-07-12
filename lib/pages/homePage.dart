@@ -304,11 +304,11 @@ class _HomePageState extends State<HomePage> {
       HomeNavItem(
         text: I18n.of(context).getDic(i18n_full_dic_app, 'assets')['assets'],
         icon: Image.asset(
-          "assets/images/icon_assets_nor.png",
+          "assets/images/icon_assets_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         iconActive: Image.asset(
-          "assets/images/icon_assets_sel.png",
+          "assets/images/icon_assets_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         content:
@@ -446,11 +446,11 @@ class _HomePageState extends State<HomePage> {
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
-        "assets/images/icon_settings_30_nor.png",
+        "assets/images/icon_settings_30_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       iconActive: Image.asset(
-        "assets/images/icon_settings_30_sel.png",
+        "assets/images/icon_settings_30_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       content: ProfilePage(widget.service, widget.connectedNode),

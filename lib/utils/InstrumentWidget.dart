@@ -82,7 +82,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                     width: width,
                     height: width / 249 * 168,
                     child: Image.asset(
-                      "assets/images/icon_instrument.png",
+                      "assets/images/icon_instrument${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                       fit: BoxFit.fill,
                     )),
                 Container(

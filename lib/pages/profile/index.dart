@@ -129,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
-                              "packages/polkawallet_ui/assets/images/icon_bg_grey.png"),
+                              "packages/polkawallet_ui/assets/images/icon_bg${UI.isDarkTheme(context) ? "_blue_dark" : "_grey"}.png"),
                           fit: BoxFit.fill)),
                   child: Stack(
                     alignment: Alignment.topRight,
@@ -139,7 +139,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: double.infinity,
                           padding: EdgeInsets.only(right: 1, bottom: 1),
                           child: Center(
-                            child: Image.asset("assets/images/message.png",
+                            child: Image.asset(
+                                "assets/images/message${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                 width: 24.h),
                           )),
                       Visibility(
@@ -185,13 +186,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   GestureDetector(
                                     child: Text(UI.accountName(context, acc),
-                                        style: TextStyle(
-                                            color: Color(0xFF565554),
-                                            fontSize:
-                                                UI.getTextSize(20, context),
-                                            fontFamily: UI.getFontFamily(
-                                                'TitilliumWeb', context),
-                                            fontWeight: FontWeight.w600)),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3),
                                     onTap: _manageAccount,
                                   ),
                                   Row(
@@ -356,8 +353,10 @@ class SettingsPageListItem extends StatelessWidget {
               padding: EdgeInsets.all(4.r),
               child: leading,
               decoration: BoxDecoration(
-                  color: Color(0xFFCECECE),
-                  borderRadius: BorderRadius.all(Radius.circular(8.r))),
+                  color: UI.isDarkTheme(context)
+                      ? Color(0xFF4D4E50)
+                      : Color(0xFFCECECE),
+                  borderRadius: BorderRadius.all(Radius.circular(7.r))),
             ),
           ),
           Expanded(
