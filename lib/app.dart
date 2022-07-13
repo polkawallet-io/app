@@ -84,6 +84,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -607,9 +608,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       _startPlugin(service);
 
-      WalletApi.getTokenStakingConfig().then((value) {
-        _store.settings.setTokenStakingConfig(value);
-      });
+      service.assets.updateStakingConfig();
     }
 
     return _keyring.allAccounts.length;
@@ -758,6 +757,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       //bridge
       BridgePage.route: (_) => BridgePage(_service),
+      XcmTxConfirmPage.route: (_) => XcmTxConfirmPage(
+            _service.plugin,
+            _keyring,
+            _service.account.getPassword,
+            txDisabledCalls: _service.store.settings
+                .getDisabledCalls(_service.plugin.basic.name),
+          ),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
@@ -903,7 +909,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         FocusScope.of(context).focusedChild?.unfocus();
       },
       child: ScreenUtilInit(
-          designSize: Size(390, 844),
+          designSize: const Size(390, 844),
           builder: (_, __) => MaterialApp(
                 title: 'Polkawallet',
                 builder: (context, widget) {
@@ -919,14 +925,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     ),
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: [
-                  AppLocalizationsDelegate(_locale ?? Locale('en', '')),
+                  AppLocalizationsDelegate(_locale ?? const Locale('en', '')),
                   GlobalMaterialLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                 ],
-                supportedLocales: [
-                  const Locale('en', ''),
-                  const Locale('zh', ''),
+                supportedLocales: const [
+                  Locale('en', ''),
+                  Locale('zh', ''),
                 ],
                 initialRoute: StartPage.route,
                 onGenerateRoute: (settings) => CupertinoPageRoute(
