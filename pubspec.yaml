@@ -37,6 +37,8 @@ dependencies:
   firebase_analytics: 8.3.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
+  polkawallet_ui: ^0.4.8
+  polkawallet_sdk: ^0.4.8
   update_app:
     git:
       url: https://github.com/mofada/flutter_update_app.git
