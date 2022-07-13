@@ -1,13 +1,13 @@
 import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class RemoteNodeListPage extends StatelessWidget {
   RemoteNodeListPage(this.service, this.changeNode);
@@ -30,7 +30,7 @@ class RemoteNodeListPage extends StatelessWidget {
         content: Visibility(
             visible: isCurrent,
             child: Image.asset(
-              "assets/images/icon_circle_select.png",
+              "assets/images/icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png",
               width: 16,
             )),
         onTap: () {

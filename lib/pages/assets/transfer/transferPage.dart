@@ -678,7 +678,9 @@ class _TransferPageState extends State<TransferPage> {
             height: 1,
             fontWeight: FontWeight.w300,
             fontSize: 12,
-            color: Color(0xBF565554));
+            color: polkawallet_ui.UI.isDarkTheme(context)
+                ? Colors.white
+                : Color(0xBF565554));
         final infoValueStyle = Theme.of(context)
             .textTheme
             .headline5

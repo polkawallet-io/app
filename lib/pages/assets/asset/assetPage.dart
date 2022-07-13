@@ -329,7 +329,7 @@ class _AssetPageState extends State<AssetPage> {
                             icon: Padding(
                               padding: EdgeInsets.only(left: 3),
                               child: Image.asset(
-                                "assets/images/send.png",
+                                "assets/images/send${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                 width: 37,
                                 color: UI.isDarkTheme(context)
                                     ? Colors.white
@@ -360,7 +360,7 @@ class _AssetPageState extends State<AssetPage> {
                           padding: EdgeInsets.symmetric(horizontal: 3.w),
                           child: CardButton(
                             icon: Image.asset(
-                              "assets/images/qr.png",
+                              "assets/images/qr${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                               width: 37,
                               color:
                                   UI.isDarkTheme(context) ? Colors.white : null,
@@ -381,7 +381,7 @@ class _AssetPageState extends State<AssetPage> {
                                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                                 child: CardButton(
                                   icon: Image.asset(
-                                    "assets/images/unlock.png",
+                                    "assets/images/unlock${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                     width: 37,
                                     color: UI.isDarkTheme(context)
                                         ? Colors.white
@@ -717,9 +717,13 @@ class BalanceCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                height: 16.w,
-                width: 16.w,
+                height: 18.w,
+                width: 18.w,
+                padding: EdgeInsets.all(2),
                 margin: EdgeInsets.only(right: 8.w),
+                decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(27),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: icon),
             Text(
               title,

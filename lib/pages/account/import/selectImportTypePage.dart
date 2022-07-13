@@ -38,7 +38,9 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ListTile(title: Text(dic['import.type'])),
+              ListTile(
+                  title: Text(dic['import.type'],
+                      style: Theme.of(context).textTheme.headline4)),
               RoundedCard(
                   margin: EdgeInsets.only(left: 15.w, right: 15.w),
                   padding: EdgeInsets.all(8),

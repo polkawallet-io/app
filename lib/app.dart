@@ -141,6 +141,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final textColor = isDarkTheme ? Colors.white : Color(0xFF565554);
     return ThemeData(
       // backgroundColor: Color(0xFFF0ECE6),
+      brightness: isDarkTheme ? Brightness.dark : Brightness.light,
       scaffoldBackgroundColor:
           isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
       dividerColor: isDarkTheme ? Color(0x4BFFFFFF) : Color(0xFFD4D4D4),
@@ -149,6 +150,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           isDarkTheme ? Color(0xFFFFC952) : Color(0xFF7D97EE),
       errorColor: Color(0xFFFA7243),
       unselectedWidgetColor: isDarkTheme ? Colors.white : Color(0xFF858380),
+      disabledColor: isDarkTheme ? Colors.white : Color(0xFF858380),
       textSelectionTheme: TextSelectionThemeData(selectionColor: textColor),
       appBarTheme: AppBarTheme(
           backgroundColor: isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
@@ -161,7 +163,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       hoverColor: secondaryColor,
-      colorScheme: ColorScheme.fromSwatch().copyWith(),
+      // colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
               fontSize: UI.getTextSize(30, context, locale: _locale),
