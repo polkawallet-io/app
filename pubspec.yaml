@@ -39,6 +39,7 @@ dependencies:
 #  firebase_messaging: 10.0.5
   polkawallet_ui: ^0.4.8
   polkawallet_sdk: ^0.4.8
+  ethereum_addresses: ^1.0.2
   update_app:
     git:
       url: https://github.com/mofada/flutter_update_app.git

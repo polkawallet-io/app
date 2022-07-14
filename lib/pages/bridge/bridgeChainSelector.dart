@@ -1,12 +1,12 @@
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:app/utils/i18n/index.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class BridgeChainSelector extends StatelessWidget {
   const BridgeChainSelector(
@@ -81,6 +81,7 @@ class BridgeChainSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
     BridgeChainData fromData = chainInfo[from];
     BridgeChainData toData = chainInfo[to];
 
@@ -102,7 +103,7 @@ class BridgeChainSelector extends StatelessWidget {
                   SizedBox(
                     height: 24.h,
                     child: Text(
-                      "From",
+                      dic['bridge.from'],
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Titillium Web Bold',
@@ -199,7 +200,7 @@ class BridgeChainSelector extends StatelessWidget {
                   SizedBox(
                     height: 24.h,
                     child: Text(
-                      "To",
+                      dic['bridge.to'],
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Titillium Web Bold',

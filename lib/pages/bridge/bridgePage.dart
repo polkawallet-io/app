@@ -1,9 +1,9 @@
-import 'package:app/pages/bridge/bridgeAddressTextFormField.dart';
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -18,15 +18,18 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class BridgePage extends StatefulWidget {
   const BridgePage(this.service, {Key key}) : super(key: key);
@@ -71,15 +74,19 @@ class _BridgePageState extends State<BridgePage> {
 
   /// send to account
   KeyPairData _accountTo;
+  bool _accountToFocus = false;
 
   /// amount input control
   final TextEditingController _amountCtrl = TextEditingController();
 
+  /// eth address input control
+  final TextEditingController _address20Ctrl = TextEditingController();
+
   /// from key
   final _formKey = GlobalKey<FormState>();
 
-  /// account to error
-  String _accountToError;
+  /// account to warn
+  String _accountToWarn;
 
   /// amount error
   String _amountError;
@@ -112,6 +119,8 @@ class _BridgePageState extends State<BridgePage> {
   @override
   void dispose() {
     _disconnectFromChain();
+    _address20Ctrl.dispose();
+    _amountCtrl.dispose();
     super.dispose();
   }
 
@@ -230,13 +239,15 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   void _fromChange(String from) async {
-    _chainFrom = from;
-    _chainTo = _chainToMap[_chainFrom].contains(_chainTo)
-        ? _chainTo
-        : _chainToMap[_chainFrom].first;
-    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
-        ? _token
-        : _tokensMap[_chainFrom + _chainTo].first;
+    setState(() {
+      _chainFrom = from;
+      _chainTo = _chainToMap[_chainFrom].contains(_chainTo)
+          ? _chainTo
+          : _chainToMap[_chainFrom].first;
+      _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
+          ? _token
+          : _tokensMap[_chainFrom + _chainTo].first;
+    });
 
     _disconnectFromChain();
     await _connectFromChain();
@@ -244,10 +255,13 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   void _toChange(String to) {
-    _chainTo = to;
-    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
-        ? _token
-        : _tokensMap[_chainFrom + _chainTo].first;
+    setState(() {
+      _chainTo = to;
+      _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
+          ? _token
+          : _tokensMap[_chainFrom + _chainTo].first;
+    });
+
     _updateInputConfig();
   }
 
@@ -260,13 +274,6 @@ class _BridgePageState extends State<BridgePage> {
     }
   }
 
-  void _accountToChange(KeyPairData account, String error) {
-    setState(() {
-      _accountTo = account;
-      _accountToError = error;
-    });
-  }
-
   Future<void> _getTxFee() async {
     final token = _balanceMap[_token];
     final sender = TxSenderData(widget.service.keyring.current.address,
@@ -275,7 +282,9 @@ class _BridgePageState extends State<BridgePage> {
         _chainFrom,
         _chainTo,
         _token,
-        _accountTo.address,
+        _isToMoonBeam()
+            ? '0x0000000000000000000000000000000000000000'
+            : _accountTo.address,
         '100000000',
         token.decimals);
 
@@ -292,26 +301,23 @@ class _BridgePageState extends State<BridgePage> {
     }
   }
 
-  Future<String> _checkBlackList(KeyPairData acc) async {
-    final addresses = await widget.service.plugin.sdk.api.account
-        .decodeAddress([acc.address]);
-    if (addresses != null) {
-      final pubKey = addresses.keys.toList()[0];
-      if (widget.service.plugin.sdk.blackList.indexOf(pubKey) > -1) {
-        return I18n.of(context)
-            .getDic(i18n_full_dic_app, 'common')['transfer.scam'];
-      }
-    }
-    return null;
-  }
-
   Future<String> _checkAccountTo(KeyPairData acc) async {
-    final blackListCheck = await _checkBlackList(acc);
-    if (blackListCheck != null) return blackListCheck;
+    if (_props == null) return null;
+
+    final error =
+        I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
+    final res = await widget.service.plugin.sdk.api.account
+        .checkAddressFormat(acc.address, _props.ss58Format);
+    if (res != null && !res) {
+      return error;
+    }
+
     return null;
   }
 
   void _validateAmount(String value) {
+    if (_balanceMap == null) return;
+
     String v = value.trim();
     int decimals = _balanceMap[_token]?.decimals ?? 12;
     String error = Fmt.validatePrice(v, context);
@@ -322,15 +328,17 @@ class _BridgePageState extends State<BridgePage> {
       });
       return;
     }
+
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
     BigInt input = Fmt.tokenInt(v, decimals);
     BigInt max = BigInt.parse(_config?.maxInput ?? '0');
     BigInt min = BigInt.parse(_config?.minInput ?? '0');
     if (input > max) {
       error =
-          'Max. amount ${Fmt.priceFloorBigInt(max, decimals ?? 12, lengthMax: 6)}';
+          '${dic['bridge.max']} ${Fmt.priceFloorBigInt(max, decimals ?? 12, lengthMax: 6)}';
     } else if (input < min) {
       error =
-          'Min. amount ${Fmt.priceFloorBigInt(min, decimals ?? 12, lengthMax: 6)}';
+          '${dic['bridge.min']} ${Fmt.priceFloorBigInt(min, decimals ?? 12, lengthMax: 6)}';
     }
     setState(() {
       _amountError = error;
@@ -339,8 +347,7 @@ class _BridgePageState extends State<BridgePage> {
 
   Future<XcmTxConfirmParams> _getTxParams(
       Widget chainFromIcon, TokenBalanceData feeToken) async {
-    if (_accountToError == null &&
-        _amountError == null &&
+    if (_amountError == null &&
         _amountCtrl.text.trim().isNotEmpty &&
         _formKey.currentState.validate() &&
         !_submitting &&
@@ -360,7 +367,7 @@ class _BridgePageState extends State<BridgePage> {
           _chainFrom,
           _chainTo,
           _token,
-          _accountTo.address,
+          _isToMoonBeam() ? _address20Ctrl.text.trim() : _accountTo.address,
           Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals).toString(),
           token.decimals);
 
@@ -422,6 +429,25 @@ class _BridgePageState extends State<BridgePage> {
 
       _subscribeBalance();
     }
+  }
+
+  String _validateAddress20(String v) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final input = v?.trim();
+    if (input == null || input.isEmpty) {
+      return dic['input.empty'];
+    }
+    try {
+      final output = checksumEthereumAddress(input);
+      print(output);
+    } catch (err) {
+      return dic['address.error.eth'];
+    }
+    return null;
+  }
+
+  bool _isToMoonBeam() {
+    return _chainTo == 'moonriver' || _chainTo == 'moonbeam';
   }
 
   @override
@@ -504,31 +530,79 @@ class _BridgePageState extends State<BridgePage> {
                                     const EdgeInsets.only(top: 20, bottom: 16),
                                 child: Column(
                                   children: [
-                                    BridgeAddressTextFormField(
-                                      widget.service.plugin.sdk.api,
-                                      widget.service.keyring.allWithContacts
-                                          .toList(),
-                                      tag: dic['hub.to.address'],
-                                      initialValue:
-                                          widget.service.keyring.current,
-                                      onChanged: (KeyPairData acc) async {
-                                        final error =
-                                            await _checkAccountTo(acc);
-                                        _accountToChange(acc, error);
-                                      },
-                                      key: ValueKey<KeyPairData>(_accountTo),
+                                    _isToMoonBeam()
+                                        ? PluginTextFormField(
+                                            label: dic['hub.to.address'],
+                                            controller: _address20Ctrl,
+                                            validator: _validateAddress20,
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
+                                            suffix: GestureDetector(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                child: Icon(Icons.cancel,
+                                                    size: 16,
+                                                    color: Theme.of(context)
+                                                        .unselectedWidgetColor),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _address20Ctrl.text = '';
+                                                });
+                                              },
+                                            ),
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                          )
+                                        : AddressTextFormField(
+                                            widget.service.plugin.sdk.api,
+                                            widget
+                                                .service.keyring.allWithContacts
+                                                .toList(),
+                                            sdk: widget.service.plugin.sdk,
+                                            labelText: dic['hub.to.address'],
+                                            labelStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline4
+                                                .copyWith(color: Colors.white),
+                                            hintText: dic['hub.to.address'],
+                                            hintStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                .copyWith(
+                                                    color: PluginColorsDark
+                                                        .headline2),
+                                            initialValue: _accountTo,
+                                            onChanged: (KeyPairData acc) async {
+                                              final error =
+                                                  await _checkAccountTo(acc);
+                                              setState(() {
+                                                _accountTo = acc;
+                                                _accountToWarn = error;
+                                              });
+                                            },
+                                            key: ValueKey<KeyPairData>(
+                                                _accountTo),
+                                            isHubTheme: true,
+                                            onFocusChange: (hasFocus) {
+                                              setState(() {
+                                                _accountToFocus = hasFocus;
+                                                if (hasFocus) {
+                                                  _accountToWarn = null;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                    ErrorMessage(
+                                      !_isToMoonBeam()
+                                          ? _accountToWarn ??
+                                              (_accountToFocus
+                                                  ? dic['bridge.address.warn']
+                                                  : null)
+                                          : null,
+                                      margin: const EdgeInsets.only(left: 8),
                                     ),
-                                    Visibility(
-                                      visible: _accountToError != null,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(top: 4),
-                                        child: Text(_accountToError ?? "",
-                                            style: TextStyle(
-                                                fontSize:
-                                                    UI.getTextSize(12, context),
-                                                color: Colors.red)),
-                                      ),
-                                    )
                                   ],
                                 ),
                               ),
@@ -560,7 +634,8 @@ class _BridgePageState extends State<BridgePage> {
                               ),
                               ErrorMessage(
                                 _amountError,
-                                margin: const EdgeInsets.only(bottom: 24),
+                                margin:
+                                    const EdgeInsets.only(left: 8, bottom: 24),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
