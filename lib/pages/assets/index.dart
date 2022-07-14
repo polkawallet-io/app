@@ -936,6 +936,29 @@ class _AssetsState extends State<AssetsPage> {
                                     child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder: (context, index) {
+                                          final child = Center(
+                                            child: Text(assetsType[index],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .button
+                                                    ?.copyWith(
+                                                        color:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .button
+                                                                    ?.color
+                                                                : Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .headline1
+                                                                    ?.color,
+                                                        fontSize:
+                                                            UI.getTextSize(
+                                                                10, context))),
+                                          );
                                           return CupertinoButton(
                                             padding: EdgeInsets.all(0),
                                             onPressed: () {
@@ -946,60 +969,69 @@ class _AssetsState extends State<AssetsPage> {
                                             child: Container(
                                               height: 24,
                                               width: 65,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    _assetsTypeIndex == index
-                                                        ? null
-                                                        : BorderRadius.all(
-                                                            Radius.circular(
-                                                                6.0)),
-                                                color: _assetsTypeIndex == index
-                                                    ? Colors.transparent
-                                                    : Colors.white,
-                                                border: _assetsTypeIndex ==
-                                                        index
-                                                    ? null
-                                                    : Border.all(
-                                                        color:
-                                                            Color(0xFF979797),
-                                                        width: 0.2,
-                                                      ),
-                                                image: _assetsTypeIndex == index
-                                                    ? DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/images/icon_select_btn.png'),
-                                                        fit: BoxFit.fill,
-                                                      )
-                                                    : null,
-                                                boxShadow: _assetsTypeIndex ==
-                                                        index
-                                                    ? []
-                                                    : [
-                                                        BoxShadow(
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 1,
-                                                          spreadRadius: 0,
-                                                          color:
-                                                              Color(0x30000000),
-                                                        ),
-                                                      ],
-                                              ),
-                                              child: Center(
-                                                child: Text(assetsType[index],
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .button
-                                                        ?.copyWith(
-                                                            color: _assetsTypeIndex ==
+                                              child: UI.isDarkTheme(context) &&
+                                                      _assetsTypeIndex != index
+                                                  ? RoundedCard(
+                                                      radius: 6, child: child)
+                                                  : Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            _assetsTypeIndex ==
                                                                     index
-                                                                ? Colors.white
-                                                                : Color(
-                                                                    0xFF565554),
-                                                            fontSize:
-                                                                UI.getTextSize(
-                                                                    10,
-                                                                    context))),
-                                              ),
+                                                                ? null
+                                                                : BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            6.0)),
+                                                        color: _assetsTypeIndex ==
+                                                                index
+                                                            ? Colors.transparent
+                                                            : UI.isDarkTheme(
+                                                                    context)
+                                                                ? Color(
+                                                                    0x14FFFFFF)
+                                                                : Colors.white,
+                                                        border:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? null
+                                                                : Border.all(
+                                                                    color: Color(
+                                                                        0xFF979797),
+                                                                    width: 0.2,
+                                                                  ),
+                                                        image: _assetsTypeIndex ==
+                                                                index
+                                                            ? DecorationImage(
+                                                                image: AssetImage(
+                                                                    'assets/images/icon_select_btn${UI.isDarkTheme(context) ? "_dark" : ""}.png'),
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              )
+                                                            : null,
+                                                        boxShadow:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? []
+                                                                : [
+                                                                    BoxShadow(
+                                                                      offset:
+                                                                          Offset(
+                                                                              1,
+                                                                              1),
+                                                                      blurRadius:
+                                                                          1,
+                                                                      spreadRadius:
+                                                                          0,
+                                                                      color: Color(
+                                                                          0x30000000),
+                                                                    ),
+                                                                  ],
+                                                      ),
+                                                      child: child,
+                                                    ),
                                             ),
                                           );
                                         },
