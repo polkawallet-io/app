@@ -62,7 +62,8 @@ const Map<String, String> enProfile = {
   'about.brif': 'Mobile Wallet for Polkadot',
   'about.version': 'Version',
   'update': 'Check Update',
-  'update.latest': 'Your App is the newest version.',
+  'update.latest':
+      'Your App is the newest version!\nFeel free to use Polkawallet',
   'update.up': 'New version found, update now?',
   'update.now': 'Update Now',
   'update.start': 'Connecting...',
