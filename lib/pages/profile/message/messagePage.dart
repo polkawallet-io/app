@@ -171,6 +171,7 @@ class _MessagePageState extends State<MessagePage> {
                                     data.onDetailAction(context);
                                   },
                                   child: RoundedCard(
+                                    borderWidth: 0,
                                     color: Theme.of(context)
                                         .scaffoldBackgroundColor,
                                     margin: EdgeInsets.only(top: 22),

@@ -687,7 +687,9 @@ class _TransferPageState extends State<TransferPage> {
             .copyWith(fontWeight: FontWeight.w600);
         return Scaffold(
           appBar: AppBar(
-              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              systemOverlayStyle: polkawallet_ui.UI.isDarkTheme(context)
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark,
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
               actions: <Widget>[

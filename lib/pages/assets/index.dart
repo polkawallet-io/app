@@ -493,7 +493,9 @@ class _AssetsState extends State<AssetsPage> {
 
   PreferredSizeWidget buildAppBar() {
     return AppBar(
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: UI.isDarkTheme(context)
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

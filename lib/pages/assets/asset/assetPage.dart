@@ -275,7 +275,9 @@ class _AssetPageState extends State<AssetPage> {
 
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        systemOverlayStyle: UI.isDarkTheme(context)
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
         title: Text(symbol),
         centerTitle: true,
         backgroundColor: Colors.transparent,
