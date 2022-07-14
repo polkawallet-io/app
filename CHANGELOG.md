@@ -1,3 +1,11 @@
+# [3.3.2-beta] - 20220713
+1. aUSD/lcDOT/LDOT icon 更新 #248
+2. 3USD 加入资产统计 + 从 acala js sdk 获取市场价格 #248
+3. collateral staking 显示优化 #246
+4. LKSM/LDOT apy 更新，使用接口查询获取
+5. swap 聚合交易
+6. karura/acala 支持taiga #218
+
 # [3.3.1-beta] - 20220630
 1. Avatar (account info) on each module #183
 2. kusama/statemine xcm params update #211
