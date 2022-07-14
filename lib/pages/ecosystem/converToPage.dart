@@ -435,15 +435,15 @@ class _ConverToPageState extends State<ConverToPage> {
 }
 
 class ErrorMessage extends StatelessWidget {
-  ErrorMessage(this.error, {this.margin});
-  final error;
+  const ErrorMessage(this.error, {this.margin});
+  final String error;
   final EdgeInsetsGeometry margin;
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: error == null
           ? EdgeInsets.zero
-          : margin ?? EdgeInsets.only(left: 16, top: 4),
+          : margin ?? const EdgeInsets.only(left: 16, top: 4),
       child: error == null
           ? null
           : Row(children: [

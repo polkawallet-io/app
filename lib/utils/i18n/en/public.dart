@@ -132,4 +132,13 @@ const Map<String, String> enPublic = {
   'hub.transfer': 'Transfer',
   'hub.cover.bridge':
       'A Bridge to connect different networks. You can transfer tokens across the parachains.',
+  'input.empty': 'Input can not be empty',
+  'address.error.eth': 'Invalid Ethereum address',
+  'bridge.from': 'From',
+  'bridge.to': 'To',
+  'bridge.min': 'Min. amount',
+  'bridge.max': 'Max. amount',
+  'bridge.address': 'To Address',
+  'bridge.address.warn':
+      'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
 };
