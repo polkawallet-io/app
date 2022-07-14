@@ -44,7 +44,10 @@ class ImportAccountAction {
       builder: (BuildContext context) {
         return PolkawalletAlertDialog(
           title: Text(dicCommon['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
+          content: Container(
+              height: 64,
+              child:
+                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
         );
       },
     );

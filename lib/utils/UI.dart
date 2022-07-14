@@ -413,7 +413,7 @@ class AppUI {
       builder: (BuildContext context) {
         return PolkawalletAlertDialog(
           title: Text(dic['update.download']),
-          content: CupertinoActivityIndicator(),
+          content: CupertinoActivityIndicator(color: const Color(0xFF3C3C44)),
         );
       },
     );

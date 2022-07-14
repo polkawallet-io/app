@@ -495,7 +495,8 @@ class _HomePageState extends State<HomePage> {
                   child: FloatingActionButton(
                     backgroundColor: Theme.of(context).cardColor,
                     child: walletConnecting
-                        ? CupertinoActivityIndicator()
+                        ? CupertinoActivityIndicator(
+                            color: const Color(0xFF3C3C44))
                         : Image.asset('assets/images/wallet_connect_logo.png'),
                     onPressed: walletConnectAlive
                         ? () {

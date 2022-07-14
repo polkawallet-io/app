@@ -269,7 +269,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       label: dic['setting.node'],
                       content: widget.connectedNode == null
-                          ? CupertinoActivityIndicator(radius: 8)
+                          ? CupertinoActivityIndicator(
+                              radius: 8, color: const Color(0xFF3C3C44))
                           : null,
                       onTap: () => Navigator.of(context)
                           .pushNamed(RemoteNodeListPage.route),

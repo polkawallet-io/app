@@ -481,7 +481,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   children: [
                     Container(
                       margin: EdgeInsets.only(right: 8),
-                      child: CupertinoActivityIndicator(),
+                      child: CupertinoActivityIndicator(
+                          color: const Color(0xFF3C3C44)),
                     ),
                     Text(
                         '${dic['v3.changeNetwork.ing']} ${networkName.toUpperCase()}...')

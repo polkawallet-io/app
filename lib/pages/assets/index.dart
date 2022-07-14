@@ -185,7 +185,8 @@ class _AssetsState extends State<AssetsPage> {
                 Text(dic['uos.parse']),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: CupertinoActivityIndicator(),
+                  child: CupertinoActivityIndicator(
+                      color: const Color(0xFF3C3C44)),
                 )
               ],
             ),

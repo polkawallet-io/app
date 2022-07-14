@@ -299,7 +299,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
             ),
             Expanded(
               child: _tokenVisible.keys.length == 0
-                  ? Center(child: CupertinoActivityIndicator())
+                  ? Center(
+                      child: CupertinoActivityIndicator(
+                          color: const Color(0xFF3C3C44)))
                   : Container(
                       color: UI.isDarkTheme(context)
                           ? Color(0xFF3D3D3D)

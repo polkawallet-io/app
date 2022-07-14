@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:rive/src/widgets/rive_animation.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(
@@ -168,7 +169,10 @@ class _Settings extends State<SettingsPage> {
                     physics: BouncingScrollPhysics(),
                     child: RoundedCard(
                       margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
-                      padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                      padding: UI.isDarkTheme(context)
+                          ? EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h)
+                          : EdgeInsets.fromLTRB(
+                              8.75.w, 16.75.h, 8.75.w, 16.75.h),
                       child: Column(
                         children: <Widget>[
                           SettingsPageListItem(
