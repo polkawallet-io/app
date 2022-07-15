@@ -375,7 +375,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                         isCurrent
                                             ? e.basic.icon
                                             : Image.asset(
-                                                'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey.png'));
+                                                'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
                               }).toList(),
                               ...widget.disabledPlugins.map((e) {
                                 final isCurrent =

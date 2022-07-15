@@ -478,12 +478,12 @@ class _AssetsState extends State<AssetsPage> {
 
     InstrumentData totalBalance =
         InstrumentData(available + reserved + locked, [], title: title);
-    totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
-        dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],
-        locked, "assets/images/icon_instrument_yellow.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1),
-        dic['available'], available, "assets/images/icon_instrument_blue.png"));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFF7647), dic['reserved'], reserved));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFFC952), dic['locked'], locked));
+    totalBalance.items.add(
+        InstrumentItemData(Color(0xFF7D97EE), dic['available'], available));
 
     datas.add(instrument1);
     datas.add(totalBalance);

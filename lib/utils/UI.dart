@@ -177,8 +177,9 @@ class AppUI {
                                           )),
                                       Expanded(
                                           child: needUpdate
-                                              ? SingleChildScrollView(
-                                                  child: Column(
+                                              ? Scrollbar(
+                                                  child: SingleChildScrollView(
+                                                      child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: versionInfo
@@ -220,7 +221,7 @@ class AppUI {
                                                             ],
                                                           )))
                                                       .toList(),
-                                                ))
+                                                )))
                                               : Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom: 12, left: 14),
@@ -241,8 +242,8 @@ class AppUI {
                                       Visibility(
                                           visible: needUpdate,
                                           child: Padding(
-                                              padding:
-                                                  EdgeInsets.only(bottom: 8),
+                                              padding: EdgeInsets.only(
+                                                  bottom: 8, top: 10),
                                               child: Text(
                                                 dic['update.up'],
                                                 textAlign: TextAlign.center,

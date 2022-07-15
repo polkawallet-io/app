@@ -144,7 +144,7 @@ class NavItem extends StatelessWidget {
                         ? Colors.white
                         : Color(0xFF5C5C5C)
                     : UI.isDarkTheme(context)
-                        ? Colors.white
+                        ? Color(0xFFBCBCBC)
                         : Color(0xFF9D9A98)),
           )
         ]),
@@ -213,7 +213,7 @@ class CentralNavItem extends StatelessWidget {
                                 .textSelectionTheme
                                 .selectionColor
                         : UI.isDarkTheme(context)
-                            ? Colors.white
+                            ? Color(0xFFBCBCBC)
                             : Color(0xFF9D9A98)),
               ),
             ]));
