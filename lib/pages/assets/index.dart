@@ -618,10 +618,13 @@ class _AssetsState extends State<AssetsPage> {
             margin: EdgeInsets.only(right: 6.w),
             child: v3.PopupMenuButton(
                 offset: Offset(-12, 52),
-                color: Theme.of(context).cardColor,
+                color: UI.isDarkTheme(context)
+                    ? Color(0xA63A3B3D)
+                    : Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Color(0x21FFFFFF), width: 0.5),
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -647,7 +650,9 @@ class _AssetsState extends State<AssetsPage> {
                               padding: EdgeInsets.only(left: 2),
                               child: SvgPicture.asset(
                                 'assets/images/scan.svg',
-                                color: Color(0xFF979797),
+                                color: UI.isDarkTheme(context)
+                                    ? Colors.white
+                                    : Color(0xFF979797),
                                 width: 20,
                               )),
                           Padding(
@@ -670,7 +675,9 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           SvgPicture.asset(
                             'assets/images/qr.svg',
-                            color: Color(0xFF979797),
+                            color: UI.isDarkTheme(context)
+                                ? Colors.white
+                                : Color(0xFF979797),
                             width: 22,
                           ),
                           Padding(
