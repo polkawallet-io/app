@@ -6,7 +6,6 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
@@ -468,7 +467,7 @@ class _BridgePageState extends State<BridgePage> {
           )
         ],
       ),
-      body: Observer(builder: (_) {
+      body: Builder(builder: (_) {
         if (!_isReady) {
           return SafeArea(
               child: Column(
@@ -502,6 +501,11 @@ class _BridgePageState extends State<BridgePage> {
         final TokenBalanceData tokenBalance = balanceLoaded
             ? _balanceMap[_token]
             : TokenBalanceData(decimals: 12, symbol: _token, amount: '0');
+        final destFeeToken = _chainTo == 'statemine' && _token != 'KSM'
+            ? TokenBalanceData(decimals: 12, symbol: 'KSM', amount: '0')
+            : _chainTo == 'statemint' && _token != 'DOT'
+                ? TokenBalanceData(decimals: 10, symbol: 'DOT', amount: '0')
+                : tokenBalance;
 
         return SafeArea(
           child: Padding(
@@ -621,6 +625,17 @@ class _BridgePageState extends State<BridgePage> {
                                     _amountCtrl.text = "";
                                   });
                                 },
+                                onSetMax: (_) {
+                                  if (_config == null) return;
+
+                                  setState(() {
+                                    _amountCtrl.text = Fmt.balanceDouble(
+                                            _config?.maxInput,
+                                            tokenBalance.decimals)
+                                        .toString();
+                                    _amountError = null;
+                                  });
+                                },
                                 balance: tokenBalance,
                                 tokenIconsMap: tokenIcons,
                                 tokenOptions: tokenBalances ?? [],
@@ -684,7 +699,7 @@ class _BridgePageState extends State<BridgePage> {
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee ?? '0'), tokenBalance.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_token)}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee ?? '0'), destFeeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(destFeeToken.symbol)}',
                                             style: feeStyle),
                                   ],
                                 ),
