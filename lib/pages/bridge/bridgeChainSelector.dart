@@ -54,9 +54,7 @@ class BridgeChainSelector extends StatelessWidget {
                 : Image.network(v.icon))));
     options.sort();
     Navigator.of(context).push(BridgePopupRoute(
-      title: index == 0
-          ? dic['hub.chain.select.from']
-          : dic['hub.chain.select.to'],
+      title: index == 0 ? dic['bridge.from'] : dic['bridge.to'],
       child: ChainSelectorList(
         selected: current,
         options: options,

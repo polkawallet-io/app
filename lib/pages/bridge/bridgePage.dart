@@ -268,7 +268,6 @@ class _BridgePageState extends State<BridgePage> {
     if (_token != token) {
       _token = token;
 
-      print(_token);
       _updateInputConfig();
     }
   }
@@ -303,6 +302,12 @@ class _BridgePageState extends State<BridgePage> {
   Future<String> _checkAccountTo(KeyPairData acc) async {
     if (_props == null) return null;
 
+    if (widget.service.keyring.allWithContacts
+            .indexWhere((e) => e.pubKey == acc.pubKey) >
+        0) {
+      return null;
+    }
+
     final error =
         I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
     final res = await widget.service.plugin.sdk.api.account
@@ -329,15 +334,14 @@ class _BridgePageState extends State<BridgePage> {
     }
 
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    BigInt input = Fmt.tokenInt(v, decimals);
-    BigInt max = BigInt.parse(_config?.maxInput ?? '0');
-    BigInt min = BigInt.parse(_config?.minInput ?? '0');
+    final input = double.parse(v);
+    final max = Fmt.balanceDouble(_config?.maxInput ?? '0', decimals);
+    final min = Fmt.balanceDouble(_config?.minInput ?? '0', decimals);
     if (input > max) {
       error =
-          '${dic['bridge.max']} ${Fmt.priceFloorBigInt(max, decimals ?? 12, lengthMax: 6)}';
+          '${dic['bridge.max']} ${max > 0 ? Fmt.priceFloor(max, lengthMax: 6) : BigInt.zero}';
     } else if (input < min) {
-      error =
-          '${dic['bridge.min']} ${Fmt.priceFloorBigInt(min, decimals ?? 12, lengthMax: 6)}';
+      error = '${dic['bridge.min']} ${Fmt.priceCeil(min, lengthMax: 6)}';
     }
     setState(() {
       _amountError = error;
@@ -415,16 +419,22 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   void _changeSenderAccount() async {
-    var res = await Navigator.of(context).pushNamed(
+    final res = await Navigator.of(context).pushNamed(
       AccountListPage.route,
       arguments: AccountListPageParams(
           list: widget.service.keyring.allAccounts.toList()),
     );
-    if (res != null) {
-      widget.service.keyring.setCurrent(res);
-      widget.service.plugin.changeAccount(res);
+    final sender = res as KeyPairData;
+    if (sender != null &&
+        sender.pubKey != widget.service.keyring.current.pubKey) {
+      setState(() {
+        _accountTo = sender;
+      });
+
+      widget.service.keyring.setCurrent(sender);
+      widget.service.plugin.changeAccount(sender);
       widget.service.store.assets
-          .loadCache(res, widget.service.plugin.basic.name);
+          .loadCache(sender, widget.service.plugin.basic.name);
 
       _subscribeBalance();
     }
@@ -628,13 +638,17 @@ class _BridgePageState extends State<BridgePage> {
                                 onSetMax: (_) {
                                   if (_config == null) return;
 
-                                  setState(() {
-                                    _amountCtrl.text = Fmt.balanceDouble(
-                                            _config?.maxInput,
-                                            tokenBalance.decimals)
-                                        .toString();
-                                    _amountError = null;
-                                  });
+                                  final max = Fmt.balanceInt(_config?.maxInput);
+                                  if (max > BigInt.zero) {
+                                    setState(() {
+                                      _amountCtrl.text = Fmt.balanceDouble(
+                                              _config?.maxInput,
+                                              tokenBalance.decimals)
+                                          .toString();
+                                    });
+
+                                    _validateAmount(_amountCtrl.text);
+                                  }
                                 },
                                 balance: tokenBalance,
                                 tokenIconsMap: tokenIcons,

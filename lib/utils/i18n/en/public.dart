@@ -123,8 +123,6 @@ const Map<String, String> enPublic = {
   'hub.to.address': 'To Address',
   'hub.amount': 'Amount',
   'hub.selectToken': 'SelectToken',
-  'hub.chain.select.from': 'Bridge from',
-  'hub.chain.select.to': 'Bridge to',
   'hub.origin.transfer.fee': 'Origin Chain Transfer Fee',
   'hub.destination.transfer.fee': 'Destination Chain Transfer Fee',
   'hub.transfer': 'Transfer',

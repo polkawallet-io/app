@@ -112,8 +112,6 @@ const Map<String, String> zhPublic = {
   'hub.to.address': '收款地址',
   'hub.amount': '数量',
   'hub.selectToken': '选择代币',
-  'hub.chain.select.from': '源链',
-  'hub.chain.select.to': '目的链',
   'hub.origin.transfer.fee': '源链转账手续费',
   'hub.destination.transfer.fee': '目的链转账手续费',
   'hub.transfer': '转账',
