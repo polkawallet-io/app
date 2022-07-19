@@ -328,7 +328,9 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
-      items.add(buildMetaHubBrowser());
+      if (widget.service.store.settings.dapps.length > 0) {
+        items.add(buildMetaHubBrowser());
+      }
       final ecosystemItem = buildMetaHubEcosystem();
       if (ecosystemItem != null) {
         items.add(buildMetaHubEcosystem());

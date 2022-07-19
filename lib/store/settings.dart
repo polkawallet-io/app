@@ -62,7 +62,14 @@ abstract class _SettingsStore with Store {
   int systemUnreadNumber = 0;
 
   @observable
-  List<dynamic> dappAllTags = [];
+  List<dynamic> dappAllTags = [
+    "DeFi",
+    "Staking",
+    "NFT",
+    "Utilities",
+    "Governance",
+    "Crowd Loan"
+  ];
 
   @observable
   List<dynamic> dapps = [];
@@ -77,8 +84,10 @@ abstract class _SettingsStore with Store {
 
   Future<void> initDapps() async {
     final dappConfig = await WalletApi.getDappsConfig();
-    dappAllTags = dappConfig["allTag"];
-    dapps = dappConfig["datas"];
+    if (dappConfig != null) {
+      dappAllTags = dappConfig["allTag"];
+      dapps = dappConfig["datas"];
+    }
   }
 
   @action
