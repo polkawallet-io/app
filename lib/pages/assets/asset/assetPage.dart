@@ -384,7 +384,7 @@ class _AssetPageState extends State<AssetPage> {
                                 child: CardButton(
                                   icon: Image.asset(
                                     "assets/images/unlock${UI.isDarkTheme(context) ? "_dark" : ""}.png",
-                                    width: 37,
+                                    width: 32,
                                     color: UI.isDarkTheme(context)
                                         ? Colors.white
                                         : null,
