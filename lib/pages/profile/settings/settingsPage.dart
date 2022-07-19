@@ -189,8 +189,6 @@ class _Settings extends State<SettingsPage> {
                           Divider(height: 24.h),
                           SettingsPageListItem(
                             label: dic['setting.theme.dark'],
-                            subtitle:
-                                hideBalanceTip.isEmpty ? null : hideBalanceTip,
                             content: v3.CupertinoSwitch(
                               value: widget.service.store.settings.isDarkTheme,
                               onChanged: (v) {
