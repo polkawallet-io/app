@@ -16,7 +16,7 @@ class BridgeChainSelector extends StatelessWidget {
       this.from,
       this.to,
       this.fromConnecting,
-      this.chainInfo,
+      this.chainsInfo,
       this.onChanged})
       : super(key: key);
 
@@ -25,7 +25,7 @@ class BridgeChainSelector extends StatelessWidget {
   final bool fromConnecting;
   final String from;
   final String to;
-  final Map<String, BridgeChainData> chainInfo;
+  final Map<String, BridgeChainData> chainsInfo;
   final Function(String, String) onChanged;
 
   void _switch() {
@@ -46,19 +46,19 @@ class BridgeChainSelector extends StatelessWidget {
       BuildContext context, int index, List<String> options) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
     final current = index == 0 ? from : to;
-    final crossChainIcons = Map<String, Widget>.from(chainInfo?.map((k, v) =>
+    final crossChainIcons = Map<String, Widget>.from(chainsInfo?.map((k, v) =>
         MapEntry(
             k.toUpperCase(),
             v.icon.contains('.svg')
                 ? SvgPicture.network(v.icon)
                 : Image.network(v.icon))));
-    options.sort();
     Navigator.of(context).push(BridgePopupRoute(
       title: index == 0 ? dic['bridge.from'] : dic['bridge.to'],
       child: ChainSelectorList(
         selected: current,
         options: options,
         crossChainIcons: crossChainIcons,
+        chainsInfo: chainsInfo,
         onSelect: (chain) {
           if (chain != current) {
             if (index == 0) {
@@ -80,8 +80,8 @@ class BridgeChainSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    BridgeChainData fromData = chainInfo[from];
-    BridgeChainData toData = chainInfo[to];
+    BridgeChainData fromData = chainsInfo[from];
+    BridgeChainData toData = chainsInfo[to];
 
     return Container(
         width: double.infinity,
@@ -380,6 +380,7 @@ class ChainSelectorList extends StatelessWidget {
   const ChainSelectorList(
       {this.options,
       this.crossChainIcons,
+      this.chainsInfo,
       this.selected,
       this.onSelect,
       Key key})
@@ -387,6 +388,7 @@ class ChainSelectorList extends StatelessWidget {
 
   final List<String> options;
   final Map<String, Widget> crossChainIcons;
+  final Map<String, BridgeChainData> chainsInfo;
   final String selected;
   final Function(String) onSelect;
 
@@ -403,7 +405,7 @@ class ChainSelectorList extends StatelessWidget {
               child: ListTile(
                 selected: i == selected,
                 title: CurrencyWithIcon(
-                  i.toUpperCase(),
+                  chainsInfo[i].display,
                   TokenIcon(i, crossChainIcons),
                   textStyle: const TextStyle(
                       color: Colors.white,

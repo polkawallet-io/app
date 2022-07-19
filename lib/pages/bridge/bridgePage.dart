@@ -178,11 +178,11 @@ class _BridgePageState extends State<BridgePage> {
       _isReady = true;
     });
 
-    await _connectFromChain();
+    await _connectFromChain(_chainFrom);
     _subscribeBalance();
   }
 
-  Future<void> _connectFromChain() async {
+  Future<void> _connectFromChain(String chainFrom) async {
     if (!_fromConnecting) {
       setState(() {
         _fromConnecting = true;
@@ -190,10 +190,12 @@ class _BridgePageState extends State<BridgePage> {
         _configLoading = true;
       });
     }
-    await widget.service.plugin.sdk.api.bridge.connectFromChains([_chainFrom]);
+    await widget.service.plugin.sdk.api.bridge.connectFromChains([chainFrom]);
 
-    _props = await widget.service.plugin.sdk.api.bridge
-        .getNetworkProperties(_chainFrom);
+    if (chainFrom == _chainFrom) {
+      _props = await widget.service.plugin.sdk.api.bridge
+          .getNetworkProperties(chainFrom);
+    }
     setState(() {
       _fromConnecting = false;
     });
@@ -259,7 +261,7 @@ class _BridgePageState extends State<BridgePage> {
     });
 
     _disconnectFromChain();
-    await _connectFromChain();
+    await _connectFromChain(_chainFrom);
     _subscribeBalance();
   }
 
@@ -541,7 +543,7 @@ class _BridgePageState extends State<BridgePage> {
                           chainToMap: _chainToMap,
                           from: _chainFrom,
                           to: _chainTo,
-                          chainInfo: _chainInfo,
+                          chainsInfo: _chainInfo,
                           onChanged: _changeChain,
                           fromConnecting: _fromConnecting,
                         ),
