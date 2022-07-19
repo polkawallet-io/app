@@ -476,8 +476,8 @@ class _CommunityPluginNote extends StatelessWidget {
       padding: EdgeInsets.all(8),
       margin: EdgeInsets.only(top: 8, bottom: 8),
       decoration: BoxDecoration(
-          color: Colors.black12,
-          border: Border.all(color: Colors.black26, width: 0.5),
+          color: Theme.of(context).cardColor,
+          border: Border.all(color: Theme.of(context).cardColor, width: 0.5),
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Column(
         children: [
@@ -490,8 +490,11 @@ class _CommunityPluginNote extends StatelessWidget {
                     dic['plugin.team'],
                 style: TextStyle(fontSize: UI.getTextSize(12, context)),
               )),
-              SvgPicture.asset('assets/images/public/github_logo.svg',
-                  width: 16),
+              SvgPicture.asset(
+                'assets/images/public/github_logo.svg',
+                width: 16,
+                color: Theme.of(context).textTheme.headline1.color,
+              ),
               JumpToLink(
                 plugin_github_links[pluginName],
                 text: '',
