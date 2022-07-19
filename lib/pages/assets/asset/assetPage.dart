@@ -332,7 +332,7 @@ class _AssetPageState extends State<AssetPage> {
                               padding: EdgeInsets.only(left: 3),
                               child: Image.asset(
                                 "assets/images/send${UI.isDarkTheme(context) ? "_dark" : ""}.png",
-                                width: 37,
+                                width: 32,
                                 color: UI.isDarkTheme(context)
                                     ? Colors.white
                                     : null,
@@ -363,7 +363,7 @@ class _AssetPageState extends State<AssetPage> {
                           child: CardButton(
                             icon: Image.asset(
                               "assets/images/qr${UI.isDarkTheme(context) ? "_dark" : ""}.png",
-                              width: 37,
+                              width: 32,
                               color:
                                   UI.isDarkTheme(context) ? Colors.white : null,
                             ),

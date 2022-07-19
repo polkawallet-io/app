@@ -549,16 +549,16 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           widget.connectedNode == null
                               ? Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   child: Center(
                                       child: RiveAnimation.asset(
                                     'assets/images/connecting.riv',
                                   )))
                               : Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   decoration: BoxDecoration(
                                       color: UI.isDarkTheme(context)
@@ -573,7 +573,7 @@ class _AssetsState extends State<AssetsPage> {
                                 .textTheme
                                 .headline4
                                 .copyWith(
-                                    fontWeight: FontWeight.w600, height: 0.9),
+                                    fontWeight: FontWeight.w600, height: 1.1),
                           ),
                           Container(
                             width: 14,
