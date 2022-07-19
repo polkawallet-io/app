@@ -107,11 +107,20 @@ class _BridgePageState extends State<BridgePage> {
 
   /// all icon widget
   Map<String, Widget> _crossChainIcons;
+
+  ///handle androidOnRenderProcessGone crash
+  static const String reloadKey = 'BridgeWebReloadKey';
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadConfig();
+    });
+
+    widget.service.plugin.sdk.webView.subscribeReloadAction(reloadKey,
+        () async {
+      await _connectFromChain();
+      await _subscribeBalance();
     });
   }
 
@@ -120,6 +129,7 @@ class _BridgePageState extends State<BridgePage> {
     _disconnectFromChain();
     _address20Ctrl.dispose();
     _amountCtrl.dispose();
+    widget.service.plugin.sdk.webView.unsubscribeReloadAction(reloadKey);
     super.dispose();
   }
 
