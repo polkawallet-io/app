@@ -46,8 +46,8 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
             decoration: BoxDecoration(
               image: UI.isDarkTheme(context)
                   ? DecorationImage(
-                      image: new ExactAssetImage(
-                          'assets/images/nodeSelect_title_bg.png'),
+                      image:
+                          AssetImage('assets/images/nodeSelect_title_bg.png'),
                       fit: BoxFit.fill,
                     )
                   : null,
