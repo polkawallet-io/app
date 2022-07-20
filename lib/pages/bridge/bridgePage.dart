@@ -93,9 +93,6 @@ class _BridgePageState extends State<BridgePage> {
   /// token balance
   Map<String, TokenBalanceData> _balanceMap;
 
-  /// loading
-  bool _configLoading = true;
-
   /// isReady
   bool _isReady = false;
 
@@ -119,8 +116,8 @@ class _BridgePageState extends State<BridgePage> {
 
     widget.service.plugin.sdk.webView.subscribeReloadAction(reloadKey,
         () async {
-      await _connectFromChain();
-      await _subscribeBalance();
+      await _connectFromChain(_chainFrom);
+      _subscribeBalance();
     });
   }
 
@@ -187,7 +184,7 @@ class _BridgePageState extends State<BridgePage> {
       setState(() {
         _fromConnecting = true;
         _fee = null;
-        _configLoading = true;
+        _config = null;
       });
     }
     await widget.service.plugin.sdk.api.bridge.connectFromChains([chainFrom]);
@@ -225,18 +222,19 @@ class _BridgePageState extends State<BridgePage> {
   Future<void> _updateInputConfig() async {
     if (_balanceMap == null || _balanceMap[_token] == null) return;
 
-    if (!_configLoading) {
+    if (_config != null) {
       setState(() {
-        _configLoading = true;
+        _config = null;
       });
     }
 
     _getTxFee();
-    _config = await widget.service.plugin.sdk.api.bridge.getAmountInputConfig(
-        _chainFrom, _chainTo, _token, widget.service.keyring.current.address);
 
+    final config = await widget.service.plugin.sdk.api.bridge
+        .getAmountInputConfig(_chainFrom, _chainTo, _token,
+            widget.service.keyring.current.address);
     setState(() {
-      _configLoading = false;
+      _config = config;
     });
 
     if (_amountCtrl.text.isNotEmpty) {
@@ -366,7 +364,7 @@ class _BridgePageState extends State<BridgePage> {
         _amountCtrl.text.trim().isNotEmpty &&
         _formKey.currentState.validate() &&
         !_submitting &&
-        !_configLoading) {
+        _config != null) {
       setState(() {
         _submitting = true;
       });
@@ -503,9 +501,7 @@ class _BridgePageState extends State<BridgePage> {
           ));
         }
 
-        final balanceLoaded =
-            _balanceMap != null && _balanceMap[_token] != null;
-        final List<TokenBalanceData> tokenBalances = balanceLoaded
+        final List<TokenBalanceData> tokenBalances = _config != null
             ? _tokensMap[_chainFrom + _chainTo]
                 .toList()
                 .map((e) => _balanceMap[e])
@@ -520,7 +516,7 @@ class _BridgePageState extends State<BridgePage> {
                 Image.network(
                     'https://resources.acala.network/tokens/$v.png')));
 
-        final TokenBalanceData tokenBalance = balanceLoaded
+        final TokenBalanceData tokenBalance = _config != null
             ? _balanceMap[_token]
             : TokenBalanceData(decimals: 12, symbol: _token, amount: '0');
         final destFeeToken = _chainTo == 'statemine' && _token != 'KSM'
@@ -719,7 +715,7 @@ class _BridgePageState extends State<BridgePage> {
                                             style: feeStyle),
                                       ),
                                     ),
-                                    _configLoading
+                                    _config == null
                                         ? CupertinoActivityIndicator(
                                             color: const Color.fromARGB(
                                                 150, 205, 205, 205),
@@ -749,7 +745,8 @@ class _BridgePageState extends State<BridgePage> {
                                                 arguments: params);
                                         if (res != null) {
                                           if (!mounted) return;
-                                          Navigator.of(context).pop(res);
+
+                                          _updateInputConfig();
                                         }
 
                                         setState(() {
