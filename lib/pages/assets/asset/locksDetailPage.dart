@@ -196,9 +196,9 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         actions: [
           PluginAccountInfoAction(
             widget.service.keyring,
-            iconDefaultColor: Color(0xFFE4E4E3),
             hasShadow: true,
             iconSize: 32.h,
+            isPlugin: false,
           )
         ],
       ),
