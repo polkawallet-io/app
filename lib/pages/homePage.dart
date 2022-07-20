@@ -22,11 +22,11 @@ import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(this.service, this.plugins, this.connectedNode,

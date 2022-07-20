@@ -314,7 +314,7 @@ class _BridgePageState extends State<BridgePage> {
 
     if (widget.service.keyring.allWithContacts
             .indexWhere((e) => e.pubKey == acc.pubKey) >
-        0) {
+        -1) {
       return null;
     }
 
