@@ -165,8 +165,9 @@ class _MessagePageState extends State<MessagePage> {
                                                 .isDarkTheme(context)
                                             ? Colors.white
                                             : Theme.of(context)
-                                                .textSelectionTheme
-                                                .selectionColor
+                                                .textTheme
+                                                .headline1
+                                                .color
                                                 .withAlpha(66)),
                               ),
                               GestureDetector(
@@ -236,8 +237,9 @@ class _MessagePageState extends State<MessagePage> {
                                           polkawallet_ui.UI.isDarkTheme(context)
                                               ? Colors.white
                                               : Theme.of(context)
-                                                  .textSelectionTheme
-                                                  .selectionColor
+                                                  .textTheme
+                                                  .headline1
+                                                  .color
                                                   .withAlpha(66)),
                             ),
                             Container(

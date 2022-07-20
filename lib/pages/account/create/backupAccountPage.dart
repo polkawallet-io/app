@@ -79,7 +79,7 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                   child: Icon(
                     Icons.refresh,
                     size: 20,
-                    color: Theme.of(context).textSelectionTheme.selectionColor,
+                    color: Theme.of(context).textTheme.headline1.color,
                   ),
                 ),
               )

@@ -1113,8 +1113,9 @@ class _AssetsState extends State<AssetsPage> {
                                                       color: balancesInfo?.isFromCache ==
                                                               false
                                                           ? Theme.of(context)
-                                                              .textSelectionTheme
-                                                              .selectionColor
+                                                              .textTheme
+                                                              .headline1
+                                                              .color
                                                           : Theme.of(context)
                                                               .dividerColor)),
                                           Text(
@@ -1283,7 +1284,7 @@ class TokenItem extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline5.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isFromCache == false
-                        ? Theme.of(context).textSelectionTheme.selectionColor
+                        ? Theme.of(context).textTheme.headline1.color
                         : Theme.of(context).dividerColor),
               ),
               marketPrice != null && marketPrice > 0

@@ -209,9 +209,7 @@ class CentralNavItem extends StatelessWidget {
                     color: active
                         ? UI.isDarkTheme(context)
                             ? Colors.white
-                            : Theme.of(context)
-                                .textSelectionTheme
-                                .selectionColor
+                            : Theme.of(context).textTheme.headline1.color
                         : UI.isDarkTheme(context)
                             ? Color(0xFFBCBCBC)
                             : Color(0xFF9D9A98)),

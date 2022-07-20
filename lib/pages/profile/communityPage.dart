@@ -96,7 +96,7 @@ class _CommunityPage extends State<CommunityPage> {
                         'assets/images/icons/discord_icon.png',
                         width: 24.w,
                       ),
-                      onTap: () => UI.launchURL('https://discord.gg/6QHVY4X'),
+                      onTap: () => UI.launchURL('https://www.acala.gg/'),
                     ),
                     Divider(),
                     SettingsPageListItem(
