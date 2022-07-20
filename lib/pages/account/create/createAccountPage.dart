@@ -40,7 +40,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         return PolkawalletAlertDialog(
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
+          content: Container(
+              height: 64,
+              child:
+                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
         );
       },
     );

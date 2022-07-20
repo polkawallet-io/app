@@ -29,6 +29,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);
@@ -274,12 +275,10 @@ class _AssetPageState extends State<AssetPage> {
 
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-        title: Text(
-          symbol,
-          style: TextStyle(
-              fontSize: UI.getTextSize(20, context), color: Colors.black87),
-        ),
+        systemOverlayStyle: UI.isDarkTheme(context)
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
+        title: Text(symbol),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -332,8 +331,11 @@ class _AssetPageState extends State<AssetPage> {
                             icon: Padding(
                               padding: EdgeInsets.only(left: 3),
                               child: Image.asset(
-                                "assets/images/send.png",
-                                width: 37,
+                                "assets/images/send${UI.isDarkTheme(context) ? "_dark" : ""}.png",
+                                width: 32,
+                                color: UI.isDarkTheme(context)
+                                    ? Colors.white
+                                    : null,
                               ),
                             ),
                             text: dic['v3.send'],
@@ -359,8 +361,12 @@ class _AssetPageState extends State<AssetPage> {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 3.w),
                           child: CardButton(
-                            icon:
-                                Image.asset("assets/images/qr.png", width: 37),
+                            icon: Image.asset(
+                              "assets/images/qr${UI.isDarkTheme(context) ? "_dark" : ""}.png",
+                              width: 32,
+                              color:
+                                  UI.isDarkTheme(context) ? Colors.white : null,
+                            ),
                             text: dic['receive'],
                             onPressed: () {
                               Navigator.pushNamed(
@@ -376,8 +382,13 @@ class _AssetPageState extends State<AssetPage> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                                 child: CardButton(
-                                  icon: Image.asset("assets/images/unlock.png",
-                                      width: 37),
+                                  icon: Image.asset(
+                                    "assets/images/unlock${UI.isDarkTheme(context) ? "_dark" : ""}.png",
+                                    width: 32,
+                                    color: UI.isDarkTheme(context)
+                                        ? Colors.white
+                                        : null,
+                                  ),
                                   text: dic['unlock'],
                                   onPressed: Fmt.balanceInt(
                                               (balancesInfo?.lockedBalance ?? 0)
@@ -407,10 +418,22 @@ class _AssetPageState extends State<AssetPage> {
                             height: 28.h,
                             margin: EdgeInsets.only(right: 8.w),
                             decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              image: DecorationImage(
-                                  image: AssetImage("assets/images/bg_tag.png"),
-                                  fit: BoxFit.fill),
+                              color: UI.isDarkTheme(context)
+                                  ? Color(0x52000000)
+                                  : Colors.transparent,
+                              borderRadius: UI.isDarkTheme(context)
+                                  ? BorderRadius.all(Radius.circular(5))
+                                  : null,
+                              border: UI.isDarkTheme(context)
+                                  ? Border.all(
+                                      color: Color(0x26FFFFFF), width: 1)
+                                  : null,
+                              image: UI.isDarkTheme(context)
+                                  ? null
+                                  : DecorationImage(
+                                      image: AssetImage(
+                                          "assets/images/bg_tag.png"),
+                                      fit: BoxFit.fill),
                             ),
                             child: Center(
                               child: Text(
@@ -423,8 +446,10 @@ class _AssetPageState extends State<AssetPage> {
                                       .textTheme
                                       .headline5
                                       .copyWith(
-                                          color: Theme.of(context)
-                                              .toggleableActiveColor,
+                                          color: UI.isDarkTheme(context)
+                                              ? Colors.white
+                                              : Theme.of(context)
+                                                  .toggleableActiveColor,
                                           fontWeight: FontWeight.w600)),
                             ),
                           ),
@@ -458,7 +483,9 @@ class _AssetPageState extends State<AssetPage> {
                               child: v3.IconButton(
                                 icon: SvgPicture.asset(
                                   'assets/images/icon_screening.svg',
-                                  color: Color(0xFF979797),
+                                  color: UI.isDarkTheme(context)
+                                      ? Colors.white
+                                      : Color(0xFF979797),
                                   width: 22.h,
                                 ),
                               ))
@@ -526,12 +553,12 @@ class BalanceCard extends StatelessWidget {
           Fmt.priceFloor(marketPrices * Fmt.bigIntToDouble(balance, decimals));
     }
 
-    final titleColor = Theme.of(context).cardColor;
-    return Container(
-      margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
+    final titleColor =
+        UI.isDarkTheme(context) ? Colors.white : Theme.of(context).cardColor;
+    final child = Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(const Radius.circular(16)),
+        borderRadius: const BorderRadius.all(const Radius.circular(8)),
         gradient: LinearGradient(
           colors: bgColors ??
               [Theme.of(context).primaryColor, Theme.of(context).hoverColor],
@@ -666,6 +693,13 @@ class BalanceCard extends StatelessWidget {
         ],
       ),
     );
+    return UI.isDarkTheme(context)
+        ? RoundedCard(
+            margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
+            child: child,
+          )
+        : Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w), child: child);
   }
 
   List<TimeSeriesAmount> getTimeSeriesAmounts(List<dynamic> marketPriceList) {
@@ -685,9 +719,13 @@ class BalanceCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                height: 16.w,
-                width: 16.w,
+                height: 18.w,
+                width: 18.w,
+                padding: EdgeInsets.all(2),
                 margin: EdgeInsets.only(right: 8.w),
+                decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(27),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: icon),
             Text(
               title,
@@ -746,19 +784,11 @@ class TransferListItem extends StatelessWidget {
               : TransferIcon(type: TransferIconType.failure)
         ],
       ),
-      title: Text(
-        '$title${crossChain != null ? ' ($crossChain)' : ''}',
-        style: Theme.of(context).textTheme.headline5.copyWith(
-              fontFamily: UI.getFontFamily('SF_Pro', context),
-            ),
-      ),
+      title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}',
+          style: Theme.of(context).textTheme.headline4),
       subtitle: Text(
         Fmt.dateTime(
             DateTime.fromMillisecondsSinceEpoch(data.blockTimestamp * 1000)),
-        style: Theme.of(context)
-            .textTheme
-            .headline6
-            .copyWith(fontWeight: FontWeight.w300, color: Color(0xBF565554)),
       ),
       trailing: Container(
         width: 110,

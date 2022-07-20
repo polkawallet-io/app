@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
@@ -197,9 +196,9 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         actions: [
           PluginAccountInfoAction(
             widget.service.keyring,
-            iconDefaultColor: Color(0xFFE4E4E3),
             hasShadow: true,
-            iconSize: 30.h,
+            iconSize: 32.h,
+            isPlugin: false,
           )
         ],
       ),
@@ -283,8 +282,11 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                             .copyWith(
                                                 fontSize:
                                                     UI.getTextSize(18, context),
-                                                color: Theme.of(context)
-                                                    .errorColor,
+                                                color: UI.isDarkTheme(context)
+                                                    ? Theme.of(context)
+                                                        .toggleableActiveColor
+                                                    : Theme.of(context)
+                                                        .errorColor,
                                                 fontWeight: FontWeight.w600),
                                       )
                                     : Container(),
@@ -325,8 +327,12 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                                 .copyWith(
                                                     fontSize: UI.getTextSize(
                                                         18, context),
-                                                    color: Theme.of(context)
-                                                        .errorColor,
+                                                    color: UI.isDarkTheme(
+                                                            context)
+                                                        ? Theme.of(context)
+                                                            .toggleableActiveColor
+                                                        : Theme.of(context)
+                                                            .errorColor,
                                                     fontWeight:
                                                         FontWeight.w600),
                                           )
@@ -383,11 +389,15 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BorderedTitle(
-              title: title,
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline3
+                  ?.copyWith(fontSize: UI.getTextSize(16, context)),
             ),
             Padding(
-                padding: EdgeInsets.only(top: 2),
+                padding: EdgeInsets.only(top: 10),
                 child: InnerShadowBGCar(child: child)),
             hasClaim
                 ? Container(

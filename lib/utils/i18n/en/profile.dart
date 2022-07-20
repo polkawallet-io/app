@@ -62,7 +62,8 @@ const Map<String, String> enProfile = {
   'about.brif': 'Mobile Wallet for Polkadot',
   'about.version': 'Version',
   'update': 'Check Update',
-  'update.latest': 'Your App is the newest version.',
+  'update.latest':
+      'Your App is the newest version!\nFeel free to use Polkawallet',
   'update.up': 'New version found, update now?',
   'update.now': 'Update Now',
   'update.start': 'Connecting...',
@@ -120,5 +121,6 @@ const Map<String, String> enProfile = {
   'message.readAll': 'Read All',
   'message.community': 'From Community',
   'message.system': 'From System',
-  'message.polkawalletTeam': 'Polkawallet Team'
+  'message.polkawalletTeam': 'Polkawallet Team',
+  'setting.theme.dark': 'Dark Theme',
 };

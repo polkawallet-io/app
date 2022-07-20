@@ -125,7 +125,8 @@ class _AboutPage extends State<AboutPage> {
                             visible: _updateLoading,
                             child: Container(
                               padding: EdgeInsets.only(right: 8.w),
-                              child: CupertinoActivityIndicator(radius: 8.r),
+                              child: CupertinoActivityIndicator(
+                                  radius: 8.r, color: const Color(0xFF3C3C44)),
                             ),
                           ),
                           Text(_appVersion ?? "", style: contentStyle)

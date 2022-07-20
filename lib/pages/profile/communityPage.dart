@@ -62,15 +62,15 @@ class _CommunityPage extends State<CommunityPage> {
                 padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
                 child: Column(
                   children: [
-                    SettingsPageListItem(
-                      label: 'Wechat',
-                      leading: Image.asset(
-                        'assets/images/icons/wechat_icon.png',
-                        width: 24.w,
-                      ),
-                      onTap: _onWechatTap,
-                    ),
-                    Divider(),
+                    // SettingsPageListItem(
+                    //   label: 'Wechat',
+                    //   leading: Image.asset(
+                    //     'assets/images/icons/wechat_icon.png',
+                    //     width: 24.w,
+                    //   ),
+                    //   onTap: _onWechatTap,
+                    // ),
+                    // Divider(),
                     SettingsPageListItem(
                       label: 'Twitter',
                       leading: Image.asset(
@@ -96,7 +96,7 @@ class _CommunityPage extends State<CommunityPage> {
                         'assets/images/icons/discord_icon.png',
                         width: 24.w,
                       ),
-                      onTap: () => UI.launchURL('https://discord.gg/6QHVY4X'),
+                      onTap: () => UI.launchURL('https://www.acala.gg/'),
                     ),
                     Divider(),
                     SettingsPageListItem(

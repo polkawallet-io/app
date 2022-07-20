@@ -349,11 +349,11 @@ class _HomePageState extends State<HomePage> {
       HomeNavItem(
         text: I18n.of(context).getDic(i18n_full_dic_app, 'assets')['assets'],
         icon: Image.asset(
-          "assets/images/icon_assets_nor.png",
+          "assets/images/icon_assets_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         iconActive: Image.asset(
-          "assets/images/icon_assets_sel.png",
+          "assets/images/icon_assets_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         content:
@@ -373,7 +373,9 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
-      items.add(buildMetaHubBrowser());
+      if (widget.service.store.settings.dapps.length > 0) {
+        items.add(buildMetaHubBrowser());
+      }
       items.add(buildMetaBridge());
       final ecosystemItem = buildMetaHubEcosystem();
       if (ecosystemItem != null) {
@@ -492,11 +494,11 @@ class _HomePageState extends State<HomePage> {
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
-        "assets/images/icon_settings_30_nor.png",
+        "assets/images/icon_settings_30_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       iconActive: Image.asset(
-        "assets/images/icon_settings_30_sel.png",
+        "assets/images/icon_settings_30_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       content: ProfilePage(widget.service, widget.connectedNode),
@@ -541,7 +543,8 @@ class _HomePageState extends State<HomePage> {
                   child: FloatingActionButton(
                     backgroundColor: Theme.of(context).cardColor,
                     child: walletConnecting
-                        ? CupertinoActivityIndicator()
+                        ? CupertinoActivityIndicator(
+                            color: const Color(0xFF3C3C44))
                         : Image.asset('assets/images/wallet_connect_logo.png'),
                     onPressed: walletConnectAlive
                         ? () {

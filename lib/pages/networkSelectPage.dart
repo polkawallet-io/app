@@ -53,7 +53,10 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         return PolkawalletAlertDialog(
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
+          content: Container(
+              height: 64,
+              child:
+                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
         );
       },
     );
@@ -119,7 +122,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 child: Container(
                     width: double.infinity,
                     child: RoundedCard(
-                        color: Color(0xFFEBEAE8),
+                        color:
+                            UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
                         margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
                         padding: EdgeInsets.all(10),
                         child: Row(
@@ -128,7 +132,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                             Padding(
                               padding: EdgeInsets.only(right: 4.w),
                               child: SvgPicture.asset(
-                                "assets/images/icon_add.svg",
+                                "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
                                 width: 16.h,
                                 fit: BoxFit.contain,
                               ),
@@ -148,7 +152,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                 child: Container(
                     width: double.infinity,
                     child: RoundedCard(
-                        color: Color(0xFFEBEAE8),
+                        color:
+                            UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
                         margin: EdgeInsets.only(bottom: 16.h),
                         padding: EdgeInsets.all(10),
                         child: Row(
@@ -157,7 +162,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                             Padding(
                               padding: EdgeInsets.only(right: 4.w),
                               child: SvgPicture.asset(
-                                "assets/images/icon_add.svg",
+                                "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
                                 width: 16.h,
                                 fit: BoxFit.contain,
                               ),
@@ -212,10 +217,12 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     style: TextStyle(
                         fontSize: UI.getTextSize(10, context),
                         fontWeight: FontWeight.w300,
-                        color: Color(0xFF565554),
+                        color: UI.isDarkTheme(context)
+                            ? Colors.white.withAlpha(191)
+                            : Color(0xFF565554),
                         fontFamily: UI.getFontFamily('SF_Pro', context))),
                 trailing: Image.asset(
-                  "assets/images/${isCurrent ? "icon_circle_select.png" : "icon_circle_unselect.png"}",
+                  "assets/images/${isCurrent ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
                   fit: BoxFit.contain,
                   width: 16.w,
                 ),
@@ -288,7 +295,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
       });
     }
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          UI.isDarkTheme(context) ? Color(0xFF18191B) : Colors.white,
       appBar: AppBar(
           title: Text(I18n.of(context)
               .getDic(i18n_full_dic_app, 'profile')['setting.network']),
@@ -306,7 +314,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     width: 54.w,
                     // color: Theme.of(context).cardColor,
                     decoration: BoxDecoration(
-                      color: Color(0xFFF3F1ED),
+                      color: UI.isDarkTheme(context)
+                          ? Color(0x26FFFFFF)
+                          : Color(0xFFF3F1ED),
                       borderRadius:
                           BorderRadius.only(topRight: Radius.circular(24.w)),
                       boxShadow: [
@@ -331,7 +341,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Image.asset(
-                                      'assets/images/logo_text_line2.png',
+                                      'assets/images/logo_text_line2${UI.isDarkTheme(context) ? "_dark" : ""}.png',
                                       width: 32.w,
                                     ),
                                     Container(
@@ -342,7 +352,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                       decoration: BoxDecoration(
                                           border: Border.symmetric(
                                               horizontal: BorderSide(
-                                                  color: Color(0xFFCCCAC6)))),
+                                                  color: UI.isDarkTheme(context)
+                                                      ? Color(0xFF9E9E9E)
+                                                      : Color(0xFFCCCAC6)))),
                                     )
                                   ],
                                 ),
@@ -363,7 +375,7 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                                         isCurrent
                                             ? e.basic.icon
                                             : Image.asset(
-                                                'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey.png'));
+                                                'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
                               }).toList(),
                               ...widget.disabledPlugins.map((e) {
                                 final isCurrent =
@@ -408,12 +420,16 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
           child: GestureDetector(
               onTap: onTap,
               child: Container(
-                  padding: EdgeInsets.fromLTRB(6, 6, 10, 10),
+                  padding: EdgeInsets.fromLTRB(
+                      6,
+                      6,
+                      UI.isDarkTheme(context) ? 6 : 10,
+                      UI.isDarkTheme(context) ? 6 : 10),
                   child: SizedBox(child: icon, height: 22, width: 22),
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
-                              "assets/images/selectWallet_unselect.png"),
+                              "assets/images/selectWallet_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"),
                           fit: BoxFit.fill)))),
         ));
   }
@@ -431,16 +447,17 @@ class _NetworkItemActive extends StatelessWidget {
         Padding(
             padding: EdgeInsets.only(left: 10),
             child: Image.asset(
-              "assets/images/selectWallet_select_bg.png",
+              "assets/images/selectWallet_select_bg${UI.isDarkTheme(context) ? "_dark" : ""}.png",
               fit: BoxFit.contain,
               width: 51.w,
             )),
         Container(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(UI.isDarkTheme(context) ? 11 : 12),
             child: SizedBox(child: icon, height: 26, width: 26),
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage("assets/images/selectWallet_select.png"),
+                    image: AssetImage(
+                        "assets/images/selectWallet_select${UI.isDarkTheme(context) ? "_dark" : ""}.png"),
                     fit: BoxFit.fill)))
       ],
     );
@@ -459,8 +476,8 @@ class _CommunityPluginNote extends StatelessWidget {
       padding: EdgeInsets.all(8),
       margin: EdgeInsets.only(top: 8, bottom: 8),
       decoration: BoxDecoration(
-          color: Colors.black12,
-          border: Border.all(color: Colors.black26, width: 0.5),
+          color: Theme.of(context).cardColor,
+          border: Border.all(color: Theme.of(context).cardColor, width: 0.5),
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Column(
         children: [
@@ -473,11 +490,15 @@ class _CommunityPluginNote extends StatelessWidget {
                     dic['plugin.team'],
                 style: TextStyle(fontSize: UI.getTextSize(12, context)),
               )),
-              SvgPicture.asset('assets/images/public/github_logo.svg',
-                  width: 16),
+              SvgPicture.asset(
+                'assets/images/public/github_logo.svg',
+                width: 16,
+                color: Theme.of(context).textTheme.headline1.color,
+              ),
               JumpToLink(
                 plugin_github_links[pluginName],
                 text: '',
+                color: Theme.of(context).textTheme.headline1?.color,
               )
             ],
           ),

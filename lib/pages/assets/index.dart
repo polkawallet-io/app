@@ -185,7 +185,8 @@ class _AssetsState extends State<AssetsPage> {
                 Text(dic['uos.parse']),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: CupertinoActivityIndicator(),
+                  child: CupertinoActivityIndicator(
+                      color: const Color(0xFF3C3C44)),
                 )
               ],
             ),
@@ -477,12 +478,12 @@ class _AssetsState extends State<AssetsPage> {
 
     InstrumentData totalBalance =
         InstrumentData(available + reserved + locked, [], title: title);
-    totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
-        dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],
-        locked, "assets/images/icon_instrument_yellow.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1),
-        dic['available'], available, "assets/images/icon_instrument_blue.png"));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFF7647), dic['reserved'], reserved));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFFC952), dic['locked'], locked));
+    totalBalance.items.add(
+        InstrumentItemData(Color(0xFF7D97EE), dic['available'], available));
 
     datas.add(instrument1);
     datas.add(totalBalance);
@@ -493,7 +494,9 @@ class _AssetsState extends State<AssetsPage> {
 
   PreferredSizeWidget buildAppBar() {
     return AppBar(
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: UI.isDarkTheme(context)
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -546,20 +549,21 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           widget.connectedNode == null
                               ? Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   child: Center(
                                       child: RiveAnimation.asset(
                                     'assets/images/connecting.riv',
                                   )))
                               : Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .toggleableActiveColor,
+                                      color: UI.isDarkTheme(context)
+                                          ? Color(0xFF82FF99)
+                                          : Color(0xFF7D97EE),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(5.5))),
                                 ),
@@ -569,7 +573,7 @@ class _AssetsState extends State<AssetsPage> {
                                 .textTheme
                                 .headline4
                                 .copyWith(
-                                    fontWeight: FontWeight.w600, height: 0.9),
+                                    fontWeight: FontWeight.w600, height: 1.1),
                           ),
                           Container(
                             width: 14,
@@ -594,7 +598,7 @@ class _AssetsState extends State<AssetsPage> {
         isBlueBg: true,
         icon: SvgPicture.asset(
           "assets/images/icon_car.svg",
-          color: Colors.white,
+          color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
           height: 22,
         ),
         onPressed: widget.service.keyring.allAccounts.length > 0
@@ -614,10 +618,13 @@ class _AssetsState extends State<AssetsPage> {
             margin: EdgeInsets.only(right: 6.w),
             child: v3.PopupMenuButton(
                 offset: Offset(-12, 52),
-                color: Theme.of(context).cardColor,
+                color: UI.isDarkTheme(context)
+                    ? Color(0xA63A3B3D)
+                    : Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Color(0x21FFFFFF), width: 0.5),
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -643,7 +650,9 @@ class _AssetsState extends State<AssetsPage> {
                               padding: EdgeInsets.only(left: 2),
                               child: SvgPicture.asset(
                                 'assets/images/scan.svg',
-                                color: Color(0xFF979797),
+                                color: UI.isDarkTheme(context)
+                                    ? Colors.white
+                                    : Color(0xFF979797),
                                 width: 20,
                               )),
                           Padding(
@@ -666,7 +675,9 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           SvgPicture.asset(
                             'assets/images/qr.svg',
-                            color: Color(0xFF979797),
+                            color: UI.isDarkTheme(context)
+                                ? Colors.white
+                                : Color(0xFF979797),
                             width: 22,
                           ),
                           Padding(
@@ -686,7 +697,9 @@ class _AssetsState extends State<AssetsPage> {
                 icon: v3.IconButton(
                   icon: Icon(
                     Icons.add,
-                    color: Theme.of(context).disabledColor,
+                    color: UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Theme.of(context).disabledColor,
                     size: 20,
                   ),
                 ))),
@@ -933,6 +946,29 @@ class _AssetsState extends State<AssetsPage> {
                                     child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder: (context, index) {
+                                          final child = Center(
+                                            child: Text(assetsType[index],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .button
+                                                    ?.copyWith(
+                                                        color:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .button
+                                                                    ?.color
+                                                                : Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .headline1
+                                                                    ?.color,
+                                                        fontSize:
+                                                            UI.getTextSize(
+                                                                10, context))),
+                                          );
                                           return CupertinoButton(
                                             padding: EdgeInsets.all(0),
                                             onPressed: () {
@@ -943,60 +979,69 @@ class _AssetsState extends State<AssetsPage> {
                                             child: Container(
                                               height: 24,
                                               width: 65,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    _assetsTypeIndex == index
-                                                        ? null
-                                                        : BorderRadius.all(
-                                                            Radius.circular(
-                                                                6.0)),
-                                                color: _assetsTypeIndex == index
-                                                    ? Colors.transparent
-                                                    : Colors.white,
-                                                border: _assetsTypeIndex ==
-                                                        index
-                                                    ? null
-                                                    : Border.all(
-                                                        color:
-                                                            Color(0xFF979797),
-                                                        width: 0.2,
-                                                      ),
-                                                image: _assetsTypeIndex == index
-                                                    ? DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/images/icon_select_btn.png'),
-                                                        fit: BoxFit.fill,
-                                                      )
-                                                    : null,
-                                                boxShadow: _assetsTypeIndex ==
-                                                        index
-                                                    ? []
-                                                    : [
-                                                        BoxShadow(
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 1,
-                                                          spreadRadius: 0,
-                                                          color:
-                                                              Color(0x30000000),
-                                                        ),
-                                                      ],
-                                              ),
-                                              child: Center(
-                                                child: Text(assetsType[index],
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .button
-                                                        ?.copyWith(
-                                                            color: _assetsTypeIndex ==
+                                              child: UI.isDarkTheme(context) &&
+                                                      _assetsTypeIndex != index
+                                                  ? RoundedCard(
+                                                      radius: 6, child: child)
+                                                  : Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            _assetsTypeIndex ==
                                                                     index
-                                                                ? Colors.white
-                                                                : Color(
-                                                                    0xFF565554),
-                                                            fontSize:
-                                                                UI.getTextSize(
-                                                                    10,
-                                                                    context))),
-                                              ),
+                                                                ? null
+                                                                : BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            6.0)),
+                                                        color: _assetsTypeIndex ==
+                                                                index
+                                                            ? Colors.transparent
+                                                            : UI.isDarkTheme(
+                                                                    context)
+                                                                ? Color(
+                                                                    0x14FFFFFF)
+                                                                : Colors.white,
+                                                        border:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? null
+                                                                : Border.all(
+                                                                    color: Color(
+                                                                        0xFF979797),
+                                                                    width: 0.2,
+                                                                  ),
+                                                        image: _assetsTypeIndex ==
+                                                                index
+                                                            ? DecorationImage(
+                                                                image: AssetImage(
+                                                                    'assets/images/icon_select_btn${UI.isDarkTheme(context) ? "_dark" : ""}.png'),
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              )
+                                                            : null,
+                                                        boxShadow:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? []
+                                                                : [
+                                                                    BoxShadow(
+                                                                      offset:
+                                                                          Offset(
+                                                                              1,
+                                                                              1),
+                                                                      blurRadius:
+                                                                          1,
+                                                                      spreadRadius:
+                                                                          0,
+                                                                      color: Color(
+                                                                          0x30000000),
+                                                                    ),
+                                                                  ],
+                                                      ),
+                                                      child: child,
+                                                    ),
                                             ),
                                           );
                                         },
@@ -1034,8 +1079,6 @@ class _AssetsState extends State<AssetsPage> {
                                             .headline5
                                             .copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                color: Color(0xFF565554)
-                                                    .withAlpha(217),
                                                 fontSize: UI.getTextSize(
                                                     18, context)),
                                       ),
@@ -1070,8 +1113,9 @@ class _AssetsState extends State<AssetsPage> {
                                                       color: balancesInfo?.isFromCache ==
                                                               false
                                                           ? Theme.of(context)
-                                                              .textSelectionTheme
-                                                              .selectionColor
+                                                              .textTheme
+                                                              .headline1
+                                                              .color
                                                           : Theme.of(context)
                                                               .dividerColor)),
                                           Text(
@@ -1226,7 +1270,6 @@ class TokenItem extends StatelessWidget {
             item.name,
             style: Theme.of(context).textTheme.headline5.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF565554).withAlpha(217),
                 fontSize: UI.getTextSize(18, context)),
           ),
           trailing: Column(
@@ -1241,7 +1284,7 @@ class TokenItem extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline5.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isFromCache == false
-                        ? Theme.of(context).textSelectionTheme.selectionColor
+                        ? Theme.of(context).textTheme.headline1.color
                         : Theme.of(context).dividerColor),
               ),
               marketPrice != null && marketPrice > 0

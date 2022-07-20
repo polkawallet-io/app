@@ -12,12 +12,15 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:rive/src/widgets/rive_animation.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage(this.service, this.changeLang, this.changeNode);
+  SettingsPage(
+      this.service, this.changeLang, this.changeNode, this.changeDarkTheme);
   final AppService service;
   final Function(String) changeLang;
   final Future<void> Function(NetworkParams) changeNode;
+  final Function(bool) changeDarkTheme;
   static final String route = '/profile/settings';
 
   @override
@@ -166,7 +169,10 @@ class _Settings extends State<SettingsPage> {
                     physics: BouncingScrollPhysics(),
                     child: RoundedCard(
                       margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
-                      padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                      padding: UI.isDarkTheme(context)
+                          ? EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h)
+                          : EdgeInsets.fromLTRB(
+                              8.75.w, 16.75.h, 8.75.w, 16.75.h),
                       child: Column(
                         children: <Widget>[
                           SettingsPageListItem(
@@ -178,6 +184,16 @@ class _Settings extends State<SettingsPage> {
                                   widget.service.store.settings.isHideBalance,
                               onChanged: (v) => widget.service.store.settings
                                   .setIsHideBalance(v),
+                            ),
+                          ),
+                          Divider(height: 24.h),
+                          SettingsPageListItem(
+                            label: dic['setting.theme.dark'],
+                            content: v3.CupertinoSwitch(
+                              value: widget.service.store.settings.isDarkTheme,
+                              onChanged: (v) {
+                                widget.changeDarkTheme(v);
+                              },
                             ),
                           ),
                           Divider(height: 24.h),

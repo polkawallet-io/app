@@ -151,7 +151,9 @@ class _ContactsPageState extends State<ContactsPage> {
             Padding(
               padding: EdgeInsets.only(right: 12.w),
               child: v3.IconButton(
-                icon: Icon(Icons.add),
+                icon: Icon(Icons.add,
+                    color:
+                        UI.isDarkTheme(context) ? Colors.black : Colors.white),
                 isBlueBg: true,
                 onPressed: () async {
                   await Navigator.of(context).pushNamed(ContactPage.route);
@@ -172,12 +174,10 @@ class _ContactsPageState extends State<ContactsPage> {
                 leading: AddressIcon(i.address, svg: i.icon, size: 36.w),
                 title: Text(
                   UI.accountName(context, i),
-                  style: TextStyle(fontSize: UI.getTextSize(16, context)),
+                  style: Theme.of(context).textTheme.headline4,
                 ),
-                subtitle: Text(
-                  Fmt.address(i.address),
-                  style: TextStyle(fontSize: UI.getTextSize(12, context)),
-                ),
+                subtitle: Text(Fmt.address(i.address),
+                    style: Theme.of(context).textTheme.headline6),
                 onTap: () => _showActions(context, i),
               ),
             );

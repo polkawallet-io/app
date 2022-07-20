@@ -141,7 +141,7 @@ class _ChangePassword extends State<ChangePasswordPage> {
                               child: Text(
                                 dic['pass.forget'],
                                 style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
+                                    color: Theme.of(context).errorColor,
                                     decoration: TextDecoration.underline),
                               ),
                               onTap: () {

@@ -65,7 +65,9 @@ class _MessagePageState extends State<MessagePage> {
                       child: Text(
                         dic['message.readAll'],
                         style: TextStyle(
-                          color: Theme.of(context).cardColor,
+                          color: polkawallet_ui.UI.isDarkTheme(context)
+                              ? Colors.white
+                              : Theme.of(context).cardColor,
                           fontSize: polkawallet_ui.UI.getTextSize(12, context),
                           fontFamily: polkawallet_ui.UI
                               .getFontFamily('TitilliumWeb', context),
@@ -110,7 +112,9 @@ class _MessagePageState extends State<MessagePage> {
             ),
             Expanded(
                 child: Container(
-              color: Colors.white,
+              color: polkawallet_ui.UI.isDarkTheme(context)
+                  ? Color(0xFF353638)
+                  : Colors.white,
               child: Observer(builder: (_) {
                 final List<MessageData> datas = [];
                 if (_tabIndex == 0) {
@@ -157,25 +161,33 @@ class _MessagePageState extends State<MessagePage> {
                                     ?.copyWith(
                                         fontSize: polkawallet_ui.UI
                                             .getTextSize(10, context),
-                                        color: Theme.of(context)
-                                            .textSelectionTheme
-                                            .selectionColor
-                                            .withAlpha(66)),
+                                        color: polkawallet_ui.UI
+                                                .isDarkTheme(context)
+                                            ? Colors.white
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .headline1
+                                                .color
+                                                .withAlpha(66)),
                               ),
                               GestureDetector(
                                   onTap: () {
                                     data.onDetailAction(context);
                                   },
                                   child: RoundedCard(
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
+                                    borderWidth: 0.5,
+                                    color:
+                                        polkawallet_ui.UI.isDarkTheme(context)
+                                            ? Color(0xFF444547)
+                                            : Theme.of(context)
+                                                .scaffoldBackgroundColor,
                                     margin: EdgeInsets.only(top: 22),
                                     child: Column(
                                       children: [
                                         ClipRRect(
                                             borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10)),
+                                                topLeft: Radius.circular(8),
+                                                topRight: Radius.circular(8)),
                                             child: CachedNetworkImage(
                                               width: double.infinity,
                                               imageUrl: data.urlByBanner(),
@@ -221,10 +233,14 @@ class _MessagePageState extends State<MessagePage> {
                                   ?.copyWith(
                                       fontSize: polkawallet_ui.UI
                                           .getTextSize(10, context),
-                                      color: Theme.of(context)
-                                          .textSelectionTheme
-                                          .selectionColor
-                                          .withAlpha(66)),
+                                      color:
+                                          polkawallet_ui.UI.isDarkTheme(context)
+                                              ? Colors.white
+                                              : Theme.of(context)
+                                                  .textTheme
+                                                  .headline1
+                                                  .color
+                                                  .withAlpha(66)),
                             ),
                             Container(
                               margin: EdgeInsets.only(top: 22, right: 65),
@@ -256,8 +272,11 @@ class _MessagePageState extends State<MessagePage> {
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
+                                          color: polkawallet_ui.UI
+                                                  .isDarkTheme(context)
+                                              ? Color(0x24FFFFFF)
+                                              : Theme.of(context)
+                                                  .scaffoldBackgroundColor,
                                           borderRadius: BorderRadius.only(
                                             bottomLeft: Radius.circular(10),
                                             topRight: Radius.circular(10),

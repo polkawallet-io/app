@@ -233,6 +233,37 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadIsHideBalanceAsyncAction.run(() => super.loadIsHideBalance());
   }
 
+  final _$isDarkThemeAtom = Atom(name: '_SettingsStore.isDarkTheme');
+
+  @override
+  bool get isDarkTheme {
+    _$isDarkThemeAtom.reportRead();
+    return super.isDarkTheme;
+  }
+
+  @override
+  set isDarkTheme(bool value) {
+    _$isDarkThemeAtom.reportWrite(value, super.isDarkTheme, () {
+      super.isDarkTheme = value;
+    });
+  }
+
+  final _$setIsDarkThemeAsyncAction =
+      AsyncAction('_SettingsStore.setIsDarkTheme');
+
+  @override
+  Future<void> setIsDarkTheme(bool value) {
+    return _$setIsDarkThemeAsyncAction.run(() => super.setIsDarkTheme(value));
+  }
+
+  final _$loadIsDarkThemeAsyncAction =
+      AsyncAction('_SettingsStore.loadIsDarkTheme');
+
+  @override
+  Future<void> loadIsDarkTheme() {
+    return _$loadIsDarkThemeAsyncAction.run(() => super.loadIsDarkTheme());
+  }
+
   @override
   String toString() {
     return '''
@@ -241,7 +272,8 @@ isHideBalance: ${isHideBalance},
 communityMessages: ${communityMessages},
 systemMessages: ${systemMessages},
 communityUnreadNumber: ${communityUnreadNumber},
-systemUnreadNumber: ${systemUnreadNumber}
+systemUnreadNumber: ${systemUnreadNumber},
+isDarkTheme: ${isDarkTheme},
     ''';
   }
 }

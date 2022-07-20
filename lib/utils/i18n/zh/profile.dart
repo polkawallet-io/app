@@ -60,7 +60,7 @@ const Map<String, String> zhProfile = {
   'about.brif': 'Mobile Wallet for Polkadot',
   'about.version': '版本',
   'update': '检查更新',
-  'update.latest': '您的应用已是最新版本。',
+  'update.latest': '您的应用已是最新版本!\n尽情使用Polkawallet吧',
   'update.up': '发现新版本，立即更新吗？',
   'update.now': '立即更新',
   'update.start': '等待连接...',
@@ -114,5 +114,6 @@ const Map<String, String> zhProfile = {
   'message.readAll': '全部已读',
   'message.community': '社区推送',
   'message.system': '系统消息',
-  'message.polkawalletTeam': '波卡钱包团队'
+  'message.polkawalletTeam': '波卡钱包团队',
+  'setting.theme.dark': '深色主题',
 };

@@ -139,18 +139,23 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   PageRouteParams _autoRoutingParams;
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
-    final textColor = Color(0xFF565554);
+    final isDarkTheme = _store?.settings?.isDarkTheme ?? false;
+    final textColor = isDarkTheme ? Colors.white : Color(0xFF565554);
     return ThemeData(
-      // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFF5F3F1),
-      dividerColor: Color(0xFFD4D4D4),
-      cardColor: Colors.white,
-      toggleableActiveColor: Color(0xFF7D97EE),
+      brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+      scaffoldBackgroundColor:
+          isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
+      dividerColor: isDarkTheme ? Color(0x4BFFFFFF) : Color(0xFFD4D4D4),
+      cardColor: isDarkTheme ? Color(0xFF353638) : Colors.white,
+      toggleableActiveColor:
+          isDarkTheme ? Color(0xFFFFC952) : Color(0xFF7D97EE),
       errorColor: Color(0xFFFA7243),
-      unselectedWidgetColor: Color(0xFF858380),
-      textSelectionTheme: TextSelectionThemeData(selectionColor: textColor),
+      unselectedWidgetColor: isDarkTheme ? Colors.white : Color(0xFF858380),
+      disabledColor: isDarkTheme ? Colors.white : Color(0xFF858380),
+      textSelectionTheme:
+          TextSelectionThemeData(selectionColor: textColor.withAlpha(80)),
       appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFF5F3F0),
+          backgroundColor: isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
           elevation: 0,
           titleTextStyle: TextStyle(
               color: textColor,
@@ -160,7 +165,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       hoverColor: secondaryColor,
-      colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
               fontSize: UI.getTextSize(30, context, locale: _locale),
@@ -219,7 +223,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           button: TextStyle(
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: isDarkTheme ? Color(0xFF121212) : Colors.white,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale))),
     );
@@ -248,6 +252,16 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       if (_locale != null) {
         _service.store.settings.initMessage((_locale).languageCode);
       }
+    });
+  }
+
+  void _changeDarkTheme(bool darkTheme) {
+    _service.store.settings.setIsDarkTheme(darkTheme);
+    setState(() {
+      _theme = _getAppTheme(
+        _service.plugin.basic.primaryColor,
+        secondaryColor: _service.plugin.basic.gradientColor,
+      );
     });
   }
 
@@ -468,7 +482,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   children: [
                     Container(
                       margin: EdgeInsets.only(right: 8),
-                      child: CupertinoActivityIndicator(),
+                      child: CupertinoActivityIndicator(
+                          color: const Color(0xFF3C3C44)),
                     ),
                     Text(
                         '${dic['v3.changeNetwork.ing']} ${networkName.toUpperCase()}...')
@@ -733,7 +748,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ExportAccountPage.route: (_) => ExportAccountPage(_service),
       ExportResultPage.route: (_) => ExportResultPage(),
       SettingsPage.route: (_) =>
-          SettingsPage(_service, _changeLang, _changeNode),
+          SettingsPage(_service, _changeLang, _changeNode, _changeDarkTheme),
       RemoteNodeListPage.route: (_) =>
           RemoteNodeListPage(_service, _changeNode),
       CreateRecoveryPage.route: (_) => CreateRecoveryPage(_service),
