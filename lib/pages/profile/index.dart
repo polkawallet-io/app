@@ -123,8 +123,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.of(context).pushNamed(MessagePage.route);
                 },
                 child: Container(
-                  width: 32.h,
-                  height: 32.h,
+                  width: 32,
+                  height: 32,
                   margin: EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
                       image: DecorationImage(
