@@ -1,3 +1,7 @@
+# [3.3.3-beta] - 20220720
+1. taiga LP 页面图标更新.
+2. Night mode #165
+
 # [3.3.2-beta] - 20220713
 1. aUSD/lcDOT/LDOT icon 更新 #248
 2. 3USD 加入资产统计 + 从 acala js sdk 获取市场价格 #248
