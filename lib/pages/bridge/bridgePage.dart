@@ -57,7 +57,7 @@ class _BridgePageState extends State<BridgePage> {
   BridgeAmountInputConfig _config;
 
   ///origin chain fee
-  TxFeeEstimateResult _fee;
+  String _fee;
 
   ///origin chain props
   BridgeNetworkProperties _props;
@@ -113,12 +113,6 @@ class _BridgePageState extends State<BridgePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadConfig();
     });
-
-    widget.service.plugin.sdk.webView.subscribeReloadAction(reloadKey,
-        () async {
-      await _connectFromChain(_chainFrom);
-      _subscribeBalance();
-    });
   }
 
   @override
@@ -126,11 +120,18 @@ class _BridgePageState extends State<BridgePage> {
     _disconnectFromChain();
     _address20Ctrl.dispose();
     _amountCtrl.dispose();
-    widget.service.plugin.sdk.webView.unsubscribeReloadAction(reloadKey);
+    widget.service.plugin.sdk.api.bridge.unsubscribeReloadAction(reloadKey);
+    widget.service.plugin.sdk.api.bridge.dispose();
     super.dispose();
   }
 
   void loadConfig() async {
+    await widget.service.plugin.sdk.api.bridge.init();
+    widget.service.plugin.sdk.api.bridge.subscribeReloadAction(reloadKey,
+        () async {
+      await _connectFromChain(_chainFrom);
+      _subscribeBalance();
+    });
     final chainFromAll =
         await widget.service.plugin.sdk.api.bridge.getFromChainsAll();
     final chainInfo =
@@ -284,9 +285,10 @@ class _BridgePageState extends State<BridgePage> {
 
   Future<void> _getTxFee() async {
     final token = _balanceMap[_token];
+    // widget.service.keyring.store.list.firstWhere((element) => element['pubKey'] == widget.service.keyring.current.pubKey);
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
-    final tx = await widget.service.plugin.sdk.api.bridge.getTxParams(
+    final feeData = await widget.service.plugin.sdk.api.bridge.estimateTxFee(
         _chainFrom,
         _chainTo,
         _token,
@@ -294,14 +296,8 @@ class _BridgePageState extends State<BridgePage> {
             ? '0x0000000000000000000000000000000000000000'
             : _accountTo.address,
         '100000000',
-        token.decimals);
-
-    if (tx == null) return '0';
-
-    final txInfo = TxInfoData(tx.module, tx.call, sender);
-    final feeData = await widget.service.plugin.sdk.api.tx
-        .estimateFees(txInfo, tx.params, jsApi: 'bridge.getApi("$_chainFrom")');
-
+        token.decimals,
+        sender.address);
     if (feeData != null) {
       setState(() {
         _fee = feeData;
@@ -695,7 +691,7 @@ class _BridgePageState extends State<BridgePage> {
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.partialFee?.toString() ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.toString() ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
                                             style: feeStyle),
                                   ],
                                 ),
