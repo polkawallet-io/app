@@ -1146,7 +1146,9 @@ class _AssetsState extends State<AssetsPage> {
                                       children: (tokens ?? [])
                                           .map((TokenBalanceData i) {
                                         // we can use token price form plugin or from market
-                                        final price = i.price ??
+                                        final price = (i.getPrice != null
+                                                ? i.getPrice()
+                                                : i.price) ??
                                             widget.service.store.assets
                                                 .marketPrices[i.symbol] ??
                                             0.0;
