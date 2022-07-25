@@ -254,9 +254,13 @@ class _BridgePageState extends State<BridgePage> {
           : _tokensMap[_chainFrom + _chainTo].first;
     });
 
-    _disconnectFromChain();
-    await _connectFromChain(_chainFrom);
-    _subscribeBalance();
+    if (!_fromConnecting) {
+      setState(() {
+        _fromConnecting = true;
+        _config = null;
+      });
+    }
+    widget.service.plugin.sdk.api.bridge.reload();
   }
 
   void _toChange(String to) {
@@ -439,7 +443,7 @@ class _BridgePageState extends State<BridgePage> {
     }
     try {
       final output = checksumEthereumAddress(input);
-      print(output);
+      debugPrint(output);
     } catch (err) {
       return dic['address.error.eth'];
     }
@@ -639,7 +643,7 @@ class _BridgePageState extends State<BridgePage> {
                                 tokenOptions: tokenBalances ?? [],
                                 quickTokenOptions: tokenBalances
                                         .where((element) => tokensAll.contains(
-                                            element.symbol.toUpperCase()))
+                                            element?.symbol?.toUpperCase()))
                                         .toList() ??
                                     [],
                                 tokenSelectTitle: dic['hub.selectToken'],
