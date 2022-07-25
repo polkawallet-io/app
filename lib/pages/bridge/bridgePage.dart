@@ -418,7 +418,18 @@ class _BridgePageState extends State<BridgePage> {
             chainFromIcon: chainFromIcon,
             feeToken: feeToken,
             isPlugin: true,
-            isBridge: true);
+            isBridge: true,
+            bridgeParams: {
+              'from': _chainFrom,
+              'to': _chainTo,
+              'token': _token,
+              'address': _isToMoonBeam()
+                  ? _address20Ctrl.text.trim()
+                  : _accountTo.address,
+              'amount': Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals)
+                  .toString(),
+              'decimals': token.decimals
+            });
       }
     }
     return null;
