@@ -338,7 +338,7 @@ class _AssetPageState extends State<AssetPage> {
                                     : null,
                               ),
                             ),
-                            text: dic['v3.send'],
+                            text: dic['transfer'],
                             onPressed: () {
                               if (widget.service.plugin.basic.name ==
                                       para_chain_name_karura ||
