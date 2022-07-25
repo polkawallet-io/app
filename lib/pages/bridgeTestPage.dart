@@ -68,7 +68,11 @@ class _BridgeTestPageState extends State<BridgeTestPage> {
       isSuccess = false;
     }
     final config = await widget.sdk.api.bridge.getAmountInputConfig(
-        connected[0], connected[1], routes[0].token, _testAddress);
+        connected[0],
+        connected[1],
+        routes[0].token,
+        _testAddress,
+        _testAddress);
     if (config.from != connected[0] ||
         config.to != connected[1] ||
         config.token != routes[0].token) {
@@ -87,7 +91,8 @@ class _BridgeTestPageState extends State<BridgeTestPage> {
           routes[0].token,
           _testAddress,
           '23300000000',
-          balance?.decimals ?? 8);
+          balance?.decimals ?? 8,
+          _testAddress);
       if (tx.module.isEmpty || tx.call.isEmpty || tx.params.length == 0) {
         isSuccess = false;
       }

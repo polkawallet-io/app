@@ -11,7 +11,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
-import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -55,9 +54,6 @@ class _BridgePageState extends State<BridgePage> {
 
   ///destination chain fee
   BridgeAmountInputConfig _config;
-
-  ///origin chain fee
-  String _fee;
 
   ///origin chain props
   BridgeNetworkProperties _props;
@@ -184,7 +180,6 @@ class _BridgePageState extends State<BridgePage> {
     if (!_fromConnecting) {
       setState(() {
         _fromConnecting = true;
-        _fee = null;
         _config = null;
       });
     }
@@ -229,10 +224,10 @@ class _BridgePageState extends State<BridgePage> {
       });
     }
 
-    _getTxFee();
-
+    final toAddress =
+        _isToMoonBeam() ? _address20Ctrl.text.trim() : _accountTo.address;
     final config = await widget.service.plugin.sdk.api.bridge
-        .getAmountInputConfig(_chainFrom, _chainTo, _token,
+        .getAmountInputConfig(_chainFrom, _chainTo, _token, toAddress,
             widget.service.keyring.current.address);
     setState(() {
       _config = config;
@@ -280,28 +275,6 @@ class _BridgePageState extends State<BridgePage> {
       _token = token;
 
       _updateInputConfig();
-    }
-  }
-
-  Future<void> _getTxFee() async {
-    final token = _balanceMap[_token];
-    // widget.service.keyring.store.list.firstWhere((element) => element['pubKey'] == widget.service.keyring.current.pubKey);
-    final sender = TxSenderData(widget.service.keyring.current.address,
-        widget.service.keyring.current.pubKey);
-    final feeData = await widget.service.plugin.sdk.api.bridge.estimateTxFee(
-        _chainFrom,
-        _chainTo,
-        _token,
-        _isToMoonBeam()
-            ? '0x0000000000000000000000000000000000000000'
-            : _accountTo.address,
-        '100000000',
-        token.decimals,
-        sender.address);
-    if (feeData != null) {
-      setState(() {
-        _fee = feeData;
-      });
     }
   }
 
@@ -378,7 +351,8 @@ class _BridgePageState extends State<BridgePage> {
           _token,
           _isToMoonBeam() ? _address20Ctrl.text.trim() : _accountTo.address,
           Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals).toString(),
-          token.decimals);
+          token.decimals,
+          widget.service.keyring.current.address);
 
       if (xcmParams != null) {
         return XcmTxConfirmParams(
@@ -526,11 +500,6 @@ class _BridgePageState extends State<BridgePage> {
         final TokenBalanceData tokenBalance = _config != null
             ? _balanceMap[_token]
             : TokenBalanceData(decimals: 12, symbol: _token, amount: '0');
-        final destFeeToken = _chainTo == 'statemine' && _token != 'KSM'
-            ? TokenBalanceData(decimals: 12, symbol: 'KSM', amount: '0')
-            : _chainTo == 'statemint' && _token != 'DOT'
-                ? TokenBalanceData(decimals: 10, symbol: 'DOT', amount: '0')
-                : tokenBalance;
 
         return SafeArea(
           child: Padding(
@@ -696,13 +665,13 @@ class _BridgePageState extends State<BridgePage> {
                                             style: feeStyle),
                                       ),
                                     ),
-                                    _fee == null
+                                    _config == null
                                         ? CupertinoActivityIndicator(
                                             color: const Color.fromARGB(
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_fee?.toString() ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.estimateFee ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
                                             style: feeStyle),
                                   ],
                                 ),
@@ -728,7 +697,7 @@ class _BridgePageState extends State<BridgePage> {
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee ?? '0'), destFeeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(destFeeToken.symbol)}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.destFee.amount ?? '0'), _config.destFee.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_config.destFee.token)}',
                                             style: feeStyle),
                                   ],
                                 ),
