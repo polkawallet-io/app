@@ -505,6 +505,11 @@ class _BridgePageState extends State<BridgePage> {
             ? _balanceMap[_token]
             : TokenBalanceData(decimals: 12, symbol: _token, amount: '0');
 
+        final feeToken = TokenBalanceData(
+            decimals: _props?.tokenDecimals?.first,
+            symbol: _props?.tokenSymbol?.first,
+            amount: '0');
+
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -675,7 +680,7 @@ class _BridgePageState extends State<BridgePage> {
                                                 150, 205, 205, 205),
                                             radius: 10.h)
                                         : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.estimateFee ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
                                             style: feeStyle),
                                   ],
                                 ),
@@ -717,7 +722,7 @@ class _BridgePageState extends State<BridgePage> {
                                             _chainFrom,
                                             _crossChainIcons,
                                           ),
-                                          tokenBalance);
+                                          feeToken);
                                       if (params != null) {
                                         if (!mounted) return;
                                         final res = await Navigator.of(context)
