@@ -76,8 +76,6 @@ class _AssetsState extends State<AssetsPage> {
       new GlobalKey<CustomRefreshIndicatorState>();
   bool _refreshing = false;
 
-  List _announcements;
-
   Timer _priceUpdateTimer;
 
   int instrumentIndex = 0;
@@ -85,6 +83,8 @@ class _AssetsState extends State<AssetsPage> {
   double _rate = 1.0;
 
   int _assetsTypeIndex = 0;
+
+  ScrollController _scrollController;
 
   Future<void> _updateBalances() async {
     if (widget.connectedNode == null) return;
@@ -97,23 +97,6 @@ class _AssetsState extends State<AssetsPage> {
       _refreshing = false;
     });
   }
-
-  // Future<dynamic> _fetchAnnouncements() async {
-  //   final res = await WalletApi.getAnnouncements();
-  //   if (res == null) return;
-
-  //   _announcements = res;
-  //   var index = _announcements.indexWhere((element) {
-  //     return element["plugin"] == widget.service.plugin.basic.name;
-  //   });
-  //   if (index == -1) {
-  //     final i =
-  //         _announcements.indexWhere((element) => element["plugin"] == "all");
-  //     return i == -1 ? null : _announcements[i];
-  //   } else {
-  //     return _announcements[index];
-  //   }
-  // }
 
   Future<void> _updateMarketPrices() async {
     widget.service.assets
@@ -397,13 +380,15 @@ class _AssetsState extends State<AssetsPage> {
   void initState() {
     super.initState();
 
+    _scrollController = ScrollController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateMarketPrices();
-      getRate();
+      _getRate();
     });
   }
 
-  Future<void> getRate() async {
+  Future<void> _getRate() async {
     var rate = await widget.service.store.settings.getRate();
     if (mounted) {
       setState(() {
@@ -492,7 +477,7 @@ class _AssetsState extends State<AssetsPage> {
     return datas;
   }
 
-  PreferredSizeWidget buildAppBar() {
+  PreferredSizeWidget _buildAppBar() {
     return AppBar(
       systemOverlayStyle: UI.isDarkTheme(context)
           ? SystemUiOverlayStyle.light
@@ -594,25 +579,31 @@ class _AssetsState extends State<AssetsPage> {
       centerTitle: true,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      leading: v3.IconButton(
-        isBlueBg: true,
-        icon: SvgPicture.asset(
-          "assets/images/icon_car.svg",
-          color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
-          height: 22,
-        ),
-        onPressed: widget.service.keyring.allAccounts.length > 0
-            ? () async {
-                final selected = (await Navigator.of(context)
-                    .pushNamed(NetworkSelectPage.route)) as PolkawalletPlugin;
-                setState(() {});
-                if (selected != null &&
-                    selected.basic.name != widget.service.plugin.basic.name) {
-                  widget.checkJSCodeUpdate(selected);
-                }
-              }
-            : null,
-      ),
+      leading: Padding(
+          padding: EdgeInsets.only(left: 16.w),
+          child: Row(children: [
+            v3.IconButton(
+              isBlueBg: true,
+              icon: SvgPicture.asset(
+                "assets/images/icon_car.svg",
+                color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
+                height: 22,
+              ),
+              onPressed: widget.service.keyring.allAccounts.length > 0
+                  ? () async {
+                      final selected = (await Navigator.of(context)
+                              .pushNamed(NetworkSelectPage.route))
+                          as PolkawalletPlugin;
+                      setState(() {});
+                      if (selected != null &&
+                          selected.basic.name !=
+                              widget.service.plugin.basic.name) {
+                        widget.checkJSCodeUpdate(selected);
+                      }
+                    }
+                  : null,
+            )
+          ])),
       actions: <Widget>[
         Container(
             margin: EdgeInsets.only(right: 6.w),
@@ -788,12 +779,12 @@ class _AssetsState extends State<AssetsPage> {
 
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: buildAppBar(),
+          appBar: _buildAppBar(),
           body: CustomRefreshIndicator(
               edgeOffset: 16,
               key: _refreshKey,
               onRefresh: _updateBalances,
-              child: ListView(children: [
+              child: ListView(controller: _scrollController, children: [
                 StickyHeader(
                     header: Container(),
                     content: Column(
@@ -972,6 +963,10 @@ class _AssetsState extends State<AssetsPage> {
                                           return CupertinoButton(
                                             padding: EdgeInsets.all(0),
                                             onPressed: () {
+                                              _scrollController.animateTo(0,
+                                                  duration: Duration(
+                                                      milliseconds: 500),
+                                                  curve: Curves.ease);
                                               setState(() {
                                                 _assetsTypeIndex = index;
                                               });
