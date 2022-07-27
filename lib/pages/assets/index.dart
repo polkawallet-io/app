@@ -721,6 +721,8 @@ class _AssetsState extends State<AssetsPage> {
         // remove empty LP tokens
         if (tokens.length > 0) {
           tokens.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
+          // remove native token
+          tokens.removeWhere((element) => element.symbol == symbol);
         }
         // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
