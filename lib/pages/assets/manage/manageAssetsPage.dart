@@ -320,7 +320,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                   dense: list[i].fullName != null,
                                   leading: TokenIcon(
                                     widget.service.plugin.basic.name ==
-                                            para_chain_name_statemine
+                                                para_chain_name_statemine ||
+                                            widget.service.plugin.basic.name ==
+                                                para_chain_name_statemint
                                         ? list[i].id
                                         : list[i].symbol,
                                     widget.service.plugin.tokenIcons,
