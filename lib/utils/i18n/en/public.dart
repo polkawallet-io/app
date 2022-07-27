@@ -137,4 +137,5 @@ const Map<String, String> enPublic = {
   'bridge.address': 'To Address',
   'bridge.address.warn':
       'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
+  'bridge.connecting.warn': 'Connection timeout. \ntry again',
 };

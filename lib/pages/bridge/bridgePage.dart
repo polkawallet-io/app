@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:async/async.dart';
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
@@ -100,6 +102,11 @@ class _BridgePageState extends State<BridgePage> {
   /// all icon widget
   Map<String, Widget> _crossChainIcons;
 
+  /// connection error
+  String _connectionError;
+
+  CancelableOperation _cancelable;
+
   ///handle androidOnRenderProcessGone crash
   static const String reloadKey = 'BridgeWebReloadKey';
   @override
@@ -170,9 +177,30 @@ class _BridgePageState extends State<BridgePage> {
     setState(() {
       _isReady = true;
     });
-
+    _loadingActionConfig();
     await _connectFromChain(_chainFrom);
     _subscribeBalance();
+  }
+
+  Future<String> _getConnectionError() async {
+    await Future.delayed(const Duration(seconds: 10));
+    if (!mounted) return '';
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    return dic['bridge.connecting.warn'];
+  }
+
+  void _loadingActionConfig() {
+    setState(() {
+      _connectionError = null;
+    });
+    _cancelable?.cancel();
+    _cancelable = null;
+    _cancelable = CancelableOperation.fromFuture(_getConnectionError(),
+        onCancel: () => null).then((p0) {
+      setState(() {
+        _connectionError = p0;
+      });
+    });
   }
 
   Future<void> _connectFromChain(String chainFrom) async {
@@ -188,8 +216,10 @@ class _BridgePageState extends State<BridgePage> {
       _props = await widget.service.plugin.sdk.api.bridge
           .getNetworkProperties(chainFrom);
     }
+    _cancelable?.cancel();
     setState(() {
       _fromConnecting = false;
+      _connectionError = null;
     });
   }
 
@@ -259,6 +289,7 @@ class _BridgePageState extends State<BridgePage> {
         _config = null;
       });
     }
+    _loadingActionConfig();
     widget.service.plugin.sdk.api.bridge.reload();
   }
 
@@ -488,7 +519,9 @@ class _BridgePageState extends State<BridgePage> {
 
         return SafeArea(
             child: PluginPopLoadingContainer(
+          canTap: true,
           loading: !_isReady || _fromConnecting || _config == null,
+          tips: _connectionError ?? 'Connecting...',
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
