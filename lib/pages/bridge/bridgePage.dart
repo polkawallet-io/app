@@ -4,7 +4,6 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:ethereum_addresses/ethereum_addresses.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,9 +19,9 @@ import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -661,7 +660,7 @@ class _BridgePageState extends State<BridgePage> {
                                         Visibility(
                                           visible: _config != null,
                                           child: Text(
-                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
+                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
                                               style: feeStyle),
                                         )
                                       ],
@@ -685,7 +684,7 @@ class _BridgePageState extends State<BridgePage> {
                                         Visibility(
                                           visible: _config != null,
                                           child: Text(
-                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee?.amount ?? '0'), _config?.destFee?.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_config?.destFee?.token ?? '')}',
                                               style: feeStyle),
                                         )
                                       ],
