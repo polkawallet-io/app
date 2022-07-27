@@ -724,10 +724,15 @@ class _AssetsState extends State<AssetsPage> {
         }
         // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
+        final isStateMint =
+            widget.service.plugin.basic.name == para_chain_name_statemine ||
+                widget.service.plugin.basic.name == para_chain_name_statemint;
         if (customTokensConfig.keys.length > 0) {
-          tokens.retainWhere((e) => customTokensConfig[e.symbol]);
+          tokens.retainWhere(
+              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
 
-          tokensAll.retainWhere((e) => customTokensConfig[e.symbol]);
+          tokensAll.retainWhere(
+              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
           tokensAll.forEach((e) {
             if (tokens.indexWhere((token) => token.symbol == e.symbol) < 0) {
               tokens.add(e);
@@ -1159,10 +1164,7 @@ class _AssetsState extends State<AssetsPage> {
                                                   ? _rate
                                                   : 1.0),
                                           icon: TokenIcon(
-                                            widget.service.plugin.basic.name ==
-                                                    para_chain_name_statemine
-                                                ? i.id
-                                                : i.symbol,
+                                            isStateMint ? i.id : i.symbol,
                                             widget.service.plugin.tokenIcons,
                                             symbol: i.symbol,
                                             size: 30,

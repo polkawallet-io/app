@@ -38,11 +38,14 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
   int _assetsTypeIndex = 0;
 
   Future<void> _onSave() async {
+    final isStateMint =
+        widget.service.plugin.basic.name == para_chain_name_statemine ||
+            widget.service.plugin.basic.name == para_chain_name_statemint;
     final config = Map<String, bool>.of(_tokenVisible);
     if (_hide0) {
       widget.service.plugin.noneNativeTokensAll.forEach((e) {
         if (Fmt.balanceInt(e.amount) == BigInt.zero) {
-          config[e.symbol] = false;
+          config[isStateMint ? e.id : e.symbol] = false;
         }
       });
     }
@@ -75,6 +78,9 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
+      final isStateMint =
+          widget.service.plugin.basic.name == para_chain_name_statemine ||
+              widget.service.plugin.basic.name == para_chain_name_statemint;
       final Map<String, bool> defaultVisibleMap = {nativeToken: true};
 
       if (widget.service.store.assets.customAssets.keys.length == 0) {
@@ -84,14 +90,18 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
         });
 
         widget.service.plugin.noneNativeTokensAll.forEach((token) {
-          if (defaultVisibleMap[token.symbol] == null) {
-            defaultVisibleMap[token.symbol] = false;
+          if (defaultVisibleMap[isStateMint ? token.id : token.symbol] ==
+              null) {
+            defaultVisibleMap[isStateMint ? token.id : token.symbol] = false;
           }
         });
       } else {
         widget.service.plugin.noneNativeTokensAll.forEach((token) {
-          defaultVisibleMap[token.symbol] =
-              widget.service.store.assets.customAssets[token.symbol];
+          defaultVisibleMap[isStateMint ? token.id : token.symbol] = widget
+              .service
+              .store
+              .assets
+              .customAssets[isStateMint ? token.id : token.symbol];
         });
       }
 
@@ -319,12 +329,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                 child: ListTile(
                                   dense: list[i].fullName != null,
                                   leading: TokenIcon(
-                                    widget.service.plugin.basic.name ==
-                                                para_chain_name_statemine ||
-                                            widget.service.plugin.basic.name ==
-                                                para_chain_name_statemint
-                                        ? list[i].id
-                                        : list[i].symbol,
+                                    isStateMint ? list[i].id : list[i].symbol,
                                     widget.service.plugin.tokenIcons,
                                     symbol: list[i].symbol,
                                   ),
@@ -363,7 +368,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                                 letterSpacing: -0.6),
                                           )),
                                       Image.asset(
-                                        "assets/images/${(_tokenVisible[list[i].symbol] ?? false) ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
+                                        "assets/images/${(_tokenVisible[isStateMint ? list[i].id : list[i].symbol] ?? false) ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
                                         fit: BoxFit.contain,
                                         width: 16.w,
                                       )
@@ -374,9 +379,13 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
                                         widget.service.plugin.networkState
                                             .tokenSymbol[0]) {
                                       setState(() {
-                                        _tokenVisible[list[i].symbol] =
-                                            !(_tokenVisible[list[i].symbol] ??
-                                                false);
+                                        _tokenVisible[isStateMint
+                                            ? list[i].id
+                                            : list[i].symbol] = !(_tokenVisible[
+                                                isStateMint
+                                                    ? list[i].id
+                                                    : list[i].symbol] ??
+                                            false);
                                       });
                                     }
                                   },
