@@ -7,6 +7,7 @@ import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
+import 'package:skeleton_loader/skeleton_loader.dart';
 
 class BridgeChainSelector extends StatelessWidget {
   const BridgeChainSelector(
@@ -15,14 +16,14 @@ class BridgeChainSelector extends StatelessWidget {
       this.chainToMap,
       this.from,
       this.to,
-      this.fromConnecting,
+      this.loading,
       this.chainsInfo,
       this.onChanged})
       : super(key: key);
 
   final List<String> chainFromAll;
   final Map<String, Set<String>> chainToMap;
-  final bool fromConnecting;
+  final bool loading;
   final String from;
   final String to;
   final Map<String, BridgeChainData> chainsInfo;
@@ -60,6 +61,7 @@ class BridgeChainSelector extends StatelessWidget {
         crossChainIcons: crossChainIcons,
         chainsInfo: chainsInfo,
         onSelect: (chain) {
+          Navigator.of(context).pop();
           if (chain != current) {
             if (index == 0) {
               onChanged(
@@ -71,7 +73,6 @@ class BridgeChainSelector extends StatelessWidget {
               onChanged(from, chain);
             }
           }
-          Navigator.of(context).pop();
         },
       ),
     ));
@@ -80,8 +81,8 @@ class BridgeChainSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    BridgeChainData fromData = chainsInfo[from];
-    BridgeChainData toData = chainsInfo[to];
+    BridgeChainData fromData = chainsInfo != null ? chainsInfo[from] : null;
+    BridgeChainData toData = chainsInfo != null ? chainsInfo[to] : null;
 
     return Container(
         width: double.infinity,
@@ -112,7 +113,7 @@ class BridgeChainSelector extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                      onTap: chainFromAll.isNotEmpty
+                      onTap: chainFromAll != null && chainFromAll.isNotEmpty
                           ? () => _selectFrom(context)
                           : null,
                       child: Container(
@@ -124,26 +125,58 @@ class BridgeChainSelector extends StatelessWidget {
                         child: Column(
                           children: [
                             Expanded(
-                                flex: 1,
-                                child: Stack(
-                                  fit: StackFit.passthrough,
-                                  children: [
-                                    fromData.icon.contains("svg")
-                                        ? SvgPicture.network(fromData.icon,
-                                            height: 40.w, width: 40.w)
-                                        : Image.network(fromData.icon,
-                                            height: 40.w, width: 40.w),
-                                    Visibility(
-                                      visible: fromConnecting,
-                                      child: Padding(
-                                          padding: EdgeInsets.all(5.h),
-                                          child: CupertinoActivityIndicator(
-                                              color: const Color.fromARGB(
-                                                  150, 205, 205, 205),
-                                              radius: 15.h)),
+                              flex: 1,
+                              child: fromData == null
+                                  ? Align(
+                                      child: SizedBox(
+                                          height: 40.w,
+                                          width: 40.w,
+                                          child: Stack(
+                                            children: [
+                                              SkeletonLoader(
+                                                builder: Container(
+                                                  height: 40.w,
+                                                  width: 40.w,
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        const Color(0xFF6F6F6F),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.w),
+                                                  ),
+                                                ),
+                                                items: 1,
+                                                period:
+                                                    const Duration(seconds: 2),
+                                                highlightColor:
+                                                    const Color(0xFF404142),
+                                                baseColor:
+                                                    const Color(0xFF6F6F6F),
+                                                direction:
+                                                    SkeletonDirection.ltr,
+                                              ),
+                                              Align(
+                                                child: Container(
+                                                  height: 20.w,
+                                                  width: 20.w,
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        const Color(0xFF404142),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.w),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )),
                                     )
-                                  ],
-                                )),
+                                  : fromData.icon.contains("svg")
+                                      ? SvgPicture.network(fromData.icon,
+                                          height: 40.w, width: 40.w)
+                                      : Image.network(fromData.icon,
+                                          height: 40.w, width: 40.w),
+                            ),
                             Container(
                                 height: 22.h,
                                 width: double.infinity,
@@ -156,15 +189,39 @@ class BridgeChainSelector extends StatelessWidget {
                                   children: [
                                     Align(
                                       alignment: Alignment.center,
-                                      child: Text(
-                                        fromData.display,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.normal,
-                                            fontFamily:
-                                                'Titillium Web Regular'),
-                                      ),
+                                      child: fromData == null
+                                          ? SizedBox(
+                                              height: 10.w,
+                                              width: 52.w,
+                                              child: SkeletonLoader(
+                                                builder: Container(
+                                                  height: 10.w,
+                                                  width: 52.w,
+                                                  color:
+                                                      const Color(0xFF6F6F6F),
+                                                ),
+                                                items: 1,
+                                                period:
+                                                    const Duration(seconds: 2),
+                                                highlightColor:
+                                                    const Color(0xFF404142),
+                                                baseColor:
+                                                    const Color(0xFF6F6F6F),
+                                                direction:
+                                                    SkeletonDirection.ltr,
+                                              ),
+                                            )
+                                          : Text(
+                                              fromData != null
+                                                  ? fromData.display
+                                                  : '',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily:
+                                                      'Titillium Web Regular'),
+                                            ),
                                     ),
                                     Align(
                                       alignment: Alignment.centerRight,
@@ -220,11 +277,61 @@ class BridgeChainSelector extends StatelessWidget {
                           children: [
                             Expanded(
                                 child: Container(
-                                    child: toData.icon.contains("svg")
-                                        ? SvgPicture.network(toData.icon,
-                                            height: 40.w, width: 40.w)
-                                        : Image.network(toData.icon,
-                                            height: 40.w, width: 40.w))),
+                                    child: toData == null
+                                        ? Align(
+                                            child: SizedBox(
+                                                height: 40.w,
+                                                width: 40.w,
+                                                child: Stack(
+                                                  children: [
+                                                    SkeletonLoader(
+                                                      builder: Container(
+                                                        height: 40.w,
+                                                        width: 40.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: const Color(
+                                                              0xFF6F6F6F),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20.w),
+                                                        ),
+                                                      ),
+                                                      items: 1,
+                                                      period: const Duration(
+                                                          seconds: 2),
+                                                      highlightColor:
+                                                          const Color(
+                                                              0xFF404142),
+                                                      baseColor: const Color(
+                                                          0xFF6F6F6F),
+                                                      direction:
+                                                          SkeletonDirection.ltr,
+                                                    ),
+                                                    Align(
+                                                      child: Container(
+                                                        height: 20.w,
+                                                        width: 20.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: const Color(
+                                                              0xFF404142),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.w),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )),
+                                          )
+                                        : toData.icon.contains("svg")
+                                            ? SvgPicture.network(toData.icon,
+                                                height: 40.w, width: 40.w)
+                                            : Image.network(toData.icon,
+                                                height: 40.w, width: 40.w))),
                             Container(
                               height: 22.h,
                               width: double.infinity,
@@ -237,14 +344,37 @@ class BridgeChainSelector extends StatelessWidget {
                                 children: [
                                   Align(
                                     alignment: Alignment.center,
-                                    child: Text(
-                                      toData.display,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.normal,
-                                          fontFamily: 'Titillium Web Regular'),
-                                    ),
+                                    child: toData == null
+                                        ? SizedBox(
+                                            height: 10.w,
+                                            width: 52.w,
+                                            child: SkeletonLoader(
+                                              builder: Container(
+                                                height: 10.w,
+                                                width: 52.w,
+                                                color: const Color(0xFF6F6F6F),
+                                              ),
+                                              items: 1,
+                                              period:
+                                                  const Duration(seconds: 2),
+                                              highlightColor:
+                                                  const Color(0xFF404142),
+                                              baseColor:
+                                                  const Color(0xFF6F6F6F),
+                                              direction: SkeletonDirection.ltr,
+                                            ),
+                                          )
+                                        : Text(
+                                            toData != null
+                                                ? toData.display
+                                                : '',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.normal,
+                                                fontFamily:
+                                                    'Titillium Web Regular'),
+                                          ),
                                   ),
                                   Align(
                                     alignment: Alignment.centerRight,

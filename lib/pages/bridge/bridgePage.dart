@@ -20,9 +20,9 @@ import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -473,33 +473,20 @@ class _BridgePageState extends State<BridgePage> {
         ],
       ),
       body: Builder(builder: (_) {
-        if (!_isReady) {
-          return SafeArea(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              SizedBox(
-                width: double.infinity,
-                child: PluginLoadingWidget(),
-              )
-            ],
-          ));
-        }
-
         final List<TokenBalanceData> tokenBalances = _config != null
             ? _tokensMap[_chainFrom + _chainTo]
                 .toList()
                 .map((e) => _balanceMap[e])
                 .toList()
             : [];
-        final tokensAll = ['ACA', 'KAR', 'DOT', 'KSM', 'AUSD'];
-        final tokenIcons = _tokensMap[_chainFrom + _chainTo]
-            .toList()
-            .asMap()
-            .map((_, v) => MapEntry(
-                v,
-                Image.network(
-                    'https://resources.acala.network/tokens/$v.png')));
+
+        final tokenIcons = _tokensMap.isNotEmpty
+            ? _tokensMap[_chainFrom + _chainTo].toList().asMap().map((_, v) =>
+                MapEntry(
+                    v,
+                    Image.network(
+                        'https://resources.acala.network/tokens/$v.png')))
+            : <String, Widget>{};
 
         final TokenBalanceData tokenBalance = _config != null
             ? _balanceMap[_token]
@@ -511,6 +498,8 @@ class _BridgePageState extends State<BridgePage> {
             amount: '0');
 
         return SafeArea(
+            child: PluginPopLoadingContainer(
+          loading: !_isReady || _fromConnecting || _config == null,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -526,223 +515,226 @@ class _BridgePageState extends State<BridgePage> {
                           to: _chainTo,
                           chainsInfo: _chainInfo,
                           onChanged: _changeChain,
-                          fromConnecting: _fromConnecting,
+                          loading: !_isReady,
                         ),
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 20, bottom: 16),
-                                child: Column(
-                                  children: [
-                                    _isToMoonBeam()
-                                        ? PluginTextFormField(
-                                            label: dic['hub.to.address'],
-                                            controller: _address20Ctrl,
-                                            validator: _validateAddress20,
-                                            padding:
-                                                const EdgeInsets.only(top: 2),
-                                            suffix: GestureDetector(
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(4),
-                                                child: Icon(Icons.cancel,
-                                                    size: 16,
-                                                    color: Theme.of(context)
-                                                        .unselectedWidgetColor),
+                        Visibility(
+                            visible: !_fromConnecting && _balanceMap != null,
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20, bottom: 16),
+                                    child: Column(
+                                      children: [
+                                        _isToMoonBeam()
+                                            ? PluginTextFormField(
+                                                label: dic['hub.to.address'],
+                                                controller: _address20Ctrl,
+                                                validator: _validateAddress20,
+                                                padding: const EdgeInsets.only(
+                                                    top: 2),
+                                                suffix: GestureDetector(
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    child: Icon(Icons.cancel,
+                                                        size: 16,
+                                                        color: Theme.of(context)
+                                                            .unselectedWidgetColor),
+                                                  ),
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _address20Ctrl.text = '';
+                                                    });
+                                                  },
+                                                ),
+                                                autovalidateMode:
+                                                    AutovalidateMode
+                                                        .onUserInteraction,
+                                              )
+                                            : AddressTextFormField(
+                                                widget.service.plugin.sdk.api,
+                                                widget.service.keyring
+                                                    .allWithContacts
+                                                    .toList(),
+                                                sdk: widget.service.plugin.sdk,
+                                                labelText:
+                                                    dic['hub.to.address'],
+                                                labelStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4
+                                                    .copyWith(
+                                                        color: Colors.white),
+                                                hintText: dic['hub.to.address'],
+                                                hintStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5
+                                                    .copyWith(
+                                                        color: PluginColorsDark
+                                                            .headline2),
+                                                initialValue: _accountTo,
+                                                onChanged:
+                                                    (KeyPairData acc) async {
+                                                  final error =
+                                                      await _checkAccountTo(
+                                                          acc);
+                                                  setState(() {
+                                                    _accountTo = acc;
+                                                    _accountToWarn = error;
+                                                  });
+                                                },
+                                                key: ValueKey<KeyPairData>(
+                                                    _accountTo),
+                                                isHubTheme: true,
+                                                onFocusChange: (hasFocus) {
+                                                  setState(() {
+                                                    _accountToFocus = hasFocus;
+                                                    if (hasFocus) {
+                                                      _accountToWarn = null;
+                                                    }
+                                                  });
+                                                },
                                               ),
-                                              onTap: () {
-                                                setState(() {
-                                                  _address20Ctrl.text = '';
-                                                });
-                                              },
-                                            ),
-                                            autovalidateMode: AutovalidateMode
-                                                .onUserInteraction,
-                                          )
-                                        : AddressTextFormField(
-                                            widget.service.plugin.sdk.api,
-                                            widget
-                                                .service.keyring.allWithContacts
-                                                .toList(),
-                                            sdk: widget.service.plugin.sdk,
-                                            labelText: dic['hub.to.address'],
-                                            labelStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline4
-                                                .copyWith(color: Colors.white),
-                                            hintText: dic['hub.to.address'],
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    color: PluginColorsDark
-                                                        .headline2),
-                                            initialValue: _accountTo,
-                                            onChanged: (KeyPairData acc) async {
-                                              final error =
-                                                  await _checkAccountTo(acc);
-                                              setState(() {
-                                                _accountTo = acc;
-                                                _accountToWarn = error;
-                                              });
-                                            },
-                                            key: ValueKey<KeyPairData>(
-                                                _accountTo),
-                                            isHubTheme: true,
-                                            onFocusChange: (hasFocus) {
-                                              setState(() {
-                                                _accountToFocus = hasFocus;
-                                                if (hasFocus) {
-                                                  _accountToWarn = null;
-                                                }
-                                              });
-                                            },
-                                          ),
-                                    ErrorMessage(
-                                      !_isToMoonBeam()
-                                          ? _accountToWarn ??
-                                              (_accountToFocus
-                                                  ? dic['bridge.address.warn']
-                                                  : null)
-                                          : null,
-                                      margin: const EdgeInsets.only(left: 8),
+                                        ErrorMessage(
+                                          !_isToMoonBeam()
+                                              ? _accountToWarn ??
+                                                  (_accountToFocus
+                                                      ? dic[
+                                                          'bridge.address.warn']
+                                                      : null)
+                                              : null,
+                                          margin:
+                                              const EdgeInsets.only(left: 8),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              PluginInputBalance(
-                                margin: EdgeInsets.only(
-                                    bottom: _amountError == null ? 24 : 2),
-                                titleTag: dic['hub.amount'],
-                                inputCtrl: _amountCtrl,
-                                onInputChange: (v) => _validateAmount(v),
-                                onTokenChange: (token) {
-                                  _tokenChange(token.symbol.toUpperCase());
-                                },
-                                onClear: () {
-                                  setState(() {
-                                    _amountError = null;
-                                    _amountCtrl.text = "";
-                                  });
-                                },
-                                onSetMax: (_) {
-                                  if (_config == null) return;
+                                  ),
+                                  PluginInputBalance(
+                                    margin: EdgeInsets.only(
+                                        bottom: _amountError == null ? 24 : 2),
+                                    titleTag: dic['hub.amount'],
+                                    inputCtrl: _amountCtrl,
+                                    onInputChange: (v) => _validateAmount(v),
+                                    onTokenChange: (token) {
+                                      _tokenChange(token.symbol.toUpperCase());
+                                    },
+                                    onClear: () {
+                                      setState(() {
+                                        _amountError = null;
+                                        _amountCtrl.text = "";
+                                      });
+                                    },
+                                    onSetMax: (_) {
+                                      if (_config == null) return;
 
-                                  final max = Fmt.balanceInt(_config?.maxInput);
-                                  if (max > BigInt.zero) {
-                                    setState(() {
-                                      _amountCtrl.text = Fmt.balanceDouble(
-                                              _config?.maxInput,
-                                              tokenBalance.decimals)
-                                          .toString();
-                                    });
-
-                                    _validateAmount(_amountCtrl.text);
-                                  }
-                                },
-                                balance: tokenBalance,
-                                tokenIconsMap: tokenIcons,
-                                tokenOptions: tokenBalances ?? [],
-                                quickTokenOptions: tokenBalances
-                                        .where((element) => tokensAll.contains(
-                                            element?.symbol?.toUpperCase()))
-                                        .toList() ??
-                                    [],
-                                tokenSelectTitle: dic['hub.selectToken'],
-                                tokenViewFunction: AppFmt.tokenView,
-                              ),
-                              ErrorMessage(
-                                _amountError,
-                                margin:
-                                    const EdgeInsets.only(left: 8, bottom: 24),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 4),
-                                        child: Text(
-                                            dic['hub.origin.transfer.fee'],
-                                            style: feeStyle),
-                                      ),
-                                    ),
-                                    _config == null
-                                        ? CupertinoActivityIndicator(
-                                            color: const Color.fromARGB(
-                                                150, 205, 205, 205),
-                                            radius: 10.h)
-                                        : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
-                                            style: feeStyle),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 4),
-                                        child: Text(
-                                            dic['hub.destination.transfer.fee'],
-                                            style: feeStyle),
-                                      ),
-                                    ),
-                                    _config == null
-                                        ? CupertinoActivityIndicator(
-                                            color: const Color.fromARGB(
-                                                150, 205, 205, 205),
-                                            radius: 10.h)
-                                        : Text(
-                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config.destFee.amount ?? '0'), _config.destFee.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_config.destFee.token)}',
-                                            style: feeStyle),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                  padding:
-                                      EdgeInsets.only(top: 150.h, bottom: 38),
-                                  child: PluginButton(
-                                    title: dic['hub.transfer'],
-                                    onPressed: () async {
-                                      final params = await _getTxParams(
-                                          TokenIcon(
-                                            _chainFrom,
-                                            _crossChainIcons,
-                                          ),
-                                          feeToken);
-                                      if (params != null) {
-                                        if (!mounted) return;
-                                        final res = await Navigator.of(context)
-                                            .pushNamed(XcmTxConfirmPage.route,
-                                                arguments: params);
-                                        if (res != null) {
-                                          if (!mounted) return;
-
-                                          _updateInputConfig();
-                                        }
-
+                                      final max =
+                                          Fmt.balanceInt(_config?.maxInput);
+                                      if (max > BigInt.zero) {
                                         setState(() {
-                                          _submitting = false;
+                                          _amountCtrl.text = Fmt.balanceDouble(
+                                                  _config?.maxInput,
+                                                  tokenBalance.decimals)
+                                              .toString();
                                         });
+
+                                        _validateAmount(_amountCtrl.text);
                                       }
                                     },
-                                  ))
-                            ],
-                          ),
-                        )
+                                    balance: tokenBalance,
+                                    tokenIconsMap: tokenIcons,
+                                    tokenOptions: tokenBalances ?? [],
+                                    tokenSelectTitle: dic['hub.selectToken'],
+                                    tokenViewFunction: AppFmt.tokenView,
+                                  ),
+                                  ErrorMessage(
+                                    _amountError,
+                                    margin: const EdgeInsets.only(
+                                        left: 8, bottom: 24),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 4),
+                                            child: Text(
+                                                dic['hub.origin.transfer.fee'],
+                                                style: feeStyle),
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible: _config != null,
+                                          child: Text(
+                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_props?.tokenSymbol?.first ?? '')}',
+                                              style: feeStyle),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 4),
+                                            child: Text(
+                                                dic['hub.destination.transfer.fee'],
+                                                style: feeStyle),
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible: _config != null,
+                                          child: Text(
+                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                              style: feeStyle),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 150.h, bottom: 38),
+                                      child: PluginButton(
+                                        title: dic['hub.transfer'],
+                                        onPressed: () async {
+                                          final params = await _getTxParams(
+                                              TokenIcon(
+                                                _chainFrom,
+                                                _crossChainIcons,
+                                              ),
+                                              feeToken);
+                                          if (params != null) {
+                                            if (!mounted) return;
+                                            final res =
+                                                await Navigator.of(context)
+                                                    .pushNamed(
+                                                        XcmTxConfirmPage.route,
+                                                        arguments: params);
+                                            if (res != null) {
+                                              if (!mounted) return;
+
+                                              _updateInputConfig();
+                                            }
+
+                                            setState(() {
+                                              _submitting = false;
+                                            });
+                                          }
+                                        },
+                                      ))
+                                ],
+                              ),
+                            ))
                       ],
                     ),
                   ),
@@ -750,7 +742,7 @@ class _BridgePageState extends State<BridgePage> {
               ],
             ),
           ),
-        );
+        ));
       }),
     );
   }
