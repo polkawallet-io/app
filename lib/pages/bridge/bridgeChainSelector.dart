@@ -8,6 +8,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
+import 'package:rive/rive.dart';
 
 class BridgeChainSelector extends StatelessWidget {
   const BridgeChainSelector(
@@ -17,6 +18,7 @@ class BridgeChainSelector extends StatelessWidget {
       this.from,
       this.to,
       this.loading,
+      this.connecting = false,
       this.chainsInfo,
       this.onChanged})
       : super(key: key);
@@ -24,6 +26,7 @@ class BridgeChainSelector extends StatelessWidget {
   final List<String> chainFromAll;
   final Map<String, Set<String>> chainToMap;
   final bool loading;
+  final bool connecting;
   final String from;
   final String to;
   final Map<String, BridgeChainData> chainsInfo;
@@ -119,9 +122,12 @@ class BridgeChainSelector extends StatelessWidget {
                       child: Container(
                         width: 112.w,
                         height: 100.h,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF404142)),
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8)),
+                            color: Color(0xFF404142)),
                         child: Column(
                           children: [
                             Expanded(
@@ -173,9 +179,19 @@ class BridgeChainSelector extends StatelessWidget {
                                     )
                                   : fromData.icon.contains("svg")
                                       ? SvgPicture.network(fromData.icon,
-                                          height: 40.w, width: 40.w)
+                                          height: 40.w,
+                                          width: 40.w,
+                                          color: connecting
+                                              ? Colors.black.withOpacity(0.5)
+                                              : null,
+                                          colorBlendMode: BlendMode.srcIn)
                                       : Image.network(fromData.icon,
-                                          height: 40.w, width: 40.w),
+                                          height: 40.w,
+                                          width: 40.w,
+                                          color: connecting
+                                              ? Colors.black.withOpacity(0.5)
+                                              : null,
+                                          colorBlendMode: BlendMode.srcATop),
                             ),
                             Container(
                                 height: 22.h,
@@ -224,6 +240,21 @@ class BridgeChainSelector extends StatelessWidget {
                                             ),
                                     ),
                                     Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Visibility(
+                                          visible: connecting,
+                                          child: Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 4),
+                                            width: 14,
+                                            height: 14,
+                                            child: const RiveAnimation.asset(
+                                              'assets/images/loading.riv',
+                                              fit: BoxFit.none,
+                                            ),
+                                          )),
+                                    ),
+                                    Align(
                                       alignment: Alignment.centerRight,
                                       child: Padding(
                                           padding:
@@ -270,9 +301,12 @@ class BridgeChainSelector extends StatelessWidget {
                       child: Container(
                         width: 112.w,
                         height: 100.h,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF404142)),
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8)),
+                            color: Color(0xFF404142)),
                         child: Column(
                           children: [
                             Expanded(
@@ -412,7 +446,7 @@ class BridgePopupRoute<T> extends PopupRoute<T> {
   String get barrierLabel => null;
 
   @override
-  Duration get transitionDuration => Duration(seconds: 0);
+  Duration get transitionDuration => const Duration(seconds: 0);
 
   final Color backgroundViewColor;
 

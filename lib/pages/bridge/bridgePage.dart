@@ -6,6 +6,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:ethereum_addresses/ethereum_addresses.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,6 +19,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
@@ -94,7 +96,7 @@ class _BridgePageState extends State<BridgePage> {
   bool _isReady = false;
 
   /// fromConnecting
-  bool _fromConnecting = true;
+  bool _fromConnecting = false;
 
   /// submitting
   bool _submitting = false;
@@ -197,8 +199,17 @@ class _BridgePageState extends State<BridgePage> {
     _cancelable = null;
     _cancelable = CancelableOperation.fromFuture(_getConnectionError(),
         onCancel: () => null).then((p0) {
-      setState(() {
-        _connectionError = p0;
+      if (p0 == null) return;
+      showCupertinoDialog(
+          context: context,
+          builder: (_) {
+            return PolkawalletAlertDialog(
+              type: DialogType.warn,
+              content: Text(p0),
+            );
+          });
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context).pop();
       });
     });
   }
@@ -518,251 +529,242 @@ class _BridgePageState extends State<BridgePage> {
             amount: '0');
 
         return SafeArea(
-            child: PluginPopLoadingContainer(
-          canTap: true,
-          loading: !_isReady || _fromConnecting || _config == null,
-          tips: _connectionError ?? 'Connecting...',
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        BridgeChainSelector(
-                          chainFromAll: _chainFromAll,
-                          chainToMap: _chainToMap,
-                          from: _chainFrom,
-                          to: _chainTo,
-                          chainsInfo: _chainInfo,
-                          onChanged: _changeChain,
-                          loading: !_isReady,
-                        ),
-                        Visibility(
-                            visible: !_fromConnecting && _balanceMap != null,
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20, bottom: 16),
-                                    child: Column(
-                                      children: [
-                                        _isToMoonBeam()
-                                            ? PluginTextFormField(
-                                                label: dic['hub.to.address'],
-                                                controller: _address20Ctrl,
-                                                validator: _validateAddress20,
-                                                padding: const EdgeInsets.only(
-                                                    top: 2),
-                                                suffix: GestureDetector(
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(4),
-                                                    child: Icon(Icons.cancel,
-                                                        size: 16,
-                                                        color: Theme.of(context)
-                                                            .unselectedWidgetColor),
-                                                  ),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _address20Ctrl.text = '';
-                                                    });
-                                                  },
+            child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BridgeChainSelector(
+                        chainFromAll: _chainFromAll,
+                        chainToMap: _chainToMap,
+                        from: _chainFrom,
+                        to: _chainTo,
+                        chainsInfo: _chainInfo,
+                        onChanged: _changeChain,
+                        loading: !_isReady,
+                        connecting: _fromConnecting,
+                      ),
+                      Visibility(
+                          visible: !_fromConnecting && _balanceMap != null,
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 20, bottom: 16),
+                                  child: Column(
+                                    children: [
+                                      _isToMoonBeam()
+                                          ? PluginTextFormField(
+                                              label: dic['hub.to.address'],
+                                              controller: _address20Ctrl,
+                                              validator: _validateAddress20,
+                                              padding:
+                                                  const EdgeInsets.only(top: 2),
+                                              suffix: GestureDetector(
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  child: Icon(Icons.cancel,
+                                                      size: 16,
+                                                      color: Theme.of(context)
+                                                          .unselectedWidgetColor),
                                                 ),
-                                                autovalidateMode:
-                                                    AutovalidateMode
-                                                        .onUserInteraction,
-                                              )
-                                            : AddressTextFormField(
-                                                widget.service.plugin.sdk.api,
-                                                widget.service.keyring
-                                                    .allWithContacts
-                                                    .toList(),
-                                                sdk: widget.service.plugin.sdk,
-                                                labelText:
-                                                    dic['hub.to.address'],
-                                                labelStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4
-                                                    .copyWith(
-                                                        color: Colors.white),
-                                                hintText: dic['hub.to.address'],
-                                                hintStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .headline5
-                                                    .copyWith(
-                                                        color: PluginColorsDark
-                                                            .headline2),
-                                                initialValue: _accountTo,
-                                                onChanged:
-                                                    (KeyPairData acc) async {
-                                                  final error =
-                                                      await _checkAccountTo(
-                                                          acc);
+                                                onTap: () {
                                                   setState(() {
-                                                    _accountTo = acc;
-                                                    _accountToWarn = error;
-                                                  });
-                                                },
-                                                key: ValueKey<KeyPairData>(
-                                                    _accountTo),
-                                                isHubTheme: true,
-                                                onFocusChange: (hasFocus) {
-                                                  setState(() {
-                                                    _accountToFocus = hasFocus;
-                                                    if (hasFocus) {
-                                                      _accountToWarn = null;
-                                                    }
+                                                    _address20Ctrl.text = '';
                                                   });
                                                 },
                                               ),
-                                        ErrorMessage(
-                                          !_isToMoonBeam()
-                                              ? _accountToWarn ??
-                                                  (_accountToFocus
-                                                      ? dic[
-                                                          'bridge.address.warn']
-                                                      : null)
-                                              : null,
-                                          margin:
-                                              const EdgeInsets.only(left: 8),
-                                        ),
-                                      ],
-                                    ),
+                                              autovalidateMode: AutovalidateMode
+                                                  .onUserInteraction,
+                                            )
+                                          : AddressTextFormField(
+                                              widget.service.plugin.sdk.api,
+                                              widget.service.keyring
+                                                  .allWithContacts
+                                                  .toList(),
+                                              sdk: widget.service.plugin.sdk,
+                                              labelText: dic['hub.to.address'],
+                                              labelStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .headline4
+                                                  .copyWith(
+                                                      color: Colors.white),
+                                              hintText: dic['hub.to.address'],
+                                              hintStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  .copyWith(
+                                                      color: PluginColorsDark
+                                                          .headline2),
+                                              initialValue: _accountTo,
+                                              onChanged:
+                                                  (KeyPairData acc) async {
+                                                final error =
+                                                    await _checkAccountTo(acc);
+                                                setState(() {
+                                                  _accountTo = acc;
+                                                  _accountToWarn = error;
+                                                });
+                                              },
+                                              key: ValueKey<KeyPairData>(
+                                                  _accountTo),
+                                              isHubTheme: true,
+                                              onFocusChange: (hasFocus) {
+                                                setState(() {
+                                                  _accountToFocus = hasFocus;
+                                                  if (hasFocus) {
+                                                    _accountToWarn = null;
+                                                  }
+                                                });
+                                              },
+                                            ),
+                                      ErrorMessage(
+                                        !_isToMoonBeam()
+                                            ? _accountToWarn ??
+                                                (_accountToFocus
+                                                    ? dic['bridge.address.warn']
+                                                    : null)
+                                            : null,
+                                        margin: const EdgeInsets.only(left: 8),
+                                      ),
+                                    ],
                                   ),
-                                  PluginInputBalance(
-                                    margin: EdgeInsets.only(
-                                        bottom: _amountError == null ? 24 : 2),
-                                    titleTag: dic['hub.amount'],
-                                    inputCtrl: _amountCtrl,
-                                    onInputChange: (v) => _validateAmount(v),
-                                    onTokenChange: (token) {
-                                      _tokenChange(token.symbol.toUpperCase());
-                                    },
-                                    onClear: () {
+                                ),
+                                PluginInputBalance(
+                                  margin: EdgeInsets.only(
+                                      bottom: _amountError == null ? 24 : 2),
+                                  titleTag: dic['hub.amount'],
+                                  inputCtrl: _amountCtrl,
+                                  onInputChange: (v) => _validateAmount(v),
+                                  onTokenChange: (token) {
+                                    _tokenChange(token.symbol.toUpperCase());
+                                  },
+                                  onClear: () {
+                                    setState(() {
+                                      _amountError = null;
+                                      _amountCtrl.text = "";
+                                    });
+                                  },
+                                  onSetMax: (_) {
+                                    if (_config == null) return;
+
+                                    final max =
+                                        Fmt.balanceInt(_config?.maxInput);
+                                    if (max > BigInt.zero) {
                                       setState(() {
-                                        _amountError = null;
-                                        _amountCtrl.text = "";
+                                        _amountCtrl.text = Fmt.balanceDouble(
+                                                _config?.maxInput,
+                                                tokenBalance.decimals)
+                                            .toString();
                                       });
-                                    },
-                                    onSetMax: (_) {
-                                      if (_config == null) return;
 
-                                      final max =
-                                          Fmt.balanceInt(_config?.maxInput);
-                                      if (max > BigInt.zero) {
-                                        setState(() {
-                                          _amountCtrl.text = Fmt.balanceDouble(
-                                                  _config?.maxInput,
-                                                  tokenBalance.decimals)
-                                              .toString();
-                                        });
-
-                                        _validateAmount(_amountCtrl.text);
-                                      }
-                                    },
-                                    balance: tokenBalance,
-                                    tokenIconsMap: tokenIcons,
-                                    tokenOptions: tokenBalances ?? [],
-                                    tokenSelectTitle: dic['hub.selectToken'],
-                                    tokenViewFunction: AppFmt.tokenView,
-                                  ),
-                                  ErrorMessage(
-                                    _amountError,
-                                    margin: const EdgeInsets.only(
-                                        left: 8, bottom: 24),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 4),
-                                            child: Text(
-                                                dic['hub.origin.transfer.fee'],
-                                                style: feeStyle),
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible: _config != null,
+                                      _validateAmount(_amountCtrl.text);
+                                    }
+                                  },
+                                  balance: tokenBalance,
+                                  tokenIconsMap: tokenIcons,
+                                  tokenOptions: tokenBalances ?? [],
+                                  tokenSelectTitle: dic['hub.selectToken'],
+                                  tokenViewFunction: AppFmt.tokenView,
+                                ),
+                                ErrorMessage(
+                                  _amountError,
+                                  margin: const EdgeInsets.only(
+                                      left: 8, bottom: 24),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4),
                                           child: Text(
-                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                              dic['hub.origin.transfer.fee'],
                                               style: feeStyle),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 4),
-                                            child: Text(
-                                                dic['hub.destination.transfer.fee'],
-                                                style: feeStyle),
-                                          ),
                                         ),
-                                        Visibility(
-                                          visible: _config != null,
-                                          child: Text(
-                                              '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee?.amount ?? '0'), _config?.destFee?.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_config?.destFee?.token ?? '')}',
-                                              style: feeStyle),
-                                        )
-                                      ],
-                                    ),
+                                      ),
+                                      Visibility(
+                                        visible: _config != null,
+                                        child: Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.estimateFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                            style: feeStyle),
+                                      )
+                                    ],
                                   ),
-                                  Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 150.h, bottom: 38),
-                                      child: PluginButton(
-                                        title: dic['hub.transfer'],
-                                        onPressed: () async {
-                                          final params = await _getTxParams(
-                                              TokenIcon(
-                                                _chainFrom,
-                                                _crossChainIcons,
-                                              ),
-                                              feeToken);
-                                          if (params != null) {
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4),
+                                          child: Text(
+                                              dic['hub.destination.transfer.fee'],
+                                              style: feeStyle),
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: _config != null,
+                                        child: Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.destFee?.amount ?? '0'), _config?.destFee?.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(_config?.destFee?.token ?? '')}',
+                                            style: feeStyle),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 150.h, bottom: 38),
+                                    child: PluginButton(
+                                      title: dic['hub.transfer'],
+                                      onPressed: () async {
+                                        final params = await _getTxParams(
+                                            TokenIcon(
+                                              _chainFrom,
+                                              _crossChainIcons,
+                                            ),
+                                            feeToken);
+                                        if (params != null) {
+                                          if (!mounted) return;
+                                          final res =
+                                              await Navigator.of(context)
+                                                  .pushNamed(
+                                                      XcmTxConfirmPage.route,
+                                                      arguments: params);
+                                          if (res != null) {
                                             if (!mounted) return;
-                                            final res =
-                                                await Navigator.of(context)
-                                                    .pushNamed(
-                                                        XcmTxConfirmPage.route,
-                                                        arguments: params);
-                                            if (res != null) {
-                                              if (!mounted) return;
 
-                                              _updateInputConfig();
-                                            }
-
-                                            setState(() {
-                                              _submitting = false;
-                                            });
+                                            _updateInputConfig();
                                           }
-                                        },
-                                      ))
-                                ],
-                              ),
-                            ))
-                      ],
-                    ),
+
+                                          setState(() {
+                                            _submitting = false;
+                                          });
+                                        }
+                                      },
+                                    ))
+                              ],
+                            ),
+                          ))
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
       }),
