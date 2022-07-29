@@ -40,19 +40,6 @@ void main() async {
     PluginRobonomics(),
   ];
 
-  ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
-    print(flutterErrorDetails.toString());
-    return Material(
-        child: SafeArea(
-      child: SingleChildScrollView(
-        child: Text(
-          flutterErrorDetails.toString(),
-          style: TextStyle(color: Color(0xFFFA7243)),
-        ),
-      ),
-    ));
-  };
-
   runApp(WalletApp(
       plugins,
       [
