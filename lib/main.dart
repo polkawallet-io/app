@@ -14,6 +14,7 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_kusama/polkawallet_plugin_kusama.dart';
 import 'package:polkawallet_plugin_robonomics/polkawallet_plugin_robonomics.dart';
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 
 void main() async {
   // FlutterBugly.postCatchedException(() async {
@@ -38,6 +39,14 @@ void main() async {
     PluginDBC(),
     PluginRobonomics(),
   ];
+
+  ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
+    print(flutterErrorDetails.toString());
+    return Material(
+        child: SafeArea(
+      child: PluginPopLoadingContainer(loading: true),
+    ));
+  };
 
   runApp(WalletApp(
       plugins,

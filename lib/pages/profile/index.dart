@@ -96,13 +96,9 @@ class _ProfilePageState extends State<ProfilePage> {
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
     final acc = widget.service.keyring.current;
-    final primaryColor = Theme.of(context).primaryColor;
 
-    final labelStyle = Theme.of(context).textTheme.headline4;
     final blue = Theme.of(context).toggleableActiveColor;
-    final iconGrey = Color(0xFFCECECE);
     final pagePadding = 16.w;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['title']),
