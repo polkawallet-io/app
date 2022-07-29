@@ -13,7 +13,7 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -144,14 +144,10 @@ class _TokenStakingState extends State<TokenStaking> {
                 ),
               ),
               isReady == false
-                  ? Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height / 2,
-                          child: PluginLoadingWidget(),
-                        )
-                      ],
-                    )
+                  ? const Expanded(
+                      child: PluginPopLoadingContainer(
+                      loading: true,
+                    ))
                   : Expanded(
                       child: Container(
                         color: Color(0x1affffff),
