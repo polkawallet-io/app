@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:async/async.dart';
+
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:async/async.dart';
 import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
@@ -185,7 +185,7 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   Future<String> _getConnectionError() async {
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 30));
     if (!mounted) return '';
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
     return dic['bridge.connecting.warn'];
@@ -304,7 +304,7 @@ class _BridgePageState extends State<BridgePage> {
     widget.service.plugin.sdk.api.bridge.reload();
   }
 
-  void _toChange(String to) {
+  void _toChange(String to) async {
     setState(() {
       _chainTo = to;
       _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
@@ -313,6 +313,13 @@ class _BridgePageState extends State<BridgePage> {
     });
 
     _updateInputConfig();
+
+    final accWarn = await _checkAccountTo(_accountTo);
+    if (_accountToWarn != accWarn && mounted) {
+      setState(() {
+        _accountToWarn = accWarn;
+      });
+    }
   }
 
   void _tokenChange(String token) {
@@ -334,8 +341,8 @@ class _BridgePageState extends State<BridgePage> {
 
     final error =
         I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
-    final res = await widget.service.plugin.sdk.api.account
-        .checkAddressFormat(acc.address, _props.ss58Format);
+    final res = await widget.service.plugin.sdk.api.bridge
+        .checkAddressFormat(acc.address, _chainInfo[_chainTo].ss58Prefix);
     if (res != null && !res) {
       return error;
     }

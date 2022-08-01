@@ -124,5 +124,5 @@ const Map<String, String> zhPublic = {
   'bridge.max': '最大数量',
   'bridge.address': '收款地址',
   'bridge.address.warn': '不建议修改跨链转账的收款地址。\n该功能仅限高级用户使用。',
-  'bridge.connecting.warn': '网络连接超时，\n请重试',
+  'bridge.connecting.warn': '网络连接超时，\n请稍后重试',
 };
