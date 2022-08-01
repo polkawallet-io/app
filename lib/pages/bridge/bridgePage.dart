@@ -292,6 +292,10 @@ class _BridgePageState extends State<BridgePage> {
       _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
           ? _token
           : _tokensMap[_chainFrom + _chainTo].first;
+
+      /// clear amount input
+      _amountError = null;
+      _amountCtrl.text = "";
     });
 
     if (!_fromConnecting) {
