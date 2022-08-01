@@ -907,6 +907,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  orientation:
+    dependency: "direct dev"
+    description:
+      name: orientation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.0"
   package_config:
     dependency: transitive
     description:

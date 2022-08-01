@@ -1,5 +1,6 @@
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/asset/priceTrendDialog.dart';
 import 'package:app/pages/assets/asset/rewardsChart.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -681,9 +682,20 @@ class BalanceCard extends StatelessWidget {
                     ? Container(
                         width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.centerRight,
-                        child: RewardsChart.withData(
-                            getTimeSeriesAmounts(marketPriceList),
-                            MediaQuery.of(context).size.width / 4))
+                        child: GestureDetector(
+                            onTap: () {
+                              showCupertinoDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PriceTrendDialog(
+                                      getTimeSeriesAmounts(marketPriceList),
+                                      symbol);
+                                },
+                              );
+                            },
+                            child: RewardsChart.withData(
+                                getTimeSeriesAmounts(marketPriceList),
+                                MediaQuery.of(context).size.width / 4)))
                     : Container(width: MediaQuery.of(context).size.width / 3),
                 flex: 0,
               )

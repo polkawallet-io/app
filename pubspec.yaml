@@ -138,6 +138,7 @@ dev_dependencies:
 #  json_serializable: ^3.5.1
   flutter_launcher_icons: ^0.9.0
   rive: ^0.9.0
+  orientation: ^1.3.0
 
 flutter_icons:
   android: "launcher_icon"
