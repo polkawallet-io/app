@@ -146,6 +146,8 @@ class _AssetPageState extends State<AssetPage> {
   void initState() {
     super.initState();
 
+    getRate();
+
     WalletApi.getMarketPriceList(
             (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 30)
         .then((value) {
@@ -173,7 +175,6 @@ class _AssetPageState extends State<AssetPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshData();
-      getRate();
     });
   }
 
@@ -318,6 +319,7 @@ class _AssetPageState extends State<AssetPage> {
                 icon: widget.service.plugin.tokenIcons[symbol],
                 marketPriceList: _marketPriceList,
                 priceCurrency: widget.service.store.settings.priceCurrency,
+                rate: _rate,
               ),
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -528,7 +530,8 @@ class BalanceCard extends StatelessWidget {
       this.bgColors,
       this.icon,
       this.marketPriceList,
-      this.priceCurrency});
+      this.priceCurrency,
+      this.rate = 1.0});
 
   final String symbol;
   final int decimals;
@@ -539,6 +542,7 @@ class BalanceCard extends StatelessWidget {
   final Widget icon;
   final List<dynamic> marketPriceList;
   final String priceCurrency;
+  final double rate;
 
   @override
   Widget build(BuildContext context) {
@@ -688,7 +692,8 @@ class BalanceCard extends StatelessWidget {
                                 builder: (BuildContext context) {
                                   return PriceTrendDialog(
                                       getTimeSeriesAmounts(marketPriceList, 30),
-                                      symbol);
+                                      symbol,
+                                      Fmt.priceCurrencySymbol(priceCurrency));
                                 },
                               );
                             },
@@ -717,7 +722,7 @@ class BalanceCard extends StatelessWidget {
     List<TimeSeriesAmount> datas = [];
     for (int i = 0; i < marketPriceList.length && i < length; i++) {
       datas.add(TimeSeriesAmount(DateTime.now().add(Duration(days: -1 * i)),
-          marketPriceList[i] * 1.0));
+          marketPriceList[i] * rate));
     }
     return datas;
   }

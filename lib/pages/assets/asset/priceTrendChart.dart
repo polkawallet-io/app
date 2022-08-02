@@ -174,7 +174,11 @@ class PriceTrendChart extends StatelessWidget {
         bottomTitles: SideTitles(
           showTitles: true,
           reservedSize: 22,
-          interval: 10 / 6.01,
+          interval: 10 /
+              ((seriesList.length > 7
+                      ? (seriesList.length / 2 - 1)
+                      : (seriesList.length - 1)) +
+                  0.01),
           getTextStyles: (context, index) => Theme.of(context)
               .textTheme
               .headline5
@@ -203,9 +207,9 @@ class PriceTrendChart extends StatelessWidget {
                   fontSize: UI.getTextSize(10, context),
                   fontWeight: FontWeight.w600),
           getTitles: (value) {
-            return Fmt.priceFloorFormatter(value, lengthFixed: 2);
+            return Fmt.priceFloorFormatter(value, lengthMax: 2);
           },
-          reservedSize: 30,
+          reservedSize: 50,
           margin: 10,
         ),
       ),

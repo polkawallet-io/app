@@ -1,15 +1,20 @@
 import 'package:app/pages/assets/asset/priceTrendChart.dart';
 import 'package:app/pages/assets/asset/rewardsChart.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:orientation/orientation.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class PriceTrendDialog extends StatefulWidget {
-  PriceTrendDialog(this.data, this.symbol, {Key key}) : super(key: key);
+  PriceTrendDialog(this.data, this.symbol, this.priceCurrencySymbol, {Key key})
+      : super(key: key);
   List<TimeSeriesAmount> data;
   String symbol;
+  String priceCurrencySymbol;
 
   @override
   State<PriceTrendDialog> createState() => _PriceTrendDialogState();
@@ -59,46 +64,50 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${widget.symbol.toUpperCase()} Price Trend \$',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline4
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              var _orientation = DeviceOrientation.portraitUp;
-                              if (orientation == Orientation.portrait) {
-                                _orientation = DeviceOrientation.landscapeRight;
-                              }
-                              OrientationPlugin.forceOrientation(_orientation);
-                            },
-                            child: Icon(
-                              Icons.ac_unit,
-                              size: 19,
-                              color:
-                                  Theme.of(context).textTheme.headline4.color,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              OrientationPlugin.forceOrientation(
-                                  DeviceOrientation.portraitUp);
-                              SystemChrome.setPreferredOrientations(
-                                  [DeviceOrientation.portraitUp]);
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.clear,
-                              size: 19,
-                              color:
-                                  Theme.of(context).textTheme.headline4.color,
-                            ),
-                          )
-                        ],
+                      Row(children: [
+                        Padding(
+                            padding: EdgeInsets.only(right: 7),
+                            child: Text(
+                              '${widget.symbol.toUpperCase()} ${I18n.of(context).getDic(i18n_full_dic_app, 'assets')['v3.priceTrend']}（${widget.priceCurrencySymbol}）',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline4
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            )),
+                        Visibility(
+                            visible: orientation == Orientation.portrait,
+                            child: GestureDetector(
+                              onTap: () {
+                                var _orientation = DeviceOrientation.portraitUp;
+                                if (orientation == Orientation.portrait) {
+                                  _orientation =
+                                      DeviceOrientation.landscapeRight;
+                                }
+                                OrientationPlugin.forceOrientation(
+                                    _orientation);
+                              },
+                              child: SvgPicture.asset(
+                                "assets/images/zoom.svg",
+                                width: 16,
+                                color: UI.isDarkTheme(context)
+                                    ? Color(0xFFFFC952)
+                                    : Color(0xFF768FE1),
+                              ),
+                            )),
+                      ]),
+                      GestureDetector(
+                        onTap: () {
+                          OrientationPlugin.forceOrientation(
+                              DeviceOrientation.portraitUp);
+                          SystemChrome.setPreferredOrientations(
+                              [DeviceOrientation.portraitUp]);
+                          Navigator.of(context).pop();
+                        },
+                        child: Icon(
+                          Icons.clear,
+                          size: 19,
+                          color: Theme.of(context).textTheme.headline4.color,
+                        ),
                       )
                     ],
                   )),
