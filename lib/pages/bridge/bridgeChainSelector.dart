@@ -19,6 +19,7 @@ class BridgeChainSelector extends StatelessWidget {
       this.to,
       this.loading,
       this.connecting = false,
+      this.toConnecting = false,
       this.chainsInfo,
       this.onChanged})
       : super(key: key);
@@ -27,6 +28,7 @@ class BridgeChainSelector extends StatelessWidget {
   final Map<String, Set<String>> chainToMap;
   final bool loading;
   final bool connecting;
+  final bool toConnecting;
   final String from;
   final String to;
   final Map<String, BridgeChainData> chainsInfo;
@@ -363,9 +365,22 @@ class BridgeChainSelector extends StatelessWidget {
                                           )
                                         : toData.icon.contains("svg")
                                             ? SvgPicture.network(toData.icon,
-                                                height: 40.w, width: 40.w)
+                                                height: 40.w,
+                                                width: 40.w,
+                                                color: toConnecting
+                                                    ? Colors.black
+                                                        .withOpacity(0.5)
+                                                    : null,
+                                                colorBlendMode: BlendMode.srcIn)
                                             : Image.network(toData.icon,
-                                                height: 40.w, width: 40.w))),
+                                                height: 40.w,
+                                                width: 40.w,
+                                                color: toConnecting
+                                                    ? Colors.black
+                                                        .withOpacity(0.5)
+                                                    : null,
+                                                colorBlendMode:
+                                                    BlendMode.srcATop))),
                             Container(
                               height: 22.h,
                               width: double.infinity,
@@ -409,6 +424,21 @@ class BridgeChainSelector extends StatelessWidget {
                                                 fontFamily:
                                                     'Titillium Web Regular'),
                                           ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Visibility(
+                                        visible: toConnecting,
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(left: 4),
+                                          width: 14,
+                                          height: 14,
+                                          child: const RiveAnimation.asset(
+                                            'assets/images/loading.riv',
+                                            fit: BoxFit.none,
+                                          ),
+                                        )),
                                   ),
                                   Align(
                                     alignment: Alignment.centerRight,

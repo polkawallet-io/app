@@ -566,6 +566,8 @@ class _BridgePageState extends State<BridgePage> {
                         onChanged: _changeChain,
                         loading: !_isReady,
                         connecting: _fromConnecting,
+                        toConnecting:
+                            _isReady && !_fromConnecting && _config == null,
                       ),
                       Visibility(
                           visible: !_fromConnecting && _balanceMap != null,
