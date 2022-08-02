@@ -111,7 +111,7 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                       )
                     ],
                   )),
-              Divider(height: 1),
+              Divider(height: 1, color: Color(0xFF979797).withAlpha(61)),
               Visibility(
                   visible: orientation != Orientation.portrait,
                   child: Padding(

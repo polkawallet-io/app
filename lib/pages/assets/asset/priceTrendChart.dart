@@ -53,63 +53,12 @@ class PriceTrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      height: width / sizeRatio,
-      padding: padding,
-      child: Stack(
-        children: [
-          // ClipRRect(
-          //     borderRadius: BorderRadius.all(Radius.circular(4)),
-          //     child: Stack(
-          //       children: [
-          //         LineChart(
-          //           LineChartData(
-          //             gridData: FlGridData(
-          //               show: true,
-          //               drawVerticalLine: false,
-          //               drawHorizontalLine: true,
-          //               verticalInterval: 1.5,
-          //               getDrawingHorizontalLine: (value) {
-          //                 return FlLine(
-          //                   color: Theme.of(context).dividerColor,
-          //                   strokeWidth: 0.2,
-          //                 );
-          //               },
-          //             ),
-          //             titlesData: FlTitlesData(
-          //               show: false,
-          //             ),
-          //             borderData: FlBorderData(show: false),
-          //             minX: 0,
-          //             maxX: xBase * 1.0,
-          //             minY: minY * (1 - 0.15),
-          //             maxY: maxY * (1 + 0.15),
-          //             lineBarsData: linesBarData(),
-          //             backgroundColor:
-          //                 isDark ? Color(0xFF232323) : Colors.white,
-          //           ),
-          //         ),
-          //         Container(
-          //           decoration:
-          //               BoxDecoration(color: Colors.transparent, boxShadow: [
-          //             BoxShadow(
-          //                 blurStyle: BlurStyle.inner,
-          //                 blurRadius: 2,
-          //                 spreadRadius: 1,
-          //                 offset: Offset(0, 0),
-          //                 color: Colors.black.withAlpha(77))
-          //           ]),
-          //           width: double.infinity,
-          //           height: double.infinity,
-          //         )
-          //       ],
-          //     )),
-          LineChart(
-            mainData(context),
-          )
-        ],
-      ),
-    );
+        width: width,
+        height: width / sizeRatio,
+        padding: padding,
+        child: LineChart(
+          mainData(context),
+        ));
   }
 
   LineChartData mainData(BuildContext context) {
@@ -121,8 +70,10 @@ class PriceTrendChart extends StatelessWidget {
         verticalInterval: 1.5,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: Theme.of(context).dividerColor,
-            strokeWidth: 0.2,
+            color: isDark
+                ? Colors.white.withAlpha(38)
+                : Color(0xFF555555).withAlpha(38),
+            strokeWidth: 1,
           );
         },
       ),
@@ -173,7 +124,7 @@ class PriceTrendChart extends StatelessWidget {
         show: true,
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 22,
+          reservedSize: 32,
           interval: 10 /
               ((seriesList.length > 7
                       ? (seriesList.length / 2 - 1)
@@ -184,7 +135,8 @@ class PriceTrendChart extends StatelessWidget {
               .headline5
               ?.copyWith(
                   fontSize: UI.getTextSize(10, context),
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
+                  height: 1.0),
           getTitles: (value) {
             var time = DateTime.fromMillisecondsSinceEpoch((value /
                         xBase *
@@ -192,9 +144,8 @@ class PriceTrendChart extends StatelessWidget {
                             minX.millisecondsSinceEpoch) +
                     minX.millisecondsSinceEpoch)
                 .toInt());
-            return "${DateFormat.d().format(time.toLocal())}";
+            return "╹\n${DateFormat.d().format(time.toLocal())}";
           },
-          margin: 8,
         ),
         topTitles: SideTitles(showTitles: false),
         rightTitles: SideTitles(showTitles: false),

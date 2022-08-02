@@ -681,7 +681,7 @@ class BalanceCard extends StatelessWidget {
                 flex: 1,
               ),
               Expanded(
-                child: marketPriceList != null && marketPriceList.length > 0
+                child: marketPriceList != null && marketPriceList.length > 1
                     ? Container(
                         width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.centerRight,
