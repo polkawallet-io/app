@@ -232,6 +232,15 @@ class _BridgePageState extends State<BridgePage> {
       _fromConnecting = false;
       _connectionError = null;
     });
+
+    if (_accountTo != null) {
+      final accWarn = await _checkAccountTo(_accountTo);
+      if (_accountToWarn != accWarn && mounted) {
+        setState(() {
+          _accountToWarn = accWarn;
+        });
+      }
+    }
   }
 
   Future<void> _disconnectFromChain() async {
