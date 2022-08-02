@@ -68,6 +68,7 @@ class PriceTrendChart extends StatelessWidget {
         drawVerticalLine: false,
         drawHorizontalLine: true,
         verticalInterval: 1.5,
+        horizontalInterval: 1.5,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: isDark

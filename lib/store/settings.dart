@@ -228,7 +228,9 @@ abstract class _SettingsStore with Store {
   }
 
   Future<double> getRate({bool isReload = false}) async {
-    if (_rate < 0 || isReload) {
+    if (priceCurrency == "USD") {
+      _rate = 1.0;
+    } else if (_rate < 0 || isReload) {
       final data = await WalletApi.getRate(convert: priceCurrency);
       if (data != null && data['data'] != null) {
         _rate = (data['data']['rate'] as num).toDouble();
