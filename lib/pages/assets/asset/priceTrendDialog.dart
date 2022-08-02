@@ -16,6 +16,8 @@ class PriceTrendDialog extends StatefulWidget {
 }
 
 class _PriceTrendDialogState extends State<PriceTrendDialog> {
+  int _length = 7;
+
   @override
   void initState() {
     super.initState();
@@ -101,8 +103,114 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                     ],
                   )),
               Divider(height: 1),
+              Visibility(
+                  visible: orientation != Orientation.portrait,
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 9, right: 25),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                left: 6, right: 6, top: 5, bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
+                                color: UI.isDarkTheme(context)
+                                    ? Colors.white.withAlpha(18)
+                                    : Colors.black.withAlpha(18)),
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 8),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 2),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4)),
+                                        color: _length == 7
+                                            ? UI.isDarkTheme(context)
+                                                ? Color(0xFFFFC952)
+                                                : Color(0xFF768FE1)
+                                            : Colors.transparent),
+                                    child: Text(
+                                      "7D",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: _length == 7
+                                                  ? Theme.of(context)
+                                                      .textTheme
+                                                      .button
+                                                      ?.color
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .headline1
+                                                      ?.color),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _length = 7;
+                                    });
+                                  },
+                                ),
+                                GestureDetector(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 2),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4)),
+                                        color: _length == 30
+                                            ? UI.isDarkTheme(context)
+                                                ? Color(0xFFFFC952)
+                                                : Color(0xFF768FE1)
+                                            : Colors.transparent),
+                                    child: Text(
+                                      "1M",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: _length == 30
+                                                  ? Theme.of(context)
+                                                      .textTheme
+                                                      .button
+                                                      ?.color
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .headline1
+                                                      ?.color),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _length = 30;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ))),
               PriceTrendChart.withData(
-                  widget.data, size, sizeRatio, UI.isDarkTheme(context))
+                  orientation == Orientation.portrait || _length == 7
+                      ? _length < widget.data.length
+                          ? widget.data.sublist(0, _length)
+                          : widget.data
+                      : widget.data,
+                  size,
+                  sizeRatio,
+                  UI.isDarkTheme(context),
+                  orientation == Orientation.portrait
+                      ? EdgeInsets.only(right: 15, top: 21)
+                      : EdgeInsets.only(right: 25, top: 12))
             ],
           ),
         ),

@@ -8,7 +8,6 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:app/utils/ShowCustomAlterWidget.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +147,7 @@ class _AssetPageState extends State<AssetPage> {
     super.initState();
 
     WalletApi.getMarketPriceList(
-            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 30)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -311,7 +310,7 @@ class _AssetPageState extends State<AssetPage> {
                 decimals: decimals,
                 marketPrices:
                     (widget.service.store.assets.marketPrices[symbol] ?? 0) *
-                        (widget.service.store.settings.priceCurrency == "CNY"
+                        (widget.service.store.settings.priceCurrency != "USD"
                             ? _rate
                             : 1.0),
                 // backgroundImage: widget.service.plugin.basic.backgroundImage,
@@ -615,7 +614,7 @@ class BalanceCard extends StatelessWidget {
                       Visibility(
                         visible: tokenPrice != null,
                         child: Text(
-                          '≈ ${Utils.currencySymbol(priceCurrency)} ${tokenPrice ?? '--.--'}',
+                          '≈ ${Fmt.priceCurrencySymbol(priceCurrency)} ${tokenPrice ?? '--.--'}',
                           style: Theme.of(context).textTheme.headline6.copyWith(
                               color: titleColor,
                               letterSpacing: -0.8,
@@ -678,7 +677,7 @@ class BalanceCard extends StatelessWidget {
                 flex: 1,
               ),
               Expanded(
-                child: marketPriceList != null
+                child: marketPriceList != null && marketPriceList.length > 0
                     ? Container(
                         width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.centerRight,
@@ -688,13 +687,13 @@ class BalanceCard extends StatelessWidget {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return PriceTrendDialog(
-                                      getTimeSeriesAmounts(marketPriceList),
+                                      getTimeSeriesAmounts(marketPriceList, 30),
                                       symbol);
                                 },
                               );
                             },
                             child: RewardsChart.withData(
-                                getTimeSeriesAmounts(marketPriceList),
+                                getTimeSeriesAmounts(marketPriceList, 7),
                                 MediaQuery.of(context).size.width / 4)))
                     : Container(width: MediaQuery.of(context).size.width / 3),
                 flex: 0,
@@ -713,9 +712,10 @@ class BalanceCard extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w), child: child);
   }
 
-  List<TimeSeriesAmount> getTimeSeriesAmounts(List<dynamic> marketPriceList) {
+  List<TimeSeriesAmount> getTimeSeriesAmounts(
+      List<dynamic> marketPriceList, int length) {
     List<TimeSeriesAmount> datas = [];
-    for (int i = 0; i < marketPriceList.length; i++) {
+    for (int i = 0; i < marketPriceList.length && i < length; i++) {
       datas.add(TimeSeriesAmount(DateTime.now().add(Duration(days: -1 * i)),
           marketPriceList[i] * 1.0));
     }

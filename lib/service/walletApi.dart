@@ -244,8 +244,8 @@ class WalletApi {
   }
 
   //$=>￥
-  static Future<Map> getRate() async {
-    final url = '$_endpoint/price-server/rate';
+  static Future<Map> getRate({String convert = "CNY"}) async {
+    final url = '$_endpoint/price-server/rate?convert=$convert';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {

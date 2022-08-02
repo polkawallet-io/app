@@ -13,11 +13,12 @@ class PriceTrendChart extends StatelessWidget {
   final double sizeRatio; //  width/height
   final bool isDark;
   static int xBase = 10;
+  EdgeInsetsGeometry padding;
   PriceTrendChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY,
-      this.width, this.isDark, this.sizeRatio);
+      this.width, this.isDark, this.sizeRatio, this.padding);
 
   factory PriceTrendChart.withData(List<TimeSeriesAmount> data, double width,
-      double sizeRatio, bool isDark) {
+      double sizeRatio, bool isDark, EdgeInsetsGeometry padding) {
     double maxY = 0, minY;
     DateTime maxX, minX;
     data.forEach((element) {
@@ -46,7 +47,7 @@ class PriceTrendChart extends StatelessWidget {
           element.amount));
     });
     return PriceTrendChart(
-        flSpotDatas, maxX, maxY, minX, minY, width, isDark, sizeRatio);
+        flSpotDatas, maxX, maxY, minX, minY, width, isDark, sizeRatio, padding);
   }
 
   @override
@@ -54,7 +55,7 @@ class PriceTrendChart extends StatelessWidget {
     return Container(
       width: width,
       height: width / sizeRatio,
-      padding: EdgeInsets.only(right: 15, top: 21),
+      padding: padding,
       child: Stack(
         children: [
           // ClipRRect(
