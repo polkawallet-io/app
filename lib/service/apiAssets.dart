@@ -73,4 +73,10 @@ class ApiAssets {
 
     apiRoot.store.assets.setMarketPrices(prices);
   }
+
+  Future<void> updateStakingConfig() async {
+    WalletApi.getTokenStakingConfig().then((value) {
+      apiRoot.store.settings.setTokenStakingConfig(value);
+    });
+  }
 }

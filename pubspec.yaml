@@ -37,6 +37,9 @@ dependencies:
   firebase_analytics: 8.3.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
+  polkawallet_ui: ^0.4.8
+  polkawallet_sdk: ^0.4.8
+  ethereum_addresses: ^1.0.2
   update_app:
     git:
       url: https://github.com/mofada/flutter_update_app.git
@@ -138,6 +141,7 @@ dev_dependencies:
 #  json_serializable: ^3.5.1
   flutter_launcher_icons: ^0.9.0
   rive: ^0.9.0
+  flutter_lints: ^2.0.1
 
 flutter_icons:
   android: "launcher_icon"
