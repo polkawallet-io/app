@@ -15,8 +15,19 @@ class PriceTrendChart extends StatelessWidget {
   static int xBase = 10;
   EdgeInsetsGeometry padding;
   Orientation orientation;
-  PriceTrendChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY,
-      this.width, this.isDark, this.sizeRatio, this.padding, this.orientation);
+  String priceCurrencySymbol;
+  PriceTrendChart(
+      this.seriesList,
+      this.maxX,
+      this.maxY,
+      this.minX,
+      this.minY,
+      this.width,
+      this.isDark,
+      this.sizeRatio,
+      this.padding,
+      this.orientation,
+      this.priceCurrencySymbol);
 
   factory PriceTrendChart.withData(
       List<TimeSeriesAmount> data,
@@ -24,7 +35,8 @@ class PriceTrendChart extends StatelessWidget {
       double sizeRatio,
       bool isDark,
       EdgeInsetsGeometry padding,
-      Orientation orientation) {
+      Orientation orientation,
+      String priceCurrencySymbol) {
     double maxY = 0, minY;
     DateTime maxX, minX;
     data.forEach((element) {
@@ -53,19 +65,45 @@ class PriceTrendChart extends StatelessWidget {
           element.amount));
     });
     return PriceTrendChart(flSpotDatas, maxX, maxY, minX, minY, width, isDark,
-        sizeRatio, padding, orientation);
+        sizeRatio, padding, orientation, priceCurrencySymbol);
   }
 
   @override
   Widget build(BuildContext context) {
+    final verticalInterval = 10 /
+        ((seriesList.length > 7
+                ? (seriesList.length / 2 - 1)
+                : (seriesList.length - 1)) +
+            0.01);
     return Container(
         width: width,
         height: width / sizeRatio,
         padding: padding,
-        child: LineChart(
-          mainData(context),
-          swapAnimationDuration: Duration(milliseconds: 0), // Optional
-          swapAnimationCurve: Curves.linear,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: [
+            LineChart(
+              mainData(context),
+              swapAnimationDuration: Duration(milliseconds: 0), // Optional
+              swapAnimationCurve: Curves.linear,
+            ),
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(left: 64, bottom: 26),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.filled(
+                    (10 ~/ verticalInterval) + 1,
+                    Container(
+                      width: 2,
+                      height: 8,
+                      color: isDark
+                          ? Color(0xFF4D4E4F)
+                          : Colors.black.withAlpha(25),
+                    )),
+              ),
+            )
+          ],
         ));
   }
 
@@ -74,12 +112,24 @@ class PriceTrendChart extends StatelessWidget {
     final _minY = minY * (1 - 0.15);
     final horizontalInterval =
         (_maxY - _minY) / (orientation == Orientation.portrait ? 3.1 : 5.1);
+
+    final verticalInterval = 10 /
+        ((seriesList.length > 7
+                ? (seriesList.length / 2 - 1)
+                : (seriesList.length - 1)) +
+            0.01);
+    print(10 /
+        ((seriesList.length > 7
+                ? (seriesList.length / 2 - 1)
+                : (seriesList.length - 1)) +
+            0.01));
     return LineChartData(
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
         drawHorizontalLine: true,
         horizontalInterval: horizontalInterval,
+        verticalInterval: verticalInterval,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: isDark
@@ -107,7 +157,9 @@ class PriceTrendChart extends StatelessWidget {
                 .toList();
           },
           touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Color(0x70000000),
+              tooltipBgColor: Color(0xFFFFFFFF).withAlpha(173),
+              tooltipPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              tooltipMargin: orientation == Orientation.portrait ? -34 : -50,
               getTooltipItems: (datas) {
                 return datas.map((e) {
                   var time = DateTime.fromMillisecondsSinceEpoch((e.x /
@@ -116,32 +168,40 @@ class PriceTrendChart extends StatelessWidget {
                                   minX.millisecondsSinceEpoch) +
                           minX.millisecondsSinceEpoch)
                       .toInt());
-                  return LineTooltipItem("", TextStyle(), children: [
-                    TextSpan(
-                        text: "${DateFormat.yMd().format(time.toLocal())}\n",
-                        style: Theme.of(context).textTheme.headline5?.copyWith(
-                            color: Colors.white,
-                            fontSize: UI.getTextSize(10, context),
-                            fontWeight: FontWeight.w600)),
-                    TextSpan(
-                        text: "${Fmt.priceFloorFormatter(e.y, lengthFixed: 4)}",
-                        style: Theme.of(context).textTheme.headline5?.copyWith(
-                            color: Colors.white,
-                            fontSize: UI.getTextSize(10, context),
-                            fontWeight: FontWeight.w600)),
-                  ]);
+                  return LineTooltipItem("", TextStyle(),
+                      textAlign: TextAlign.start,
+                      children: [
+                        TextSpan(
+                            text: orientation == Orientation.portrait
+                                ? ""
+                                : "${DateFormat.Md().format(time.toLocal())}\n",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                ?.copyWith(
+                                    color: Colors.black.withAlpha(191),
+                                    fontSize: UI.getTextSize(12, context),
+                                    fontWeight: FontWeight.w600)),
+                        TextSpan(
+                            text:
+                                "${Fmt.priceFloorFormatter(e.y, lengthFixed: 4)}$priceCurrencySymbol",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                ?.copyWith(
+                                    color: Colors.black.withAlpha(191),
+                                    fontSize: UI.getTextSize(12, context),
+                                    fontWeight: FontWeight.w600)),
+                      ]);
                 }).toList();
               })),
       titlesData: FlTitlesData(
         show: true,
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 32,
-          interval: 10 /
-              ((seriesList.length > 7
-                      ? (seriesList.length / 2 - 1)
-                      : (seriesList.length - 1)) +
-                  0.01),
+          reservedSize: 20,
+          margin: 15,
+          interval: verticalInterval,
           getTextStyles: (context, index) => Theme.of(context)
               .textTheme
               .headline5
@@ -156,7 +216,7 @@ class PriceTrendChart extends StatelessWidget {
                             minX.millisecondsSinceEpoch) +
                     minX.millisecondsSinceEpoch)
                 .toInt());
-            return "╹\n${DateFormat.d().format(time.toLocal())}";
+            return "${DateFormat.d().format(time.toLocal())}";
           },
         ),
         topTitles: SideTitles(showTitles: false),
@@ -169,15 +229,25 @@ class PriceTrendChart extends StatelessWidget {
               .headline5
               ?.copyWith(
                   fontSize: UI.getTextSize(10, context),
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.color
+                      ?.withAlpha(255 ~/ _maxY * index.toInt())),
           getTitles: (value) {
-            return Fmt.priceFloorFormatter(value, lengthMax: 2);
+            return "${Fmt.priceFloorFormatter(value, lengthMax: 2)}$priceCurrencySymbol";
           },
-          reservedSize: 50,
+          reservedSize: 55,
           margin: 10,
         ),
       ),
-      borderData: FlBorderData(show: false),
+      borderData: FlBorderData(
+          show: true,
+          border: Border.all(
+              color: isDark
+                  ? Colors.white.withAlpha(38)
+                  : Color(0xFF555555).withAlpha(38))),
       minX: 0,
       maxX: xBase * 1.0,
       minY: _minY,

@@ -51,6 +51,18 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
       return SafeArea(
           child: Center(
         child: RoundedCard(
+          brightBoxShadow: const [
+            BoxShadow(
+              color: Color(0x55000000),
+              blurStyle: BlurStyle.inner,
+              blurRadius: 1.0,
+              spreadRadius: 0.0,
+              offset: Offset(
+                0.5,
+                1.0,
+              ),
+            )
+          ],
           radius: 6,
           margin: orientation == Orientation.portrait
               ? EdgeInsets.symmetric(horizontal: 16)
@@ -220,7 +232,8 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                   orientation == Orientation.portrait
                       ? EdgeInsets.only(right: 15, top: 21)
                       : EdgeInsets.only(right: 25, top: 12),
-                  orientation)
+                  orientation,
+                  widget.priceCurrencySymbol)
             ],
           ),
         ),
