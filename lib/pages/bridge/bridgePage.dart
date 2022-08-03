@@ -116,7 +116,9 @@ class _BridgePageState extends State<BridgePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context).settings.arguments;
-      loadConfig(BridgePageParams.fromJson(Map<String, String>.from(args)));
+      loadConfig(args != null
+          ? BridgePageParams.fromJson(Map<String, String>.from(args))
+          : null);
     });
   }
 
