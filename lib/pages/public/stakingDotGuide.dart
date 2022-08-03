@@ -50,9 +50,8 @@ class StakingDOTGuide extends StatelessWidget {
                     title: dic['event.0515.3'],
                     subtitle: '',
                     button: dic['event.0515.8'],
-                    onClick: () => _onRoute(context, '/assets/token/transfer', {
-                      'tokenNameId': 'DOT',
-                      'isXCM': 'true',
+                    onClick: () => _onRoute(context, '/bridge', {
+                      'token': 'DOT',
                       'chainFrom': 'polkadot',
                       'chainTo': 'acala',
                     }),

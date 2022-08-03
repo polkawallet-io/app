@@ -50,9 +50,8 @@ class StakingKSMGuide extends StatelessWidget {
                     title: dic['event.0415.3'],
                     subtitle: '',
                     button: dic['event.0415.8'],
-                    onClick: () => _onRoute(context, '/assets/token/transfer', {
-                      'tokenNameId': 'KSM',
-                      'isXCM': 'true',
+                    onClick: () => _onRoute(context, '/bridge', {
+                      'token': 'KSM',
                       'chainFrom': 'kusama',
                       'chainTo': 'karura',
                     }),

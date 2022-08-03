@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
+import 'package:app/pages/bridge/bridgePageParams.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -115,7 +115,8 @@ class _BridgePageState extends State<BridgePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadConfig();
+      final args = ModalRoute.of(context).settings.arguments;
+      loadConfig(BridgePageParams.fromJson(Map<String, String>.from(args)));
     });
   }
 
@@ -129,7 +130,7 @@ class _BridgePageState extends State<BridgePage> {
     super.dispose();
   }
 
-  void loadConfig() async {
+  void loadConfig(BridgePageParams args) async {
     await widget.service.plugin.sdk.api.bridge.init();
     widget.service.plugin.sdk.api.bridge.subscribeReloadAction(reloadKey,
         () async {
@@ -164,17 +165,31 @@ class _BridgePageState extends State<BridgePage> {
     _accountTo = widget.service.keyring.current;
 
     //default current network
-    _chainFrom = chainFromAll.contains(widget.service.plugin.basic.name)
-        ? widget.service.plugin.basic.name
-        : chainFromAll.first;
-    _chainTo = _chainToMap[_chainFrom].contains('acala')
-        ? 'acala'
-        : _chainToMap[_chainFrom].contains('karura')
-            ? 'karura'
-            : _chainToMap[_chainFrom].first;
-    _token = _tokensMap[_chainFrom + _chainTo].contains(_token)
-        ? _token
-        : _tokensMap[_chainFrom + _chainTo].first;
+    final from = args?.chainFrom;
+    final to = args?.chainTo;
+    final token = args?.token;
+    final address = args?.address;
+    _chainFrom = from ??
+        (chainFromAll.contains(widget.service.plugin.basic.name)
+            ? widget.service.plugin.basic.name
+            : chainFromAll.first);
+    _chainTo = to ??
+        (_chainToMap[_chainFrom].contains('acala')
+            ? 'acala'
+            : _chainToMap[_chainFrom].contains('karura')
+                ? 'karura'
+                : _chainToMap[_chainFrom].first);
+    _token = token ??
+        (_tokensMap[_chainFrom + _chainTo].contains(_token)
+            ? _token
+            : _tokensMap[_chainFrom + _chainTo].first);
+    if (address != null) {
+      if (address.startsWith('0x') && address.length == 42) {
+        _address20Ctrl.text = address;
+      } else {
+        _updateAccountTo(address);
+      }
+    }
 
     setState(() {
       _isReady = true;
@@ -182,6 +197,31 @@ class _BridgePageState extends State<BridgePage> {
     _loadingActionConfig();
     await _connectFromChain(_chainFrom);
     _subscribeBalance();
+  }
+
+  Future<void> _updateAccountTo(String address) async {
+    final acc = KeyPairData();
+    acc.address = address;
+    setState(() {
+      _accountTo = acc;
+    });
+
+    final res = await Future.wait([
+      widget.service.plugin.sdk.api.account.getAddressIcons([acc.address]),
+      _checkAccountTo(acc),
+    ]);
+    if (res != null && res[0] != null) {
+      final accWithIcon = KeyPairData();
+      accWithIcon.address = address;
+
+      final List icon = res[0];
+      accWithIcon.icon = icon[0][1];
+
+      setState(() {
+        _accountTo = accWithIcon;
+        _accountToWarn = res[1];
+      });
+    }
   }
 
   Future<String> _getConnectionError() async {
@@ -404,9 +444,8 @@ class _BridgePageState extends State<BridgePage> {
       });
 
       TokenBalanceData token = _balanceMap[_token];
-      final dicApp = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+      final dicAss = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
 
       final tokenView = AppFmt.tokenView(token.symbol);
 
@@ -421,14 +460,14 @@ class _BridgePageState extends State<BridgePage> {
 
       if (xcmParams != null) {
         return XcmTxConfirmParams(
-            txTitle: dicApp['hub.bridge'],
+            txTitle: dic['hub.bridge'],
             module: xcmParams.module,
             call: xcmParams.call,
             txDisplay: {
-              dicAcala['cross.chain']: _chainTo?.toUpperCase(),
+              dic['bridge.to']: _chainTo?.toUpperCase(),
             },
             txDisplayBold: {
-              dic['amount']: Text(
+              dicAss['amount']: Text(
                   '${Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()), lengthMax: 8)} $tokenView',
                   style: const TextStyle(
                       fontSize: 30,
@@ -436,7 +475,7 @@ class _BridgePageState extends State<BridgePage> {
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Titillium Web SemiBold',
                       color: Colors.white)),
-              dic['address']: Row(
+              dicAss['address']: Row(
                 children: [
                   AddressIcon(_accountTo.address, svg: _accountTo.icon),
                   Expanded(

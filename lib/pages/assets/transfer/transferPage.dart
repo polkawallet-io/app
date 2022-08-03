@@ -600,23 +600,23 @@ class _TransferPageState extends State<TransferPage> {
         });
       }
 
-      final xcmEnabledChains = await widget.service.store.settings
-          .getXcmEnabledChains(widget.service.plugin.basic.name);
-      setState(() {
-        _accountOptions = widget.service.keyring.allWithContacts.toList();
-        _xcmEnabledChains = xcmEnabledChains;
-
-        if (args?.chainTo != null) {
-          final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
-          if (chainToIndex > -1) {
-            _chainTo = widget.service.allPlugins
-                .firstWhere((e) => e.basic.name == args.chainTo);
-            _accountTo = widget.service.keyring.current;
-            return;
-          }
-        }
-        _chainTo = widget.service.plugin;
-      });
+      // final xcmEnabledChains = await widget.service.store.settings
+      //     .getXcmEnabledChains(widget.service.plugin.basic.name);
+      // setState(() {
+      //   _accountOptions = widget.service.keyring.allWithContacts.toList();
+      //   _xcmEnabledChains = xcmEnabledChains;
+      //
+      //   if (args?.chainTo != null) {
+      //     final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
+      //     if (chainToIndex > -1) {
+      //       _chainTo = widget.service.allPlugins
+      //           .firstWhere((e) => e.basic.name == args.chainTo);
+      //       _accountTo = widget.service.keyring.current;
+      //       return;
+      //     }
+      //   }
+      //   _chainTo = widget.service.plugin;
+      // });
     });
   }
 
