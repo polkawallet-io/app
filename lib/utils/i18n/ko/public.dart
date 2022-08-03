@@ -118,4 +118,24 @@ const Map<String, String> enPublic = {
   'hub.browser.clearMessage':
       'Are you sure you want to delete the item from browsing history?',
   'hub.browser.searchingHistory': 'Searching History',
+  'hub.bridge': 'Bridge',
+  'hub.route': 'Route',
+  'hub.to.address': 'To Address',
+  'hub.amount': 'Amount',
+  'hub.selectToken': 'SelectToken',
+  'hub.origin.transfer.fee': 'Origin Chain Transfer Fee',
+  'hub.destination.transfer.fee': 'Destination Chain Transfer Fee',
+  'hub.transfer': 'Transfer',
+  'hub.cover.bridge':
+      'A Bridge to connect different networks. You can transfer tokens across the parachains.',
+  'input.empty': 'Input can not be empty',
+  'address.error.eth': 'Invalid Ethereum address',
+  'bridge.from': 'From',
+  'bridge.to': 'To',
+  'bridge.min': 'Min. amount',
+  'bridge.max': 'Max. amount',
+  'bridge.address': 'To Address',
+  'bridge.address.warn':
+      'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
+  'bridge.connecting.warn': 'Connection timeout. \ntry again later.',
 };
