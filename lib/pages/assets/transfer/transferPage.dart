@@ -591,6 +591,8 @@ class _TransferPageState extends State<TransferPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getTxFee();
 
+      _chainTo = widget.service.plugin;
+
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
       if (args?.address != null) {
         _updateAccountTo(args.address);
