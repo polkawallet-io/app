@@ -327,8 +327,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     _dropsService(service, node: node);
   }
 
-  Future<void> _restartWebConnect(AppService service,
-      {NetworkParams node}) async {
+  Future<void> _restartWebConnect() async {
     setState(() {
       _connectedNode = null;
     });
@@ -350,13 +349,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     //       : null,
     // );
 
-    final connected =
-        await service.plugin.start(_keyring, nodes: service.plugin.nodeList);
+    final connected = await _service.plugin.start(_keyring);
     setState(() {
       _connectedNode = connected;
     });
 
-    _dropsService(service, node: node);
+    _dropsService(_service);
   }
 
   Timer _webViewDropsTimer;
@@ -366,7 +364,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     _dropsServiceCancel();
     _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
       _chainTimer = Timer(Duration(seconds: 18), () async {
-        _restartWebConnect(service, node: node);
+        _restartWebConnect();
         _webViewDropsTimer = Timer(Duration(seconds: 60), () {
           _dropsService(service, node: node);
         });
@@ -420,7 +418,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             : null, socketDisconnectedAction: () {
       UI.throttle(() {
         _dropsServiceCancel();
-        _restartWebConnect(service, node: node);
+        _restartWebConnect();
       });
     });
 
@@ -616,7 +614,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               : null, socketDisconnectedAction: () {
         UI.throttle(() {
           _dropsServiceCancel();
-          _restartWebConnect(service);
+          _restartWebConnect();
         });
       });
 
