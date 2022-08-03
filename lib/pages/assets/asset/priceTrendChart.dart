@@ -14,11 +14,17 @@ class PriceTrendChart extends StatelessWidget {
   final bool isDark;
   static int xBase = 10;
   EdgeInsetsGeometry padding;
+  Orientation orientation;
   PriceTrendChart(this.seriesList, this.maxX, this.maxY, this.minX, this.minY,
-      this.width, this.isDark, this.sizeRatio, this.padding);
+      this.width, this.isDark, this.sizeRatio, this.padding, this.orientation);
 
-  factory PriceTrendChart.withData(List<TimeSeriesAmount> data, double width,
-      double sizeRatio, bool isDark, EdgeInsetsGeometry padding) {
+  factory PriceTrendChart.withData(
+      List<TimeSeriesAmount> data,
+      double width,
+      double sizeRatio,
+      bool isDark,
+      EdgeInsetsGeometry padding,
+      Orientation orientation) {
     double maxY = 0, minY;
     DateTime maxX, minX;
     data.forEach((element) {
@@ -46,8 +52,8 @@ class PriceTrendChart extends StatelessWidget {
               xBase,
           element.amount));
     });
-    return PriceTrendChart(
-        flSpotDatas, maxX, maxY, minX, minY, width, isDark, sizeRatio, padding);
+    return PriceTrendChart(flSpotDatas, maxX, maxY, minX, minY, width, isDark,
+        sizeRatio, padding, orientation);
   }
 
   @override
@@ -58,17 +64,22 @@ class PriceTrendChart extends StatelessWidget {
         padding: padding,
         child: LineChart(
           mainData(context),
+          swapAnimationDuration: Duration(milliseconds: 0), // Optional
+          swapAnimationCurve: Curves.linear,
         ));
   }
 
   LineChartData mainData(BuildContext context) {
+    final _maxY = maxY * (1 + 0.15);
+    final _minY = minY * (1 - 0.15);
+    final horizontalInterval =
+        (_maxY - _minY) / (orientation == Orientation.portrait ? 3.1 : 5.1);
     return LineChartData(
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
         drawHorizontalLine: true,
-        verticalInterval: 1.5,
-        horizontalInterval: 1.5,
+        horizontalInterval: horizontalInterval,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: isDark
@@ -152,6 +163,7 @@ class PriceTrendChart extends StatelessWidget {
         rightTitles: SideTitles(showTitles: false),
         leftTitles: SideTitles(
           showTitles: true,
+          interval: horizontalInterval,
           getTextStyles: (context, index) => Theme.of(context)
               .textTheme
               .headline5
@@ -168,8 +180,8 @@ class PriceTrendChart extends StatelessWidget {
       borderData: FlBorderData(show: false),
       minX: 0,
       maxX: xBase * 1.0,
-      minY: minY * (1 - 0.15),
-      maxY: maxY * (1 + 0.15),
+      minY: _minY,
+      maxY: _maxY,
       lineBarsData: linesBarData(),
       backgroundColor: isDark ? Color(0xFF232323) : Colors.white,
     );

@@ -219,7 +219,8 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                   UI.isDarkTheme(context),
                   orientation == Orientation.portrait
                       ? EdgeInsets.only(right: 15, top: 21)
-                      : EdgeInsets.only(right: 25, top: 12))
+                      : EdgeInsets.only(right: 25, top: 12),
+                  orientation)
             ],
           ),
         ),
