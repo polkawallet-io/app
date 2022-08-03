@@ -324,7 +324,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
-    _dropsService(service, node: node);
+    _dropsService();
   }
 
   Future<void> _restartWebConnect() async {
@@ -354,24 +354,24 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
-    _dropsService(_service);
+    _dropsService();
   }
 
   Timer _webViewDropsTimer;
   Timer _dropsServiceTimer;
   Timer _chainTimer;
-  _dropsService(AppService service, {NetworkParams node}) {
+  _dropsService() {
     _dropsServiceCancel();
     _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
       _chainTimer = Timer(Duration(seconds: 18), () async {
         _restartWebConnect();
         _webViewDropsTimer = Timer(Duration(seconds: 60), () {
-          _dropsService(service, node: node);
+          _dropsService();
         });
       });
       _service.plugin.sdk.webView
           .evalJavascript('api.rpc.system.chain()')
-          .then((value) => _dropsService(service, node: node));
+          .then((value) => _dropsService());
     });
   }
 
@@ -903,7 +903,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.resumed:
-        _dropsService(_service);
+        _dropsService();
         break;
       case AppLifecycleState.paused:
         _dropsServiceCancel();
