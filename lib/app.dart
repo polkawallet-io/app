@@ -820,7 +820,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   void _handleIncomingAppLinks() {
     uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
-      closeWebView();
+      closeInAppWebView();
       _toPageByUri(uri);
       print('got uri: $uri');
     }, onError: (Object err) {
