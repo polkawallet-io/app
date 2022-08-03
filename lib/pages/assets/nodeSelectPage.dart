@@ -44,22 +44,32 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
           Container(
             margin: EdgeInsets.only(bottom: 7.h),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              color: UI.isDarkTheme(context)
-                  ? Color(0xFF818181)
-                  : Color(0xFFF0ECE6),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x33000000),
-                  blurRadius: 4.0,
-                  spreadRadius: 0.0,
-                  offset: Offset(
-                    0.0,
-                    2.0,
-                  ),
-                )
-              ],
+              image: UI.isDarkTheme(context)
+                  ? DecorationImage(
+                      image:
+                          AssetImage('assets/images/nodeSelect_title_bg.png'),
+                      fit: BoxFit.fill,
+                    )
+                  : null,
+              borderRadius: UI.isDarkTheme(context)
+                  ? null
+                  : BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+              color: UI.isDarkTheme(context) ? null : Color(0xFFF0ECE6),
+              boxShadow: UI.isDarkTheme(context)
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Color(0x33000000),
+                        blurRadius: 4.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(
+                          0.0,
+                          2.0,
+                        ),
+                      )
+                    ],
             ),
             height: 48.h,
             child: Stack(

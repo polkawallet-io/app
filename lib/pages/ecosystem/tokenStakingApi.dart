@@ -9,6 +9,8 @@ class TokenStakingApi {
 
   static Function refresh;
 
+  static Map<String, dynamic> _cacheTokenStakingAssets;
+
   static Future<Map<String, TokenBalanceData>> getBalance(
       AppService service, List<dynamic> networkNames, String token,
       {bool isCachaChange = true}) async {
@@ -29,9 +31,11 @@ class TokenStakingApi {
     }
 
     Map<String, TokenBalanceData> balances = Map<String, TokenBalanceData>();
-    var cacheTokenStakingAssets =
-        service.assets.getTokenStakingAssets(service.keyring.current.pubKey) ??
-            Map<String, dynamic>();
+    if (_cacheTokenStakingAssets == null) {
+      _cacheTokenStakingAssets = service.assets
+              .getTokenStakingAssets(service.keyring.current.pubKey) ??
+          Map<String, dynamic>();
+    }
     final balanceQuery = networkNames
         .map((e) =>
             'xcm.getBalances("$e", "${service.keyring.current.address}", ["$token"])')
@@ -53,33 +57,36 @@ class TokenStakingApi {
               name: token,
               currencyId: {'Token': token},
               detailPageRoute: "/assets/token/detail",
-              isCacheChange: cacheTokenStakingAssets == null ||
-                      cacheTokenStakingAssets["$element-$token"] == null ||
+              isCacheChange: _cacheTokenStakingAssets == null ||
+                      _cacheTokenStakingAssets["$element-$token"] == null ||
                       isCachaChange == false
                   ? false
-                  : cacheTokenStakingAssets["$element-$token"]['amount'] !=
+                  : _cacheTokenStakingAssets["$element-$token"]['amount'] !=
                       balance['amount']);
 
           balances[element] = balanceData;
-          cacheTokenStakingAssets["$element-$token"] = {
+          _cacheTokenStakingAssets["$element-$token"] = {
             "amount": balance['amount']
           };
         }
       }
     }
 
-    if (cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
+    if (_cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
             null &&
-        cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
+        _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
             currentPluginBalance.amount &&
         isCachaChange) {
       currentPluginBalance.isCacheChange = true;
+    } else {
+      currentPluginBalance.isCacheChange = false;
     }
-    cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
+
+    _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
         currentPluginBalance.amount;
 
     service.assets.setTokenStakingAssets(
-        service.keyring.current.pubKey, cacheTokenStakingAssets);
+        service.keyring.current.pubKey, _cacheTokenStakingAssets);
 
     final datas = Map<String, TokenBalanceData>()
       ..addAll({service.plugin.basic.name: currentPluginBalance})

@@ -252,9 +252,10 @@ class _BrowserPageState extends State<BrowserPage> {
                                   }
                                 },
                                 child: Container(
-                                    child: Text(
+                                    child: Center(
+                                        child: Text(
                                       index == 0
-                                          ? "all"
+                                          ? "All"
                                           : widget.service.store.settings
                                               .dappAllTags[index - 1],
                                       style: Theme.of(context)
@@ -263,13 +264,14 @@ class _BrowserPageState extends State<BrowserPage> {
                                           ?.copyWith(
                                               fontSize:
                                                   UI.getTextSize(12, context),
+                                              height: 1.0,
                                               fontWeight: _tag == index
                                                   ? FontWeight.w600
                                                   : FontWeight.w400,
                                               color: _tag == index
                                                   ? Colors.black
                                                   : PluginColorsDark.headline1),
-                                    ),
+                                    )),
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 7, vertical: 3),
                                     decoration: BoxDecoration(
@@ -277,7 +279,7 @@ class _BrowserPageState extends State<BrowserPage> {
                                             ? PluginColorsDark.primary
                                             : Color(0xFFFFFFFF).withAlpha(43),
                                         borderRadius:
-                                            BorderRadius.circular(6))));
+                                            BorderRadius.circular(4))));
                           })),
                   Expanded(
                       child: GridView.builder(

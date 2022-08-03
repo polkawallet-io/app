@@ -350,8 +350,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     //       : null,
     // );
 
-    final connected = await service.plugin.start(_keyring,
-        nodes: node != null ? [node] : service.plugin.nodeList);
+    final connected =
+        await service.plugin.start(_keyring, nodes: service.plugin.nodeList);
     setState(() {
       _connectedNode = connected;
     });

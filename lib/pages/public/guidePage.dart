@@ -14,7 +14,7 @@ class GuidePage extends StatefulWidget {
 
 class _GuidePageState extends State<GuidePage> {
   final PageController _pageController = PageController();
-  final _pages = [0, 1, 2, 3];
+  final _pages = [0, 1, 2, 3, 4];
 
   int _pageIndex = 0;
 

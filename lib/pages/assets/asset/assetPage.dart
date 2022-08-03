@@ -241,7 +241,6 @@ class _AssetPageState extends State<AssetPage> {
   List<Color> getBgColors() {
     switch (widget.service.plugin.basic.name) {
       case relay_chain_name_ksm:
-      case para_chain_name_statemine:
         return [Color(0xFF767575), Color(0xFF2A2A2B)];
       case para_chain_name_karura:
         return [Color(0xFF2B292A), Color(0xFFCD4337)];
@@ -338,7 +337,7 @@ class _AssetPageState extends State<AssetPage> {
                                     : null,
                               ),
                             ),
-                            text: dic['v3.send'],
+                            text: dic['transfer'],
                             onPressed: () {
                               if (widget.service.plugin.basic.name ==
                                       para_chain_name_karura ||

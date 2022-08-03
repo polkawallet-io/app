@@ -68,7 +68,9 @@ class _Settings extends State<SettingsPage> {
                 FixedExtentScrollController(initialItem: selected),
             children: _langOptions.map((i) {
               return Padding(
-                  padding: EdgeInsets.all(16), child: Text(_getLang(i)));
+                  padding: EdgeInsets.all(16),
+                  child:
+                      Text(_getLang(i), style: TextStyle(color: Colors.black)));
             }).toList(),
             onSelectedItemChanged: (v) {
               selected = v;
@@ -112,7 +114,8 @@ class _Settings extends State<SettingsPage> {
             children: _priceCurrencyOptions.map((i) {
               return Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text(_getPriceCurrency(i)));
+                  child: Text(_getPriceCurrency(i),
+                      style: TextStyle(color: Colors.black)));
             }).toList(),
             onSelectedItemChanged: (v) {
               selected = v;

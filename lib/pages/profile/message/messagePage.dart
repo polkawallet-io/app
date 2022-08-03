@@ -77,8 +77,7 @@ class _MessagePageState extends State<MessagePage> {
                     )))
           ],
         ),
-        body: SafeArea(
-            child: Column(
+        body: Column(
           children: [
             Observer(builder: (_) {
               final communityUnreadNumber = (widget
@@ -321,6 +320,6 @@ class _MessagePageState extends State<MessagePage> {
               }),
             ))
           ],
-        )));
+        ));
   }
 }

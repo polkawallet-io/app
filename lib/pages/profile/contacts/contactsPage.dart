@@ -44,7 +44,6 @@ class _ContactsPageState extends State<ContactsPage> {
           PolkawalletActionSheetAction(
             child: Text(
               dic['edit'],
-              style: TextStyle(color: Colors.blueAccent),
             ),
             onPressed: () async {
               Navigator.of(context).pop(0);
@@ -56,7 +55,6 @@ class _ContactsPageState extends State<ContactsPage> {
           PolkawalletActionSheetAction(
             child: Text(
               dic['copy'],
-              style: TextStyle(color: Colors.blueAccent),
             ),
             onPressed: () async {
               Navigator.of(context).pop(1);
@@ -65,8 +63,8 @@ class _ContactsPageState extends State<ContactsPage> {
           PolkawalletActionSheetAction(
             child: Text(
               dic['delete'],
-              style: TextStyle(color: Colors.red),
             ),
+            isDefaultAction: true,
             onPressed: () {
               Navigator.of(context).pop(2);
               _removeItem(pageContext, i);
@@ -76,7 +74,6 @@ class _ContactsPageState extends State<ContactsPage> {
         cancelButton: PolkawalletActionSheetAction(
           child: Text(
             dic['cancel'],
-            style: TextStyle(color: Colors.blueAccent),
           ),
           onPressed: () {
             Navigator.pop(context);
