@@ -83,7 +83,7 @@ class PriceTrendChart extends StatelessWidget {
           alignment: AlignmentDirectional.bottomCenter,
           children: [
             LineChart(
-              mainData(context),
+              mainData(context, verticalInterval),
               swapAnimationDuration: Duration(milliseconds: 0), // Optional
               swapAnimationCurve: Curves.linear,
             ),
@@ -107,22 +107,11 @@ class PriceTrendChart extends StatelessWidget {
         ));
   }
 
-  LineChartData mainData(BuildContext context) {
+  LineChartData mainData(BuildContext context, double verticalInterval) {
     final _maxY = maxY * (1 + 0.15);
     final _minY = minY * (1 - 0.15);
     final horizontalInterval =
         (_maxY - _minY) / (orientation == Orientation.portrait ? 3.1 : 5.1);
-
-    final verticalInterval = 10 /
-        ((seriesList.length > 7
-                ? (seriesList.length / 2 - 1)
-                : (seriesList.length - 1)) +
-            0.01);
-    print(10 /
-        ((seriesList.length > 7
-                ? (seriesList.length / 2 - 1)
-                : (seriesList.length - 1)) +
-            0.01));
     return LineChartData(
       gridData: FlGridData(
         show: true,
