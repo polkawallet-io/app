@@ -788,6 +788,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _toPageByUri(Uri uri) {
+    if (uri.toString().contains(".html")) {
+      return;
+    }
     final paths = uri.toString().split("polkawallet.io");
     Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
     if (paths.length > 1) {

@@ -354,7 +354,7 @@ packages:
     source: hosted
     version: "2.0.3"
   ethereum_addresses:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ethereum_addresses
       url: "https://pub.dartlang.org"
@@ -512,6 +512,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
+  flutter_lints:
+    dependency: "direct dev"
+    description:
+      name: flutter_lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -816,6 +823,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.4"
+  lints:
+    dependency: transitive
+    description:
+      name: lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   liquid_progress_indicator:
     dependency: transitive
     description:
@@ -1114,14 +1128,14 @@ packages:
     source: path
     version: "0.4.6"
   polkawallet_sdk:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../../coding/polkawallet/sdk"
       relative: true
     source: path
     version: "0.4.8"
   polkawallet_ui:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
