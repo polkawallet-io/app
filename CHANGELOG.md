@@ -1,3 +1,12 @@
+# [3.3.4-beta] - 20220804
+1. Replace history api #267
+2. Optimize Vault display #180
+3. 其他插件中非原生token具体资产页面暗色版适配 #297
+4. 修复部分已知bug #271 #306 #297 #307 #320 #321
+5. 历史记录增加按事件筛选功能 #298
+6. Swap模块taiga token兑换记录标记。 #305
+7. 支持 Statemint 插件，以便在后续支持 WBTC,WETH 跨链 #221
+
 # [3.3.3-beta] - 20220720
 1. taiga LP 页面图标更新.
 2. Night mode #165
