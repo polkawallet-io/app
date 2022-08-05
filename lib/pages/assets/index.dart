@@ -843,11 +843,7 @@ class _AssetsState extends State<AssetsPage> {
                                   },
                                   priceCurrency: widget
                                       .service.store.settings.priceCurrency,
-                                  rate: widget.service.store.settings
-                                              .priceCurrency ==
-                                          "CNY"
-                                      ? _rate
-                                      : 1.0,
+                                  rate: _rate,
                                   hideBalance: widget
                                       .service.store.settings.isHideBalance),
                         ),
@@ -1159,12 +1155,7 @@ class _AssetsState extends State<AssetsPage> {
                                           i.decimals,
                                           isFromCache: isTokensFromCache,
                                           detailPageRoute: i.detailPageRoute,
-                                          marketPrice: price *
-                                              (widget.service.store.settings
-                                                          .priceCurrency ==
-                                                      "CNY"
-                                                  ? _rate
-                                                  : 1.0),
+                                          marketPrice: price,
                                           icon: TokenIcon(
                                             isStateMint ? i.id : i.symbol,
                                             widget.service.plugin.tokenIcons,
@@ -1175,6 +1166,7 @@ class _AssetsState extends State<AssetsPage> {
                                               .settings.isHideBalance,
                                           priceCurrency: widget.service.store
                                               .settings.priceCurrency,
+                                          priceRate: _rate,
                                         );
                                       }).toList(),
                                     )),
@@ -1215,6 +1207,7 @@ class _AssetsState extends State<AssetsPage> {
                                                         .store
                                                         .settings
                                                         .priceCurrency,
+                                                    priceRate: _rate,
                                                   ))
                                               .toList(),
                                         )
@@ -1242,7 +1235,8 @@ class TokenItem extends StatelessWidget {
       this.icon,
       this.isFromCache = false,
       this.isHideBalance,
-      this.priceCurrency});
+      this.priceCurrency,
+      this.priceRate});
   final TokenBalanceData item;
   final int decimals;
   final double marketPrice;
@@ -1251,6 +1245,7 @@ class TokenItem extends StatelessWidget {
   final bool isFromCache;
   final bool isHideBalance;
   final String priceCurrency;
+  final double priceRate;
 
   @override
   Widget build(BuildContext context) {
@@ -1292,7 +1287,7 @@ class TokenItem extends StatelessWidget {
                   ? Text(
                       isHideBalance
                           ? "******"
-                          : '≈ ${Fmt.priceCurrencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
+                          : '≈ ${Fmt.priceCurrencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice * priceRate)}',
                       style: Theme.of(context).textTheme.headline6.copyWith(
                           fontFamily:
                               UI.getFontFamily('TitilliumWeb', context)),
@@ -1303,8 +1298,10 @@ class TokenItem extends StatelessWidget {
           onTap: detailPageRoute == null
               ? null
               : () {
-                  Navigator.of(context)
-                      .pushNamed(detailPageRoute, arguments: item);
+                  Navigator.of(context).pushNamed(detailPageRoute,
+                      arguments: item
+                        ..priceCurrency = priceCurrency
+                        ..priceRate = priceRate);
                 },
         )
       ],
