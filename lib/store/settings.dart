@@ -227,9 +227,11 @@ abstract class _SettingsStore with Store {
     systemUnreadNumber = data;
   }
 
-  Future<double> getRate() async {
-    if (_rate < 0) {
-      final data = await WalletApi.getRate();
+  Future<double> getRate({bool isReload = false}) async {
+    if (priceCurrency == "USD") {
+      _rate = 1.0;
+    } else if (_rate < 0 || isReload) {
+      final data = await WalletApi.getRate(convert: priceCurrency);
       if (data != null && data['data'] != null) {
         _rate = (data['data']['rate'] as num).toDouble();
       } else {
@@ -297,6 +299,7 @@ abstract class _SettingsStore with Store {
 
   void setPriceCurrency(String value) {
     priceCurrency = value;
+    getRate(isReload: true);
     storage.write(localStoragePriceCurrencyKey, value);
   }
 

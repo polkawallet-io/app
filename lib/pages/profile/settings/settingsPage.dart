@@ -29,7 +29,19 @@ class SettingsPage extends StatefulWidget {
 
 class _Settings extends State<SettingsPage> {
   final _langOptions = ['', 'en', 'zh'];
-  final _priceCurrencyOptions = ['USD', 'CNY'];
+  final _priceCurrencyOptions = [
+    'USD',
+    'CNY',
+    'EUR',
+    'GBP',
+    'RUB',
+    'HKD',
+    'NZD',
+    'AUD',
+    'TWD',
+    'KRW',
+    'JPY'
+  ];
   bool _isLoading = false;
 
   String _getLang(String code) {
@@ -45,9 +57,38 @@ class _Settings extends State<SettingsPage> {
   }
 
   String _getPriceCurrency(String currency) {
+// CNY（人民币）Chinese Yuan (¥)
+// USD（美元）United States Dollar ($)
+// EUR（欧元）Euro (€)
+// GBP（英镑）Pound Sterling (£)
+// RUB（卢布）Russian Ruble (₽)
+// HKD（港币）Hong Kong Dollar ($)
+// NZD（新西兰元）New Zealand Dollar ($)
+// AUD（澳元）Australian Dollar ($)
+// TWD（台币）New Taiwan Dollar (NT$)
+// KRW（韩元）South Korean Won (₩)
+// JPY（日元）Japanese Yen (¥)
     switch (currency) {
       case 'CNY':
-        return '¥ CNY';
+        return '￥ CNY';
+      case 'EUR':
+        return '€ EUR';
+      case 'GBP':
+        return '£ GBP';
+      case 'RUB':
+        return '₽ RUB';
+      case 'HKD':
+        return '\$ HKD';
+      case 'NZD':
+        return '\$ NZD';
+      case 'AUD':
+        return '\$ AUD';
+      case 'TWD':
+        return 'NT\$ TWD';
+      case 'KRW':
+        return '₩ KRW';
+      case 'JPY':
+        return '¥ JPY';
       default:
         return '\$ USD';
     }
@@ -164,7 +205,7 @@ class _Settings extends State<SettingsPage> {
                         ? dic['setting.currency.tip']
                         : '';
                 final currencyTip =
-                    widget.service.store.settings.priceCurrency == 'CNY'
+                    widget.service.store.settings.priceCurrency != "USD"
                         ? ' (${dic['setting.currency.tip']})'
                         : '';
                 return SafeArea(

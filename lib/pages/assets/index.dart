@@ -434,7 +434,7 @@ class _AssetsState extends State<AssetsPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 0;
-    if (widget.service.store.settings.priceCurrency == "CNY") {
+    if (widget.service.store.settings.priceCurrency != "USD") {
       marketPrice *= _rate;
     }
     final available = marketPrice *
@@ -759,7 +759,7 @@ class _AssetsState extends State<AssetsPage> {
             balancesInfo != null) {
           tokenPrice = Fmt.priceCeil(
               widget.service.store.assets.marketPrices[symbol] *
-                  (widget.service.store.settings.priceCurrency == "CNY"
+                  (widget.service.store.settings.priceCurrency != "USD"
                       ? _rate
                       : 1.0) *
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
@@ -1124,7 +1124,7 @@ class _AssetsState extends State<AssetsPage> {
                                             widget.service.store.settings
                                                     .isHideBalance
                                                 ? "******"
-                                                : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
+                                                : '≈ ${Fmt.priceCurrencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline6
@@ -1292,7 +1292,7 @@ class TokenItem extends StatelessWidget {
                   ? Text(
                       isHideBalance
                           ? "******"
-                          : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
+                          : '≈ ${Fmt.priceCurrencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
                       style: Theme.of(context).textTheme.headline6.copyWith(
                           fontFamily:
                               UI.getFontFamily('TitilliumWeb', context)),

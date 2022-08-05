@@ -114,4 +114,5 @@ const Map<String, String> enAssets = {
   'v3.changeNetwork.ing': 'Changing to',
   'v3.my': 'My',
   'v3.tap': 'TAP',
+  'v3.priceTrend': 'Price Trend'
 };

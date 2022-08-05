@@ -1,5 +1,6 @@
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/asset/priceTrendDialog.dart';
 import 'package:app/pages/assets/asset/rewardsChart.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -7,7 +8,6 @@ import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:app/utils/ShowCustomAlterWidget.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -146,8 +146,10 @@ class _AssetPageState extends State<AssetPage> {
   void initState() {
     super.initState();
 
+    getRate();
+
     WalletApi.getMarketPriceList(
-            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 7)
+            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0], 30)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -173,7 +175,6 @@ class _AssetPageState extends State<AssetPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshData();
-      getRate();
     });
   }
 
@@ -310,7 +311,7 @@ class _AssetPageState extends State<AssetPage> {
                 decimals: decimals,
                 marketPrices:
                     (widget.service.store.assets.marketPrices[symbol] ?? 0) *
-                        (widget.service.store.settings.priceCurrency == "CNY"
+                        (widget.service.store.settings.priceCurrency != "USD"
                             ? _rate
                             : 1.0),
                 // backgroundImage: widget.service.plugin.basic.backgroundImage,
@@ -318,6 +319,7 @@ class _AssetPageState extends State<AssetPage> {
                 icon: widget.service.plugin.tokenIcons[symbol],
                 marketPriceList: _marketPriceList,
                 priceCurrency: widget.service.store.settings.priceCurrency,
+                rate: _rate,
               ),
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -528,7 +530,8 @@ class BalanceCard extends StatelessWidget {
       this.bgColors,
       this.icon,
       this.marketPriceList,
-      this.priceCurrency});
+      this.priceCurrency,
+      this.rate = 1.0});
 
   final String symbol;
   final int decimals;
@@ -539,6 +542,7 @@ class BalanceCard extends StatelessWidget {
   final Widget icon;
   final List<dynamic> marketPriceList;
   final String priceCurrency;
+  final double rate;
 
   @override
   Widget build(BuildContext context) {
@@ -614,7 +618,7 @@ class BalanceCard extends StatelessWidget {
                       Visibility(
                         visible: tokenPrice != null,
                         child: Text(
-                          '≈ ${Utils.currencySymbol(priceCurrency)} ${tokenPrice ?? '--.--'}',
+                          '≈ ${Fmt.priceCurrencySymbol(priceCurrency)} ${tokenPrice ?? '--.--'}',
                           style: Theme.of(context).textTheme.headline6.copyWith(
                               color: titleColor,
                               letterSpacing: -0.8,
@@ -677,13 +681,25 @@ class BalanceCard extends StatelessWidget {
                 flex: 1,
               ),
               Expanded(
-                child: marketPriceList != null
+                child: marketPriceList != null && marketPriceList.length > 1
                     ? Container(
                         width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.centerRight,
-                        child: RewardsChart.withData(
-                            getTimeSeriesAmounts(marketPriceList),
-                            MediaQuery.of(context).size.width / 4))
+                        child: GestureDetector(
+                            onTap: () {
+                              showCupertinoDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PriceTrendDialog(
+                                      getTimeSeriesAmounts(marketPriceList, 30),
+                                      symbol,
+                                      Fmt.priceCurrencySymbol(priceCurrency));
+                                },
+                              );
+                            },
+                            child: RewardsChart.withData(
+                                getTimeSeriesAmounts(marketPriceList, 7),
+                                MediaQuery.of(context).size.width / 4)))
                     : Container(width: MediaQuery.of(context).size.width / 3),
                 flex: 0,
               )
@@ -701,11 +717,12 @@ class BalanceCard extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w), child: child);
   }
 
-  List<TimeSeriesAmount> getTimeSeriesAmounts(List<dynamic> marketPriceList) {
+  List<TimeSeriesAmount> getTimeSeriesAmounts(
+      List<dynamic> marketPriceList, int length) {
     List<TimeSeriesAmount> datas = [];
-    for (int i = 0; i < marketPriceList.length; i++) {
+    for (int i = 0; i < marketPriceList.length && i < length; i++) {
       datas.add(TimeSeriesAmount(DateTime.now().add(Duration(days: -1 * i)),
-          marketPriceList[i] * 1.0));
+          marketPriceList[i] * rate));
     }
     return datas;
   }
