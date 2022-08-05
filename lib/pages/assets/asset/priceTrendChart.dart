@@ -223,7 +223,7 @@ class PriceTrendChart extends StatelessWidget {
                       .textTheme
                       .headline5
                       ?.color
-                      ?.withAlpha(255 ~/ _maxY * index.toInt())),
+                      ?.withAlpha((255.0 / _maxY * index).toInt())),
           getTitles: (value) {
             return "${Fmt.priceFloorFormatter(value, lengthMax: 2)}$priceCurrencySymbol";
           },
