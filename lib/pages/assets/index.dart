@@ -10,7 +10,6 @@ import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/InstrumentWidget.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -210,6 +209,7 @@ class _AssetsState extends State<AssetsPage> {
                       children: [
                         Container(
                             margin: EdgeInsets.only(right: 8),
+                            height: 32,
                             width: 32,
                             child: widget.plugins[networkIndex].basic.icon),
                         Text(
@@ -261,6 +261,7 @@ class _AssetsState extends State<AssetsPage> {
                 title: Text(dic['uos.title']),
                 content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: confirmMsg),
                 actions: <Widget>[
                   PolkawalletActionSheetAction(

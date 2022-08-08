@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.3.4+3343
+version: 3.3.4+3344
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -128,6 +128,10 @@ dependency_overrides:
   flutter_html: ^2.2.1
   flutter_slidable: ^1.2.0
   platform: ^3.1.0
+  flutter_qr_scan:
+    git:
+      url: https://github.com/polkawallet-io/flutter_qr_reader.git
+      ref: 90fdd52b98e954c301b68f605c0c6c0fd21cef61
 
 
 dev_dependencies:

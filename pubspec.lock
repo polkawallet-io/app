@@ -553,11 +553,13 @@ packages:
     source: hosted
     version: "2.0.6"
   flutter_qr_scan:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: flutter_qr_scan
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: "90fdd52b98e954c301b68f605c0c6c0fd21cef61"
+      resolved-ref: "90fdd52b98e954c301b68f605c0c6c0fd21cef61"
+      url: "https://github.com/polkawallet-io/flutter_qr_reader.git"
+    source: git
     version: "1.0.7"
   flutter_screenutil:
     dependency: "direct main"
