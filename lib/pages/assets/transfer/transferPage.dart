@@ -18,6 +18,7 @@ import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/txButton.dart';
@@ -116,11 +117,6 @@ class _TransferPageState extends State<TransferPage> {
     _updateAccountTo(to.address.address, name: to.address.name);
   }
 
-  bool _isFromXTokensParaChain() {
-    return widget.service.plugin.basic.name == para_chain_name_karura ||
-        widget.service.plugin.basic.name == para_chain_name_bifrost;
-  }
-
   bool _isToParaChain() {
     return _chainTo.basic.name != relay_chain_name_ksm &&
         _chainTo.basic.name != relay_chain_name_dot &&
@@ -180,22 +176,14 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (_chainTo.basic.name != widget.service.plugin.basic.name) {
-        final isFromXTokensParaChain = _isFromXTokensParaChain();
         final isToParaChain = _isToParaChain();
 
         final isToParent = _chainTo.basic.name == relay_chain_name_ksm ||
             _chainTo.basic.name == relay_chain_name_dot;
 
-        final txModule = isToParent
-            ? 'polkadotXcm'
-            : isFromXTokensParaChain
-                ? 'xTokens'
-                : 'xcmPallet';
-        final txCall = isToParaChain
-            ? isFromXTokensParaChain
-                ? 'transfer'
-                : 'reserveTransferAssets'
-            : 'limitedTeleportAssets';
+        final txModule = isToParent ? 'polkadotXcm' : 'xcmPallet';
+        final txCall =
+            isToParaChain ? 'reserveTransferAssets' : 'limitedTeleportAssets';
 
         final amount =
             Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString();
@@ -217,34 +205,11 @@ class _TransferPageState extends State<TransferPage> {
         }
 
         List paramsX;
-        if (isFromXTokensParaChain && isToParaChain) {
-          final dest = {
-            'parents': 1,
-            'interior': {
-              'X2': [
-                {'Parachain': _chainTo.basic.parachainId},
-                {
-                  'AccountId32': {'id': destPubKey, 'network': 'Any'}
-                }
-              ]
-            }
-          };
-
-          /// this is transfer KAR from Karura to Bifrost
-          /// paramsX: [token, amount, dest, dest_weight]
-          paramsX = [
-            {'Token': symbol},
-            amount,
-            {'V1': dest},
-            xcm_dest_weight_bifrost
-          ];
-        } else {
-          /// this is KSM/DOT transfer RelayChain <-> ParaChain
+        if (isToParaChain) {
+          /// this is KSM/DOT transfer RelayChain <-> Acala/Karura
           /// paramsX: [dest, beneficiary, assets, dest_weight]
           final dest = {
-            'X1': isToParent
-                ? 'Parent'
-                : {'Parachain': _chainTo.basic.parachainId}
+            'X1': {'Parachain': _chainTo.basic.parachainId}
           };
           final beneficiary = {
             'X1': {
@@ -253,12 +218,7 @@ class _TransferPageState extends State<TransferPage> {
           };
           final assets = [
             {
-              'ConcreteFungible': isToParent
-                  ? {
-                      'amount': amount,
-                      'id': {'X1': 'Parent'}
-                    }
-                  : {'amount': amount}
+              'ConcreteFungible': {'amount': amount}
             }
           ];
           paramsX = [
@@ -266,6 +226,40 @@ class _TransferPageState extends State<TransferPage> {
             {'V0': beneficiary},
             {'V0': assets},
             0
+          ];
+        } else {
+          /// this is KSM/DOT transfer RelayChain <-> ParaChain
+          /// paramsX: [dest, beneficiary, assets, fee_asset_item, dest_weight]
+          final dest = isToParent
+              ? {'interior': 'Here', 'parents': 1}
+              : {
+                  'interior': {
+                    'X1': {'Parachain': _chainTo.basic.parachainId}
+                  },
+                  'parents': 0
+                };
+          final beneficiary = {
+            'interior': {
+              'X1': {
+                'AccountId32': {'id': destPubKey, 'network': 'Any'}
+              }
+            },
+            'parents': 0
+          };
+          final assets = [
+            {
+              'fun': {'Fungible': amount},
+              'id': {
+                'Concrete': {'interior': 'Here', 'parents': isToParent ? 1 : 0}
+              },
+            }
+          ];
+          paramsX = [
+            {'V1': dest},
+            {'V1': beneficiary},
+            {'V1': assets},
+            0,
+            'Unlimited'
           ];
         }
         return TxConfirmParams(
@@ -447,10 +441,10 @@ class _TransferPageState extends State<TransferPage> {
 
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => CupertinoActionSheet(
+      builder: (_) => PolkawalletActionSheet(
         title: Text(dic['cross.para.select']),
         actions: allPlugins.map((e) {
-          return CupertinoActionSheetAction(
+          return PolkawalletActionSheetAction(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -498,7 +492,7 @@ class _TransferPageState extends State<TransferPage> {
             },
           );
         }).toList(),
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {
@@ -514,7 +508,7 @@ class _TransferPageState extends State<TransferPage> {
         context: context,
         builder: (_) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -539,16 +533,17 @@ class _TransferPageState extends State<TransferPage> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['note']),
             content: Text(dic['note.msg1']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(I18n.of(context)
                     .getDic(i18n_full_dic_ui, 'common')['cancel']),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              CupertinoButton(
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () {
@@ -558,7 +553,7 @@ class _TransferPageState extends State<TransferPage> {
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
+                        return PolkawalletAlertDialog(
                           title: Text(dic['note']),
                           content: Text(dic['note.msg2']),
                           actions: <Widget>[
@@ -596,6 +591,8 @@ class _TransferPageState extends State<TransferPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getTxFee();
 
+      _chainTo = widget.service.plugin;
+
       final TransferPageParams args = ModalRoute.of(context).settings.arguments;
       if (args?.address != null) {
         _updateAccountTo(args.address);
@@ -605,23 +602,23 @@ class _TransferPageState extends State<TransferPage> {
         });
       }
 
-      final xcmEnabledChains = await widget.service.store.settings
-          .getXcmEnabledChains(widget.service.plugin.basic.name);
-      setState(() {
-        _accountOptions = widget.service.keyring.allWithContacts.toList();
-        _xcmEnabledChains = xcmEnabledChains;
-
-        if (args?.chainTo != null) {
-          final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
-          if (chainToIndex > -1) {
-            _chainTo = widget.service.allPlugins
-                .firstWhere((e) => e.basic.name == args.chainTo);
-            _accountTo = widget.service.keyring.current;
-            return;
-          }
-        }
-        _chainTo = widget.service.plugin;
-      });
+      // final xcmEnabledChains = await widget.service.store.settings
+      //     .getXcmEnabledChains(widget.service.plugin.basic.name);
+      // setState(() {
+      //   _accountOptions = widget.service.keyring.allWithContacts.toList();
+      //   _xcmEnabledChains = xcmEnabledChains;
+      //
+      //   if (args?.chainTo != null) {
+      //     final chainToIndex = xcmEnabledChains.indexOf(args.chainTo);
+      //     if (chainToIndex > -1) {
+      //       _chainTo = widget.service.allPlugins
+      //           .firstWhere((e) => e.basic.name == args.chainTo);
+      //       _accountTo = widget.service.keyring.current;
+      //       return;
+      //     }
+      //   }
+      //   _chainTo = widget.service.plugin;
+      // });
     });
   }
 
@@ -675,10 +672,26 @@ class _TransferPageState extends State<TransferPage> {
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
 
-        final labelStyle = Theme.of(context).textTheme.headline4;
+        final labelStyle = Theme.of(context)
+            .textTheme
+            .headline4
+            ?.copyWith(fontWeight: FontWeight.bold);
+        final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
+            height: 1,
+            fontWeight: FontWeight.w300,
+            fontSize: 12,
+            color: polkawallet_ui.UI.isDarkTheme(context)
+                ? Colors.white
+                : Color(0xBF565554));
+        final infoValueStyle = Theme.of(context)
+            .textTheme
+            .headline5
+            .copyWith(fontWeight: FontWeight.w600);
         return Scaffold(
           appBar: AppBar(
-              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              systemOverlayStyle: polkawallet_ui.UI.isDarkTheme(context)
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark,
               title: Text('${dic['transfer']} $symbol'),
               centerTitle: true,
               actions: <Widget>[
@@ -687,7 +700,7 @@ class _TransferPageState extends State<TransferPage> {
                     icon: SvgPicture.asset(
                       'assets/images/scan.svg',
                       color: Theme.of(context).cardColor,
-                      width: 20,
+                      width: 24,
                     ),
                     onPressed: _onScan,
                     isBlueBg: true)
@@ -709,8 +722,10 @@ class _TransferPageState extends State<TransferPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(dic['from'], style: labelStyle),
-                                  AddressFormItem(
-                                      widget.service.keyring.current),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 3),
+                                      child: AddressFormItem(
+                                          widget.service.keyring.current)),
                                   Container(height: 8.h),
                                   Form(
                                     key: _formKey,
@@ -733,6 +748,7 @@ class _TransferPageState extends State<TransferPage> {
                                               _accountToError = accValid;
                                             });
                                           },
+                                          sdk: widget.service.plugin.sdk,
                                           key:
                                               ValueKey<KeyPairData>(_accountTo),
                                         ),
@@ -765,8 +781,10 @@ class _TransferPageState extends State<TransferPage> {
                                             suffix: GestureDetector(
                                               child: Text(dic['amount.max'],
                                                   style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: Theme.of(context)
-                                                          .primaryColor)),
+                                                          .toggleableActiveColor)),
                                               onTap: () => _setMaxAmount(
                                                   available, existAmount),
                                             ),
@@ -810,8 +828,7 @@ class _TransferPageState extends State<TransferPage> {
                                   ),
                                   Padding(
                                       padding: EdgeInsets.only(
-                                          top: 20.h, bottom: 7.h),
-                                      child: Divider(height: 1)),
+                                          top: 20.h, bottom: 7.h)),
                                   Visibility(
                                       visible: canCrossChain,
                                       child: Column(
@@ -922,155 +939,168 @@ class _TransferPageState extends State<TransferPage> {
                                 ])),
                         RoundedCard(
                           margin: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                          padding: EdgeInsets.symmetric(vertical: 6),
                           child: Column(
                             children: [
                               Visibility(
                                   visible: isCrossChain,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 16),
+                                  child: Column(children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 40),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(dic['cross.exist'],
+                                                        style: labelStyle
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400)),
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 2),
+                                                        child: Text(
+                                                          dic['amount.exist.msg'],
+                                                          style: subTitleStyle
+                                                              ?.copyWith(
+                                                                  height: 1.3),
+                                                        )),
+                                                  ],
+                                                )),
+                                          ),
+                                          Expanded(
+                                              flex: 0,
+                                              child: Text(
+                                                  '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
+                                                  style: infoValueStyle)),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
+                                  ])),
+                              Visibility(
+                                  visible: isCrossChain,
+                                  child: Column(children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Text(dic['cross.fee'],
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                            ),
+                                          ),
+                                          Text(
+                                              '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
+                                              style: infoValueStyle),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
+                                  ])),
+                              Column(children: [
+                                Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Expanded(
                                           child: Container(
                                               padding:
-                                                  EdgeInsets.only(right: 40),
+                                                  EdgeInsets.only(right: 60),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(dic['cross.exist'],
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline4),
-                                                  Text(
-                                                    dic['amount.exist.msg'],
-                                                    style: TextStyle(
-                                                      color: Color(0xBF565554),
-                                                      fontSize: polkawallet_ui
-                                                          .UI
-                                                          .getTextSize(
-                                                              12, context),
-                                                      fontFamily: polkawallet_ui
-                                                          .UI
-                                                          .getFontFamily(
-                                                              'SF_Pro',
-                                                              context),
-                                                    ),
-                                                  ),
+                                                  Text(dic['amount.exist'],
+                                                      style:
+                                                          labelStyle?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400)),
+                                                  Padding(
+                                                      padding: EdgeInsets.only(
+                                                          top: 2),
+                                                      child: Text(
+                                                        dic['amount.exist.msg'],
+                                                        style: subTitleStyle
+                                                            ?.copyWith(
+                                                                height: 1.3),
+                                                      )),
                                                 ],
                                               )),
                                         ),
-                                        Expanded(
-                                            flex: 0,
-                                            child: Text(
-                                                '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $symbol',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline5
-                                                    .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600))),
-                                      ],
-                                    ),
-                                  )),
-                              Visibility(
-                                  visible: isCrossChain,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 4),
-                                            child: Text(dic['cross.fee'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4),
-                                          ),
-                                        ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $symbol',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w600)),
+                                            '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
+                                            style: infoValueStyle),
                                       ],
-                                    ),
-                                  )),
-                              Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          padding: EdgeInsets.only(right: 60),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(dic['amount.exist'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4),
-                                              Text(
-                                                dic['amount.exist.msg'],
-                                                style: TextStyle(
-                                                    fontSize: polkawallet_ui.UI
-                                                        .getTextSize(
-                                                            12, context),
-                                                    fontWeight:
-                                                        FontWeight.w200),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $symbol',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ),
+                                    )),
+                                Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 6),
+                                    child: Divider(height: 1))
+                              ]),
                               Visibility(
                                   visible: _fee?.partialFee != null,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(right: 4),
-                                            child: Text(dic['amount.fee'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4),
+                                  child: Column(children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Text(dic['amount.fee'],
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline5
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                      ],
+                                          Text(
+                                              '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
+                                              style: infoValueStyle),
+                                        ],
+                                      ),
                                     ),
-                                  )),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 6),
+                                        child: Divider(height: 1))
+                                  ])),
                               Container(
-                                margin: EdgeInsets.only(top: 8),
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -1083,20 +1113,17 @@ class _TransferPageState extends State<TransferPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(dic['transfer.alive'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4),
-                                              Text(
-                                                dic['transfer.alive.msg'],
-                                                style: TextStyle(
-                                                  color: Color(0xBF565554),
-                                                  fontSize: polkawallet_ui.UI
-                                                      .getTextSize(12, context),
-                                                  fontFamily: polkawallet_ui.UI
-                                                      .getFontFamily(
-                                                          'SF_Pro', context),
-                                                ),
-                                              ),
+                                                  style: labelStyle?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                              Padding(
+                                                  padding:
+                                                      EdgeInsets.only(top: 2),
+                                                  child: Text(
+                                                    dic['transfer.alive.msg'],
+                                                    style: subTitleStyle
+                                                        ?.copyWith(height: 1.3),
+                                                  )),
                                             ],
                                           )),
                                     ),

@@ -7,6 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/PluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -29,15 +30,16 @@ class _DappLatestPageState extends State<DappLatestPage> {
     final bool res = await showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             content: Text(message),
             actions: <Widget>[
-              CupertinoDialogAction(
+              PolkawalletActionSheetAction(
                 child: Text(I18n.of(context)
                     .getDic(i18n_full_dic_karura, 'common')['cancel']),
                 onPressed: () => Navigator.of(context).pop(false),
               ),
-              CupertinoDialogAction(
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
                 child: Text(I18n.of(context)
                     .getDic(i18n_full_dic_karura, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(true),
@@ -66,9 +68,9 @@ class _DappLatestPageState extends State<DappLatestPage> {
               title: Text(dic['hub.browser.latest']),
               centerTitle: true,
               leading: PluginIconButton(
-                icon: SvgPicture.asset(
-                  "packages/polkawallet_ui/assets/images/icon_back_24.svg",
-                  color: Colors.black,
+                icon: Image.asset(
+                  "packages/polkawallet_ui/assets/images/icon_back_plugin.png",
+                  width: 9,
                 ),
                 onPressed: () {
                   if (_isdelete) {

@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class FriendListPage extends StatefulWidget {
   FriendListPage(this.service);
@@ -48,11 +49,11 @@ class _FriendListPage extends State<FriendListPage> {
         context: context,
         builder: (BuildContext context) {
           final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Container(),
             content: Text(dic['recovery.friends.max']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () {

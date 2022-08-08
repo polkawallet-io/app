@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 import 'import/selectImportTypePage.dart';
 
@@ -21,7 +22,7 @@ class CreateAccountEntryPage extends StatelessWidget {
         showCupertinoDialog(
             context: context,
             builder: (_) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 content: Text(I18n.of(context)
                     .getDic(i18n_full_dic_app, 'public')['os.invalid']),
               );

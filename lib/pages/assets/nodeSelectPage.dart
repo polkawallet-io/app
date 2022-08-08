@@ -44,20 +44,32 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
           Container(
             margin: EdgeInsets.only(bottom: 7.h),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              color: Color(0xFFF0ECE6),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x33000000),
-                  blurRadius: 4.0,
-                  spreadRadius: 0.0,
-                  offset: Offset(
-                    0.0,
-                    2.0,
-                  ),
-                )
-              ],
+              image: UI.isDarkTheme(context)
+                  ? DecorationImage(
+                      image:
+                          AssetImage('assets/images/nodeSelect_title_bg.png'),
+                      fit: BoxFit.fill,
+                    )
+                  : null,
+              borderRadius: UI.isDarkTheme(context)
+                  ? null
+                  : BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+              color: UI.isDarkTheme(context) ? null : Color(0xFFF0ECE6),
+              boxShadow: UI.isDarkTheme(context)
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Color(0x33000000),
+                        blurRadius: 4.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(
+                          0.0,
+                          2.0,
+                        ),
+                      )
+                    ],
             ),
             height: 48.h,
             child: Stack(
@@ -157,13 +169,18 @@ class NodeSelectItem extends StatelessWidget {
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline4
-                                    .copyWith(color: Color(0xFF040404))),
+                                    .copyWith(
+                                        color: UI.isDarkTheme(context)
+                                            ? Colors.white
+                                            : Color(0xFF040404))),
                             subtitle: Text(e.endpoint,
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline6
                                     .copyWith(
-                                        color: Color(0xFF7E7D7B),
+                                        color: UI.isDarkTheme(context)
+                                            ? Colors.white.withAlpha(166)
+                                            : Color(0xFF7E7D7B),
                                         fontWeight: FontWeight.w300)),
                             bgColor: Theme.of(context).cardColor,
                             isSelect: service
@@ -237,7 +254,13 @@ class _PluginItemWidgetState extends State<PluginItemWidget> {
       child: Container(
         decoration: BoxDecoration(
             color: widget.bgColor,
-            gradient: widget.isSelect || isTapDown
+            image: UI.isDarkTheme(context) && (widget.isSelect || isTapDown)
+                ? DecorationImage(
+                    image:
+                        AssetImage("assets/images/plugin_item_select_bg.png"),
+                    fit: BoxFit.fill)
+                : null,
+            gradient: !UI.isDarkTheme(context) && (widget.isSelect || isTapDown)
                 ? LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -317,8 +340,8 @@ class _NodeItemWidgetState extends State<NodeItemWidget> {
             color: widget.bgColor,
             image: isTapDown
                 ? DecorationImage(
-                    image:
-                        AssetImage("assets/images/nodeItem_bg_onTapDown.png"),
+                    image: AssetImage(
+                        "assets/images/${UI.isDarkTheme(context) ? "plugin_item_select_bg" : "nodeItem_bg_onTapDown"}.png"),
                     fit: BoxFit.fill)
                 : null),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -339,7 +362,7 @@ class _NodeItemWidgetState extends State<NodeItemWidget> {
                     ],
                   )),
                   Image.asset(
-                    "assets/images/${widget.isSelect ? "icon_circle_select.png" : isTapDown ? "icon_circle_onTapDown.png" : "icon_circle_unselect.png"}",
+                    "assets/images/${widget.isSelect ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : isTapDown ? "icon_circle_onTapDown.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
                     fit: BoxFit.contain,
                     width: 16.w,
                   )

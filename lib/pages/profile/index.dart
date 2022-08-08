@@ -26,6 +26,7 @@ import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage(this.service, this.connectedNode);
@@ -57,28 +58,28 @@ class _ProfilePageState extends State<ProfilePage> {
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: [
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.make']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoverySettingPage.route);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.init']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoveryStatePage.route);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(dic['recovery.help']),
             onPressed: () {
               Navigator.of(context).popAndPushNamed(RecoveryProofPage.route);
             },
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {
@@ -95,13 +96,9 @@ class _ProfilePageState extends State<ProfilePage> {
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
     final acc = widget.service.keyring.current;
-    final primaryColor = Theme.of(context).primaryColor;
 
-    final labelStyle = Theme.of(context).textTheme.headline4;
     final blue = Theme.of(context).toggleableActiveColor;
-    final iconGrey = Color(0xFFCECECE);
     final pagePadding = 16.w;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['title']),
@@ -122,13 +119,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.of(context).pushNamed(MessagePage.route);
                 },
                 child: Container(
-                  width: 32.h,
-                  height: 32.h,
+                  width: 32,
+                  height: 32,
                   margin: EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
-                              "packages/polkawallet_ui/assets/images/icon_bg_grey.png"),
+                              "packages/polkawallet_ui/assets/images/icon_bg${UI.isDarkTheme(context) ? "_blue_dark" : "_grey"}.png"),
                           fit: BoxFit.fill)),
                   child: Stack(
                     alignment: Alignment.topRight,
@@ -138,7 +135,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: double.infinity,
                           padding: EdgeInsets.only(right: 1, bottom: 1),
                           child: Center(
-                            child: Image.asset("assets/images/message.png",
+                            child: Image.asset(
+                                "assets/images/message${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                 width: 24.h),
                           )),
                       Visibility(
@@ -184,13 +182,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   GestureDetector(
                                     child: Text(UI.accountName(context, acc),
-                                        style: TextStyle(
-                                            color: Color(0xFF565554),
-                                            fontSize:
-                                                UI.getTextSize(20, context),
-                                            fontFamily: UI.getFontFamily(
-                                                'TitilliumWeb', context),
-                                            fontWeight: FontWeight.w600)),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3),
                                     onTap: _manageAccount,
                                   ),
                                   Row(
@@ -271,7 +265,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       label: dic['setting.node'],
                       content: widget.connectedNode == null
-                          ? CupertinoActivityIndicator(radius: 8)
+                          ? CupertinoActivityIndicator(
+                              radius: 8, color: const Color(0xFF3C3C44))
                           : null,
                       onTap: () => Navigator.of(context)
                           .pushNamed(RemoteNodeListPage.route),
@@ -355,8 +350,10 @@ class SettingsPageListItem extends StatelessWidget {
               padding: EdgeInsets.all(4.r),
               child: leading,
               decoration: BoxDecoration(
-                  color: Color(0xFFCECECE),
-                  borderRadius: BorderRadius.all(Radius.circular(8.r))),
+                  color: UI.isDarkTheme(context)
+                      ? Color(0xFF4D4E50)
+                      : Color(0xFFCECECE),
+                  borderRadius: BorderRadius.all(Radius.circular(7.r))),
             ),
           ),
           Expanded(

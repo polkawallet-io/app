@@ -9,6 +9,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class CommunityPage extends StatefulWidget {
   CommunityPage(this.service);
@@ -26,11 +27,11 @@ class _CommunityPage extends State<CommunityPage> {
     showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text('Acala Wechat'),
             content: Image.asset('assets/images/public/aca_qr_wechat.jpg'),
             actions: [
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
                   style: TextStyle(color: Colors.blueAccent),
@@ -61,15 +62,15 @@ class _CommunityPage extends State<CommunityPage> {
                 padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
                 child: Column(
                   children: [
-                    SettingsPageListItem(
-                      label: 'Wechat',
-                      leading: Image.asset(
-                        'assets/images/icons/wechat_icon.png',
-                        width: 24.w,
-                      ),
-                      onTap: _onWechatTap,
-                    ),
-                    Divider(),
+                    // SettingsPageListItem(
+                    //   label: 'Wechat',
+                    //   leading: Image.asset(
+                    //     'assets/images/icons/wechat_icon.png',
+                    //     width: 24.w,
+                    //   ),
+                    //   onTap: _onWechatTap,
+                    // ),
+                    // Divider(),
                     SettingsPageListItem(
                       label: 'Twitter',
                       leading: Image.asset(
@@ -95,7 +96,7 @@ class _CommunityPage extends State<CommunityPage> {
                         'assets/images/icons/discord_icon.png',
                         width: 24.w,
                       ),
-                      onTap: () => UI.launchURL('https://discord.gg/6QHVY4X'),
+                      onTap: () => UI.launchURL('https://www.acala.gg/'),
                     ),
                     Divider(),
                     SettingsPageListItem(

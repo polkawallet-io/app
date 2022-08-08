@@ -2,19 +2,19 @@ import 'package:app/common/consts.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class LocksDetailPage extends StatefulWidget {
   LocksDetailPage(this.service);
@@ -190,9 +190,18 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final claimableAmount = Fmt.priceFloorBigInt(_claimable, decimals);
     return Scaffold(
       appBar: AppBar(
-          title: Text('${dic['unlock']} ($symbol)'),
-          centerTitle: true,
-          leading: BackBtn()),
+        title: Text('${dic['unlock']} ($symbol)'),
+        centerTitle: true,
+        leading: BackBtn(),
+        actions: [
+          PluginAccountInfoAction(
+            widget.service.keyring,
+            hasShadow: true,
+            iconSize: 32.h,
+            isPlugin: false,
+          )
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -273,7 +282,11 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                             .copyWith(
                                                 fontSize:
                                                     UI.getTextSize(18, context),
-                                                color: Color(0xFFE46B41),
+                                                color: UI.isDarkTheme(context)
+                                                    ? Theme.of(context)
+                                                        .toggleableActiveColor
+                                                    : Theme.of(context)
+                                                        .errorColor,
                                                 fontWeight: FontWeight.w600),
                                       )
                                     : Container(),
@@ -314,7 +327,12 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                                 .copyWith(
                                                     fontSize: UI.getTextSize(
                                                         18, context),
-                                                    color: Color(0xFFE46B41),
+                                                    color: UI.isDarkTheme(
+                                                            context)
+                                                        ? Theme.of(context)
+                                                            .toggleableActiveColor
+                                                        : Theme.of(context)
+                                                            .errorColor,
                                                     fontWeight:
                                                         FontWeight.w600),
                                           )
@@ -371,11 +389,15 @@ class LocksDetailPageState extends State<LocksDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BorderedTitle(
-              title: title,
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline3
+                  ?.copyWith(fontSize: UI.getTextSize(16, context)),
             ),
             Padding(
-                padding: EdgeInsets.only(top: 2),
+                padding: EdgeInsets.only(top: 10),
                 child: InnerShadowBGCar(child: child)),
             hasClaim
                 ? Container(

@@ -82,7 +82,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                     width: width,
                     height: width / 249 * 168,
                     child: Image.asset(
-                      "assets/images/icon_instrument.png",
+                      "assets/images/icon_instrument${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                       fit: BoxFit.fill,
                     )),
                 Container(
@@ -98,8 +98,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               fontSize: UI.getTextSize(14, context),
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context)
-                                  .textSelectionTheme
-                                  .selectionColor
+                                  .textTheme
+                                  .headline1
+                                  .color
                                   .withAlpha(191))),
                       GestureDetector(
                         onTap: () {
@@ -108,14 +109,15 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                         child: Text(
                             widget.hideBalance
                                 ? "******"
-                                : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                                : "${Fmt.priceCurrencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(widget.datas[getIndex()].sumValue, lengthMax: widget.datas[getIndex()].lengthMax)}",
                             style: TextStyle(
                                 fontFamily: UI.getFontFamily('SF_Pro', context),
                                 fontSize: UI.getTextSize(18, context),
                                 fontWeight: FontWeight.w600,
                                 color: Theme.of(context)
-                                    .textSelectionTheme
-                                    .selectionColor)),
+                                    .textTheme
+                                    .headline1
+                                    .color)),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 15.h),
@@ -262,23 +264,22 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                 fontSize: UI.getTextSize(12, context),
                                 fontWeight: FontWeight.w400,
                                 color: Theme.of(context)
-                                    .textSelectionTheme
-                                    .selectionColor),
+                                    .textTheme
+                                    .headline1
+                                    .color),
                           )
                         ],
                       ),
                       Text(
                         widget.hideBalance
                             ? "******"
-                            : "${Utils.currencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
+                            : "${Fmt.priceCurrencySymbol(widget.priceCurrency)}${Fmt.priceFloorFormatter(e.value, lengthMax: widget.datas[getIndex()].lengthMax)}",
                         style: TextStyle(
                             fontFamily:
                                 UI.getFontFamily('TitilliumWeb', context),
                             fontSize: UI.getTextSize(12, context),
                             fontWeight: FontWeight.w400,
-                            color: Theme.of(context)
-                                .textSelectionTheme
-                                .selectionColor),
+                            color: Theme.of(context).textTheme.headline1.color),
                       )
                     ],
                   ),

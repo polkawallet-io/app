@@ -12,6 +12,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class CreateAccountPage extends StatefulWidget {
   CreateAccountPage(this.service);
@@ -36,10 +37,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
+          content: Container(
+              height: 64,
+              child:
+                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
         );
       },
     );
@@ -80,7 +84,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       builder: (BuildContext context) {
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
         final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Container(),
           content: Column(
             children: <Widget>[
@@ -101,18 +105,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ],
           ),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                 dicCommon['cancel'],
-                style:
-                    TextStyle(color: Theme.of(context).unselectedWidgetColor),
               ),
               onPressed: () => Navigator.of(context).pop(false),
             ),
-            CupertinoButton(
+            PolkawalletActionSheetAction(
+              isDefaultAction: true,
               child: Text(
                 dicCommon['ok'],
-                style: TextStyle(color: Colors.blueAccent),
               ),
               onPressed: () => Navigator.of(context).pop(true),
             ),

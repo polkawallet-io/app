@@ -30,6 +30,7 @@ void main() async {
     PluginAcala(),
     PluginKarura(),
     PluginStatemine(),
+    PluginStatemine(name: 'statemint'),
     PluginBifrost(),
     PluginChainX(),
     PluginEdgeware(),

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
+import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/pluginPage.dart';
@@ -21,6 +22,7 @@ import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
@@ -125,7 +127,7 @@ class _HomePageState extends State<HomePage> {
         showCupertinoDialog(
             context: context,
             builder: (_) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 content: Text(I18n.of(context)
                     .getDic(i18n_full_dic_app, 'public')['wss.timeout']),
               );
@@ -220,6 +222,50 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
+  MetaHubItem buildMetaBridge() {
+    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    return MetaHubItem(
+        dic['hub.bridge'],
+        GestureDetector(
+          child: Column(children: [
+            Expanded(
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/public/hub_bridge.png'),
+                  Container(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      dic['hub.cover.bridge'],
+                      textAlign: TextAlign.justify,
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                          fontSize: UI.getTextSize(14, context),
+                          color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            )),
+            Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(36, 255, 255, 255),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  dic['hub.enter'],
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                      fontSize: UI.getTextSize(20, context),
+                      color: Theme.of(context).errorColor),
+                ))
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed(BridgePage.route);
+          },
+        ));
+  }
+
   MetaHubItem buildMetaHubEcosystem() {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     var token = "DOT";
@@ -303,11 +349,11 @@ class _HomePageState extends State<HomePage> {
       HomeNavItem(
         text: I18n.of(context).getDic(i18n_full_dic_app, 'assets')['assets'],
         icon: Image.asset(
-          "assets/images/icon_assets_nor.png",
+          "assets/images/icon_assets_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         iconActive: Image.asset(
-          "assets/images/icon_assets_sel.png",
+          "assets/images/icon_assets_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
         content:
@@ -327,7 +373,10 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
-      items.add(buildMetaHubBrowser());
+      if (widget.service.store.settings.dapps.length > 0) {
+        items.add(buildMetaHubBrowser());
+      }
+      items.add(buildMetaBridge());
       final ecosystemItem = buildMetaHubEcosystem();
       if (ecosystemItem != null) {
         items.add(buildMetaHubEcosystem());
@@ -445,11 +494,11 @@ class _HomePageState extends State<HomePage> {
     pages.add(HomeNavItem(
       text: I18n.of(context).getDic(i18n_full_dic_app, 'profile')['title'],
       icon: Image.asset(
-        "assets/images/icon_settings_30_nor.png",
+        "assets/images/icon_settings_30_nor${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       iconActive: Image.asset(
-        "assets/images/icon_settings_30_sel.png",
+        "assets/images/icon_settings_30_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
         fit: BoxFit.contain,
       ),
       content: ProfilePage(widget.service, widget.connectedNode),
@@ -494,7 +543,8 @@ class _HomePageState extends State<HomePage> {
                   child: FloatingActionButton(
                     backgroundColor: Theme.of(context).cardColor,
                     child: walletConnecting
-                        ? CupertinoActivityIndicator()
+                        ? CupertinoActivityIndicator(
+                            color: const Color(0xFF3C3C44))
                         : Image.asset('assets/images/wallet_connect_logo.png'),
                     onPressed: walletConnectAlive
                         ? () {

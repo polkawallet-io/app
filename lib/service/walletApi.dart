@@ -160,6 +160,9 @@ class WalletApi {
   }
 
   static Future<Map> getTokenPrices(List<String> tokens) async {
+    if (tokens == null) {
+      return null;
+    }
     final url = '$_endpoint/price-server?from=market&token=${tokens.join(',')}';
     try {
       Response res = await get(Uri.parse(url));
@@ -241,8 +244,8 @@ class WalletApi {
   }
 
   //$=>￥
-  static Future<Map> getRate() async {
-    final url = '$_endpoint/price-server/rate';
+  static Future<Map> getRate({String convert = "USD"}) async {
+    final url = '$_endpoint/price-server/rate?convert=$convert';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {

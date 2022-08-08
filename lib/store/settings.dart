@@ -23,6 +23,7 @@ abstract class _SettingsStore with Store {
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
   final String localStorageDAppAuthUrlsKey = 'dAppAuthUrls';
+  final String localStorageIsDarkThemeKey = 'darkTheme';
 
   @observable
   String localeCode = '';
@@ -45,6 +46,9 @@ abstract class _SettingsStore with Store {
   double _rate = -1;
 
   @observable
+  bool isDarkTheme = false;
+
+  @observable
   Map<String, List<MessageData>> communityMessages =
       Map<String, List<MessageData>>();
 
@@ -58,7 +62,14 @@ abstract class _SettingsStore with Store {
   int systemUnreadNumber = 0;
 
   @observable
-  List<dynamic> dappAllTags = [];
+  List<dynamic> dappAllTags = [
+    "DeFi",
+    "Staking",
+    "NFT",
+    "Utilities",
+    "Governance",
+    "Crowd Loan"
+  ];
 
   @observable
   List<dynamic> dapps = [];
@@ -73,8 +84,10 @@ abstract class _SettingsStore with Store {
 
   Future<void> initDapps() async {
     final dappConfig = await WalletApi.getDappsConfig();
-    dappAllTags = dappConfig["allTag"];
-    dapps = dappConfig["datas"];
+    if (dappConfig != null) {
+      dappAllTags = dappConfig["allTag"];
+      dapps = dappConfig["datas"];
+    }
   }
 
   @action
@@ -214,9 +227,11 @@ abstract class _SettingsStore with Store {
     systemUnreadNumber = data;
   }
 
-  Future<double> getRate() async {
-    if (_rate < 0) {
-      final data = await WalletApi.getRate();
+  Future<double> getRate({bool isReload = false}) async {
+    if (priceCurrency == "USD") {
+      _rate = 1.0;
+    } else if (_rate < 0 || isReload) {
+      final data = await WalletApi.getRate(convert: priceCurrency);
       if (data != null && data['data'] != null) {
         _rate = (data['data']['rate'] as num).toDouble();
       } else {
@@ -250,6 +265,7 @@ abstract class _SettingsStore with Store {
       loadNetwork(),
       loadPriceCurrency(),
       loadIsHideBalance(),
+      loadIsDarkTheme(),
     ]);
   }
 
@@ -283,6 +299,7 @@ abstract class _SettingsStore with Store {
 
   void setPriceCurrency(String value) {
     priceCurrency = value;
+    getRate(isReload: true);
     storage.write(localStoragePriceCurrencyKey, value);
   }
 
@@ -325,5 +342,19 @@ abstract class _SettingsStore with Store {
       return authed[url] ?? false;
     }
     return false;
+  }
+
+  @action
+  Future<void> setIsDarkTheme(bool dark) async {
+    isDarkTheme = dark;
+    storage.write(localStorageIsDarkThemeKey, dark);
+  }
+
+  @action
+  Future<void> loadIsDarkTheme() async {
+    final stored = storage.read(localStorageIsDarkThemeKey);
+    if (stored != null) {
+      isDarkTheme = stored;
+    }
   }
 }

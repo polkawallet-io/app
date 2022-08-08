@@ -13,6 +13,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ContactsPage extends StatefulWidget {
   ContactsPage(this.service);
@@ -38,12 +39,11 @@ class _ContactsPageState extends State<ContactsPage> {
     final dic = I18n.of(pageContext).getDic(i18n_full_dic_ui, 'common');
     final res = await showCupertinoModalPopup(
       context: pageContext,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: <Widget>[
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['edit'],
-              style: TextStyle(color: Colors.blueAccent),
             ),
             onPressed: () async {
               Navigator.of(context).pop(0);
@@ -52,30 +52,28 @@ class _ContactsPageState extends State<ContactsPage> {
               _refreshData();
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['copy'],
-              style: TextStyle(color: Colors.blueAccent),
             ),
             onPressed: () async {
               Navigator.of(context).pop(1);
             },
           ),
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
               dic['delete'],
-              style: TextStyle(color: Colors.red),
             ),
+            isDefaultAction: true,
             onPressed: () {
               Navigator.of(context).pop(2);
               _removeItem(pageContext, i);
             },
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
             dic['cancel'],
-            style: TextStyle(color: Colors.blueAccent),
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -93,16 +91,17 @@ class _ContactsPageState extends State<ContactsPage> {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(I18n.of(context)
               .getDic(i18n_full_dic_app, 'profile')['contact.delete.warn']),
           content: Text(UI.accountName(context, i)),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(dic['cancel']),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            CupertinoButton(
+            PolkawalletActionSheetAction(
+              isDefaultAction: true,
               child: Text(dic['ok']),
               onPressed: () async {
                 Navigator.of(context).pop();
@@ -149,7 +148,9 @@ class _ContactsPageState extends State<ContactsPage> {
             Padding(
               padding: EdgeInsets.only(right: 12.w),
               child: v3.IconButton(
-                icon: Icon(Icons.add),
+                icon: Icon(Icons.add,
+                    color:
+                        UI.isDarkTheme(context) ? Colors.black : Colors.white),
                 isBlueBg: true,
                 onPressed: () async {
                   await Navigator.of(context).pushNamed(ContactPage.route);
@@ -170,12 +171,10 @@ class _ContactsPageState extends State<ContactsPage> {
                 leading: AddressIcon(i.address, svg: i.icon, size: 36.w),
                 title: Text(
                   UI.accountName(context, i),
-                  style: TextStyle(fontSize: UI.getTextSize(16, context)),
+                  style: Theme.of(context).textTheme.headline4,
                 ),
-                subtitle: Text(
-                  Fmt.address(i.address),
-                  style: TextStyle(fontSize: UI.getTextSize(12, context)),
-                ),
+                subtitle: Text(Fmt.address(i.address),
+                    style: Theme.of(context).textTheme.headline6),
                 onTap: () => _showActions(context, i),
               ),
             );

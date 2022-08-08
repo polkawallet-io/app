@@ -28,6 +28,7 @@ import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
@@ -75,8 +76,6 @@ class _AssetsState extends State<AssetsPage> {
       new GlobalKey<CustomRefreshIndicatorState>();
   bool _refreshing = false;
 
-  List _announcements;
-
   Timer _priceUpdateTimer;
 
   int instrumentIndex = 0;
@@ -84,6 +83,8 @@ class _AssetsState extends State<AssetsPage> {
   double _rate = 1.0;
 
   int _assetsTypeIndex = 0;
+
+  ScrollController _scrollController;
 
   Future<void> _updateBalances() async {
     if (widget.connectedNode == null) return;
@@ -96,23 +97,6 @@ class _AssetsState extends State<AssetsPage> {
       _refreshing = false;
     });
   }
-
-  // Future<dynamic> _fetchAnnouncements() async {
-  //   final res = await WalletApi.getAnnouncements();
-  //   if (res == null) return;
-
-  //   _announcements = res;
-  //   var index = _announcements.indexWhere((element) {
-  //     return element["plugin"] == widget.service.plugin.basic.name;
-  //   });
-  //   if (index == -1) {
-  //     final i =
-  //         _announcements.indexWhere((element) => element["plugin"] == "all");
-  //     return i == -1 ? null : _announcements[i];
-  //   } else {
-  //     return _announcements[index];
-  //   }
-  // }
 
   Future<void> _updateMarketPrices() async {
     widget.service.assets
@@ -159,11 +143,11 @@ class _AssetsState extends State<AssetsPage> {
         showCupertinoDialog(
           context: context,
           builder: (_) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['uos.title']),
               content: Text(dic['uos.acc.invalid']),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['ok']),
                   onPressed: () => Navigator.of(context).pop(),
@@ -178,13 +162,14 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             content: Column(
               children: [
                 Text(dic['uos.parse']),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: CupertinoActivityIndicator(),
+                  child: CupertinoActivityIndicator(
+                      color: const Color(0xFF3C3C44)),
                 )
               ],
             ),
@@ -272,18 +257,19 @@ class _AssetsState extends State<AssetsPage> {
           final confirmed = await showCupertinoDialog(
             context: context,
             builder: (_) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 title: Text(dic['uos.title']),
                 content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: confirmMsg),
                 actions: <Widget>[
-                  CupertinoButton(
+                  PolkawalletActionSheetAction(
                     child: Text(I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['cancel']),
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
-                  CupertinoButton(
+                  PolkawalletActionSheetAction(
+                    isDefaultAction: true,
                     child: Text(I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['ok']),
                     onPressed: () {
@@ -320,11 +306,11 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Column(children: errorMsg),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(),
@@ -342,7 +328,7 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Text(dic['uos.signing']),
           );
@@ -361,11 +347,11 @@ class _AssetsState extends State<AssetsPage> {
       showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(dic['uos.title']),
             content: Text(err.toString()),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ok']),
                 onPressed: () => Navigator.of(context).pop(),
@@ -394,13 +380,15 @@ class _AssetsState extends State<AssetsPage> {
   void initState() {
     super.initState();
 
+    _scrollController = ScrollController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateMarketPrices();
-      getRate();
+      _getRate();
     });
   }
 
-  Future<void> getRate() async {
+  Future<void> _getRate() async {
     var rate = await widget.service.store.settings.getRate();
     if (mounted) {
       setState(() {
@@ -446,7 +434,7 @@ class _AssetsState extends State<AssetsPage> {
     final decimals =
         (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
     var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 0;
-    if (widget.service.store.settings.priceCurrency == "CNY") {
+    if (widget.service.store.settings.priceCurrency != "USD") {
       marketPrice *= _rate;
     }
     final available = marketPrice *
@@ -475,12 +463,12 @@ class _AssetsState extends State<AssetsPage> {
 
     InstrumentData totalBalance =
         InstrumentData(available + reserved + locked, [], title: title);
-    totalBalance.items.add(InstrumentItemData(Color(0xFFCE623C),
-        dic['reserved'], reserved, "assets/images/icon_instrument_orange.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFFFFC952), dic['locked'],
-        locked, "assets/images/icon_instrument_yellow.png"));
-    totalBalance.items.add(InstrumentItemData(Color(0xFF768FE1),
-        dic['available'], available, "assets/images/icon_instrument_blue.png"));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFF7647), dic['reserved'], reserved));
+    totalBalance.items
+        .add(InstrumentItemData(Color(0xFFFFC952), dic['locked'], locked));
+    totalBalance.items.add(
+        InstrumentItemData(Color(0xFF7D97EE), dic['available'], available));
 
     datas.add(instrument1);
     datas.add(totalBalance);
@@ -489,9 +477,11 @@ class _AssetsState extends State<AssetsPage> {
     return datas;
   }
 
-  PreferredSizeWidget buildAppBar() {
+  PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: UI.isDarkTheme(context)
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -544,20 +534,21 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           widget.connectedNode == null
                               ? Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   child: Center(
                                       child: RiveAnimation.asset(
                                     'assets/images/connecting.riv',
                                   )))
                               : Container(
-                                  width: 11,
-                                  height: 11,
+                                  width: 9,
+                                  height: 9,
                                   margin: EdgeInsets.only(right: 4),
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .toggleableActiveColor,
+                                      color: UI.isDarkTheme(context)
+                                          ? Color(0xFF82FF99)
+                                          : Color(0xFF7D97EE),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(5.5))),
                                 ),
@@ -567,7 +558,7 @@ class _AssetsState extends State<AssetsPage> {
                                 .textTheme
                                 .headline4
                                 .copyWith(
-                                    fontWeight: FontWeight.w600, height: 0.9),
+                                    fontWeight: FontWeight.w600, height: 1.1),
                           ),
                           Container(
                             width: 14,
@@ -588,34 +579,43 @@ class _AssetsState extends State<AssetsPage> {
       centerTitle: true,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      leading: v3.IconButton(
-        isBlueBg: true,
-        icon: SvgPicture.asset(
-          "assets/images/icon_car.svg",
-          color: Colors.white,
-          height: 22,
-        ),
-        onPressed: widget.service.keyring.allAccounts.length > 0
-            ? () async {
-                final selected = (await Navigator.of(context)
-                    .pushNamed(NetworkSelectPage.route)) as PolkawalletPlugin;
-                setState(() {});
-                if (selected != null &&
-                    selected.basic.name != widget.service.plugin.basic.name) {
-                  widget.checkJSCodeUpdate(selected);
-                }
-              }
-            : null,
-      ),
+      leading: Padding(
+          padding: EdgeInsets.only(left: 16.w),
+          child: Row(children: [
+            v3.IconButton(
+              isBlueBg: true,
+              icon: SvgPicture.asset(
+                "assets/images/icon_car.svg",
+                color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
+                height: 22,
+              ),
+              onPressed: widget.service.keyring.allAccounts.length > 0
+                  ? () async {
+                      final selected = (await Navigator.of(context)
+                              .pushNamed(NetworkSelectPage.route))
+                          as PolkawalletPlugin;
+                      setState(() {});
+                      if (selected != null &&
+                          selected.basic.name !=
+                              widget.service.plugin.basic.name) {
+                        widget.checkJSCodeUpdate(selected);
+                      }
+                    }
+                  : null,
+            )
+          ])),
       actions: <Widget>[
         Container(
             margin: EdgeInsets.only(right: 6.w),
             child: v3.PopupMenuButton(
                 offset: Offset(-12, 52),
-                color: Theme.of(context).cardColor,
+                color: UI.isDarkTheme(context)
+                    ? Color(0xA63A3B3D)
+                    : Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Color(0x21FFFFFF), width: 0.5),
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -641,7 +641,9 @@ class _AssetsState extends State<AssetsPage> {
                               padding: EdgeInsets.only(left: 2),
                               child: SvgPicture.asset(
                                 'assets/images/scan.svg',
-                                color: Color(0xFF979797),
+                                color: UI.isDarkTheme(context)
+                                    ? Colors.white
+                                    : Color(0xFF979797),
                                 width: 20,
                               )),
                           Padding(
@@ -664,7 +666,9 @@ class _AssetsState extends State<AssetsPage> {
                         children: [
                           SvgPicture.asset(
                             'assets/images/qr.svg',
-                            color: Color(0xFF979797),
+                            color: UI.isDarkTheme(context)
+                                ? Colors.white
+                                : Color(0xFF979797),
                             width: 22,
                           ),
                           Padding(
@@ -684,7 +688,9 @@ class _AssetsState extends State<AssetsPage> {
                 icon: v3.IconButton(
                   icon: Icon(
                     Icons.add,
-                    color: Theme.of(context).disabledColor,
+                    color: UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Theme.of(context).disabledColor,
                     size: 20,
                   ),
                 ))),
@@ -718,10 +724,15 @@ class _AssetsState extends State<AssetsPage> {
         }
         // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
+        final isStateMint =
+            widget.service.plugin.basic.name == para_chain_name_statemine ||
+                widget.service.plugin.basic.name == para_chain_name_statemint;
         if (customTokensConfig.keys.length > 0) {
-          tokens.retainWhere((e) => customTokensConfig[e.symbol]);
+          tokens.retainWhere(
+              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
 
-          tokensAll.retainWhere((e) => customTokensConfig[e.symbol]);
+          tokensAll.retainWhere(
+              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
           tokensAll.forEach((e) {
             if (tokens.indexWhere((token) => token.symbol == e.symbol) < 0) {
               tokens.add(e);
@@ -730,6 +741,8 @@ class _AssetsState extends State<AssetsPage> {
         }
         // sort the list
         if (tokens.length > 0) {
+          // remove native token
+          tokens.removeWhere((element) => element.symbol == symbol);
           tokens.sort((a, b) => a.symbol.contains('-')
               ? 1
               : b.symbol.contains('-')
@@ -746,7 +759,7 @@ class _AssetsState extends State<AssetsPage> {
             balancesInfo != null) {
           tokenPrice = Fmt.priceCeil(
               widget.service.store.assets.marketPrices[symbol] *
-                  (widget.service.store.settings.priceCurrency == "CNY"
+                  (widget.service.store.settings.priceCurrency != "USD"
                       ? _rate
                       : 1.0) *
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
@@ -773,12 +786,12 @@ class _AssetsState extends State<AssetsPage> {
 
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: buildAppBar(),
+          appBar: _buildAppBar(),
           body: CustomRefreshIndicator(
               edgeOffset: 16,
               key: _refreshKey,
               onRefresh: _updateBalances,
-              child: ListView(children: [
+              child: ListView(controller: _scrollController, children: [
                 StickyHeader(
                     header: Container(),
                     content: Column(
@@ -830,11 +843,7 @@ class _AssetsState extends State<AssetsPage> {
                                   },
                                   priceCurrency: widget
                                       .service.store.settings.priceCurrency,
-                                  rate: widget.service.store.settings
-                                              .priceCurrency ==
-                                          "CNY"
-                                      ? _rate
-                                      : 1.0,
+                                  rate: _rate,
                                   hideBalance: widget
                                       .service.store.settings.isHideBalance),
                         ),
@@ -848,6 +857,14 @@ class _AssetsState extends State<AssetsPage> {
                         //     text: 'DApps Test',
                         //     onPressed: () =>
                         //         Navigator.of(context).pushNamed(DAppsTestPage.route),
+                        //   ),
+                        // ),
+                        // Container(
+                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
+                        //   child: RoundedButton(
+                        //     text: 'Bridge Test',
+                        //     onPressed: () => Navigator.of(context)
+                        //         .pushNamed(BridgeTestPage.route),
                         //   ),
                         // ),
                         widget.service.plugin.basic.isTestNet
@@ -923,9 +940,36 @@ class _AssetsState extends State<AssetsPage> {
                                     child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder: (context, index) {
+                                          final child = Center(
+                                            child: Text(assetsType[index],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .button
+                                                    ?.copyWith(
+                                                        color:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .button
+                                                                    ?.color
+                                                                : Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .headline1
+                                                                    ?.color,
+                                                        fontSize:
+                                                            UI.getTextSize(
+                                                                10, context))),
+                                          );
                                           return CupertinoButton(
                                             padding: EdgeInsets.all(0),
                                             onPressed: () {
+                                              _scrollController.animateTo(0,
+                                                  duration: Duration(
+                                                      milliseconds: 500),
+                                                  curve: Curves.ease);
                                               setState(() {
                                                 _assetsTypeIndex = index;
                                               });
@@ -933,62 +977,69 @@ class _AssetsState extends State<AssetsPage> {
                                             child: Container(
                                               height: 24,
                                               width: 65,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    _assetsTypeIndex == index
-                                                        ? null
-                                                        : BorderRadius.all(
-                                                            Radius.circular(
-                                                                6.0)),
-                                                color: _assetsTypeIndex == index
-                                                    ? Colors.transparent
-                                                    : Colors.white,
-                                                border: _assetsTypeIndex ==
-                                                        index
-                                                    ? null
-                                                    : Border.all(
-                                                        color:
-                                                            Color(0xFF979797),
-                                                        width: 0.2,
+                                              child: UI.isDarkTheme(context) &&
+                                                      _assetsTypeIndex != index
+                                                  ? RoundedCard(
+                                                      radius: 6, child: child)
+                                                  : Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? null
+                                                                : BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            6.0)),
+                                                        color: _assetsTypeIndex ==
+                                                                index
+                                                            ? Colors.transparent
+                                                            : UI.isDarkTheme(
+                                                                    context)
+                                                                ? Color(
+                                                                    0x14FFFFFF)
+                                                                : Colors.white,
+                                                        border:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? null
+                                                                : Border.all(
+                                                                    color: Color(
+                                                                        0xFF979797),
+                                                                    width: 0.2,
+                                                                  ),
+                                                        image: _assetsTypeIndex ==
+                                                                index
+                                                            ? DecorationImage(
+                                                                image: AssetImage(
+                                                                    'assets/images/icon_select_btn${UI.isDarkTheme(context) ? "_dark" : ""}.png'),
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              )
+                                                            : null,
+                                                        boxShadow:
+                                                            _assetsTypeIndex ==
+                                                                    index
+                                                                ? []
+                                                                : [
+                                                                    BoxShadow(
+                                                                      offset:
+                                                                          Offset(
+                                                                              1,
+                                                                              1),
+                                                                      blurRadius:
+                                                                          1,
+                                                                      spreadRadius:
+                                                                          0,
+                                                                      color: Color(
+                                                                          0x30000000),
+                                                                    ),
+                                                                  ],
                                                       ),
-                                                image: _assetsTypeIndex == index
-                                                    ? DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/images/icon_select_btn.png'),
-                                                        fit: BoxFit.fill,
-                                                      )
-                                                    : null,
-                                                boxShadow: _assetsTypeIndex ==
-                                                        index
-                                                    ? []
-                                                    : [
-                                                        BoxShadow(
-                                                          offset: Offset(1, 1),
-                                                          blurRadius: 1,
-                                                          spreadRadius: 0,
-                                                          color:
-                                                              Color(0x30000000),
-                                                        ),
-                                                      ],
-                                              ),
-                                              child: Center(
-                                                child: Text(assetsType[index],
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .button
-                                                        ?.copyWith(
-                                                            color:
-                                                                _assetsTypeIndex ==
-                                                                        index
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black,
-                                                            fontSize:
-                                                                UI.getTextSize(
-                                                                    10,
-                                                                    context))),
-                                              ),
+                                                      child: child,
+                                                    ),
                                             ),
                                           );
                                         },
@@ -1011,12 +1062,12 @@ class _AssetsState extends State<AssetsPage> {
                                     visible: _assetsTypeIndex == 0 ||
                                         _assetsTypeIndex == 1,
                                     child: ListTile(
+                                      horizontalTitleGap: 10,
                                       leading: Container(
-                                        width: 48.w,
-                                        alignment: Alignment.centerLeft,
                                         child: TokenIcon(
                                           symbol,
                                           widget.service.plugin.tokenIcons,
+                                          size: 30,
                                         ),
                                       ),
                                       title: Text(
@@ -1025,7 +1076,9 @@ class _AssetsState extends State<AssetsPage> {
                                             .textTheme
                                             .headline5
                                             .copyWith(
-                                                fontWeight: FontWeight.w600),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: UI.getTextSize(
+                                                    18, context)),
                                       ),
                                       trailing: Column(
                                         mainAxisAlignment:
@@ -1058,15 +1111,16 @@ class _AssetsState extends State<AssetsPage> {
                                                       color: balancesInfo?.isFromCache ==
                                                               false
                                                           ? Theme.of(context)
-                                                              .textSelectionTheme
-                                                              .selectionColor
+                                                              .textTheme
+                                                              .headline1
+                                                              .color
                                                           : Theme.of(context)
                                                               .dividerColor)),
                                           Text(
                                             widget.service.store.settings
                                                     .isHideBalance
                                                 ? "******"
-                                                : '≈ ${Utils.currencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
+                                                : '≈ ${Fmt.priceCurrencySymbol(widget.service.store.settings.priceCurrency)}${tokenPrice ?? '--.--'}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline6
@@ -1090,7 +1144,9 @@ class _AssetsState extends State<AssetsPage> {
                                       children: (tokens ?? [])
                                           .map((TokenBalanceData i) {
                                         // we can use token price form plugin or from market
-                                        final price = i.price ??
+                                        final price = (i.getPrice != null
+                                                ? i.getPrice()
+                                                : i.price) ??
                                             widget.service.store.assets
                                                 .marketPrices[i.symbol] ??
                                             0.0;
@@ -1099,24 +1155,18 @@ class _AssetsState extends State<AssetsPage> {
                                           i.decimals,
                                           isFromCache: isTokensFromCache,
                                           detailPageRoute: i.detailPageRoute,
-                                          marketPrice: price *
-                                              (widget.service.store.settings
-                                                          .priceCurrency ==
-                                                      "CNY"
-                                                  ? _rate
-                                                  : 1.0),
+                                          marketPrice: price,
                                           icon: TokenIcon(
-                                            widget.service.plugin.basic.name ==
-                                                    para_chain_name_statemine
-                                                ? i.id
-                                                : i.symbol,
+                                            isStateMint ? i.id : i.symbol,
                                             widget.service.plugin.tokenIcons,
                                             symbol: i.symbol,
+                                            size: 30,
                                           ),
                                           isHideBalance: widget.service.store
                                               .settings.isHideBalance,
                                           priceCurrency: widget.service.store
                                               .settings.priceCurrency,
+                                          priceRate: _rate,
                                         );
                                       }).toList(),
                                     )),
@@ -1157,6 +1207,7 @@ class _AssetsState extends State<AssetsPage> {
                                                         .store
                                                         .settings
                                                         .priceCurrency,
+                                                    priceRate: _rate,
                                                   ))
                                               .toList(),
                                         )
@@ -1184,7 +1235,8 @@ class TokenItem extends StatelessWidget {
       this.icon,
       this.isFromCache = false,
       this.isHideBalance,
-      this.priceCurrency});
+      this.priceCurrency,
+      this.priceRate});
   final TokenBalanceData item;
   final int decimals;
   final double marketPrice;
@@ -1193,6 +1245,7 @@ class TokenItem extends StatelessWidget {
   final bool isFromCache;
   final bool isHideBalance;
   final String priceCurrency;
+  final double priceRate;
 
   @override
   Widget build(BuildContext context) {
@@ -1202,9 +1255,8 @@ class TokenItem extends StatelessWidget {
       children: [
         Divider(height: 1),
         ListTile(
+          horizontalTitleGap: 10,
           leading: Container(
-            width: 48.w,
-            alignment: Alignment.centerLeft,
             child: icon ??
                 CircleAvatar(
                   child: Text(item.symbol.substring(0, 2)),
@@ -1212,10 +1264,9 @@ class TokenItem extends StatelessWidget {
           ),
           title: Text(
             item.name,
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.headline5.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: UI.getTextSize(18, context)),
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1229,14 +1280,14 @@ class TokenItem extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline5.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isFromCache == false
-                        ? Theme.of(context).textSelectionTheme.selectionColor
+                        ? Theme.of(context).textTheme.headline1.color
                         : Theme.of(context).dividerColor),
               ),
               marketPrice != null && marketPrice > 0
                   ? Text(
                       isHideBalance
                           ? "******"
-                          : '≈ ${Utils.currencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice)}',
+                          : '≈ ${Fmt.priceCurrencySymbol(priceCurrency)}${Fmt.priceFloor(Fmt.bigIntToDouble(balanceTotal, decimals) * marketPrice * priceRate)}',
                       style: Theme.of(context).textTheme.headline6.copyWith(
                           fontFamily:
                               UI.getFontFamily('TitilliumWeb', context)),
@@ -1247,8 +1298,10 @@ class TokenItem extends StatelessWidget {
           onTap: detailPageRoute == null
               ? null
               : () {
-                  Navigator.of(context)
-                      .pushNamed(detailPageRoute, arguments: item);
+                  Navigator.of(context).pushNamed(detailPageRoute,
+                      arguments: item
+                        ..priceCurrency = priceCurrency
+                        ..priceRate = priceRate);
                 },
         )
       ],

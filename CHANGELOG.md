@@ -1,3 +1,38 @@
+# [3.3.4-beta] - 20220804
+1. Replace history api #267
+2. Optimize Vault display #180
+3. 其他插件中非原生token具体资产页面暗色版适配 #297
+4. 修复部分已知bug #271 #306 #297 #307 #320 #321
+5. 历史记录增加按事件筛选功能 #298
+6. Swap模块taiga token兑换记录标记。 #305
+7. 支持 Statemint 插件，以便在后续支持 WBTC,WETH 跨链 #221
+8. ACA 质押挖矿奖励 ACA-aUSD LP 的 APR 修复
+9. 新增 bridge 模块 #182
+10. DApp 签名账户判断优化，支持任何地址格式。
+
+# [3.3.3-beta] - 20220720
+1. taiga LP 页面图标更新.
+2. Night mode #165
+
+# [3.3.2-beta] - 20220713
+1. aUSD/lcDOT/LDOT icon 更新 #248
+2. 3USD 加入资产统计 + 从 acala js sdk 获取市场价格 #248
+3. collateral staking 显示优化 #246
+4. LKSM/LDOT apy 更新，使用接口查询获取
+5. swap 聚合交易
+6. karura/acala 支持taiga #218
+
+# [3.3.1-beta] - 20220630
+1. Avatar (account info) on each module #183
+2. kusama/statemine xcm params update #211
+3. Multiply vault history page& detail page #193
+4. LDOT/LKSM fast redeem fix #213
+5. acala/karura loyalty end time fix #216
+6. Pop-up dialog UI update #157
+7. Built-in browser【more】enhancement #181
+8. Avatar customization #130
+9. acala lcDOT/tDOT prices update #222 #233
+
 # [3.3.0-beta] - 20220620
 1. flutter upgrade 3.0.1
 2. karura - crab/turing xcm #160 #184

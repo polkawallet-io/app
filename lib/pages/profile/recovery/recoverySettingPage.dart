@@ -26,6 +26,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class RecoverySettingPage extends StatefulWidget {
   RecoverySettingPage(this.service);
@@ -106,11 +107,11 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Container(),
             content: Text(dic['recovery.remove.warn']),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () {
@@ -258,7 +259,7 @@ class _RecoverySettingPage extends State<RecoverySettingPage> {
                                         proxy: hasProxy,
                                         networkState:
                                             widget.service.plugin.networkState,
-                                        action: CupertinoActionSheetAction(
+                                        action: PolkawalletActionSheetAction(
                                           child: Text(dic['recovery.close']),
                                           onPressed: () {
                                             Navigator.of(context).pop();
@@ -447,17 +448,17 @@ class ActiveRecovery extends StatelessWidget {
   void _showActions(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
+      builder: (BuildContext context) => PolkawalletActionSheet(
         actions: [
           action,
-          CupertinoActionSheetAction(
+          PolkawalletActionSheetAction(
             child: Text(
                 I18n.of(context).getDic(i18n_full_dic_app, 'assets')['detail']),
             onPressed: () => Navigator.of(context)
                 .popAndPushNamed(TxDetailPage.route, arguments: tx),
           )
         ],
-        cancelButton: CupertinoActionSheetAction(
+        cancelButton: PolkawalletActionSheetAction(
           child: Text(
               I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel']),
           onPressed: () {

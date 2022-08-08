@@ -7,6 +7,7 @@ import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ImportAccountAction {
   static Future<void> authBiometric(
@@ -41,9 +42,12 @@ class ImportAccountAction {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dicCommon['loading']),
-          content: Container(height: 64, child: CupertinoActivityIndicator()),
+          content: Container(
+              height: 64,
+              child:
+                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
         );
       },
     );
@@ -62,7 +66,7 @@ class ImportAccountAction {
         showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Container(),
               content:
                   Text('${dic['import.invalid']} ${dic['create.password']}'),
@@ -103,12 +107,12 @@ class ImportAccountAction {
         await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Container(),
               content: Text(
                   '${dic['import.invalid']} ${dic[_keyType.toString().split('.')[1]]}'),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(dicCommon['ok']),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -142,7 +146,7 @@ class ImportAccountAction {
       final duplicate = await showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(Fmt.address(service.keyring.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),
             actions: <Widget>[
@@ -150,7 +154,7 @@ class ImportAccountAction {
               //   child: Text(dicCommon['cancel']),
               //   onPressed: () => Navigator.of(context).pop(true),
               // ),
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(dicCommon['ok']),
                 onPressed: () => Navigator.of(context).pop(false),
               ),

@@ -39,6 +39,21 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$isDarkThemeAtom = Atom(name: '_SettingsStore.isDarkTheme');
+
+  @override
+  bool get isDarkTheme {
+    _$isDarkThemeAtom.reportRead();
+    return super.isDarkTheme;
+  }
+
+  @override
+  set isDarkTheme(bool value) {
+    _$isDarkThemeAtom.reportWrite(value, super.isDarkTheme, () {
+      super.isDarkTheme = value;
+    });
+  }
+
   final _$communityMessagesAtom =
       Atom(name: '_SettingsStore.communityMessages');
 
@@ -133,20 +148,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
-  final _$tokenStakingConfigAtom =
-      Atom(name: '_SettingsStore.tokenStakingConfig');
+  final _$setTokenStakingConfigAsyncAction =
+      AsyncAction('_SettingsStore.setTokenStakingConfig');
 
   @override
-  Map<dynamic, dynamic> get tokenStakingConfig {
-    _$tokenStakingConfigAtom.reportRead();
-    return super.tokenStakingConfig;
-  }
-
-  @override
-  set tokenStakingConfig(Map value) {
-    _$tokenStakingConfigAtom.reportWrite(value, super.tokenStakingConfig, () {
-      super.tokenStakingConfig = value;
-    });
+  Future<void> setTokenStakingConfig(Map<dynamic, dynamic> data) {
+    return _$setTokenStakingConfigAsyncAction
+        .run(() => super.setTokenStakingConfig(data));
   }
 
   final _$setCommunityMessagesAsyncAction =
@@ -183,15 +191,6 @@ mixin _$SettingsStore on _SettingsStore, Store {
   Future<void> setSystemUnreadNumber(int data) {
     return _$setSystemUnreadNumberAsyncAction
         .run(() => super.setSystemUnreadNumber(data));
-  }
-
-  final _$setTokenStakingConfigAsyncAction =
-      AsyncAction('_SettingsStore.setTokenStakingConfig');
-
-  @override
-  Future<void> setTokenStakingConfig(Map data) {
-    return _$setTokenStakingConfigAsyncAction
-        .run(() => super.setTokenStakingConfig(data));
   }
 
   final _$initAsyncAction = AsyncAction('_SettingsStore.init');
@@ -233,15 +232,34 @@ mixin _$SettingsStore on _SettingsStore, Store {
     return _$loadIsHideBalanceAsyncAction.run(() => super.loadIsHideBalance());
   }
 
+  final _$setIsDarkThemeAsyncAction =
+      AsyncAction('_SettingsStore.setIsDarkTheme');
+
+  @override
+  Future<void> setIsDarkTheme(bool dark) {
+    return _$setIsDarkThemeAsyncAction.run(() => super.setIsDarkTheme(dark));
+  }
+
+  final _$loadIsDarkThemeAsyncAction =
+      AsyncAction('_SettingsStore.loadIsDarkTheme');
+
+  @override
+  Future<void> loadIsDarkTheme() {
+    return _$loadIsDarkThemeAsyncAction.run(() => super.loadIsDarkTheme());
+  }
+
   @override
   String toString() {
     return '''
 localeCode: ${localeCode},
 isHideBalance: ${isHideBalance},
+isDarkTheme: ${isDarkTheme},
 communityMessages: ${communityMessages},
 systemMessages: ${systemMessages},
 communityUnreadNumber: ${communityUnreadNumber},
-systemUnreadNumber: ${systemUnreadNumber}
+systemUnreadNumber: ${systemUnreadNumber},
+dappAllTags: ${dappAllTags},
+dapps: ${dapps}
     ''';
   }
 }

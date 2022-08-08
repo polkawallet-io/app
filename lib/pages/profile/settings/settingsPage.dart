@@ -12,12 +12,15 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:rive/src/widgets/rive_animation.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage(this.service, this.changeLang, this.changeNode);
+  SettingsPage(
+      this.service, this.changeLang, this.changeNode, this.changeDarkTheme);
   final AppService service;
   final Function(String) changeLang;
   final Future<void> Function(NetworkParams) changeNode;
+  final Function(bool) changeDarkTheme;
   static final String route = '/profile/settings';
 
   @override
@@ -26,7 +29,19 @@ class SettingsPage extends StatefulWidget {
 
 class _Settings extends State<SettingsPage> {
   final _langOptions = ['', 'en', 'zh'];
-  final _priceCurrencyOptions = ['USD', 'CNY'];
+  final _priceCurrencyOptions = [
+    'USD',
+    'CNY',
+    'EUR',
+    'GBP',
+    'RUB',
+    'HKD',
+    'NZD',
+    'AUD',
+    'TWD',
+    'KRW',
+    'JPY'
+  ];
   bool _isLoading = false;
 
   String _getLang(String code) {
@@ -42,9 +57,38 @@ class _Settings extends State<SettingsPage> {
   }
 
   String _getPriceCurrency(String currency) {
+// CNY（人民币）Chinese Yuan (¥)
+// USD（美元）United States Dollar ($)
+// EUR（欧元）Euro (€)
+// GBP（英镑）Pound Sterling (£)
+// RUB（卢布）Russian Ruble (₽)
+// HKD（港币）Hong Kong Dollar ($)
+// NZD（新西兰元）New Zealand Dollar ($)
+// AUD（澳元）Australian Dollar ($)
+// TWD（台币）New Taiwan Dollar (NT$)
+// KRW（韩元）South Korean Won (₩)
+// JPY（日元）Japanese Yen (¥)
     switch (currency) {
       case 'CNY':
-        return '¥ CNY';
+        return '￥ CNY';
+      case 'EUR':
+        return '€ EUR';
+      case 'GBP':
+        return '£ GBP';
+      case 'RUB':
+        return '₽ RUB';
+      case 'HKD':
+        return '\$ HKD';
+      case 'NZD':
+        return '\$ NZD';
+      case 'AUD':
+        return '\$ AUD';
+      case 'TWD':
+        return 'NT\$ TWD';
+      case 'KRW':
+        return '₩ KRW';
+      case 'JPY':
+        return '¥ JPY';
       default:
         return '\$ USD';
     }
@@ -65,7 +109,9 @@ class _Settings extends State<SettingsPage> {
                 FixedExtentScrollController(initialItem: selected),
             children: _langOptions.map((i) {
               return Padding(
-                  padding: EdgeInsets.all(16), child: Text(_getLang(i)));
+                  padding: EdgeInsets.all(16),
+                  child:
+                      Text(_getLang(i), style: TextStyle(color: Colors.black)));
             }).toList(),
             onSelectedItemChanged: (v) {
               selected = v;
@@ -109,7 +155,8 @@ class _Settings extends State<SettingsPage> {
             children: _priceCurrencyOptions.map((i) {
               return Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text(_getPriceCurrency(i)));
+                  child: Text(_getPriceCurrency(i),
+                      style: TextStyle(color: Colors.black)));
             }).toList(),
             onSelectedItemChanged: (v) {
               selected = v;
@@ -119,6 +166,7 @@ class _Settings extends State<SettingsPage> {
             final currency = _priceCurrencyOptions[selected];
             if (currency != cached) {
               widget.service.store.settings.setPriceCurrency(currency);
+              setState(() {});
             }
             return true;
           },
@@ -157,7 +205,7 @@ class _Settings extends State<SettingsPage> {
                         ? dic['setting.currency.tip']
                         : '';
                 final currencyTip =
-                    widget.service.store.settings.priceCurrency == 'CNY'
+                    widget.service.store.settings.priceCurrency != "USD"
                         ? ' (${dic['setting.currency.tip']})'
                         : '';
                 return SafeArea(
@@ -165,7 +213,10 @@ class _Settings extends State<SettingsPage> {
                     physics: BouncingScrollPhysics(),
                     child: RoundedCard(
                       margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
-                      padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                      padding: UI.isDarkTheme(context)
+                          ? EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h)
+                          : EdgeInsets.fromLTRB(
+                              8.75.w, 16.75.h, 8.75.w, 16.75.h),
                       child: Column(
                         children: <Widget>[
                           SettingsPageListItem(
@@ -177,6 +228,16 @@ class _Settings extends State<SettingsPage> {
                                   widget.service.store.settings.isHideBalance,
                               onChanged: (v) => widget.service.store.settings
                                   .setIsHideBalance(v),
+                            ),
+                          ),
+                          Divider(height: 24.h),
+                          SettingsPageListItem(
+                            label: dic['setting.theme.dark'],
+                            content: v3.CupertinoSwitch(
+                              value: widget.service.store.settings.isDarkTheme,
+                              onChanged: (v) {
+                                widget.changeDarkTheme(v);
+                              },
                             ),
                           ),
                           Divider(height: 24.h),

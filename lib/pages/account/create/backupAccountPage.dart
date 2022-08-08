@@ -14,6 +14,7 @@ import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -65,9 +66,25 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
         final mnemonics = widget.service.store.account.newAccount.key ?? '';
         return Scaffold(
           appBar: AppBar(
-              title: Text(dic['create']),
-              centerTitle: true,
-              leading: BackBtn()),
+            title: Text(dic['create']),
+            centerTitle: true,
+            leading: BackBtn(),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  _generateAccount();
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(
+                    Icons.refresh,
+                    size: 20,
+                    color: Theme.of(context).textTheme.headline1.color,
+                  ),
+                ),
+              )
+            ],
+          ),
           body: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,11 +240,12 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                     showCupertinoDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
+                        return PolkawalletAlertDialog(
+                          type: DialogType.warn,
                           title: Text(dic['import.warn']),
                           content: Text(dic['mnemonic.msg']),
                           actions: [
-                            CupertinoButton(
+                            PolkawalletActionSheetAction(
                               child: Text(dic['mnemonic.btn']),
                               onPressed: () {
                                 Navigator.of(context).pop();

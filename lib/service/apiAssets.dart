@@ -46,6 +46,8 @@ class ApiAssets {
   }
 
   Future<void> fetchMarketPrices(List<String> tokens) async {
+    if (tokens == null) return;
+
     final res = await Future.wait([
       WalletApi.getTokenPrices(tokens),
       WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name)
@@ -70,5 +72,11 @@ class ApiAssets {
     }
 
     apiRoot.store.assets.setMarketPrices(prices);
+  }
+
+  Future<void> updateStakingConfig() async {
+    WalletApi.getTokenStakingConfig().then((value) {
+      apiRoot.store.settings.setTokenStakingConfig(value);
+    });
   }
 }

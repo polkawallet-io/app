@@ -23,7 +23,7 @@ class StakingDOTGuide extends StatelessWidget {
     final greyStyle = Theme.of(context).textTheme.headline5;
     return Scaffold(
       appBar: AppBar(
-        title: Text('29%+ DOT Staking'),
+        title: Text('DOT Staking'),
         centerTitle: true,
         leading: BackBtn(),
       ),
@@ -50,9 +50,8 @@ class StakingDOTGuide extends StatelessWidget {
                     title: dic['event.0515.3'],
                     subtitle: '',
                     button: dic['event.0515.8'],
-                    onClick: () => _onRoute(context, '/assets/token/transfer', {
-                      'tokenNameId': 'DOT',
-                      'isXCM': 'true',
+                    onClick: () => _onRoute(context, '/bridge', {
+                      'token': 'DOT',
                       'chainFrom': 'polkadot',
                       'chainTo': 'acala',
                     }),
@@ -61,7 +60,7 @@ class StakingDOTGuide extends StatelessWidget {
                   _InfoItem(
                     index: '2.',
                     title: dic['event.0515.4'],
-                    subtitle: dic['event.0515.5'],
+                    subtitle: '',
                     button: dic['event.0515.9'],
                     onClick: () => _onRoute(context, '/acala/homa', {}),
                   ),

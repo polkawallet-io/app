@@ -94,7 +94,10 @@ class _AccountAdvanceOption extends State<AccountAdvanceOption> {
                       children: _typeOptions
                           .map((i) => Padding(
                               padding: EdgeInsets.all(16),
-                              child: Text(i.toString().split('.')[1])))
+                              child: Text(
+                                i.toString().split('.')[1],
+                                style: TextStyle(color: Colors.black),
+                              )))
                           .toList(),
                       onSelectedItemChanged: (v) {
                         setState(() {

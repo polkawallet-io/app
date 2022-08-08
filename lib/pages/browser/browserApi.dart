@@ -40,7 +40,8 @@ class BrowserApi {
       arguments: {
         "url": dapp['detailUrl'],
         "isPlugin": true,
-        "icon": dapp["icon"]
+        "icon": dapp["icon"],
+        "name": dapp["name"]
       },
     );
   }

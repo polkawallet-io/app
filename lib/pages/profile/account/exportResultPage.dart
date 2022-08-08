@@ -60,7 +60,7 @@ class ExportResultPage extends StatelessWidget {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       border: Border.all(
                         color: Colors.black12,
                         width: 1,

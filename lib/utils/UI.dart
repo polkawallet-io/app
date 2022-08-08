@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:app/common/consts.dart';
 import 'package:app/service/walletApi.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -30,11 +32,12 @@ class AppUI {
     await showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
+          type: DialogType.warn,
           title: Container(),
           content: Text(errorMsg ?? msg),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
               onPressed: () {
@@ -98,216 +101,237 @@ class AppUI {
                   alignment: AlignmentDirectional.topCenter,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(top: needUpdate ? 105 : 106),
-                      padding: EdgeInsets.only(
-                          top: needUpdate ? 92 : 69,
-                          bottom: 20,
-                          left: 19,
-                          right: 19),
-                      width: double.infinity,
-                      height: (MediaQuery.of(context).size.width - 96) /
-                          294 *
-                          (needUpdate ? 421 : 298),
-                      decoration: BoxDecoration(
-                        color: needUpdate ? Colors.transparent : Colors.white,
-                        gradient: needUpdate
-                            ? null
-                            : LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: [0.03, 0.3],
-                                colors: [
-                                  Color(0xFFFDF1EB),
-                                  Color(0xFFFFFFFF),
-                                ],
-                              ),
-                        borderRadius: needUpdate
-                            ? null
-                            : const BorderRadius.only(
+                        margin: EdgeInsets.only(top: needUpdate ? 105 : 106),
+                        width: double.infinity,
+                        height: (MediaQuery.of(context).size.width - 96) /
+                            294 *
+                            (needUpdate ? 421 : 298),
+                        child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(60),
                                 topRight: Radius.circular(60),
                                 bottomLeft: Radius.circular(20),
                                 bottomRight: Radius.circular(20)),
-                        image: needUpdate
-                            ? DecorationImage(
-                                image: AssetImage(
-                                    "assets/images/update_app_bg.png"))
-                            : null,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            'V ${showLatestBeta.split("-")[0]}',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline3
-                                ?.copyWith(
-                                    fontSize: UI.getTextSize(28, context)),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.only(bottom: 24),
-                              child: Text(
-                                '- ${showLatestBeta.split("-")[1]}',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline4
-                                    ?.copyWith(
-                                        fontSize: UI.getTextSize(18, context)),
-                              )),
-                          Expanded(
-                              child: needUpdate
-                                  ? SingleChildScrollView(
-                                      child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: versionInfo
-                                          .map((e) => Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 12, left: 14),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 10,
-                                                    height: 10,
-                                                    margin:
-                                                        EdgeInsets.only(top: 5),
-                                                    decoration: BoxDecoration(
-                                                        color: Theme.of(context)
-                                                            .toggleableActiveColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5)),
-                                                  ),
-                                                  Expanded(
-                                                      child: Padding(
+                            child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      top: needUpdate ? 92 : 69,
+                                      bottom: 20,
+                                      left: 19,
+                                      right: 19),
+                                  width: double.infinity,
+                                  height:
+                                      (MediaQuery.of(context).size.width - 96) /
+                                          294 *
+                                          (needUpdate ? 421 : 298),
+                                  decoration: BoxDecoration(
+                                    color: needUpdate || UI.isDarkTheme(context)
+                                        ? Colors.transparent
+                                        : Colors.white,
+                                    gradient:
+                                        needUpdate || UI.isDarkTheme(context)
+                                            ? null
+                                            : LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                stops: [0.03, 0.3],
+                                                colors: [
+                                                  Color(0xFFFDF1EB),
+                                                  Color(0xFFFFFFFF),
+                                                ],
+                                              ),
+                                    image: needUpdate
+                                        ? DecorationImage(
+                                            image: AssetImage(
+                                                "assets/images/update_app_bg${UI.isDarkTheme(context) ? "_dark" : ""}.png"))
+                                        : UI.isDarkTheme(context)
+                                            ? DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/images/update_app_bg2_dark.png"))
+                                            : null,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'V ${showLatestBeta.split("-")[0]}',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3
+                                            ?.copyWith(
+                                                fontSize: UI.getTextSize(
+                                                    28, context)),
+                                      ),
+                                      Padding(
+                                          padding: EdgeInsets.only(bottom: 24),
+                                          child: Text(
+                                            '- ${showLatestBeta.split("-")[1]}',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline4
+                                                ?.copyWith(
+                                                    fontSize: UI.getTextSize(
+                                                        18, context)),
+                                          )),
+                                      Expanded(
+                                          child: needUpdate
+                                              ? Scrollbar(
+                                                  child: SingleChildScrollView(
+                                                      child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: versionInfo
+                                                      .map((e) => Padding(
                                                           padding:
                                                               EdgeInsets.only(
-                                                                  left: 9),
-                                                          child: Text(
-                                                            e,
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: Theme.of(
+                                                                  bottom: 12,
+                                                                  left: 14),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Container(
+                                                                width: 10,
+                                                                height: 10,
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        top: 5),
+                                                                decoration: BoxDecoration(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .toggleableActiveColor,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            5)),
+                                                              ),
+                                                              Expanded(
+                                                                  child: Padding(
+                                                                      padding: EdgeInsets.only(left: 9),
+                                                                      child: Text(
+                                                                        e,
+                                                                        textAlign:
+                                                                            TextAlign.left,
+                                                                        style: Theme.of(context)
+                                                                            .textTheme
+                                                                            .headline4,
+                                                                      ))),
+                                                            ],
+                                                          )))
+                                                      .toList(),
+                                                )))
+                                              : Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 12, left: 14),
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                        dic['update.latest'],
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .headline4
+                                                            ?.copyWith(
+                                                                height: 1.7),
+                                                      ),
+                                                    ],
+                                                  ))),
+                                      Visibility(
+                                          visible: needUpdate,
+                                          child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: 8, top: 10),
+                                              child: Text(
+                                                dic['update.up'],
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6
+                                                    ?.copyWith(
+                                                        fontSize:
+                                                            UI.getTextSize(
+                                                                14, context)),
+                                              ))),
+                                      GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            if (!needUpdate) {
+                                              return;
+                                            }
+                                            if (Platform.isIOS) {
+                                              // go to ios download page
+                                              UI.launchURL(versions[platform]
+                                                  ['store-url']);
+                                            } else if (Platform.isAndroid) {
+                                              if (buildTarget ==
+                                                  BuildTargets.playStore) {
+                                                // go to google play page
+                                                UI.launchURL(versions[platform]
+                                                    ['store-url']);
+                                                return;
+                                              }
+                                              // download apk
+                                              // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
+                                              try {
+                                                UpdateApp.updateApp(
+                                                    url: versions['android']
+                                                        ['url'],
+                                                    appleId: "1520301768");
+                                                showCupertinoDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext ctx) {
+                                                      return PolkawalletAlertDialog(
+                                                        title: Text(dic[
+                                                            'update.download']),
+                                                        content: Text(dic[
+                                                            'update.download.check']),
+                                                        actions: [
+                                                          PolkawalletActionSheetAction(
+                                                            child: Text(I18n.of(
                                                                     context)
-                                                                .textTheme
-                                                                .headline4,
-                                                          ))),
-                                                ],
-                                              )))
-                                          .toList(),
-                                    ))
-                                  : Padding(
-                                      padding:
-                                          EdgeInsets.only(bottom: 12, left: 14),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 10,
-                                            height: 10,
-                                            margin: EdgeInsets.only(top: 5),
+                                                                .getDic(
+                                                                    i18n_full_dic_ui,
+                                                                    'common')['ok']),
+                                                            onPressed: () =>
+                                                                Navigator.of(
+                                                                        ctx)
+                                                                    .pop(),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    });
+                                              } catch (e) {
+                                                print(
+                                                    'Failed to make OTA update. Details: $e');
+                                              }
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 45, vertical: 7),
                                             decoration: BoxDecoration(
                                                 color: Theme.of(context)
                                                     .toggleableActiveColor,
                                                 borderRadius:
-                                                    BorderRadius.circular(5)),
-                                          ),
-                                          Expanded(
-                                              child: Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 9),
-                                                  child: Text(
-                                                    dic['update.latest'],
-                                                    textAlign: TextAlign.left,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .headline4,
-                                                  ))),
-                                        ],
-                                      ))),
-                          Visibility(
-                              visible: needUpdate,
-                              child: Padding(
-                                  padding: EdgeInsets.only(bottom: 8),
-                                  child: Text(
-                                    dic['update.up'],
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(
-                                            fontSize:
-                                                UI.getTextSize(14, context)),
-                                  ))),
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                if (!needUpdate) {
-                                  return;
-                                }
-                                if (Platform.isIOS) {
-                                  // go to ios download page
-                                  UI.launchURL(versions[platform]['store-url']);
-                                } else if (Platform.isAndroid) {
-                                  if (buildTarget == BuildTargets.playStore) {
-                                    // go to google play page
-                                    UI.launchURL(
-                                        versions[platform]['store-url']);
-                                    return;
-                                  }
-                                  // download apk
-                                  // START LISTENING FOR DOWNLOAD PROGRESS REPORTING EVENTS
-                                  try {
-                                    UpdateApp.updateApp(
-                                        url: versions['android']['url'],
-                                        appleId: "1520301768");
-                                    showCupertinoDialog(
-                                        context: context,
-                                        builder: (BuildContext ctx) {
-                                          return CupertinoAlertDialog(
-                                            title: Text(dic['update.download']),
-                                            content: Text(
-                                                dic['update.download.check']),
-                                            actions: [
-                                              CupertinoButton(
-                                                child: Text(I18n.of(context)
-                                                    .getDic(i18n_full_dic_ui,
-                                                        'common')['ok']),
-                                                onPressed: () =>
-                                                    Navigator.of(ctx).pop(),
-                                              ),
-                                            ],
-                                          );
-                                        });
-                                  } catch (e) {
-                                    print(
-                                        'Failed to make OTA update. Details: $e');
-                                  }
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 45, vertical: 7),
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).toggleableActiveColor,
-                                    borderRadius: BorderRadius.circular(4)),
-                                child: Text(
-                                  needUpdate
-                                      ? dic['update.now']
-                                      : I18n.of(context).getDic(
-                                          i18n_full_dic_ui, 'common')['ok'],
-                                  style: Theme.of(context).textTheme.button,
-                                ),
-                              ))
-                        ],
-                      ),
-                    ),
+                                                    BorderRadius.circular(4)),
+                                            child: Text(
+                                              needUpdate
+                                                  ? dic['update.now']
+                                                  : I18n.of(context).getDic(
+                                                      i18n_full_dic_ui,
+                                                      'common')['ok'],
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .button,
+                                            ),
+                                          ))
+                                    ],
+                                  ),
+                                )))),
                     Image.asset(
                       "assets/images/update_app_icon${needUpdate ? '' : '2'}.png",
                       width: needUpdate ? 116 : 200,
@@ -346,12 +370,12 @@ class AppUI {
         final bool isOk = await showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text('metadata v$jsVersionLatest'),
               content: Text(I18n.of(context)
                   .getDic(i18n_full_dic_app, 'profile')['update.js.up']),
               actions: <Widget>[
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(dic['cancel']),
                   onPressed: () {
                     Navigator.of(context).pop(false);
@@ -360,7 +384,8 @@ class AppUI {
                     }
                   },
                 ),
-                CupertinoButton(
+                PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(dic['ok']),
                   onPressed: () {
                     Navigator.of(context).pop(true);
@@ -387,9 +412,9 @@ class AppUI {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dic['update.download']),
-          content: CupertinoActivityIndicator(),
+          content: CupertinoActivityIndicator(color: const Color(0xFF3C3C44)),
         );
       },
     );
@@ -399,13 +424,13 @@ class AppUI {
     await showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Container(),
           content: code == null
               ? Text(dic['update.error'])
               : Text(dicCommon['success']),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(dicCommon['ok']),
               onPressed: () {
                 if (code != null) {
@@ -428,12 +453,12 @@ class AppUI {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             title: Text(I18n.of(context)
                 .getDic(i18n_full_dic_app, 'assets')['amount.low']),
             content: Container(),
             actions: <Widget>[
-              CupertinoButton(
+              PolkawalletActionSheetAction(
                 child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(),

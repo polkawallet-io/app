@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.3.0+3303
+version: 3.3.4+3343
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -37,6 +37,9 @@ dependencies:
   firebase_analytics: 8.3.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
+  polkawallet_ui: ^0.4.8
+  polkawallet_sdk: ^0.4.8
+  ethereum_addresses: ^1.0.2
   update_app:
     git:
       url: https://github.com/mofada/flutter_update_app.git
@@ -48,23 +51,19 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 0d793bdbd95a76a3088b161d325de87a5db9da1d
+      ref: c80eca534d3041ab1f2ff1674febbf63fb6c1e24
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 06994d689d8a92e7621b0f89bd0a181024ecb8a1
+      ref: a609b218b4b93743c77016841d8ffc8e29ba8898
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: 03eb437bb059f5bc1e3988df5ac6bbca0e659bf9
+      ref: 9c8bf1aba91caa69d1fd8cdd5dbfd28cf20962bf
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
-      ref: e2a9fc66914153a24b18a99c99b9895e96837c3f
-  polkawallet_plugin_laminar:
-    git:
-      url: https://github.com/polkawallet-io/polkawallet_plugin_laminar.git
-      ref: 7950c74abe74494aed49662b37dcebdacf1013c1
+      ref: 8ae288145247607b3fc67deca7d7f64016d8bf56
   polkawallet_plugin_bifrost:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
@@ -101,20 +100,20 @@ dependencies:
   sticky_headers: ^0.2.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
-  polkawallet_plugin_karura:
-    path: ../../coding/polkawallet/polkawallet_plugin_karura
-  polkawallet_plugin_statemine:
-    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-#  polkawallet_ui: ^0.4.7
-#  polkawallet_sdk: ^0.4.7
-  polkawallet_ui:
-     path: ../../coding/polkawallet/ui
-  polkawallet_sdk:
-     path: ../../coding/polkawallet/sdk
+#  polkawallet_plugin_kusama:
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#  polkawallet_plugin_acala:
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#  polkawallet_plugin_karura:
+#    path: ../../coding/polkawallet/polkawallet_plugin_karura
+#  polkawallet_plugin_statemine:
+#    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+  polkawallet_ui: ^0.4.9
+  polkawallet_sdk: ^0.4.9
+#  polkawallet_ui:
+#     path: ../../coding/polkawallet/ui
+#  polkawallet_sdk:
+#     path: ../../coding/polkawallet/sdk
   transformer_page_view:
     git:
       url: https://github.com/polkawallet-io/transformer_page_view.git
@@ -142,6 +141,8 @@ dev_dependencies:
 #  json_serializable: ^3.5.1
   flutter_launcher_icons: ^0.9.0
   rive: ^0.9.0
+  flutter_lints: ^2.0.1
+  orientation: ^1.3.0
 
 flutter_icons:
   android: "launcher_icon"

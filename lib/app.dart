@@ -12,6 +12,8 @@ import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
+import 'package:app/pages/bridge/bridgePage.dart';
+import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
@@ -73,6 +75,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
@@ -81,6 +84,7 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/pages/walletExtensionSignPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -135,60 +139,67 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   PageRouteParams _autoRoutingParams;
 
   ThemeData _getAppTheme(MaterialColor color, {Color secondaryColor}) {
+    final isDarkTheme = _store?.settings?.isDarkTheme ?? false;
+    final textColor = isDarkTheme ? Colors.white : Color(0xFF565554);
     return ThemeData(
-      // backgroundColor: Color(0xFFF0ECE6),
-      scaffoldBackgroundColor: Color(0xFFF5F3F0),
-      dividerColor: Color(0xFFD4D4D4),
-      cardColor: Colors.white,
-      toggleableActiveColor: Color(0xFF768FE1),
-      errorColor: Color(0xFFE46B41),
-      unselectedWidgetColor: Color(0xFF858380),
+      brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+      scaffoldBackgroundColor:
+          isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
+      dividerColor: isDarkTheme ? Color(0x4BFFFFFF) : Color(0xFFD4D4D4),
+      cardColor: isDarkTheme ? Color(0xFF353638) : Colors.white,
+      toggleableActiveColor:
+          isDarkTheme ? Color(0xFFFFC952) : Color(0xFF7D97EE),
+      errorColor: Color(0xFFFA7243),
+      unselectedWidgetColor: isDarkTheme ? Colors.white : Color(0xFF858380),
+      disabledColor: isDarkTheme ? Colors.white : Color(0xFF858380),
       textSelectionTheme:
-          TextSelectionThemeData(selectionColor: Color(0xFF565554)),
+          TextSelectionThemeData(selectionColor: textColor.withAlpha(80)),
       appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFFF5F3F0),
+          backgroundColor: isDarkTheme ? Color(0xFF242528) : Color(0xFFF5F3F1),
           elevation: 0,
           titleTextStyle: TextStyle(
-              color: Color(0xFF565554),
+              color: textColor,
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale),
               fontWeight: FontWeight.w600)),
       primarySwatch: color,
       hoverColor: secondaryColor,
-      colorScheme: ColorScheme.fromSwatch().copyWith(),
       textTheme: TextTheme(
           headline1: TextStyle(
               fontSize: UI.getTextSize(30, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline2: TextStyle(
-            fontSize: UI.getTextSize(22, context, locale: _locale),
-          ),
+              fontSize: UI.getTextSize(22, context, locale: _locale),
+              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontFamily:
+                  UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline3: TextStyle(
               fontSize: UI.getTextSize(20, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           headline4: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(16, context, locale: _locale),
             fontFamily:
                 UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline5: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(14, context, locale: _locale),
             fontFamily:
                 UI.getFontFamily('TitilliumWeb', context, locale: _locale),
             fontWeight: FontWeight.w400,
           ),
           headline6: TextStyle(
-            color: Color(0xFF565554),
+            color: textColor,
             fontSize: UI.getTextSize(12, context, locale: _locale),
             fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale),
             fontWeight: FontWeight.w400,
@@ -196,22 +207,23 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           bodyText1: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w400,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           bodyText2: TextStyle(
               fontSize: UI.getTextSize(16, context, locale: _locale),
               fontWeight: FontWeight.w300,
-              color: Color(0xFF565554),
+              color: textColor,
               fontFamily: UI.getFontFamily('SF_Pro', context, locale: _locale)),
           caption: TextStyle(
               fontSize: UI.getTextSize(12, context, locale: _locale),
               fontWeight: FontWeight.w600,
+              color: textColor,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale)),
           button: TextStyle(
               fontSize: UI.getTextSize(18, context, locale: _locale),
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: isDarkTheme ? Color(0xFF121212) : Colors.white,
               fontFamily:
                   UI.getFontFamily('TitilliumWeb', context, locale: _locale))),
     );
@@ -240,6 +252,16 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       if (_locale != null) {
         _service.store.settings.initMessage((_locale).languageCode);
       }
+    });
+  }
+
+  void _changeDarkTheme(bool darkTheme) {
+    _service.store.settings.setIsDarkTheme(darkTheme);
+    setState(() {
+      _theme = _getAppTheme(
+        _service.plugin.basic.primaryColor,
+        secondaryColor: _service.plugin.basic.gradientColor,
+      );
     });
   }
 
@@ -302,11 +324,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
-    _dropsService(service, node: node);
+    _dropsService();
   }
 
-  Future<void> _restartWebConnect(AppService service,
-      {NetworkParams node}) async {
+  Future<void> _restartWebConnect() async {
     setState(() {
       _connectedNode = null;
     });
@@ -328,30 +349,29 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     //       : null,
     // );
 
-    final connected = await service.plugin.start(_keyring,
-        nodes: node != null ? [node] : service.plugin.nodeList);
+    final connected = await _service.plugin.start(_keyring);
     setState(() {
       _connectedNode = connected;
     });
 
-    _dropsService(service, node: node);
+    _dropsService();
   }
 
   Timer _webViewDropsTimer;
   Timer _dropsServiceTimer;
   Timer _chainTimer;
-  _dropsService(AppService service, {NetworkParams node}) {
+  _dropsService() {
     _dropsServiceCancel();
     _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
       _chainTimer = Timer(Duration(seconds: 18), () async {
-        _restartWebConnect(service, node: node);
+        _restartWebConnect();
         _webViewDropsTimer = Timer(Duration(seconds: 60), () {
-          _dropsService(service, node: node);
+          _dropsService();
         });
       });
       _service.plugin.sdk.webView
           .evalJavascript('api.rpc.system.chain()')
-          .then((value) => _dropsService(service, node: node));
+          .then((value) => _dropsService());
     });
   }
 
@@ -398,7 +418,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             : null, socketDisconnectedAction: () {
       UI.throttle(() {
         _dropsServiceCancel();
-        _restartWebConnect(service, node: node);
+        _restartWebConnect();
       });
     });
 
@@ -418,7 +438,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           context: _homePageContext,
           builder: (BuildContext context) {
             final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['v3.changeNetwork']),
               content: Container(
                 margin: EdgeInsets.only(top: 8),
@@ -426,20 +446,17 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
               ),
               actions: [
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(
                     I18n.of(context)
                         .getDic(i18n_full_dic_ui, 'common')['cancel'],
-                    style: TextStyle(
-                        color: Theme.of(context).unselectedWidgetColor),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
                 ),
-                CupertinoButton(
+                PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(
                     I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
-                    style: TextStyle(
-                        color: Theme.of(context).toggleableActiveColor),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
                 ),
@@ -454,7 +471,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           builder: (_) {
             final dic =
                 I18n.of(_homePageContext).getDic(i18n_full_dic_app, 'assets');
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['v3.changeNetwork']),
               content: Container(
                 margin: EdgeInsets.only(top: 24, bottom: 24),
@@ -463,7 +480,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   children: [
                     Container(
                       margin: EdgeInsets.only(right: 8),
-                      child: CupertinoActivityIndicator(),
+                      child: CupertinoActivityIndicator(
+                          color: const Color(0xFF3C3C44)),
                     ),
                     Text(
                         '${dic['v3.changeNetwork.ing']} ${networkName.toUpperCase()}...')
@@ -509,12 +527,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       showCupertinoDialog(
           context: context,
           builder: (_) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
+              type: DialogType.warn,
               title: Text(dic['bad.warn']),
               content: Text(
                   '${Fmt.address(_keyring.current.address)} ${dic['bad.warn.info']}'),
               actions: [
-                CupertinoButton(
+                PolkawalletActionSheetAction(
                   child: Text(I18n.of(context)
                       .getDic(i18n_full_dic_ui, 'common')['ok']),
                   onPressed: () => Navigator.of(context).pop(),
@@ -595,7 +614,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               : null, socketDisconnectedAction: () {
         UI.throttle(() {
           _dropsServiceCancel();
-          _restartWebConnect(service);
+          _restartWebConnect();
         });
       });
 
@@ -605,9 +624,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       _startPlugin(service);
 
-      WalletApi.getTokenStakingConfig().then((value) {
-        _store.settings.setTokenStakingConfig(value);
-      });
+      service.assets.updateStakingConfig();
     }
 
     return _keyring.allAccounts.length;
@@ -729,7 +746,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ExportAccountPage.route: (_) => ExportAccountPage(_service),
       ExportResultPage.route: (_) => ExportResultPage(),
       SettingsPage.route: (_) =>
-          SettingsPage(_service, _changeLang, _changeNode),
+          SettingsPage(_service, _changeLang, _changeNode, _changeDarkTheme),
       RemoteNodeListPage.route: (_) =>
           RemoteNodeListPage(_service, _changeNode),
       CreateRecoveryPage.route: (_) => CreateRecoveryPage(_service),
@@ -754,16 +771,30 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
 
+      //bridge
+      BridgePage.route: (_) => BridgePage(_service),
+      XcmTxConfirmPage.route: (_) => XcmTxConfirmPage(
+            _service.plugin,
+            _keyring,
+            _service.account.getPassword,
+            txDisabledCalls: _service.store.settings
+                .getDisabledCalls(_service.plugin.basic.name),
+          ),
+
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
+      BridgeTestPage.route: (_) => BridgeTestPage(_service.plugin.sdk)
     };
   }
 
   void _toPageByUri(Uri uri) {
+    if (uri.toString().contains(".html")) {
+      return;
+    }
     final paths = uri.toString().split("polkawallet.io");
     Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
     if (paths.length > 1) {
-      var network = "karura";
+      String network;
       final pathDatas = paths[1].split("?");
       if (pathDatas.length > 1) {
         final datas = pathDatas[1].split("&");
@@ -777,7 +808,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         });
       }
 
-      if (network != _service.plugin.basic.name) {
+      if (network != null && network != _service.plugin.basic.name) {
         _switchNetwork(network,
             pageRoute: PageRouteParams(pathDatas[0], args: args));
       } else {
@@ -790,7 +821,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   void _handleIncomingAppLinks() {
     uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
-      closeWebView();
+      closeInAppWebView();
       _toPageByUri(uri);
       print('got uri: $uri');
     }, onError: (Object err) {
@@ -875,7 +906,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.resumed:
-        _dropsService(_service);
+        _dropsService();
         break;
       case AppLifecycleState.paused:
         _dropsServiceCancel();
@@ -897,7 +928,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         FocusScope.of(context).focusedChild?.unfocus();
       },
       child: ScreenUtilInit(
-          designSize: Size(390, 844),
+          designSize: const Size(390, 844),
           builder: (_, __) => MaterialApp(
                 title: 'Polkawallet',
                 builder: (context, widget) {
@@ -913,14 +944,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     ),
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: [
-                  AppLocalizationsDelegate(_locale ?? Locale('en', '')),
+                  AppLocalizationsDelegate(_locale ?? const Locale('en', '')),
                   GlobalMaterialLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                 ],
-                supportedLocales: [
-                  const Locale('en', ''),
-                  const Locale('zh', ''),
+                supportedLocales: const [
+                  Locale('en', ''),
+                  Locale('zh', ''),
                 ],
                 initialRoute: StartPage.route,
                 onGenerateRoute: (settings) => CupertinoPageRoute(

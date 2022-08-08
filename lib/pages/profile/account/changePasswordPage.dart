@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   ChangePasswordPage(this.service);
@@ -63,11 +64,11 @@ class _ChangePassword extends State<ChangePasswordPage> {
     showCupertinoDialog(
       context: context,
       builder: (_) {
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dic['pass.success']),
           content: Text(dic['pass.success.txt']),
           actions: <Widget>[
-            CupertinoButton(
+            PolkawalletActionSheetAction(
               child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
               onPressed: () {
@@ -140,18 +141,18 @@ class _ChangePassword extends State<ChangePasswordPage> {
                               child: Text(
                                 dic['pass.forget'],
                                 style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
+                                    color: Theme.of(context).errorColor,
                                     decoration: TextDecoration.underline),
                               ),
                               onTap: () {
                                 showCupertinoDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return CupertinoAlertDialog(
+                                    return PolkawalletAlertDialog(
                                       title: Text(dic['pass.reset']),
                                       content: Text(dic['pass.reset.text']),
                                       actions: <Widget>[
-                                        CupertinoButton(
+                                        PolkawalletActionSheetAction(
                                           child: Text(I18n.of(context).getDic(
                                               i18n_full_dic_ui,
                                               'common')['ok']),

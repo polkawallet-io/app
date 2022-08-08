@@ -1,13 +1,12 @@
-import 'dart:math';
-
 import 'package:app/service/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
-import 'package:simple_shadow/simple_shadow.dart';
-import 'package:polkawallet_ui/components/circularProgressBar.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/circularProgressBar.dart';
+import 'package:simple_shadow/simple_shadow.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 import 'i18n/index.dart';
 
@@ -81,12 +80,13 @@ class _BottomBarScaffoldState extends State<BottomBarScaffold> {
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: SimpleShadow(
         child: BottomAppBar(
-          color: Color(0xFFE0DEDA),
+          color:
+              UI.isDarkTheme(context) ? Color(0xFF5D5D5D) : Color(0xFFE6E6E5),
           shape: CustomNotchedShape(context),
           child: SizedBox(height: 64, child: Row(children: children)),
         ),
         opacity: 0.4, // Default: 0.5
-        color: Color(0xAA000000), // Default: Black
+        color: Color(0x66000000), // Default: Black
         offset: Offset(0, -1), // Default: Offset(2, 2)
         sigma: 2, // Default: 2
       ),
@@ -140,8 +140,12 @@ class NavItem extends StatelessWidget {
             item.text,
             style: style?.copyWith(
                 color: active
-                    ? Theme.of(context).textSelectionTheme.selectionColor
-                    : Color(0xFF9D9A98)),
+                    ? UI.isDarkTheme(context)
+                        ? Colors.white
+                        : Color(0xFF5C5C5C)
+                    : UI.isDarkTheme(context)
+                        ? Color(0xFFBCBCBC)
+                        : Color(0xFF9D9A98)),
           )
         ]),
       ),
@@ -185,7 +189,7 @@ class CentralNavItem extends StatelessWidget {
                               1.0
                             ],
                             colors: [
-                              Color(!active ? 0xFFEEECE8 : 0xFF807D78),
+                              Color(!active ? 0xFFEEEEED : 0xFF807D78),
                               Color(!active ? 0xFFB0ACA6 : 0xFFB0ACA6),
                             ])),
                     child: Center(
@@ -203,8 +207,12 @@ class CentralNavItem extends StatelessWidget {
                 item.text,
                 style: style?.copyWith(
                     color: active
-                        ? Theme.of(context).textSelectionTheme.selectionColor
-                        : Color(0xFF9D9A98)),
+                        ? UI.isDarkTheme(context)
+                            ? Colors.white
+                            : Theme.of(context).textTheme.headline1.color
+                        : UI.isDarkTheme(context)
+                            ? Color(0xFFBCBCBC)
+                            : Color(0xFF9D9A98)),
               ),
             ]));
   }
