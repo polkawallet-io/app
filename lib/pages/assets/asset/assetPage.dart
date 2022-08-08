@@ -23,13 +23,13 @@ import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/cardButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class AssetPage extends StatefulWidget {
   AssetPage(this.service);

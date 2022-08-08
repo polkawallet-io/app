@@ -6,6 +6,9 @@
 5. 历史记录增加按事件筛选功能 #298
 6. Swap模块taiga token兑换记录标记。 #305
 7. 支持 Statemint 插件，以便在后续支持 WBTC,WETH 跨链 #221
+8. ACA 质押挖矿奖励 ACA-aUSD LP 的 APR 修复
+9. 新增 bridge 模块 #182
+10. DApp 签名账户判断优化，支持任何地址格式。
 
 # [3.3.3-beta] - 20220720
 1. taiga LP 页面图标更新.
