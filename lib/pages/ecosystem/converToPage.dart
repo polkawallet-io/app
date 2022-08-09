@@ -314,8 +314,7 @@ class _ConverToPageState extends State<ConverToPage> {
                     titleTag:
                         "${dic['ecosystem.bringTo']} ${widget.service.plugin.basic.name}",
                     inputCtrl: _amountCtrl,
-                    onSetMax: (Fmt.balanceInt(balance.amount) ?? BigInt.zero) >
-                            BigInt.zero
+                    onSetMax: BigInt.parse(max) > BigInt.zero
                         ? (maxValue) {
                             _amountCtrl.text = Fmt.priceFloorBigInt(
                                 BigInt.parse(max), balance.decimals,
@@ -325,14 +324,14 @@ class _ConverToPageState extends State<ConverToPage> {
                     onInputChange: (v) {
                       var error = _validateAmount(
                           v, Fmt.balanceInt(balance.amount), balance.decimals);
-                      if (Fmt.tokenInt(v, balance.decimals) <
+                      if (Fmt.tokenInt(v, balance.decimals) >
+                          BigInt.parse(max)) {
+                        error =
+                            '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max) < BigInt.zero ? BigInt.zero : BigInt.parse(max), balance.decimals, lengthMax: 6)}';
+                      } else if (Fmt.tokenInt(v, balance.decimals) <
                           BigInt.parse(min)) {
                         error =
                             '${dic['bridge.min']} ${Fmt.priceFloorBigInt(BigInt.parse(min), balance.decimals, lengthMax: 6)}';
-                      } else if (Fmt.tokenInt(v, balance.decimals) >
-                          BigInt.parse(max)) {
-                        error =
-                            '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max), balance.decimals, lengthMax: 6)}';
                       }
                       if (error == null) {
                         _getTxFee(_amountCtrl.text);

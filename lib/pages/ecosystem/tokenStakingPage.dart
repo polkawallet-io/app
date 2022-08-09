@@ -277,7 +277,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                           Padding(
                               padding: EdgeInsets.only(right: 3),
                               child: Text(
-                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals)} ${widget.balance.symbol}",
+                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals, lengthMax: 6)} ${widget.balance.symbol}",
                                   style: style)),
                           Visibility(
                             visible: widget.balance.isCacheChange,

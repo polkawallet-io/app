@@ -212,7 +212,7 @@ packages:
       name: clock
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   code_builder:
     dependency: transitive
     description:
@@ -373,7 +373,7 @@ packages:
       name: fake_async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.1"
   ffi:
     dependency: transitive
     description:
@@ -588,7 +588,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.3"
   flutter_swiper:
     dependency: transitive
     description:
@@ -957,14 +957,14 @@ packages:
       name: path_drawing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   path_parsing:
     dependency: transitive
     description:
       name: path_parsing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   path_provider:
     dependency: transitive
     description:
@@ -1069,7 +1069,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_acala"
       relative: true
     source: path
-    version: "0.4.8"
+    version: "0.4.9"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -1112,7 +1112,7 @@ packages:
       path: "../../coding/polkawallet/polkawallet_plugin_karura"
       relative: true
     source: path
-    version: "0.4.8"
+    version: "0.4.9"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
@@ -1132,24 +1132,26 @@ packages:
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
-      relative: true
-    source: path
-    version: "0.4.6"
+      path: "."
+      ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      resolved-ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
+    source: git
+    version: "0.4.9"
   polkawallet_sdk:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.4.8"
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.9"
   polkawallet_ui:
     dependency: "direct main"
     description:
       path: "../../coding/polkawallet/ui"
       relative: true
     source: path
-    version: "0.4.8"
+    version: "0.4.9"
   pool:
     dependency: transitive
     description:
@@ -1448,7 +1450,7 @@ packages:
       name: term_glyph
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   test_api:
     dependency: transitive
     description:

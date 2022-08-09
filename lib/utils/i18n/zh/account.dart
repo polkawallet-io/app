@@ -46,6 +46,7 @@ const Map<String, String> zhAccount = {
   'unlock.bio': '验证以解锁',
   'unlock.bio.enable': '启用指纹/面容识别',
   'uos.title': '离线签名',
+  'uos.acc.invalid': '账户不可用',
   'uos.network': '签名请求来自',
   'uos.continue': '确认继续？',
   'uos.continue.switch': '切换账户并继续签名？',

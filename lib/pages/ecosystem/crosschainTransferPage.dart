@@ -33,10 +33,10 @@ import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
-  CrossChainTransferPage(this.service, {Key key}) : super(key: key);
+  const CrossChainTransferPage(this.service, {Key key}) : super(key: key);
   final AppService service;
 
-  static final String route = '/ecosystem/crosschainTransfer';
+  static const String route = '/ecosystem/crosschainTransfer';
 
   @override
   State<CrossChainTransferPage> createState() => _CrossChainTransferPageState();
@@ -347,20 +347,16 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                   : Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['fee'])
               : Fmt.balanceInt(
                   (tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
-          final sendFee =
-              List.of((tokenXcmInfo[balance.symbol] ?? {})['sendFee'] ?? []);
-
-          final sendFeeAmount =
-              sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
 
           final feeTokenSymbol =
               ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
                   {})['nativeToken'];
 
-          final nativeTokenDecimals =
-              widget.service.plugin.networkState.tokenDecimals[widget
-                  .service.plugin.networkState.tokenSymbol
-                  .indexOf(feeTokenSymbol)];
+          final feeTokenIndex = widget.service.plugin.balances.tokens
+              .indexWhere((e) => e.symbol == feeTokenSymbol);
+          final nativeTokenDecimals = feeTokenIndex >= 0
+              ? widget.service.plugin.balances.tokens[feeTokenIndex].decimals
+              : 12;
 
           final fromEd = isFromKar
               ? BigInt.zero
@@ -391,9 +387,9 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                               ChainSelected(dic['ecosystem.from'], fromNetwork),
                               isFromKar
                                   ? PluginTagCard(
-                                      margin: EdgeInsets.only(top: 24),
+                                      margin: const EdgeInsets.only(top: 24),
                                       titleTag: dic['ecosystem.to'],
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 16),
                                       child: GestureDetector(
                                         onTap: () {
@@ -434,9 +430,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
-                                onSetMax: (Fmt.balanceInt(balance.amount) ??
-                                            BigInt.zero) >
-                                        BigInt.zero
+                                onSetMax: BigInt.parse(max) > BigInt.zero
                                     ? (maxValue) {
                                         _amountCtrl.text = Fmt.priceFloorBigInt(
                                             BigInt.parse(max), balance.decimals,
@@ -448,14 +442,14 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                       v,
                                       Fmt.balanceInt(balance.amount),
                                       balance.decimals);
-                                  if (Fmt.tokenInt(v, balance.decimals) <
+                                  if (Fmt.tokenInt(v, balance.decimals) >
+                                      BigInt.parse(max)) {
+                                    error =
+                                        '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max) < BigInt.zero ? BigInt.zero : BigInt.parse(max), balance.decimals, lengthMax: 6)}';
+                                  } else if (Fmt.tokenInt(v, balance.decimals) <
                                       BigInt.parse(min)) {
                                     error =
                                         '${dic['bridge.min']} ${Fmt.priceFloorBigInt(BigInt.parse(min), balance.decimals, lengthMax: 6)}';
-                                  } else if (Fmt.tokenInt(v, balance.decimals) >
-                                      BigInt.parse(max)) {
-                                    error =
-                                        '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max), balance.decimals, lengthMax: 6)}';
                                   }
                                   setState(() {
                                     _error1 = error;
