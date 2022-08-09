@@ -53,6 +53,7 @@ const Map<String, String> enAccount = {
   'unlock.bio': 'Authenticate to unlock',
   'unlock.bio.enable': 'Enable fingerprint/faceID',
   'uos.title': 'Offline Signature',
+  'uos.acc.invalid': 'Account invalid',
   'uos.network': 'Tx signing request from',
   'uos.continue': 'Continue?',
   'uos.continue.switch': 'Switch account to continue?',
