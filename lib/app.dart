@@ -72,6 +72,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/service/localServer.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -907,6 +908,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         _dropsService();
+        LocalServer.getInstance().startLocalServer();
         break;
       case AppLifecycleState.paused:
         _dropsServiceCancel();
