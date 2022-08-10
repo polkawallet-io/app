@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';
@@ -27,10 +28,18 @@ import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service, this.plugins, this.connectedNode,
-      this.checkJSCodeUpdate, this.switchNetwork, this.changeNode);
+  HomePage(
+      this.service,
+      this.plugins,
+      this.connectedNode,
+      this.checkJSCodeUpdate,
+      this.switchNetwork,
+      this.changeNode,
+      this.disabledPlugins,
+      this.changeNetwork);
 
   final AppService service;
   final NetworkParams connectedNode;
@@ -41,6 +50,8 @@ class HomePage extends StatefulWidget {
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
+  final List<PluginDisabled> disabledPlugins;
+  final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   static final String route = '/';
 
@@ -266,6 +277,50 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
+  MetaHubItem buildMetaHubEVM() {
+    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    return MetaHubItem(
+        "EVM+",
+        GestureDetector(
+          child: Column(children: [
+            Expanded(
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/public/hub_evm.png'),
+                  Container(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      dic['hub.cover.evm'],
+                      textAlign: TextAlign.justify,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontSize: 14, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            )),
+            Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(36, 255, 255, 255),
+                    borderRadius: BorderRadius.all(Radius.circular(4))),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  dic['hub.enter'],
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                      fontSize: 20, color: Theme.of(context).errorColor),
+                ))
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed(AccountBindPage.route);
+          },
+        ));
+  }
+
   MetaHubItem buildMetaHubEcosystem() {
     var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     var token = "DOT";
@@ -361,10 +416,7 @@ class _HomePageState extends State<HomePage> {
                 (PolkawalletPlugin plugin) async {
           _setupWssNotifyTimer();
           widget.checkJSCodeUpdate(context, plugin);
-        }, (String name, {NetworkParams node}) async {
-          _setupWssNotifyTimer();
-          widget.switchNetwork(name, node: node);
-        }, _handleWalletConnect),
+        }, widget.disabledPlugins, widget.changeNetwork, _handleWalletConnect),
         // content: Container(),
       )
     ];
@@ -373,6 +425,7 @@ class _HomePageState extends State<HomePage> {
     if (pluginPages.length > 1 ||
         (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
       final List<MetaHubItem> items = [];
+      items.add(buildMetaHubEVM());
       if (widget.service.store.settings.dapps.length > 0) {
         items.add(buildMetaHubBrowser());
       }

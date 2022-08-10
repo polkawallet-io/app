@@ -125,4 +125,5 @@ const Map<String, String> zhPublic = {
   'bridge.address': '收款地址',
   'bridge.address.warn': '不建议修改跨链转账的收款地址。\n该功能仅限高级用户使用。',
   'bridge.connecting.warn': '网络连接超时，\n请稍后重试',
+  'hub.cover.evm': '一个简单的工具，使您的Substrate和EVM地址享受Polkawallet中的两种不同的构造生态系统。'
 };

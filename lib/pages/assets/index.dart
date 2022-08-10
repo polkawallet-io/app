@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -54,17 +55,19 @@ class AssetsPage extends StatefulWidget {
     this.plugins,
     this.connectedNode,
     this.checkJSCodeUpdate,
-    this.switchNetwork,
+    this.disabledPlugins,
+    this.changeNetwork,
     this.handleWalletConnect,
   );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Future<void> Function(String, {NetworkParams node}) switchNetwork;
   final Future<void> Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
+  final List<PluginDisabled> disabledPlugins;
+  final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -524,10 +527,13 @@ class _AssetsState extends State<AssetsPage> {
                                 MediaQuery.of(context).padding.top -
                                 MediaQuery.of(context).padding.bottom -
                                 kToolbarHeight -
-                                20.h,
+                                10.h,
                             width: double.infinity,
-                            child: NodeSelectPage(widget.service,
-                                widget.plugins, widget.switchNetwork),
+                            child: NodeSelectPage(
+                                widget.service,
+                                widget.plugins,
+                                widget.changeNetwork,
+                                widget.disabledPlugins),
                           );
                         },
                         context: context,

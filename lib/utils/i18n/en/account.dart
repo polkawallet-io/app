@@ -89,4 +89,5 @@ const Map<String, String> enAccount = {
       "Enter the password to activate fingerprint/face ID due to the biometrics has expired.",
   'mnemonic.msg': "Invalid mnemonic, please enter again.",
   'mnemonic.btn': 'Got it',
+  'account': 'account',
 };

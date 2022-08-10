@@ -100,20 +100,20 @@ dependencies:
   sticky_headers: ^0.2.0
 
 dependency_overrides:
-#  polkawallet_plugin_kusama:
-#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-#  polkawallet_plugin_acala:
-#    path: ../../coding/polkawallet/polkawallet_plugin_acala
-#  polkawallet_plugin_karura:
-#    path: ../../coding/polkawallet/polkawallet_plugin_karura
-#  polkawallet_plugin_statemine:
-#    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-  polkawallet_ui: ^0.4.9
-  polkawallet_sdk: ^0.4.9
-#  polkawallet_ui:
-#     path: ../../coding/polkawallet/ui
-#  polkawallet_sdk:
-#     path: ../../coding/polkawallet/sdk
+  polkawallet_plugin_kusama:
+    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+  polkawallet_plugin_acala:
+    path: ../../coding/polkawallet/polkawallet_plugin_acala
+  polkawallet_plugin_karura:
+    path: ../../coding/polkawallet/polkawallet_plugin_karura
+  polkawallet_plugin_statemine:
+    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+#  polkawallet_ui: ^0.4.9
+#  polkawallet_sdk: ^0.4.9
+  polkawallet_ui:
+     path: ../../coding/polkawallet/ui
+  polkawallet_sdk:
+     path: ../../coding/polkawallet/sdk
   transformer_page_view:
     git:
       url: https://github.com/polkawallet-io/transformer_page_view.git

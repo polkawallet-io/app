@@ -78,4 +78,5 @@ const Map<String, String> zhAccount = {
   'biometric.msg': "由于该账户超过7日未使用过指纹/面容ID，需要输入密码进行解锁。",
   'mnemonic.msg': "无效助记词，请重新输入。",
   'mnemonic.btn': '我知道了',
+  'account': '帐户',
 };

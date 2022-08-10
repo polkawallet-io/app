@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,7 +56,8 @@ class CreateAccountEntryPage extends StatelessWidget {
                 title: dic['create'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.pushNamed(context, CreateAccountPage.route);
+                  Navigator.of(context)
+                      .pushNamed(AccountTypeSelectPage.route, arguments: 0);
                 },
               ),
             ),
@@ -65,7 +67,8 @@ class CreateAccountEntryPage extends StatelessWidget {
                 title: dic['import'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.pushNamed(context, SelectImportTypePage.route);
+                  Navigator.of(context)
+                      .pushNamed(AccountTypeSelectPage.route, arguments: 1);
                 },
               ),
             ),

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/bind/accountBindEntryPage.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -665,8 +668,15 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                         _queryPluginsConfig();
                       }
                       return snapshot.data > 0
-                          ? HomePage(_service, widget.plugins, _connectedNode,
-                              _checkJSCodeUpdate, _switchNetwork, _changeNode)
+                          ? HomePage(
+                              _service,
+                              widget.plugins,
+                              _connectedNode,
+                              _checkJSCodeUpdate,
+                              _switchNetwork,
+                              _changeNode,
+                              widget.disabledPlugins,
+                              _changeNetwork)
                           : CreateAccountEntryPage(_service.plugin);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);
@@ -724,6 +734,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ImportAccountFormKeyStore.route: (_) =>
           ImportAccountFormKeyStore(_service),
       ImportAccountCreatePage.route: (_) => ImportAccountCreatePage(_service),
+      AccountTypeSelectPage.route: (_) => AccountTypeSelectPage(),
+      AccountBindPage.route: (_) => AccountBindPage(_service),
+      AccountBindEntryPage.route: (_) => AccountBindEntryPage(),
 
       /// assets
       AssetPage.route: (_) => AssetPage(_service),
