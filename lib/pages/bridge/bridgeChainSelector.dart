@@ -596,6 +596,14 @@ class ChainSelectorList extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: const Color(0x24FFFFFF)),
+              foregroundDecoration: i == selected
+                  ? BoxDecoration(
+                      color: const Color(0xFFFF7849).withOpacity(0.09),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: const Color(0xFFFF7849),
+                      ))
+                  : null,
               child: ListTile(
                 selected: i == selected,
                 title: CurrencyWithIcon(
