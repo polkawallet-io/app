@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/import/importAccountAction.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
@@ -12,11 +13,13 @@ import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class CreateAccountForm extends StatefulWidget {
-  CreateAccountForm(this.service, {this.submitting, this.onSubmit});
+  CreateAccountForm(this.service,
+      {this.submitting, this.onSubmit, this.type = AccountType.Substrate});
 
   final AppService service;
   final Future<bool> Function() onSubmit;
   final bool submitting;
+  final AccountType type;
 
   @override
   _CreateAccountFormState createState() => _CreateAccountFormState();
@@ -50,6 +53,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       final success = await widget.onSubmit();
 
       if (success) {
+        widget.service.store.account.setAccountType(widget.type);
+
         /// save password with biometrics after import success
         if (_supportBiometric && _enableBiometric) {
           await ImportAccountAction.authBiometric(context, widget.service);

@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountForm.dart';
@@ -48,18 +49,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       },
     );
 
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final type = data['accountType'] as AccountType;
     try {
       final json = await widget.service.account.importAccount(
-        cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
-        isFromCreatePage: true,
-      );
+          cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
+          derivePath: _advanceOptions.path ?? '',
+          isFromCreatePage: true,
+          type: type);
       await widget.service.account.addAccount(
-        json: json,
-        cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
-        isFromCreatePage: true,
-      );
+          json: json,
+          cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
+          derivePath: _advanceOptions.path ?? '',
+          isFromCreatePage: true,
+          type: type);
 
       setState(() {
         _submitting = false;
@@ -123,8 +126,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       },
     );
     if (next) {
-      final advancedOptions =
-          await Navigator.pushNamed(context, BackupAccountPage.route);
+      final data = ModalRoute.of(context).settings.arguments as Map;
+      // data['accountType'];
+      final advancedOptions = await Navigator.pushNamed(
+          context, BackupAccountPage.route,
+          arguments: data);
       if (advancedOptions != null) {
         setState(() {
           _step = 1;
@@ -203,6 +209,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     if (_step == 0) {
       return _generateSeed(context);
     }
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final type = data['accountType'] as AccountType;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -221,6 +229,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           widget.service,
           submitting: _submitting,
           onSubmit: _importAccount,
+          type: type,
         ),
       ),
     );

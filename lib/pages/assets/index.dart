@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
@@ -497,9 +498,16 @@ class _AssetsState extends State<AssetsPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            child: AddressIcon(widget.service.keyring.current.address,
-                svg: widget.service.keyring.current.icon),
             margin: EdgeInsets.only(right: 8.w),
+            child: AddressIcon(
+                widget.service.store.account.accountType ==
+                        AccountType.Substrate
+                    ? widget.service.keyring.current.address
+                    : widget.service.keyringEVM.current.address,
+                svg: widget.service.store.account.accountType ==
+                        AccountType.Substrate
+                    ? widget.service.keyring.current.icon
+                    : widget.service.keyringEVM.current.icon),
           ),
           Padding(
               padding: EdgeInsets.only(bottom: 5),
@@ -507,7 +515,10 @@ class _AssetsState extends State<AssetsPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "${Fmt.address(widget.service.keyring.current.address)}",
+                    Fmt.address(widget.service.store.account.accountType ==
+                            AccountType.Substrate
+                        ? widget.service.keyring.current.address
+                        : widget.service.keyringEVM.current.address),
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   GestureDetector(
@@ -567,7 +578,10 @@ class _AssetsState extends State<AssetsPage> {
                                           Radius.circular(5.5))),
                                 ),
                           Text(
-                            "${widget.service.plugin.basic.name.toUpperCase()}",
+                            widget.service.store.account.accountType ==
+                                    AccountType.Substrate
+                                ? widget.service.plugin.basic.name.toUpperCase()
+                                : "EVM+",
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4

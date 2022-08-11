@@ -2,6 +2,7 @@ import 'package:app/pages/account/bind/accountBindEntryPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -23,7 +24,7 @@ class AccountBindStep1 extends StatefulWidget {
 class _AccountBindStep1State extends State<AccountBindStep1> {
   final _viewKey = GlobalKey<FormState>();
   var _isShowSelect = false;
-  KeyPairData _accountTo;
+  EthWalletData _accountTo;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                   child: Text("Evm ${dicPublic['auction.address']}",
                       style: labelStyle)),
               AddressFormItem(
-                _accountTo ?? widget.service.keyring.current,
+                _accountTo ?? widget.service.keyringEVM.current,
                 key: _viewKey,
                 margin: EdgeInsets.zero,
                 isGreyBg: false,
@@ -79,15 +80,15 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                                     child: ListView.separated(
                                       padding: EdgeInsets.zero,
                                       shrinkWrap: true,
-                                      itemCount: widget.service.keyring
+                                      itemCount: widget.service.keyringEVM
                                               .allAccounts.length +
                                           1,
                                       itemBuilder: ((context, index) {
                                         if (index <
-                                            widget.service.keyring.allAccounts
-                                                .length) {
-                                          final account = widget.service.keyring
-                                              .allAccounts[index];
+                                            widget.service.keyringEVM
+                                                .allAccounts.length) {
+                                          final account = widget.service
+                                              .keyringEVM.allAccounts[index];
                                           return GestureDetector(
                                               behavior: HitTestBehavior.opaque,
                                               onTap: () {

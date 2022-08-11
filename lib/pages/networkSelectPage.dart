@@ -18,7 +18,6 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -36,246 +35,17 @@ class NetworkSelectPage extends StatefulWidget {
 }
 
 class _NetworkSelectPageState extends State<NetworkSelectPage> {
-  PluginDisabled _pluginDisabledSelected;
-  PolkawalletPlugin _selectedNetwork;
-  bool _networkChanging = false;
-
   int _appVersionCode = 0;
   bool _isEvm = false;
-
-  Future<void> _reloadNetwork() async {
-    setState(() {
-      _networkChanging = true;
-    });
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PolkawalletAlertDialog(
-          title: Text(
-              I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
-          content: Container(
-              height: 64,
-              child:
-                  CupertinoActivityIndicator(color: const Color(0xFF3C3C44))),
-        );
-      },
-    );
-    await widget.changeNetwork(_selectedNetwork);
-
-    if (mounted) {
-      Navigator.of(context).pop();
-      setState(() {
-        _networkChanging = false;
-      });
-    }
-  }
-
-  Future<void> _onSelect(KeyPairData i) async {
-    bool isCurrentNetwork =
-        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-    if (i.address != widget.service.keyring.current.address ||
-        !isCurrentNetwork) {
-      /// set current account
-      widget.service.keyring.setCurrent(i);
-
-      if (!isCurrentNetwork) {
-        /// set new network and reload web view
-        await _reloadNetwork();
-
-        _selectedNetwork.changeAccount(i);
-      } else {
-        widget.service.plugin.changeAccount(i);
-      }
-
-      widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
-    }
-    Navigator.of(context).pop(_selectedNetwork);
-  }
-
-  Future<void> _onCreateAccount(int step) async {
-    bool isCurrentNetwork =
-        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-    if (!isCurrentNetwork) {
-      await _reloadNetwork();
-    }
-    Navigator.of(context)
-        .pushNamed(AccountTypeSelectPage.route, arguments: step);
-  }
-
-  List<Widget> _buildAccountList() {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final name =
-        _selectedNetwork?.basic?.name ?? _pluginDisabledSelected?.name ?? '';
-    final List<Widget> res = [
-      Text(
-        name.toUpperCase(),
-        style: Theme.of(context).textTheme.headline3,
-      ),
-      Visibility(
-          visible: plugin_from_community.indexOf(name) > -1,
-          child: _CommunityPluginNote(name, false)),
-      Padding(
-          padding: EdgeInsets.only(bottom: 10.h),
-          child: Column(
-            children: [
-              GestureDetector(
-                child: Container(
-                    width: double.infinity,
-                    child: RoundedCard(
-                        color:
-                            UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
-                        margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 4.w),
-                              child: SvgPicture.asset(
-                                "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
-                                width: 16.h,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Text(
-                              dic['create'],
-                              style: Theme.of(context).textTheme.headline4,
-                            )
-                          ],
-                        ))),
-                onTap: () => _onCreateAccount(0),
-              ),
-              Container(
-                width: 16.h,
-              ),
-              GestureDetector(
-                child: Container(
-                    width: double.infinity,
-                    child: RoundedCard(
-                        color:
-                            UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
-                        margin: EdgeInsets.only(bottom: 16.h),
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 4.w),
-                              child: SvgPicture.asset(
-                                "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
-                                width: 16.h,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Text(
-                              dic['import'],
-                              style: Theme.of(context).textTheme.headline4,
-                            )
-                          ],
-                        ))),
-                onTap: () => _onCreateAccount(1),
-              )
-            ],
-          )),
-    ];
-
-    /// first item is current account
-    List<KeyPairData> accounts = [widget.service.keyring.current];
-
-    /// add optional accounts
-    accounts.addAll(widget.service.keyring.optionals);
-
-    if (_selectedNetwork != null) {
-      res.addAll(accounts.map((i) {
-        final bool isCurrentNetwork =
-            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-        final addressMap = widget.service.keyring.store
-            .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
-        final address = addressMap != null
-            ? addressMap[i.pubKey]
-            : widget.service.keyring.current.address;
-        final String accIndex = isCurrentNetwork &&
-                i.indexInfo != null &&
-                i.indexInfo['accountIndex'] != null
-            ? '${i.indexInfo['accountIndex']}\n'
-            : '';
-        final isCurrent = isCurrentNetwork &&
-            i.address == widget.service.keyring.current.address;
-        return Column(
-          children: [
-            Container(
-              color: Colors.transparent,
-              child: ListTile(
-                dense: true,
-                leading: AddressIcon(address, svg: i.icon),
-                title: Text(
-                  UI.accountName(context, i),
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                subtitle: Text('$accIndex${Fmt.address(address)}',
-                    maxLines: 2,
-                    style: TextStyle(
-                        fontSize: UI.getTextSize(10, context),
-                        fontWeight: FontWeight.w300,
-                        color: UI.isDarkTheme(context)
-                            ? Colors.white.withAlpha(191)
-                            : Color(0xFF565554),
-                        fontFamily: UI.getFontFamily('SF_Pro', context))),
-                trailing: Image.asset(
-                  "assets/images/${isCurrent ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
-                  fit: BoxFit.contain,
-                  width: 16.w,
-                ),
-                onTap: _networkChanging ? null : () => _onSelect(i),
-              ),
-            ),
-            Divider(
-              height: 1,
-            )
-          ],
-        );
-        // return RoundedCard(
-        //   border: isCurrent
-        //       ? Border.all(color: Theme.of(context).primaryColorLight)
-        //       : Border.all(color: Theme.of(context).cardColor),
-        //   margin: EdgeInsets.only(bottom: 16),
-        //   padding: EdgeInsets.only(top: padding, bottom: padding),
-        //   child: ListTile(
-        //     leading: AddressIcon(address, svg: i.icon),
-        //     title: Text(UI.accountName(context, i)),
-        //     subtitle: Text('$accIndex${Fmt.address(address)}', maxLines: 2),
-        //     trailing: isCurrent
-        //         ? Icon(
-        //             Icons.check_circle,
-        //             color: Theme.of(context).primaryColor,
-        //           )
-        //         : Container(width: 8),
-        //     onTap: _networkChanging ? null : () => _onSelect(i),
-        //   ),
-        // );
-      }).toList());
-    }
-    return res;
-  }
-
-  List<Widget> _buildPluginDisabled() {
-    return [
-      Text(
-        _pluginDisabledSelected.name.toUpperCase(),
-        style: Theme.of(context).textTheme.headline3,
-      ),
-      _CommunityPluginNote(_pluginDisabledSelected.name, true),
-    ];
-  }
 
   @override
   void initState() {
     super.initState();
 
+    _isEvm = widget.service.store.account.accountType == AccountType.Evm;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var appVersionCode = await Utils.getBuildNumber();
       setState(() {
-        _selectedNetwork = widget.service.plugin;
         _appVersionCode = appVersionCode;
       });
     });
@@ -325,136 +95,8 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
         widget.changeNetwork,
         isEvm: _isEvm,
       ),
-      // body: Row(
-      //   children: <Widget>[
-      //     // left side bar
-      //     Padding(
-      //         padding: EdgeInsets.only(top: 20.h),
-      //         child: Stack(
-      //           children: [
-      //             Container(
-      //               width: 54.w,
-      //               // color: Theme.of(context).cardColor,
-      //               decoration: BoxDecoration(
-      //                 color: UI.isDarkTheme(context)
-      //                     ? Color(0x26FFFFFF)
-      //                     : Color(0xFFF3F1ED),
-      //                 borderRadius:
-      //                     BorderRadius.only(topRight: Radius.circular(24.w)),
-      //                 boxShadow: [
-      //                   BoxShadow(
-      //                       color: Color(0x33000000),
-      //                       blurRadius: 3.0,
-      //                       spreadRadius: 1.0,
-      //                       offset: Offset(2.0, 2.0))
-      //                 ],
-      //               ),
-      //             ),
-      //             Padding(
-      //                 padding: EdgeInsets.only(top: 16.h, bottom: 10.h),
-      //                 child: SingleChildScrollView(
-      //                     physics: BouncingScrollPhysics(),
-      //                     child: Column(
-      //                       crossAxisAlignment: CrossAxisAlignment.start,
-      //                       children: [
-      //                         Container(
-      //                           margin: EdgeInsets.only(left: 12.w, right: 8.w),
-      //                           child: Column(
-      //                             crossAxisAlignment: CrossAxisAlignment.start,
-      //                             children: [
-      //                               Image.asset(
-      //                                 'assets/images/logo_text_line2${UI.isDarkTheme(context) ? "_dark" : ""}.png',
-      //                                 width: 32.w,
-      //                               ),
-      //                               Container(
-      //                                 margin: EdgeInsets.only(
-      //                                     top: 8.h, bottom: 8.h),
-      //                                 height: 4.h,
-      //                                 width: 34.w,
-      //                                 decoration: BoxDecoration(
-      //                                     border: Border.symmetric(
-      //                                         horizontal: BorderSide(
-      //                                             color: UI.isDarkTheme(context)
-      //                                                 ? Color(0xFF9E9E9E)
-      //                                                 : Color(0xFFCCCAC6)))),
-      //                               )
-      //                             ],
-      //                           ),
-      //                         ),
-      //                         ...widget.plugins.map((e) {
-      //                           final isCurrent = e.basic.name ==
-      //                               _selectedNetwork?.basic?.name;
-      //                           return isCurrent
-      //                               ? _NetworkItemActive(icon: e.basic.icon)
-      //                               : netWorkItem(() {
-      //                                   if (!isCurrent) {
-      //                                     setState(() {
-      //                                       _selectedNetwork = e;
-      //                                       _pluginDisabledSelected = null;
-      //                                     });
-      //                                   }
-      //                                 },
-      //                                   isCurrent
-      //                                       ? e.basic.icon
-      //                                       : Image.asset(
-      //                                           'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
-      //                         }).toList(),
-      //                         ...widget.disabledPlugins.map((e) {
-      //                           final isCurrent =
-      //                               e.name == _pluginDisabledSelected?.name;
-      //                           return isCurrent
-      //                               ? _NetworkItemActive(icon: e.icon)
-      //                               : netWorkItem(() {
-      //                                   if (_pluginDisabledSelected?.name !=
-      //                                       e.name) {
-      //                                     setState(() {
-      //                                       _pluginDisabledSelected = e;
-      //                                       _selectedNetwork = null;
-      //                                     });
-      //                                   }
-      //                                 }, e.icon);
-      //                         }).toList()
-      //                       ],
-      //                       // children: sideBar,
-      //                     ))),
-      //           ],
-      //         )),
-      //     Expanded(
-      //       child: ListView(
-      //         physics: BouncingScrollPhysics(),
-      //         padding: EdgeInsets.all(16),
-      //         children: _pluginDisabledSelected == null
-      //             ? _buildAccountList()
-      //             : _buildPluginDisabled(),
-      //       ),
-      //     )
-      //   ],
-      // ),
     );
   }
-
-  // Widget netWorkItem(Function() onTap, Widget icon) {
-  //   return Container(
-  //       margin: EdgeInsets.only(left: 6.w),
-  //       width: 48.w,
-  //       height: 64.h,
-  //       child: Center(
-  //         child: GestureDetector(
-  //             onTap: onTap,
-  //             child: Container(
-  //                 padding: EdgeInsets.fromLTRB(
-  //                     6,
-  //                     6,
-  //                     UI.isDarkTheme(context) ? 6 : 10,
-  //                     UI.isDarkTheme(context) ? 6 : 10),
-  //                 child: SizedBox(child: icon, height: 22, width: 22),
-  //                 decoration: BoxDecoration(
-  //                     image: DecorationImage(
-  //                         image: AssetImage(
-  //                             "assets/images/selectWallet_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"),
-  //                         fit: BoxFit.fill)))),
-  //       ));
-  // }
 }
 
 class _NetworkItemActive extends StatelessWidget {
@@ -564,13 +206,24 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     });
   }
 
-  Future<void> _onSelect(KeyPairData i) async {
-    bool isCurrentNetwork =
-        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-    if (i.address != widget.service.keyring.current.address ||
-        !isCurrentNetwork) {
+  Future<void> _onSelect(dynamic i) async {
+    bool isCurrentNetwork = widget.isEvm
+        ? true
+        : _selectedNetwork.basic.name == widget.service.plugin.basic.name;
+    final currentAddress =
+        widget.service.store.account.accountType == AccountType.Evm
+            ? widget.service.keyringEVM.current.address
+            : widget.service.keyring.current.address;
+    if (i.address != currentAddress || !isCurrentNetwork) {
+      widget.service.store.account.setAccountType(
+          widget.isEvm ? AccountType.Evm : AccountType.Substrate);
+
       /// set current account
-      widget.service.keyring.setCurrent(i);
+      if (widget.isEvm) {
+        widget.service.keyringEVM.setCurrent(i);
+      } else {
+        widget.service.keyring.setCurrent(i);
+      }
 
       if (!isCurrentNetwork) {
         /// set new network and reload web view
@@ -578,10 +231,13 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
 
         _selectedNetwork.changeAccount(i);
       } else {
-        widget.service.plugin.changeAccount(i);
+        if (!widget.isEvm) {
+          widget.service.plugin.changeAccount(i);
+        }
       }
-
-      widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
+      if (!widget.isEvm) {
+        widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
+      }
     }
     Navigator.of(context).pop(_selectedNetwork);
   }
@@ -649,28 +305,42 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         _selectedNetwork?.basic?.name ?? _pluginDisabledSelected?.name ?? '';
 
     /// first item is current account
-    List<KeyPairData> accounts = [widget.service.keyring.current];
+    List<dynamic> accounts = [
+      widget.isEvm
+          ? widget.service.keyringEVM.current
+          : widget.service.keyring.current
+    ];
 
     /// add optional accounts
-    accounts.addAll(widget.service.keyring.optionals);
-
+    accounts.addAll(!widget.isEvm
+        ? widget.service.keyring.optionals
+        : widget.service.keyringEVM.optionals);
     final List<Widget> accountWidgets = [];
     if (_selectedNetwork != null) {
       accountWidgets.addAll(accounts.map((i) {
-        final bool isCurrentNetwork =
-            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
+        final bool isCurrentNetwork = !widget.isEvm
+            ? _selectedNetwork.basic.name == widget.service.plugin.basic.name
+            : true;
         final addressMap = widget.service.keyring.store
             .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
-        final address = addressMap != null
-            ? addressMap[i.pubKey]
-            : widget.service.keyring.current.address;
-        final String accIndex = isCurrentNetwork &&
-                i.indexInfo != null &&
-                i.indexInfo['accountIndex'] != null
-            ? '${i.indexInfo['accountIndex']}\n'
-            : '';
+        final address = !widget.isEvm
+            ? (addressMap != null
+                ? addressMap[i.pubKey]
+                : widget.service.keyring.current.address)
+            : widget.service.keyringEVM.current.address;
+        final String accIndex = !widget.isEvm
+            ? isCurrentNetwork &&
+                    i.indexInfo != null &&
+                    i.indexInfo['accountIndex'] != null
+                ? '${i.indexInfo['accountIndex']}\n'
+                : ''
+            : "";
         final isCurrent = isCurrentNetwork &&
-            i.address == widget.service.keyring.current.address;
+            i.address ==
+                (widget.service.store.account.accountType ==
+                        AccountType.Substrate
+                    ? widget.service.keyring.current.address
+                    : widget.service.keyringEVM.current.address);
         return Column(
           children: [
             Container(

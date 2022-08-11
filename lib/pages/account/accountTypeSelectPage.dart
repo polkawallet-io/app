@@ -6,6 +6,8 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 
+enum AccountType { Substrate, Evm }
+
 class AccountTypeSelectPage extends StatefulWidget {
   AccountTypeSelectPage({Key key}) : super(key: key);
 
@@ -16,14 +18,10 @@ class AccountTypeSelectPage extends StatefulWidget {
 }
 
 class _AccountTypeSelectPageState extends State<AccountTypeSelectPage> {
-  Future<void> _onCreateAccount(int step, int type) async {
-    Navigator.of(context).pushNamed(step == 0
-        ? type == 0
-            ? CreateAccountPage.route
-            : CreateAccountPage.route
-        : type == 0
-            ? SelectImportTypePage.route
-            : SelectImportTypePage.route);
+  Future<void> _onCreateAccount(int step, AccountType type) async {
+    Navigator.of(context).pushNamed(
+        step == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
+        arguments: {"accountType": type});
   }
 
   @override
@@ -52,12 +50,13 @@ class _AccountTypeSelectPageState extends State<AccountTypeSelectPage> {
                   padding: EdgeInsets.only(top: 33, bottom: 24),
                   child: Button(
                     title: "Substrate ${dic['account']}",
-                    onPressed: () => _onCreateAccount(step, 0),
+                    onPressed: () =>
+                        _onCreateAccount(step, AccountType.Substrate),
                   ),
                 ),
                 Button(
                   title: "Evm ${dic['account']}",
-                  onPressed: () => _onCreateAccount(step, 1),
+                  onPressed: () => _onCreateAccount(step, AccountType.Evm),
                 ),
               ],
             )));

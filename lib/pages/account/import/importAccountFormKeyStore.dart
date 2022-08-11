@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -123,14 +124,20 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                               widget.service.store.account
                                   .setNewAccountKey(_keyCtrl.text.trim());
 
+                              final type =
+                                  (ModalRoute.of(context).settings.arguments
+                                      as Map)['accountType'] as AccountType;
                               final saved = await ImportAccountAction.onSubmit(
                                   context,
                                   widget.service,
                                   {
                                     'keyType': selected,
+                                    "accountType": type,
                                   },
                                   (p0) {});
                               if (saved) {
+                                widget.service.store.account
+                                    .setAccountType(type);
                                 if (_supportBiometric && _enableBiometric) {
                                   await ImportAccountAction.authBiometric(
                                       context, widget.service);

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
@@ -51,9 +53,15 @@ class ExportAccountPage extends StatelessWidget {
                     SettingsPageListItem(
                       label: dicAcc['keystore'],
                       onTap: () {
-                        Map json = service.keyring.current.toJson();
-                        json.remove('name');
-                        json['meta']['name'] = service.keyring.current.name;
+                        Map json = service.store.account.accountType ==
+                                AccountType.Substrate
+                            ? service.keyring.current.toJson()
+                            : service.keyringEVM.current.toJson();
+                        if (service.store.account.accountType ==
+                            AccountType.Substrate) {
+                          json.remove('name');
+                          json['meta']['name'] = service.keyring.current.name;
+                        }
                         json.remove('icon');
                         final data = SeedBackupData();
                         data.seed = jsonEncode(json);

@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/createAccountForm.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -25,7 +26,7 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final data = ModalRoute.of(context).settings.arguments;
+    final data = ModalRoute.of(context).settings.arguments as Map;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -33,6 +34,7 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
         child: CreateAccountForm(
           widget.service,
           submitting: _submitting,
+          type: data['accountType'] as AccountType,
           onSubmit: () {
             return ImportAccountAction.onSubmit(context, widget.service, data,
                 (submitting) {

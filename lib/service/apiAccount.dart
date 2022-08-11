@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
+import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
@@ -21,12 +23,13 @@ class ApiAccount {
   final _biometricEnabledKey = 'biometric_enabled_';
   final _biometricPasswordKey = 'biometric_password_';
 
-  Future<Map> importAccount({
-    KeyType keyType = KeyType.mnemonic,
-    CryptoType cryptoType = CryptoType.sr25519,
-    String derivePath = '',
-    bool isFromCreatePage = false,
-  }) async {
+  Future<Map> importAccount(
+      {KeyType keyType = KeyType.mnemonic,
+      CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      bool isFromCreatePage = false,
+      AccountType type = AccountType.Substrate,
+      EVMKeyType evmKeyType = EVMKeyType.mnemonic}) async {
     final acc = apiRoot.store.account.newAccount;
     if (isFromCreatePage &&
         (acc.name == null ||
@@ -35,25 +38,32 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('create account failed');
     }
-    final res = await apiRoot.plugin.sdk.api.keyring.importAccount(
-      apiRoot.keyring,
-      keyType: keyType,
-      cryptoType: cryptoType,
-      derivePath: derivePath,
-      key: acc.key,
-      name: acc.name,
-      password: acc.password,
-    );
+    final res = type == AccountType.Substrate
+        ? await apiRoot.plugin.sdk.api.keyring.importAccount(
+            apiRoot.keyring,
+            keyType: keyType,
+            cryptoType: cryptoType,
+            derivePath: derivePath,
+            key: acc.key,
+            name: acc.name,
+            password: acc.password,
+          )
+        : await apiRoot.plugin.sdk.api.eth.keyring.importAccount(
+            keyType: evmKeyType,
+            key: acc.key,
+            name: acc.name,
+            password: acc.password);
     return res;
   }
 
-  Future<KeyPairData> addAccount({
-    Map json,
-    KeyType keyType = KeyType.mnemonic,
-    CryptoType cryptoType = CryptoType.sr25519,
-    String derivePath = '',
-    bool isFromCreatePage = false,
-  }) async {
+  Future<dynamic> addAccount(
+      {Map json,
+      KeyType keyType = KeyType.mnemonic,
+      CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      bool isFromCreatePage = false,
+      AccountType type = AccountType.Substrate,
+      EVMKeyType evmKeyType = EVMKeyType.mnemonic}) async {
     final acc = apiRoot.store.account.newAccount;
     if (isFromCreatePage &&
         (acc.name == null ||
@@ -62,12 +72,18 @@ class ApiAccount {
             acc.password.isEmpty)) {
       throw Exception('save account failed');
     }
-    final res = await apiRoot.plugin.sdk.api.keyring.addAccount(
-      apiRoot.keyring,
-      keyType: keyType,
-      acc: json,
-      password: acc.password,
-    );
+    final res = type == AccountType.Substrate
+        ? await apiRoot.plugin.sdk.api.keyring.addAccount(
+            apiRoot.keyring,
+            keyType: keyType,
+            acc: json,
+            password: acc.password,
+          )
+        : await apiRoot.plugin.sdk.api.eth.keyring.addAccount(
+            apiRoot.keyringEVM,
+            keyType: evmKeyType,
+            acc: json,
+            password: acc.password);
     return res;
   }
 

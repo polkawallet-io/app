@@ -1,4 +1,5 @@
 import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -35,6 +36,7 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
     super.initState();
     expansionIndex = widget.plugins.indexWhere(
         (element) => element.basic.name == widget.service.plugin.basic.name);
+    _isEvm = widget.service.store.account.accountType == AccountType.Evm;
   }
 
   @override

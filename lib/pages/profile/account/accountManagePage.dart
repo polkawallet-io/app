@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
@@ -39,15 +40,29 @@ class _AccountManagePageState extends State<AccountManagePage> {
     final password = await widget.service.account
         .getPassword(context, widget.service.keyring.current);
     if (password != null) {
-      widget.service.plugin.sdk.api.keyring
-          .deleteAccount(widget.service.keyring, widget.service.keyring.current)
-          .then((_) {
-        // refresh balance
-        widget.service.plugin.changeAccount(widget.service.keyring.current);
+      if (widget.service.store.account.accountType == AccountType.Substrate) {
+        widget.service.plugin.sdk.api.keyring
+            .deleteAccount(
+                widget.service.keyring, widget.service.keyring.current)
+            .then((_) {
+          // refresh balance
+          widget.service.plugin.changeAccount(widget.service.keyring.current);
 
-        widget.service.store.assets.loadCache(
-            widget.service.keyring.current, widget.service.plugin.basic.name);
-      });
+          widget.service.store.assets.loadCache(
+              widget.service.keyring.current, widget.service.plugin.basic.name);
+        });
+      } else {
+        widget.service.plugin.sdk.api.eth.keyring
+            .deleteAccount(
+                widget.service.keyringEVM, widget.service.keyringEVM.current)
+            .then((_) {
+          // // refresh balance
+          // widget.service.plugin.changeAccount(widget.service.keyring.current);
+
+          // widget.service.store.assets.loadCache(
+          //     widget.service.keyring.current, widget.service.plugin.basic.name);
+        });
+      }
       Navigator.of(context).pop();
     }
   }
@@ -134,7 +149,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
-    final acc = widget.service.keyring.current;
+    final dynamic acc =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current;
 
     final primaryColor = Theme.of(context).primaryColor;
     return Scaffold(

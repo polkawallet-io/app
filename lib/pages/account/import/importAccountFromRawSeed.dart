@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -46,6 +47,8 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
   Widget build(BuildContext context) {
     selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -83,24 +86,28 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                           onChanged: _onKeyChange,
                                         ),
                                       ),
-                                      Container(
-                                        margin: EdgeInsets.fromLTRB(
-                                            16.w, 16.h, 16.w, 16.h),
-                                        child: AccountAdvanceOption(
-                                          api: widget
-                                              .service.plugin.sdk.api?.keyring,
-                                          seed: _keyCtrl.text.trim(),
-                                          onChange: (AccountAdvanceOptionParams
-                                              data) {
-                                            setState(() {
-                                              _advanceOptions = data;
-                                            });
+                                      Visibility(
+                                          visible:
+                                              type == AccountType.Substrate,
+                                          child: Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                16.w, 16.h, 16.w, 16.h),
+                                            child: AccountAdvanceOption(
+                                              api: widget.service.plugin.sdk.api
+                                                  ?.keyring,
+                                              seed: _keyCtrl.text.trim(),
+                                              onChange:
+                                                  (AccountAdvanceOptionParams
+                                                      data) {
+                                                setState(() {
+                                                  _advanceOptions = data;
+                                                });
 
-                                            _refreshAccountAddress(
-                                                _keyCtrl.text);
-                                          },
-                                        ),
-                                      ),
+                                                _refreshAccountAddress(
+                                                    _keyCtrl.text);
+                                              },
+                                            ),
+                                          )),
                                     ],
                                   )))),
                       Container(
@@ -122,6 +129,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                     'cryptoType': _advanceOptions.type ??
                                         CryptoType.sr25519,
                                     'derivePath': _advanceOptions.path ?? '',
+                                    "accountType": type
                                   });
                             }
                           },
@@ -147,17 +155,33 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
   }
 
   Future<void> _refreshAccountAddress(String v) async {
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     final seed = v.trim();
 
-    if (seed.length <= 32 || seed.length == 66) {
-      final addressInfo = await widget.service.plugin.sdk.api.keyring
-          .addressFromRawSeed(widget.service.plugin.basic.ss58,
-              cryptoType: _advanceOptions.type,
-              derivePath: _advanceOptions.path,
-              rawSeed: seed);
-      setState(() {
-        _addressIcon = addressInfo;
-      });
+    if (type == AccountType.Evm) {
+      try {
+        final addressInfo = await widget.service.plugin.sdk.api.eth.keyring
+            .addressFromPrivateKey(privateKey: seed);
+        setState(() {
+          _addressIcon = addressInfo;
+        });
+      } catch (_) {
+        setState(() {
+          _addressIcon = AddressIconData();
+        });
+      }
+    } else {
+      if (seed.length <= 32 || seed.length == 66) {
+        final addressInfo = await widget.service.plugin.sdk.api.keyring
+            .addressFromRawSeed(widget.service.plugin.basic.ss58,
+                cryptoType: _advanceOptions.type,
+                derivePath: _advanceOptions.path,
+                rawSeed: seed);
+        setState(() {
+          _addressIcon = addressInfo;
+        });
+      }
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
@@ -5,11 +7,16 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 part 'account.g.dart';
 
 class AccountStore extends _AccountStore with _$AccountStore {
-  AccountStore() : super();
+  AccountStore(this.storage) : super(storage);
+
+  final GetStorage storage;
 }
 
 abstract class _AccountStore with Store {
-  _AccountStore();
+  _AccountStore(this.storage);
+  final GetStorage storage;
+
+  final String localStorageIsAccountTypeKey = 'accountType';
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -33,6 +40,9 @@ abstract class _AccountStore with Store {
 
   @observable
   ObservableList<WCPairedData> wcSessions = ObservableList<WCPairedData>();
+
+  @observable
+  AccountType accountType = AccountType.Substrate;
 
   @action
   void setNewAccount(String name, String password) {
@@ -100,6 +110,21 @@ abstract class _AccountStore with Store {
   @action
   void deleteWCSession(WCPairedData session) {
     wcSessions.removeWhere((e) => e.topic == session.topic);
+  }
+
+  @action
+  void setAccountType(AccountType type) {
+    accountType = type;
+    storage.write(localStorageIsAccountTypeKey, accountType.name.toString());
+  }
+
+  @action
+  Future<void> init() async {
+    final stored = storage.read(localStorageIsAccountTypeKey);
+    if (stored != null) {
+      accountType =
+          AccountType.values.firstWhere((e) => e.toString().contains(stored));
+    }
   }
 }
 

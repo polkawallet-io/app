@@ -1,4 +1,5 @@
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/communityPage.dart';
@@ -39,7 +40,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  KeyPairData _currentAccount;
+  dynamic _currentAccount;
 
   Future<void> _manageAccount() async {
     if (widget.service.keyring.current.observation ?? false) {
@@ -49,7 +50,10 @@ class _ProfilePageState extends State<ProfilePage> {
       await Navigator.pushNamed(context, AccountManagePage.route);
     }
     setState(() {
-      _currentAccount = widget.service.keyring.current;
+      _currentAccount =
+          widget.service.store.account.accountType == AccountType.Substrate
+              ? widget.service.keyring.current
+              : widget.service.keyringEVM.current;
     });
   }
 
@@ -95,7 +99,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
-    final acc = widget.service.keyring.current;
+    final dynamic acc =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current;
 
     final blue = Theme.of(context).toggleableActiveColor;
     final pagePadding = 16.w;

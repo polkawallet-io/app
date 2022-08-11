@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -48,6 +49,8 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
   @override
   Widget build(BuildContext context) {
     selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
         appBar: AppBar(
@@ -87,24 +90,28 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                           onChanged: _onKeyChange,
                                         ),
                                       ),
-                                      Container(
-                                        margin: EdgeInsets.fromLTRB(
-                                            16.w, 16.h, 16.w, 16.h),
-                                        child: AccountAdvanceOption(
-                                          api: widget
-                                              .service.plugin.sdk.api?.keyring,
-                                          seed: _keyCtrl.text.trim(),
-                                          onChange: (AccountAdvanceOptionParams
-                                              data) {
-                                            setState(() {
-                                              _advanceOptions = data;
-                                            });
+                                      Visibility(
+                                          visible:
+                                              type == AccountType.Substrate,
+                                          child: Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                16.w, 16.h, 16.w, 16.h),
+                                            child: AccountAdvanceOption(
+                                              api: widget.service.plugin.sdk.api
+                                                  ?.keyring,
+                                              seed: _keyCtrl.text.trim(),
+                                              onChange:
+                                                  (AccountAdvanceOptionParams
+                                                      data) {
+                                                setState(() {
+                                                  _advanceOptions = data;
+                                                });
 
-                                            _refreshAccountAddress(
-                                                _keyCtrl.text);
-                                          },
-                                        ),
-                                      ),
+                                                _refreshAccountAddress(
+                                                    _keyCtrl.text);
+                                              },
+                                            ),
+                                          )),
                                     ],
                                   )))),
                       Container(
@@ -128,6 +135,7 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                     'cryptoType': _advanceOptions.type ??
                                         CryptoType.sr25519,
                                     'derivePath': _advanceOptions.path ?? '',
+                                    "accountType": type
                                   });
                             }
                           },
@@ -192,14 +200,19 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
   }
 
   Future<void> _refreshAccountAddress(String v) async {
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     final mnemonic = v.trim();
 
     if (mnemonic.split(" ").length >= 12) {
-      final addressInfo = await widget.service.plugin.sdk.api.keyring
-          .addressFromMnemonic(widget.service.plugin.basic.ss58,
+      final addressInfo = type == AccountType.Substrate
+          ? await widget.service.plugin.sdk.api.keyring.addressFromMnemonic(
+              widget.service.plugin.basic.ss58,
               cryptoType: _advanceOptions.type,
               derivePath: _advanceOptions.path,
-              mnemonic: mnemonic);
+              mnemonic: mnemonic)
+          : await widget.service.plugin.sdk.api.eth.keyring.addressFromMnemonic(
+              derivePath: "m/44'/60'/0'/0/0", mnemonic: mnemonic);
       setState(() {
         _addressIcon = addressInfo;
       });

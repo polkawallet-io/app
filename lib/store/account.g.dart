@@ -116,6 +116,27 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
+  final _$accountTypeAtom = Atom(name: '_AccountStore.accountType');
+
+  @override
+  AccountType get accountType {
+    _$accountTypeAtom.reportRead();
+    return super.accountType;
+  }
+
+  @override
+  set accountType(AccountType value) {
+    _$accountTypeAtom.reportWrite(value, super.accountType, () {
+      super.accountType = value;
+    });
+  }
+
+  final _$initAsyncAction = AsyncAction('_AccountStore.init');
+  @override
+  Future<void> init() {
+    return _$initAsyncAction.run(() => super.init());
+  }
+
   final _$_AccountStoreActionController =
       ActionController(name: '_AccountStore');
 
@@ -241,6 +262,17 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
+  void setAccountType(AccountType type) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setAccountType');
+    try {
+      return super.setAccountType(type);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 newAccount: ${newAccount},
@@ -249,7 +281,8 @@ pubKeyAddressMap: ${pubKeyAddressMap},
 addressIconsMap: ${addressIconsMap},
 recoveryInfo: ${recoveryInfo},
 walletConnectPairing: ${walletConnectPairing},
-wcSessions: ${wcSessions}
+wcSessions: ${wcSessions},
+accountType: ${accountType}
     ''';
   }
 }
