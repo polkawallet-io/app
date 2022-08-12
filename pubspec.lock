@@ -1106,6 +1106,13 @@ packages:
       url: "https://github.com/remzrn/polkawallet_plugin_edgeware.git"
     source: git
     version: "0.3.0"
+  polkawallet_plugin_evm:
+    dependency: "direct overridden"
+    description:
+      path: "../../coding/polkawallet/polkawallet_plugin_evm"
+      relative: true
+    source: path
+    version: "0.0.1"
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:

@@ -9,7 +9,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
@@ -201,14 +203,17 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       setState(() {
-        _selectedNetwork = widget.service.plugin;
+        _selectedNetwork =
+            widget.isEvm ? widget.service.pluginEvm : widget.service.plugin;
       });
     });
   }
 
   Future<void> _onSelect(dynamic i) async {
     bool isCurrentNetwork = widget.isEvm
-        ? true
+        ? widget.service.plugin is PluginEvm &&
+            (_selectedNetwork as PluginEvm).network ==
+                (widget.service.plugin as PluginEvm).network
         : _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     final currentAddress =
         widget.service.store.account.accountType == AccountType.Evm
@@ -229,11 +234,11 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         /// set new network and reload web view
         await _reloadNetwork();
 
-        _selectedNetwork.changeAccount(i);
+        _selectedNetwork.changeAccount(
+            (i is EthWalletData) ? (i as EthWalletData).toKeyPairData() : i);
       } else {
-        if (!widget.isEvm) {
-          widget.service.plugin.changeAccount(i);
-        }
+        widget.service.plugin.changeAccount(
+            (i is EthWalletData) ? (i as EthWalletData).toKeyPairData() : i);
       }
       if (!widget.isEvm) {
         widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
@@ -532,25 +537,53 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                                 ],
                               ),
                             ),
-                            ...widget.plugins.map((e) {
-                              final isCurrent =
-                                  e.basic.name == _selectedNetwork?.basic?.name;
-                              return isCurrent
-                                  ? _NetworkItemActive(icon: e.basic.icon)
-                                  : netWorkItem(() {
-                                      if (!isCurrent) {
-                                        setState(() {
-                                          _selectedNetwork = e;
-                                          _pluginDisabledSelected = null;
-                                        });
-                                      }
-                                    },
-                                      isCurrent
-                                          ? e.basic.icon
-                                          : Image.asset(
-                                              'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
+                            ...(widget.isEvm
+                                    ? widget.service.pluginEvm.networkList()
+                                    : widget.plugins)
+                                .map((e) {
+                              if (e is PolkawalletPlugin) {
+                                final isCurrent = e.basic.name ==
+                                    _selectedNetwork?.basic?.name;
+                                return isCurrent
+                                    ? _NetworkItemActive(icon: e.basic.icon)
+                                    : netWorkItem(() {
+                                        if (!isCurrent) {
+                                          setState(() {
+                                            _selectedNetwork = e;
+                                            _pluginDisabledSelected = null;
+                                          });
+                                        }
+                                      },
+                                        isCurrent
+                                            ? e.basic.icon
+                                            : Image.asset(
+                                                'assets/images/plugins/logo_${e.basic.name.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
+                              } else {
+                                final network = e as String;
+                                final isCurrent = _selectedNetwork
+                                        is! PluginEvm ||
+                                    e ==
+                                        (_selectedNetwork as PluginEvm).network;
+                                return isCurrent
+                                    ? _NetworkItemActive(
+                                        icon: PluginEvm.getIcon(e))
+                                    : netWorkItem(() {
+                                        if (!isCurrent) {
+                                          setState(() {
+                                            _selectedNetwork =
+                                                PluginEvm(networkName: e);
+                                            _pluginDisabledSelected = null;
+                                          });
+                                        }
+                                      },
+                                        isCurrent
+                                            ? PluginEvm.getIcon(e)
+                                            : Image.asset(
+                                                'assets/images/plugins/logo_${network.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
+                              }
                             }).toList(),
-                            ...widget.disabledPlugins.map((e) {
+                            ...(widget.isEvm ? [] : widget.disabledPlugins)
+                                .map((e) {
                               final isCurrent =
                                   e.name == _pluginDisabledSelected?.name;
                               return isCurrent

@@ -132,6 +132,8 @@ dependency_overrides:
     git:
       url: https://github.com/polkawallet-io/flutter_qr_reader.git
       ref: 90fdd52b98e954c301b68f605c0c6c0fd21cef61
+  polkawallet_plugin_evm:
+    path: ../../coding/polkawallet/polkawallet_plugin_evm
 
 
 dev_dependencies:

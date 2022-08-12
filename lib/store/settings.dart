@@ -19,6 +19,7 @@ abstract class _SettingsStore with Store {
 
   final String localStorageLocaleKey = 'locale';
   final String localStorageNetworkKey = 'network';
+  final String localStorageNetworkEvmKey = 'networkEvm';
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
@@ -34,6 +35,8 @@ abstract class _SettingsStore with Store {
   String priceCurrency = 'USD';
 
   String network = 'polkadot';
+
+  String evmNetwork = 'acala';
 
   Map pluginsConfig = Map();
 
@@ -315,10 +318,19 @@ abstract class _SettingsStore with Store {
     storage.write(localStorageNetworkKey, value);
   }
 
+  void setEvmNetwork(String value) {
+    evmNetwork = value;
+    storage.write(localStorageNetworkEvmKey, value);
+  }
+
   Future<void> loadNetwork() async {
     final value = await storage.read(localStorageNetworkKey);
     if (value != null) {
       network = value;
+    }
+    final evmValue = await storage.read(localStorageNetworkEvmKey);
+    if (evmValue != null) {
+      evmNetwork = evmValue;
     }
   }
 

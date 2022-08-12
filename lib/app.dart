@@ -102,6 +102,7 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 const get_storage_container = 'configuration';
 
@@ -402,7 +403,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         secondaryColor: network.basic.gradientColor,
       );
     });
-    _store.settings.setNetwork(network.basic.name);
+    if (network is PluginEvm) {
+      _store.settings.setEvmNetwork((network as PluginEvm).network);
+    } else {
+      _store.settings.setNetwork(network.basic.name);
+    }
 
     final useLocalJS = WalletApi.getPolkadotJSVersion(
           _store.storage,
@@ -413,8 +418,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
     _service.plugin.dispose();
 
-    final service =
-        AppService(widget.plugins, network, _keyring, _store, _keyringEVM);
+    final service = AppService(widget.plugins, network, _keyring, _store,
+        _keyringEVM, PluginEvm(networkName: _store.settings.evmNetwork));
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -598,10 +603,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           .indexWhere((e) => e.basic.name == store.settings.network);
       final service = AppService(
           widget.plugins,
-          widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
+          store.account.accountType == AccountType.Evm
+              ? PluginEvm(networkName: store.settings.evmNetwork)
+              : widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           store,
-          _keyringEVM);
+          _keyringEVM,
+          PluginEvm(networkName: store.settings.evmNetwork));
       service.init();
       setState(() {
         _store = store;

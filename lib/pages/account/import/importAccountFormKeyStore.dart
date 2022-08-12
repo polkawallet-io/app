@@ -144,7 +144,10 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                 }
 
                                 widget.service.plugin.changeAccount(
-                                    widget.service.keyring.current);
+                                    type == AccountType.Substrate
+                                        ? widget.service.keyring.current
+                                        : widget.service.keyringEVM.current
+                                            .toKeyPairData());
                                 widget.service.store.assets.loadCache(
                                     widget.service.keyring.current,
                                     widget.service.plugin.basic.name);
