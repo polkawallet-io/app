@@ -319,6 +319,9 @@ class _ConverToPageState extends State<ConverToPage> {
                             _amountCtrl.text = Fmt.priceFloorBigInt(
                                 BigInt.parse(max), balance.decimals,
                                 lengthMax: 10);
+                            setState(() {
+                              _error1 = null;
+                            });
                           }
                         : null,
                     onInputChange: (v) {
