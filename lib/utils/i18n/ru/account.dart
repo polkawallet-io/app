@@ -81,7 +81,12 @@ const Map<String, String> enAccount = {
   'plugin.note': 'Maintained by ',
   'plugin.team': ' team.',
   'plugin.disable': 'This plugin is outdated and needs fix from maintainer.',
-  'bad.scam': 'Scam address',
+  'bad.scam':
+      'This is a less-than-honest address with high risk. Please change another address',
+  'bad.risk.cex':
+      'This is a CEX address with high risk. Make sure you still want to transfer your assets.',
+  'bad.risk':
+      'This address with high risk. Please check the recipient\'s identity carefully.',
   'bad.warn': 'WARNING!!!',
   'bad.warn.info':
       'is a public account which is derived by Mnemonic 【null】, please delete it and create a new one.',
