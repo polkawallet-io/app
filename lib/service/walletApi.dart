@@ -302,4 +302,19 @@ class WalletApi {
       return null;
     }
   }
+
+  static Future<Map> getAddressRisk(String address) async {
+    try {
+      Response res = await get(
+          getUrl(_endpoint, '/height-time-avg/risk?address=$address'));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
 }
