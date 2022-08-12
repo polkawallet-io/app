@@ -12,7 +12,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
@@ -332,7 +331,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
             ? (addressMap != null
                 ? addressMap[i.pubKey]
                 : widget.service.keyring.current.address)
-            : widget.service.keyringEVM.current.address;
+            : i.address;
         final String accIndex = !widget.isEvm
             ? isCurrentNetwork &&
                     i.indexInfo != null &&
@@ -561,7 +560,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                               } else {
                                 final network = e as String;
                                 final isCurrent = _selectedNetwork
-                                        is! PluginEvm ||
+                                        is PluginEvm &&
                                     e ==
                                         (_selectedNetwork as PluginEvm).network;
                                 return isCurrent
