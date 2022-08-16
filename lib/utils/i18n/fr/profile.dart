@@ -28,7 +28,7 @@ const Map<String, String> enProfile = {
   'setting.lang.auto': 'Auto Detect',
   'setting.network': 'Select Wallet',
   'setting.network.node': 'Select Wallet Node',
-  'setting.currency': 'Price Symbol',
+  'setting.currency': 'Currency',
   'setting.currency.tip': 'only affects the main Assets page',
   'setting.balance.hide': 'Hide Balance',
   'community': 'Join Community',
