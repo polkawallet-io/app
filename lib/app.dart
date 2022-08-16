@@ -326,7 +326,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
 
     final connected = await service.plugin.start(_keyring,
-        nodes: node != null ? [node] : service.plugin.nodeList);
+        keyringEVM: _keyringEVM,
+        nodes: node != null ? [node] : service.plugin.nodeList,
+        nodeEVM: _store.account.accountType == AccountType.Evm
+            ? node ?? service.plugin.nodeList[0]
+            : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -356,7 +360,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     //       : null,
     // );
 
-    final connected = await _service.plugin.start(_keyring);
+    final connected = await _service.plugin.start(_keyring,
+        keyringEVM: _keyringEVM,
+        nodeEVM: _store.account.accountType == AccountType.Evm
+            ? _service.plugin.nodeList[0]
+            : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -433,7 +441,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         _dropsServiceCancel();
         _restartWebConnect();
       });
-    });
+    }, isEVM: _store.account.accountType == AccountType.Evm);
 
     setState(() {
       _service = service;
@@ -525,7 +533,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       });
     }
     _service.plugin.sdk.api.account.unsubscribeBalance();
-    final connected = await _service.plugin.start(_keyring, nodes: [node]);
+    final connected = await _service.plugin.start(_keyring,
+        keyringEVM: _keyringEVM,
+        nodes: [node],
+        nodeEVM: _store.account.accountType == AccountType.Evm ? node : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -639,7 +650,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _dropsServiceCancel();
           _restartWebConnect();
         });
-      });
+      }, isEVM: _store.account.accountType == AccountType.Evm);
 
       if (_keyring.keyPairs.length > 0) {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
