@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/assets/assetEVM/index.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';
@@ -411,12 +413,20 @@ class _HomePageState extends State<HomePage> {
           "assets/images/icon_assets_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
-        content:
-            AssetsPage(widget.service, widget.plugins, widget.connectedNode,
+        content: widget.service.store.account.accountType == AccountType.Evm
+            ? AssetsEVMPage(
+                widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
-          _setupWssNotifyTimer();
-          widget.checkJSCodeUpdate(context, plugin);
-        }, widget.disabledPlugins, widget.changeNetwork, _handleWalletConnect),
+                _setupWssNotifyTimer();
+                widget.checkJSCodeUpdate(context, plugin);
+              }, widget.disabledPlugins, widget.changeNetwork,
+                _handleWalletConnect)
+            : AssetsPage(widget.service, widget.plugins, widget.connectedNode,
+                (PolkawalletPlugin plugin) async {
+                _setupWssNotifyTimer();
+                widget.checkJSCodeUpdate(context, plugin);
+              }, widget.disabledPlugins, widget.changeNetwork,
+                _handleWalletConnect),
         // content: Container(),
       )
     ];

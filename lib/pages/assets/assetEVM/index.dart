@@ -50,8 +50,8 @@ final assetsType = [
   "Taiga token"
 ];
 
-class AssetsPage extends StatefulWidget {
-  AssetsPage(
+class AssetsEVMPage extends StatefulWidget {
+  AssetsEVMPage(
     this.service,
     this.plugins,
     this.connectedNode,
@@ -71,10 +71,10 @@ class AssetsPage extends StatefulWidget {
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   @override
-  _AssetsState createState() => _AssetsState();
+  _AssetsEVMState createState() => _AssetsEVMState();
 }
 
-class _AssetsState extends State<AssetsPage> {
+class _AssetsEVMState extends State<AssetsEVMPage> {
   final GlobalKey<CustomRefreshIndicatorState> _refreshKey =
       new GlobalKey<CustomRefreshIndicatorState>();
   bool _refreshing = false;
@@ -376,7 +376,7 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   @override
-  void didUpdateWidget(covariant AssetsPage oldWidget) {
+  void didUpdateWidget(covariant AssetsEVMPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.connectedNode?.endpoint != widget.connectedNode?.endpoint) {
       if (_refreshing) {
@@ -499,8 +499,8 @@ class _AssetsState extends State<AssetsPage> {
         children: [
           Container(
             margin: EdgeInsets.only(right: 8.w),
-            child: AddressIcon(widget.service.keyring.current.address,
-                svg: widget.service.keyring.current.icon),
+            child: AddressIcon(widget.service.keyringEVM.current.address,
+                svg: widget.service.keyringEVM.current.icon),
           ),
           Padding(
               padding: EdgeInsets.only(bottom: 5),
@@ -508,7 +508,7 @@ class _AssetsState extends State<AssetsPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    Fmt.address(widget.service.keyring.current.address),
+                    Fmt.address(widget.service.keyringEVM.current.address),
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   GestureDetector(
@@ -918,29 +918,21 @@ class _AssetsState extends State<AssetsPage> {
                                   title: I18n.of(context).getDic(
                                       i18n_full_dic_app, 'assets')['assets'],
                                 ),
-                                Visibility(
-                                    visible: (widget.service.plugin
-                                                    .noneNativeTokensAll ??
-                                                [])
-                                            .length >
-                                        0,
-                                    child: Expanded(
-                                        child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        v3.IconButton(
-                                          onPressed: () => Navigator.of(context)
-                                              .pushNamed(
-                                                  ManageAssetsPage.route),
-                                          icon: Icon(
-                                            Icons.menu,
-                                            color:
-                                                Theme.of(context).disabledColor,
-                                            size: 20,
-                                          ),
-                                        )
-                                      ],
-                                    )))
+                                Expanded(
+                                    child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    v3.IconButton(
+                                      onPressed: () => Navigator.of(context)
+                                          .pushNamed('evm/assets/manage'),
+                                      icon: Icon(
+                                        Icons.menu,
+                                        color: Theme.of(context).disabledColor,
+                                        size: 20,
+                                      ),
+                                    )
+                                  ],
+                                ))
                               ],
                             ),
                             Visibility(
