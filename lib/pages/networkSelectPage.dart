@@ -2,6 +2,8 @@ import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/create/createAccountPage.dart';
+import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -270,14 +272,19 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     }
   }
 
-  Future<void> _onCreateAccount(int step) async {
+  Future<void> _onCreateAccount(int isImport) async {
     bool isCurrentNetwork =
         _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     if (!isCurrentNetwork) {
       await _reloadNetwork();
     }
-    Navigator.of(context)
-        .pushNamed(AccountTypeSelectPage.route, arguments: step);
+    // Navigator.of(context)
+    //     .pushNamed(AccountTypeSelectPage.route, arguments: isImport);
+    Navigator.of(context).pushNamed(
+        isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
+        arguments: {
+          "accountType": widget.isEvm ? AccountType.Evm : AccountType.Substrate
+        });
   }
 
   Widget netWorkItem(Function() onTap, Widget icon) {
@@ -309,11 +316,13 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         _selectedNetwork?.basic?.name ?? _pluginDisabledSelected?.name ?? '';
 
     /// first item is current account
-    List<dynamic> accounts = [
-      widget.isEvm
-          ? widget.service.keyringEVM.current
-          : widget.service.keyring.current
-    ];
+    List<dynamic> accounts = [];
+    final dynamic current = widget.isEvm
+        ? widget.service.keyringEVM.current
+        : widget.service.keyring.current;
+    if (current.address != null) {
+      accounts.add(current);
+    }
 
     /// add optional accounts
     accounts.addAll(!widget.isEvm
@@ -354,7 +363,8 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                 dense: true,
                 leading: AddressIcon(address, svg: i.icon),
                 title: Text(
-                  UI.accountName(context, i),
+                  UI.accountName(context,
+                      widget.isEvm ? (i as EthWalletData).toKeyPairData() : i),
                   style: Theme.of(context).textTheme.headline5,
                 ),
                 subtitle: Text('$accIndex${Fmt.address(address)}',

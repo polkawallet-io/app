@@ -1,9 +1,9 @@
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
-import 'package:flutter/material.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 
 enum AccountType { Substrate, Evm }
@@ -18,19 +18,19 @@ class AccountTypeSelectPage extends StatefulWidget {
 }
 
 class _AccountTypeSelectPageState extends State<AccountTypeSelectPage> {
-  Future<void> _onCreateAccount(int step, AccountType type) async {
+  Future<void> _onCreateAccount(int isImport, AccountType type) async {
     Navigator.of(context).pushNamed(
-        step == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
+        isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
         arguments: {"accountType": type});
   }
 
   @override
   Widget build(BuildContext context) {
-    final step = ModalRoute.of(context).settings.arguments as int;
+    final isImport = ModalRoute.of(context).settings.arguments as int;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
         appBar: AppBar(
-            title: Text(dic[step == 0 ? 'create' : 'import']),
+            title: Text(dic[isImport == 0 ? 'create' : 'import']),
             centerTitle: true,
             leading: BackBtn(),
             elevation: 0),
@@ -51,12 +51,12 @@ class _AccountTypeSelectPageState extends State<AccountTypeSelectPage> {
                   child: Button(
                     title: "Substrate ${dic['account']}",
                     onPressed: () =>
-                        _onCreateAccount(step, AccountType.Substrate),
+                        _onCreateAccount(isImport, AccountType.Substrate),
                   ),
                 ),
                 Button(
                   title: "Evm ${dic['account']}",
-                  onPressed: () => _onCreateAccount(step, AccountType.Evm),
+                  onPressed: () => _onCreateAccount(isImport, AccountType.Evm),
                 ),
               ],
             )));
