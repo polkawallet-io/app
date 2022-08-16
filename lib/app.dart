@@ -376,6 +376,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Timer _dropsServiceTimer;
   Timer _chainTimer;
   _dropsService() {
+    if (_service.store.account.accountType == AccountType.Evm) {
+      return;
+    }
     _dropsServiceCancel();
     _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
       _chainTimer = Timer(Duration(seconds: 18), () async {
