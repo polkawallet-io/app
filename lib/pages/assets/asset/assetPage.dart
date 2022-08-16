@@ -691,7 +691,7 @@ class BalanceCard extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               width: MediaQuery.of(context).size.width / 4,
                               child: Text(
-                                  '${I18n.of(context).getDic(i18n_full_dic_app, 'assets')['v3.priceTrend']}${Fmt.priceCurrencySymbol(priceCurrency)} ：',
+                                  '${I18n.of(context).getDic(i18n_full_dic_app, 'assets')['v3.priceTrend']} ${Fmt.priceCurrencySymbol(priceCurrency)} ：',
                                   style: TextStyle(
                                     color: titleColor,
                                     fontSize: UI.getTextSize(12, context),
