@@ -43,7 +43,7 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: UI.isDarkTheme(context) ? Color(0xFF18191B) : Colors.white,
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30), topRight: Radius.circular(30)),
       ),
