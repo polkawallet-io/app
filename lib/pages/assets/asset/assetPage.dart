@@ -681,27 +681,47 @@ class BalanceCard extends StatelessWidget {
                 flex: 1,
               ),
               Expanded(
-                child: marketPriceList != null && marketPriceList.length > 1
-                    ? Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                            onTap: () {
-                              showCupertinoDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return PriceTrendDialog(
-                                      getTimeSeriesAmounts(marketPriceList, 30),
-                                      symbol,
-                                      Fmt.priceCurrencySymbol(priceCurrency));
-                                },
-                              );
-                            },
-                            child: RewardsChart.withData(
-                                getTimeSeriesAmounts(marketPriceList, 7),
-                                MediaQuery.of(context).size.width / 4)))
-                    : Container(width: MediaQuery.of(context).size.width / 3),
                 flex: 0,
+                child: marketPriceList != null && marketPriceList.length > 1
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 7),
+                              alignment: Alignment.centerLeft,
+                              width: MediaQuery.of(context).size.width / 4,
+                              child: Text(
+                                  '${I18n.of(context).getDic(i18n_full_dic_app, 'assets')['v3.priceTrend']}${Fmt.priceCurrencySymbol(priceCurrency)} ：',
+                                  style: TextStyle(
+                                    color: titleColor,
+                                    fontSize: UI.getTextSize(12, context),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily:
+                                        UI.getFontFamily('SF_Pro', context),
+                                  ))),
+                          Container(
+                              width: MediaQuery.of(context).size.width / 3,
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                  onTap: () {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return PriceTrendDialog(
+                                            getTimeSeriesAmounts(
+                                                marketPriceList, 30),
+                                            symbol,
+                                            Fmt.priceCurrencySymbol(
+                                                priceCurrency));
+                                      },
+                                    );
+                                  },
+                                  child: RewardsChart.withData(
+                                      getTimeSeriesAmounts(marketPriceList, 7),
+                                      MediaQuery.of(context).size.width / 4)))
+                        ],
+                      )
+                    : Container(width: MediaQuery.of(context).size.width / 3),
               )
             ],
           ),

@@ -77,8 +77,22 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(children: [
+                        GestureDetector(
+                          onTap: () {
+                            OrientationPlugin.forceOrientation(
+                                DeviceOrientation.portraitUp);
+                            SystemChrome.setPreferredOrientations(
+                                [DeviceOrientation.portraitUp]);
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(
+                            Icons.clear,
+                            size: 18,
+                            color: Theme.of(context).textTheme.headline4.color,
+                          ),
+                        ),
                         Padding(
-                            padding: EdgeInsets.only(right: 7),
+                            padding: EdgeInsets.only(left: 9),
                             child: Text(
                               '${widget.symbol.toUpperCase()} ${I18n.of(context).getDic(i18n_full_dic_app, 'assets')['v3.priceTrend']}（${widget.priceCurrencySymbol}）',
                               style: Theme.of(context)
@@ -86,41 +100,25 @@ class _PriceTrendDialogState extends State<PriceTrendDialog> {
                                   .headline4
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             )),
-                        Visibility(
-                            visible: orientation == Orientation.portrait,
-                            child: GestureDetector(
-                              onTap: () {
-                                var _orientation = DeviceOrientation.portraitUp;
-                                if (orientation == Orientation.portrait) {
-                                  _orientation =
-                                      DeviceOrientation.landscapeRight;
-                                }
-                                OrientationPlugin.forceOrientation(
-                                    _orientation);
-                              },
-                              child: SvgPicture.asset(
-                                "assets/images/zoom.svg",
-                                width: 16,
-                                color: UI.isDarkTheme(context)
-                                    ? Color(0xFFFFC952)
-                                    : Color(0xFF768FE1),
-                              ),
-                            )),
                       ]),
-                      GestureDetector(
-                        onTap: () {
-                          OrientationPlugin.forceOrientation(
-                              DeviceOrientation.portraitUp);
-                          SystemChrome.setPreferredOrientations(
-                              [DeviceOrientation.portraitUp]);
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(
-                          Icons.clear,
-                          size: 19,
-                          color: Theme.of(context).textTheme.headline4.color,
-                        ),
-                      )
+                      Visibility(
+                          visible: orientation == Orientation.portrait,
+                          child: GestureDetector(
+                            onTap: () {
+                              var _orientation = DeviceOrientation.portraitUp;
+                              if (orientation == Orientation.portrait) {
+                                _orientation = DeviceOrientation.landscapeRight;
+                              }
+                              OrientationPlugin.forceOrientation(_orientation);
+                            },
+                            child: SvgPicture.asset(
+                              "assets/images/zoom.svg",
+                              width: 18,
+                              color: UI.isDarkTheme(context)
+                                  ? Color(0xFFFFC952)
+                                  : Color(0xFF768FE1),
+                            ),
+                          )),
                     ],
                   )),
               Divider(height: 1, color: Color(0xFF979797).withAlpha(61)),
