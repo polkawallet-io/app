@@ -8,9 +8,9 @@ import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class AccountBindEntryPage extends StatefulWidget {
-  AccountBindEntryPage({Key key}) : super(key: key);
+  const AccountBindEntryPage({Key key}) : super(key: key);
 
-  static final String route = '/account/accountBindEntry';
+  static const String route = '/account/accountBindEntry';
 
   @override
   State<AccountBindEntryPage> createState() => _AccountBindEntryPageState();
@@ -25,12 +25,12 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
         appBar: AppBar(
             title: Text('Bind ${type == 0 ? "substrate" : "Evm"} account'),
             centerTitle: true,
-            leading: BackBtn(),
+            leading: const BackBtn(),
             elevation: 0),
         body: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Button(
                 title: dic['create'],
                 isBlueBg: true,
@@ -39,12 +39,12 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                       type == 0
                           ? CreateAccountPage.route
                           : CreateAccountPage.route,
-                      arguments: 0);
+                      arguments: {"accountType": AccountType.Substrate});
                 },
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Button(
                 title: dic['import'],
                 isBlueBg: true,
@@ -53,7 +53,7 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                       type == 0
                           ? SelectImportTypePage.route
                           : SelectImportTypePage.route,
-                      arguments: 1);
+                      arguments: {"accountType": AccountType.Evm});
                 },
               ),
             ),

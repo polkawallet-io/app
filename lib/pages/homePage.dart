@@ -318,7 +318,8 @@ class _HomePageState extends State<HomePage> {
                 ))
           ]),
           onTap: () {
-            Navigator.of(context).pushNamed(AccountBindPage.route);
+            Navigator.of(context)
+                .pushNamed(AccountBindPage.route, arguments: true);
           },
         ));
   }

@@ -6,8 +6,10 @@ import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 
 class AccountBindStep3 extends StatefulWidget {
-  AccountBindStep3(this.service, this.onNext, {Key key}) : super(key: key);
+  AccountBindStep3(this.service, this.signMessage, this.onNext, {Key key})
+      : super(key: key);
   final AppService service;
+  final Map signMessage;
   Function onNext;
 
   @override
@@ -40,7 +42,7 @@ class _AccountBindStep3State extends State<AccountBindStep3> {
                   child: Text("Evm ${dicPublic['auction.address']}",
                       style: labelStyle)),
               AddressFormItem(
-                widget.service.keyring.current,
+                widget.service.keyringEVM.current,
               ),
               Padding(
                   padding: EdgeInsets.only(bottom: 5, top: 21),
@@ -52,7 +54,7 @@ class _AccountBindStep3State extends State<AccountBindStep3> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   )),
               Text(
-                "0x6914fc70fac4cab20a8922e900c4ba57feecf8e10x6914fc70fac4cab20a8922e900c4b",
+                widget.signMessage['signature'],
                 style: Theme.of(context).textTheme.headline5,
               ),
             ],

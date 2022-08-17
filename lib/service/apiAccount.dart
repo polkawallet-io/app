@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:app/common/consts.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
@@ -228,5 +230,99 @@ class ApiAccount {
       queryAddressIcons(res.friends);
     }
     return res;
+  }
+
+  Future<String> getEvmPassword(BuildContext context, EthWalletData acc) async {
+    final bioPass = await getPasswordWithBiometricAuth(context, acc.address);
+    final isClose = isCloseBiometricDisabled(acc.address);
+    if (bioPass == null && !isClose) {
+      await showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return PolkawalletAlertDialog(
+            title: Text(
+                I18n.of(context).getDic(i18n_full_dic_app, 'assets')['note']),
+            content: Text(I18n.of(context)
+                .getDic(i18n_full_dic_app, 'account')['biometric.msg']),
+            actions: <Widget>[
+              PolkawalletActionSheetAction(
+                child: Text(
+                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok']),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    final password = await showCupertinoDialog(
+      context: context,
+      builder: (_) {
+        return PasswordInputDialog(
+          apiRoot.plugin.sdk.api,
+          title: Text(
+              I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
+          ethAccount: acc,
+          userPass: bioPass == "can't" ? null : bioPass,
+        );
+      },
+    );
+    if (bioPass == null && !isClose && password != null) {
+      setBiometricEnabled(acc.address);
+    }
+    return password;
+  }
+
+  /// query evm address
+  Future<String> queryEvmAddress(String address) async {
+    final dynamic res = await apiRoot.plugin.sdk.webView
+        .evalJavascript('api.query.evmAccounts.evmAddresses("$address")');
+    return res;
+  }
+
+  /// query sub account
+  Future<String> queryAccountWithEvmAddress(String ethAddress) async {
+    final dynamic res = await apiRoot.plugin.sdk.webView
+        .evalJavascript('api.query.evmAccounts.accounts("$ethAddress")');
+    return res;
+  }
+
+  /// query evm address
+  Future<Map> evmSignMessage(
+      Map data, String publicKey, String ethAddress, String password) async {
+    ///
+    final payload = {
+      "types": {
+        "EIP712Domain": [
+          {"name": 'name', "type": 'string'},
+          {"name": 'version', "type": 'string'},
+          {"name": 'chainId', "type": 'uint256'},
+          {"name": 'salt', "type": 'bytes32'}
+        ],
+        "Transaction": [
+          {"name": 'substrateAddress', "type": 'bytes'}
+        ]
+      },
+      "primaryType": 'Transaction',
+      "domain": {
+        "name": 'Acala EVM claim',
+        "version": '1',
+        "chainId": data["domain"]["chainId"],
+        "salt": data["domain"]["salt"]
+      },
+      "message": {"substrateAddress": publicKey}
+    };
+
+    final dynamic res = await apiRoot.plugin.sdk.webView.evalJavascript(
+        'eth.keyring.signMessage(${jsonEncode(payload)},"$ethAddress","$password")');
+    return res;
+  }
+
+  /// claimAccount
+  Future<String> claimAccountWithEvmAddress(
+      String ethAddress, String ethSignature) async {
+    final dynamic toHex = await apiRoot.plugin.sdk.webView.evalJavascript(
+        'Promise.all([api.tx.evmAccounts.claimAccount("$ethAddress","$ethSignature").toHex()])');
+    return toHex[0];
   }
 }

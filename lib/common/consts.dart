@@ -69,3 +69,59 @@ const bridge_account = {
 const show_guide_status_key = 'show_guide_status';
 
 const JPUSH_APP_KEY = 'dfa60080aa05c5c7b7dc7aa0';
+
+const metamask_acala_params = {
+  "network": {
+    "chainId": '0x313',
+    "chainName": 'Acala',
+    "nativeCurrency": {"name": 'Acala', "symbol": 'ACA', "decimals": 18},
+    "rpcUrls": ['https://eth-rpc-acala.aca-api.network'],
+    "blockExplorerUrls": ['https://blockscout.acala.network']
+  },
+  "domain": {
+    "chainId": 787,
+    "salt": '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c'
+  }
+};
+
+const metamask_acala_testnet_params = {
+  "network": {
+    "chainId": '0x255',
+    "chainName": 'Acala Testnet',
+    "nativeCurrency": {"name": 'Acala', "symbol": 'ACA', "decimals": 18},
+    "rpcUrls": ['https://acala-dev.aca-dev.network/eth/http'],
+    "blockExplorerUrls": ['https://blockscout.acala-dev.aca-dev.network']
+  },
+  "domain": {
+    "chainId": 597,
+    "salt": '0xd878fca7d80ffa1630527d63a835c0f1862f10c80657bf2be8e5dfcf9d1b0a7d'
+  }
+};
+
+const metamask_karura_params = {
+  "network": {
+    "chainId": '0x2AE',
+    "chainName": 'Karura',
+    "nativeCurrency": {"name": 'Karura', "symbol": 'KAR', "decimals": 18},
+    "rpcUrls": ['https://eth-rpc-karura.aca-api.network/eth/http'],
+    "blockExplorerUrls": ['https://blockscout.karura.network']
+  },
+  "domain": {
+    "chainId": 686,
+    "salt": '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b'
+  }
+};
+
+const metamask_karura_testnet_params = {
+  "network": {
+    "chainId": '0x254',
+    "chainName": 'Karura Testnet',
+    "nativeCurrency": {"name": 'Karura', "symbol": 'KAR', "decimals": 18},
+    "rpcUrls": ['https://karura-dev.aca-dev.network/eth/http'],
+    "blockExplorerUrls": ['https://blockscout.karura-dev.aca-dev.network']
+  },
+  "domain": {
+    "chainId": 596,
+    "salt": '0xd5f7c90bd50e61d833e3f0836b0f3e1503054200ef5aa32856f8da5ce1213b01'
+  }
+};
