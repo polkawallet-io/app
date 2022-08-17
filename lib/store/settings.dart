@@ -75,9 +75,9 @@ abstract class _SettingsStore with Store {
   List<dynamic> dapps = [];
 
   Map<dynamic, dynamic> tokenStakingConfig = {
-    "onStart": {"KSM": true, "DOT": false},
-    "KSM": ["kusama", "bifrost", "calamari"],
-    "LKSM": ["parallel heiko", "calamari", "turing"],
+    "onStart": {"KSM": true, "DOT": true},
+    "KSM": ["kusama", "calamari"],
+    "LKSM": ["parallel heiko", "calamari"],
     "DOT": ["polkadot"],
     "LDOT": ["parallel"]
   };
