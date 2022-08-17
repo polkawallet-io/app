@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/contacts/contactPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -31,7 +32,11 @@ class _ContactsPageState extends State<ContactsPage> {
 
   void _refreshData() {
     setState(() {
-      _list = widget.service.keyring.contacts;
+      _list = widget.service.store.account.accountType == AccountType.Evm
+          ? widget.service.keyringEVM.contacts
+              .map((e) => e.toKeyPairData())
+              .toList()
+          : widget.service.keyring.contacts;
     });
   }
 
@@ -132,7 +137,11 @@ class _ContactsPageState extends State<ContactsPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _list = widget.service.keyring.contacts;
+        _list = widget.service.store.account.accountType == AccountType.Evm
+            ? widget.service.keyringEVM.contacts
+                .map((e) => e.toKeyPairData())
+                .toList()
+            : widget.service.keyring.contacts;
       });
     });
   }

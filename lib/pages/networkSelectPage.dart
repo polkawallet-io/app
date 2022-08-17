@@ -331,9 +331,8 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     final List<Widget> accountWidgets = [];
     if (_selectedNetwork != null) {
       accountWidgets.addAll(accounts.map((i) {
-        final bool isCurrentNetwork = !widget.isEvm
-            ? _selectedNetwork.basic.name == widget.service.plugin.basic.name
-            : true;
+        final bool isCurrentNetwork =
+            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
         final addressMap = widget.service.keyring.store
             .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
         final address = !widget.isEvm
@@ -363,8 +362,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                 dense: true,
                 leading: AddressIcon(address, svg: i.icon),
                 title: Text(
-                  UI.accountName(context,
-                      widget.isEvm ? (i as EthWalletData).toKeyPairData() : i),
+                  UI.accountName(context, i),
                   style: Theme.of(context).textTheme.headline5,
                 ),
                 subtitle: Text('$accIndex${Fmt.address(address)}',

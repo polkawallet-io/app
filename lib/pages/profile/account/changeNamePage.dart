@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +26,9 @@ class _ChangeName extends State<ChangeNamePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _nameCtrl.text = widget.service.keyring.current.name;
+    _nameCtrl.text = widget.service.store.account.accountType == AccountType.Evm
+        ? widget.service.keyringEVM.current.name
+        : widget.service.keyring.current.name;
   }
 
   @override
@@ -81,8 +84,11 @@ class _ChangeName extends State<ChangeNamePage> {
                 title: dic['contact.save'],
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
-                    widget.service.plugin.sdk.api.keyring.changeName(
-                        widget.service.keyring, _nameCtrl.text.trim());
+                    widget.service.store.account.accountType == AccountType.Evm
+                        ? widget.service.plugin.sdk.api.eth.keyring.changeName(
+                            widget.service.keyringEVM, _nameCtrl.text.trim())
+                        : widget.service.plugin.sdk.api.keyring.changeName(
+                            widget.service.keyring, _nameCtrl.text.trim());
                     Navigator.of(context).pop();
                   }
                 },

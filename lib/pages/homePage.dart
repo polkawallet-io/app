@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
-import 'package:app/pages/assets/assetEVM/index.dart';
+import 'package:app/pages/assets/erc20Tokens/index.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';

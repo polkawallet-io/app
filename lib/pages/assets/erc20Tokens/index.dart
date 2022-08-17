@@ -40,6 +40,7 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 final assetsType = [
   "All",
@@ -717,8 +718,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final symbol =
-            (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+        final plugin = widget.service.plugin as PluginEvm;
+        final symbol = plugin.nativeToken;
         final decimals =
             (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
 
@@ -924,7 +925,12 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                   children: [
                                     v3.IconButton(
                                       onPressed: () => Navigator.of(context)
-                                          .pushNamed('evm/assets/manage'),
+                                          .pushNamed('evm/assets/manage',
+                                              arguments: {
+                                            "current": widget
+                                                .service.keyringEVM.current
+                                                .toKeyPairData()
+                                          }),
                                       icon: Icon(
                                         Icons.menu,
                                         color: Theme.of(context).disabledColor,
