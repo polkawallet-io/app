@@ -49,7 +49,6 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/public/DAppsTestPage.dart';
-import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
@@ -743,7 +742,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
-      AcalaBridgePage.route: (_) => AcalaBridgePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
       StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 

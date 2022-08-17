@@ -61,47 +61,6 @@ const plugin_from_community = [
   chain_name_robonomics
 ];
 
-const xcm_base_weight = 1000000000;
-const xcm_dest_weight_ksm = 3 * xcm_base_weight;
-const xcm_dest_weight_bifrost = 5000000000;
-
-const xcm_send_fees = {
-  relay_chain_name_ksm: {
-    'fee': '106666660',
-    'existentialDeposit': '333333333',
-  },
-  para_chain_name_statemine: {
-    'fee': '4000000000',
-    'existentialDeposit': '33333333',
-  },
-  para_chain_name_karura: {
-    'fee': '64000000',
-    'existentialDeposit': '100000000',
-  },
-  para_chain_name_acala: {
-    'fee': '4285630',
-    'existentialDeposit': '100000000',
-  },
-};
-
-const xcm_support_dest_chains = {
-  relay_chain_name_ksm: [
-    relay_chain_name_ksm,
-    para_chain_name_statemine,
-    para_chain_name_karura,
-  ],
-  // todo: KSM from statemine to kusasma has bug
-  // para_chain_name_statemine: [
-  //   para_chain_name_statemine,
-  //   relay_chain_name_ksm,
-  // ],
-  // todo: transfer KAR to bifrost is not open yet
-  // para_chain_name_karura: [
-  //   para_chain_name_karura,
-  //   para_chain_name_bifrost,
-  // ],
-};
-
 const bridge_account = {
   'mandala': '5G9VH1qNxbPE39SW9SWmDDhePxt1zxLScJ7ync57MFhJSh1v',
   'acala': '13YMK2eYoAvStnzReuxBjMrAvPXmmdsURwZvc62PrdXimbNy'

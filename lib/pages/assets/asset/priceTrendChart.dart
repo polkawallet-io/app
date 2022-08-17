@@ -70,11 +70,22 @@ class PriceTrendChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _maxY = maxY * (1 + 0.15);
+    final _minY = minY * (1 - 0.15);
     final verticalInterval = 10 /
         ((seriesList.length > 7
                 ? (seriesList.length / 2 - 1)
                 : (seriesList.length - 1)) +
             0.01);
+
+    final horizontalInterval =
+        (_maxY - _minY) / (orientation == Orientation.portrait ? 3.1 : 5.1);
+
+    final shared = [];
+    for (int i = ((_maxY - _minY) ~/ horizontalInterval); i >= 0; i--) {
+      shared.add(
+          (_maxY - _minY) / ((_maxY - _minY) / horizontalInterval) * i + _minY);
+    }
     return Container(
         width: width,
         height: width / sizeRatio,
@@ -82,14 +93,19 @@ class PriceTrendChart extends StatelessWidget {
         child: Stack(
           alignment: AlignmentDirectional.bottomCenter,
           children: [
-            LineChart(
-              mainData(context, verticalInterval),
-              swapAnimationDuration: Duration(milliseconds: 0), // Optional
-              swapAnimationCurve: Curves.linear,
-            ),
+            Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(left: 64),
+                child: LineChart(
+                  mainData(context, verticalInterval, horizontalInterval, _maxY,
+                      _minY),
+                  swapAnimationDuration:
+                      const Duration(milliseconds: 0), // Optional
+                  swapAnimationCurve: Curves.linear,
+                )),
             Container(
               width: double.infinity,
-              margin: EdgeInsets.only(left: 64, bottom: 26),
+              margin: const EdgeInsets.only(left: 64, bottom: 26),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.filled(
@@ -102,16 +118,39 @@ class PriceTrendChart extends StatelessWidget {
                           : Colors.black.withAlpha(25),
                     )),
               ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 31, left: 20),
+              width: double.infinity,
+              alignment: Alignment.centerLeft,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...shared.map((e) {
+                      return Text(
+                          "${Fmt.priceFloorFormatter(e, lengthMax: 2)}$priceCurrencySymbol",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              ?.copyWith(
+                                  fontSize: UI.getTextSize(10, context),
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headline5
+                                      ?.color
+                                      ?.withAlpha(
+                                          (255.0 / _maxY * e).toInt())));
+                    })
+                  ]),
             )
           ],
         ));
   }
 
-  LineChartData mainData(BuildContext context, double verticalInterval) {
-    final _maxY = maxY * (1 + 0.15);
-    final _minY = minY * (1 - 0.15);
-    final horizontalInterval =
-        (_maxY - _minY) / (orientation == Orientation.portrait ? 3.1 : 5.1);
+  LineChartData mainData(BuildContext context, double verticalInterval,
+      double horizontalInterval, double _maxY, double _minY) {
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -138,7 +177,7 @@ class PriceTrendChart extends StatelessWidget {
                       show: true,
                       getDotPainter: (p0, p1, p2, p3) {
                         return FlDotCirclePainter(
-                            radius: 6,
+                            radius: 8,
                             color: chartLineColors()[0],
                             strokeColor: Colors.transparent);
                       },
@@ -146,9 +185,11 @@ class PriceTrendChart extends StatelessWidget {
                 .toList();
           },
           touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Color(0xFFFFFFFF).withAlpha(173),
-              tooltipPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              tooltipMargin: orientation == Orientation.portrait ? -34 : -50,
+              tooltipBgColor: Color(0xFF4F4D4D).withAlpha(102),
+              tooltipPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              tooltipMargin: 10,
+              fitInsideHorizontally: true,
+              fitInsideVertically: true,
               getTooltipItems: (datas) {
                 return datas.map((e) {
                   var time = DateTime.fromMillisecondsSinceEpoch((e.x /
@@ -168,7 +209,7 @@ class PriceTrendChart extends StatelessWidget {
                                 .textTheme
                                 .headline5
                                 ?.copyWith(
-                                    color: Colors.black.withAlpha(191),
+                                    color: Colors.white,
                                     fontSize: UI.getTextSize(12, context),
                                     fontWeight: FontWeight.w600)),
                         TextSpan(
@@ -178,7 +219,7 @@ class PriceTrendChart extends StatelessWidget {
                                 .textTheme
                                 .headline5
                                 ?.copyWith(
-                                    color: Colors.black.withAlpha(191),
+                                    color: Colors.white,
                                     fontSize: UI.getTextSize(12, context),
                                     fontWeight: FontWeight.w600)),
                       ]);
@@ -210,26 +251,27 @@ class PriceTrendChart extends StatelessWidget {
         ),
         topTitles: SideTitles(showTitles: false),
         rightTitles: SideTitles(showTitles: false),
-        leftTitles: SideTitles(
-          showTitles: true,
-          interval: horizontalInterval,
-          getTextStyles: (context, index) => Theme.of(context)
-              .textTheme
-              .headline5
-              ?.copyWith(
-                  fontSize: UI.getTextSize(10, context),
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context)
-                      .textTheme
-                      .headline5
-                      ?.color
-                      ?.withAlpha((255.0 / _maxY * index).toInt())),
-          getTitles: (value) {
-            return "${Fmt.priceFloorFormatter(value, lengthMax: 2)}$priceCurrencySymbol";
-          },
-          reservedSize: 55,
-          margin: 10,
-        ),
+        leftTitles: SideTitles(showTitles: false),
+        // leftTitles: SideTitles(
+        //   showTitles: true,
+        //   interval: horizontalInterval,
+        //   getTextStyles: (context, index) => Theme.of(context)
+        //       .textTheme
+        //       .headline5
+        //       ?.copyWith(
+        //           fontSize: UI.getTextSize(10, context),
+        //           fontWeight: FontWeight.w600,
+        //           color: Theme.of(context)
+        //               .textTheme
+        //               .headline5
+        //               ?.color
+        //               ?.withAlpha((255.0 / _maxY * index).toInt())),
+        //   getTitles: (value) {
+        //     return "${Fmt.priceFloorFormatter(value, lengthMax: 2)}$priceCurrencySymbol";
+        //   },
+        //   reservedSize: 55,
+        //   margin: 10,
+        // ),
       ),
       borderData: FlBorderData(
           show: true,
@@ -254,7 +296,7 @@ class PriceTrendChart extends StatelessWidget {
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
-          show: false,
+          show: true,
         ),
         belowBarData: BarAreaData(
           show: true,
