@@ -578,7 +578,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
     if (jsVersions == null) return;
 
-    final network = plugin.basic.name;
+    final network = plugin.basic.name.contains('-')
+        ? plugin.basic.name.split('-').first //eth
+        : plugin.basic.name;
     final version = jsVersions[network];
     final versionMin = jsVersions['$network-min'];
     final currentVersion = WalletApi.getPolkadotJSVersion(
