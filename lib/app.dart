@@ -735,8 +735,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       PluginAccountListPage.route: (_) =>
           PluginAccountListPage(_service.plugin, _keyring),
-      AccountQrCodePage.route: (_) =>
-          AccountQrCodePage(_service.plugin, _keyring),
+      AccountQrCodePage.route: (_) => AccountQrCodePage(
+            _service.plugin,
+            _keyring,
+            keyringEVM: _service.store.account.accountType == AccountType.Evm
+                ? _keyringEVM
+                : null,
+          ),
       NetworkSelectPage.route: (_) => NetworkSelectPage(
           _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),

@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
@@ -22,13 +23,19 @@ class ExportAccountPage extends StatelessWidget {
   static final String route = '/profile/export';
 
   Future<void> _onExport(BuildContext context) async {
-    final password = await service.account.getPassword(
-      context,
-      service.keyring.current,
-    );
+    final password = service.store.account.accountType == AccountType.Substrate
+        ? await service.account.getPassword(
+            context,
+            service.keyring.current,
+          )
+        : await service.account
+            .getEvmPassword(context, service.keyringEVM.current);
     if (password != null) {
-      final seed = await service.plugin.sdk.api.keyring
-          .getDecryptedSeed(service.keyring, password);
+      final seed = service.store.account.accountType == AccountType.Substrate
+          ? await service.plugin.sdk.api.keyring
+              .getDecryptedSeed(service.keyring, password)
+          : await service.plugin.sdk.api.eth.keyring
+              .getDecryptedSeed(service.keyringEVM, password);
       Navigator.of(context).pushNamed(ExportResultPage.route, arguments: seed);
     }
   }
@@ -71,8 +78,13 @@ class ExportAccountPage extends StatelessWidget {
                       },
                     ),
                     FutureBuilder(
-                      future: service.keyring.store.checkSeedExist(
-                          KeyType.mnemonic, service.keyring.current.pubKey),
+                      future: service.store.account.accountType ==
+                              AccountType.Substrate
+                          ? service.keyring.store.checkSeedExist(
+                              KeyType.mnemonic, service.keyring.current.pubKey)
+                          : service.keyringEVM.store.checkSeedExist(
+                              EVMKeyType.mnemonic,
+                              service.keyringEVM.current.address),
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         if (snapshot.hasData && snapshot.data == true) {
@@ -91,8 +103,13 @@ class ExportAccountPage extends StatelessWidget {
                       },
                     ),
                     FutureBuilder(
-                      future: service.keyring.store.checkSeedExist(
-                          KeyType.rawSeed, service.keyring.current.pubKey),
+                      future: service.store.account.accountType ==
+                              AccountType.Substrate
+                          ? service.keyring.store.checkSeedExist(
+                              KeyType.rawSeed, service.keyring.current.pubKey)
+                          : service.keyringEVM.store.checkSeedExist(
+                              EVMKeyType.privateKey,
+                              service.keyringEVM.current.address),
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         if (snapshot.hasData && snapshot.data == true) {
@@ -100,7 +117,10 @@ class ExportAccountPage extends StatelessWidget {
                             children: [
                               Divider(height: 24.h),
                               SettingsPageListItem(
-                                label: dicAcc['rawSeed'],
+                                label: service.store.account.accountType ==
+                                        AccountType.Substrate
+                                    ? dicAcc['rawSeed']
+                                    : dicAcc['privateKey'],
                                 onTap: () => _onExport(context),
                               ),
                             ],

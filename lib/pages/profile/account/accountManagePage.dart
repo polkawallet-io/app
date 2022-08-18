@@ -70,7 +70,9 @@ class _AccountManagePageState extends State<AccountManagePage> {
 
   Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
-    final pubKey = widget.service.keyring.current.pubKey;
+    final pubKey = widget.service.store.account.accountType == AccountType.Evm
+        ? widget.service.keyringEVM.current.address
+        : widget.service.keyring.current.pubKey;
     final password = await showCupertinoDialog(
       context: context,
       builder: (_) {
@@ -78,7 +80,13 @@ class _AccountManagePageState extends State<AccountManagePage> {
           widget.service.plugin.sdk.api,
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
-          account: widget.service.keyring.current,
+          account: widget.service.store.account.accountType == AccountType.Evm
+              ? null
+              : widget.service.keyring.current,
+          ethAccount:
+              widget.service.store.account.accountType == AccountType.Evm
+                  ? widget.service.keyringEVM.current
+                  : null,
         );
       },
     );

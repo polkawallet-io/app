@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -40,10 +41,15 @@ class _ChangePassword extends State<ChangePasswordPage> {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final String passNew = _passCtrl.text.trim();
 
-    await widget.service.plugin.sdk.api.keyring
-        .changePassword(widget.service.keyring, passOld, passNew);
+    widget.service.store.account.accountType == AccountType.Evm
+        ? await widget.service.plugin.sdk.api.eth.keyring
+            .changePassword(widget.service.keyringEVM, passOld, passNew)
+        : await widget.service.plugin.sdk.api.keyring
+            .changePassword(widget.service.keyring, passOld, passNew);
 
-    final pubKey = widget.service.keyring.current.pubKey;
+    final pubKey = widget.service.store.account.accountType == AccountType.Evm
+        ? widget.service.keyringEVM.current.address
+        : widget.service.keyring.current.pubKey;
     if (_enableBiometric) {
       final storeFile = await widget.service.account
           .getBiometricPassStoreFile(context, pubKey);
@@ -84,10 +90,14 @@ class _ChangePassword extends State<ChangePasswordPage> {
 
   Future<void> _onSave() async {
     if (_formKey.currentState.validate()) {
-      final password = await widget.service.account.getPassword(
-        context,
-        widget.service.keyring.current,
-      );
+      final password =
+          widget.service.store.account.accountType == AccountType.Evm
+              ? await widget.service.account
+                  .getEvmPassword(context, widget.service.keyringEVM.current)
+              : await widget.service.account.getPassword(
+                  context,
+                  widget.service.keyring.current,
+                );
       if (password != null) {
         _doChangePass(password);
       }

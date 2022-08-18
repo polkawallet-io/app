@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
@@ -113,20 +114,36 @@ class _Contact extends State<ContactPage> {
         }
       } else {
         // edit contact
-        con['pubKey'] = _args.pubKey;
-        await widget.service.keyring.store.updateContact(con);
+        widget.service.store.account.accountType == AccountType.Evm
+            ? con['pubKey'] = _args.pubKey
+            : con['address'] = _args.address;
+        widget.service.store.account.accountType == AccountType.Evm
+            ? await widget.service.keyringEVM.store.updateContact(con)
+            : await widget.service.keyring.store.updateContact(con);
         // if the contact being edited was current account
         // and was set not observable, we should reset current account.
-        if (_args.pubKey == widget.service.keyring.store.currentPubKey &&
-            _args.observation &&
-            !_isObservation) {
-          if (widget.service.keyring.allAccounts.length > 0) {
-            widget.service.keyring
-                .setCurrent(widget.service.keyring.allAccounts[0]);
-            widget.service.plugin
-                .changeAccount(widget.service.keyring.allAccounts[0]);
+        final current =
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.store.currentAddress
+                : widget.service.keyring.store.currentPubKey;
+        if (_args.pubKey == current && _args.observation && !_isObservation) {
+          if (widget.service.store.account.accountType == AccountType.Evm
+              ? widget.service.keyringEVM.allAccounts.length > 0
+              : widget.service.keyring.allAccounts.length > 0) {
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM
+                    .setCurrent(widget.service.keyringEVM.allAccounts[0])
+                : widget.service.keyring
+                    .setCurrent(widget.service.keyring.allAccounts[0]);
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.plugin.changeAccount(
+                    widget.service.keyringEVM.allAccounts[0].toKeyPairData())
+                : widget.service.plugin
+                    .changeAccount(widget.service.keyring.allAccounts[0]);
           } else {
-            widget.service.keyring.setCurrent(KeyPairData());
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.setCurrent(EthWalletData())
+                : widget.service.keyring.setCurrent(KeyPairData());
           }
         }
       }

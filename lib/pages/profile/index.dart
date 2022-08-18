@@ -19,7 +19,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
@@ -43,17 +42,18 @@ class _ProfilePageState extends State<ProfilePage> {
   dynamic _currentAccount;
 
   Future<void> _manageAccount() async {
-    if (widget.service.keyring.current.observation ?? false) {
+    final currentAccount =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current.toKeyPairData();
+    if (currentAccount.observation ?? false) {
       await Navigator.pushNamed(context, ContactPage.route,
-          arguments: widget.service.keyring.current);
+          arguments: currentAccount);
     } else {
       await Navigator.pushNamed(context, AccountManagePage.route);
     }
     setState(() {
-      _currentAccount =
-          widget.service.store.account.accountType == AccountType.Substrate
-              ? widget.service.keyring.current
-              : widget.service.keyringEVM.current;
+      _currentAccount = currentAccount;
     });
   }
 

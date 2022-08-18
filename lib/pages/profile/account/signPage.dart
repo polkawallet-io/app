@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -48,8 +49,12 @@ class _SignMessagePageState extends State<SignMessagePage>
       setState(() {
         _submitting = true;
       });
-      final password = await widget.service.account
-          .getPassword(context, widget.service.keyring.current);
+      final password =
+          widget.service.store.account.accountType == AccountType.Evm
+              ? await widget.service.account
+                  .getEvmPassword(context, widget.service.keyringEVM.current)
+              : await widget.service.account
+                  .getPassword(context, widget.service.keyring.current);
 
       final params = SignAsExtensionParam();
       params.msgType = "pub(bytes.sign)";
@@ -58,8 +63,13 @@ class _SignMessagePageState extends State<SignMessagePage>
         "data": _messageCtrl.text,
       };
 
-      final res = await widget.service.plugin.sdk.api.keyring
-          .signAsExtension(password, params);
+      final res = widget.service.store.account.accountType == AccountType.Evm
+          ? await widget.service.plugin.sdk.api.eth.keyring.signMessage(
+              password,
+              _messageCtrl.text,
+              widget.service.keyringEVM.current.address)
+          : await widget.service.plugin.sdk.api.keyring
+              .signAsExtension(password, params);
       setState(() {
         _signResCtrl.text = res.signature;
         _submitting = false;
@@ -72,11 +82,25 @@ class _SignMessagePageState extends State<SignMessagePage>
       setState(() {
         _submitting = true;
       });
-      final res = await widget.service.plugin.sdk.api.keyring.signatureVerify(
-        _messageVerifyCtrl.text.trim(),
-        _signatureCtrl.text.trim(),
-        _verifySigner.address,
-      );
+      VerifyResult res = VerifyResult()..isValid = false;
+      if (widget.service.store.account.accountType == AccountType.Evm) {
+        try {
+          var resData =
+              await widget.service.plugin.sdk.api.eth.keyring.signatureVerify(
+            _messageVerifyCtrl.text.trim(),
+            _signatureCtrl.text.trim(),
+          );
+          if (resData['signer'] == _verifySigner.address) {
+            res.isValid = true;
+          }
+        } catch (_) {}
+      } else {
+        res = await widget.service.plugin.sdk.api.keyring.signatureVerify(
+          _messageVerifyCtrl.text.trim(),
+          _signatureCtrl.text.trim(),
+          _verifySigner.address,
+        );
+      }
       setState(() {
         _verifyResult = res;
         _submitting = false;
@@ -90,7 +114,10 @@ class _SignMessagePageState extends State<SignMessagePage>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _verifySigner = widget.service.keyring.current;
+        _verifySigner =
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.current.toKeyPairData()
+                : widget.service.keyring.current;
       });
     });
   }
@@ -137,9 +164,11 @@ class _SignMessagePageState extends State<SignMessagePage>
                       Container(
                         margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                         child: AddressFormItem(
-                          widget.service.keyring.current,
+                          widget.service.store.account.accountType ==
+                                  AccountType.Evm
+                              ? widget.service.keyringEVM.current
+                              : widget.service.keyring.current,
                           label: dicCommon['submit.signer'],
-                          svg: widget.service.keyring.current.icon,
                         ),
                       ),
                       Container(
@@ -198,7 +227,12 @@ class _SignMessagePageState extends State<SignMessagePage>
                         margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                         child: AddressTextFormField(
                           widget.service.plugin.sdk.api,
-                          widget.service.keyring.keyPairs,
+                          widget.service.store.account.accountType ==
+                                  AccountType.Evm
+                              ? widget.service.keyringEVM.keyPairs
+                                  .map((e) => e.toKeyPairData())
+                                  .toList()
+                              : widget.service.keyring.keyPairs,
                           labelText: dicCommon['submit.signer'],
                           hintText: dicCommon['submit.signer'],
                           initialValue:
@@ -250,11 +284,13 @@ class _SignMessagePageState extends State<SignMessagePage>
                         child: InfoItemRow(
                             'isValid', '${_verifyResult.isValid ?? '-'}'),
                       ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(14.w, 4.h, 12.w, 0),
-                        child: InfoItemRow(
-                            'crypto', '${_verifyResult.crypto ?? '-'}'),
-                      ),
+                      Visibility(
+                          visible: _verifyResult.crypto != null,
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(14.w, 4.h, 12.w, 0),
+                            child: InfoItemRow(
+                                'crypto', '${_verifyResult.crypto ?? '-'}'),
+                          )),
                       Container(
                         margin: EdgeInsets.fromLTRB(14.w, 16.h, 12.w, 24.h),
                         child: Button(
