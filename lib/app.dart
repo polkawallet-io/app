@@ -70,6 +70,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
@@ -101,7 +102,6 @@ import 'pages/account/import/importAccountFormKeyStore.dart';
 import 'pages/account/import/importAccountFormMnemonic.dart';
 import 'pages/account/import/importAccountFromRawSeed.dart';
 import 'pages/account/import/selectImportTypePage.dart';
-import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 const get_storage_container = 'configuration';
 

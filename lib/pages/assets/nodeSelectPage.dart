@@ -50,7 +50,6 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 7.h),
             decoration: BoxDecoration(
               image: UI.isDarkTheme(context)
                   ? DecorationImage(

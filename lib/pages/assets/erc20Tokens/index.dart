@@ -718,10 +718,10 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final plugin = widget.service.plugin as PluginEvm;
-        final symbol = plugin.nativeToken;
-        final decimals =
-            (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
+        final symbol = (widget.service.plugin is PluginEvm)
+            ? (widget.service.plugin as PluginEvm).nativeToken
+            : '-';
+        const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.balances.tokens.toList();

@@ -420,6 +420,17 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                 child: RoundedCard(
                     color: UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
                     margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
+                    brightBoxShadow: const [
+                      BoxShadow(
+                        color: Color(0x30000000),
+                        blurRadius: 2.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          1.0,
+                          1.0,
+                        ),
+                      )
+                    ],
                     padding: EdgeInsets.all(10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -450,6 +461,17 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                     color: UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
                     margin: EdgeInsets.only(bottom: 16.h),
                     padding: EdgeInsets.all(10),
+                    brightBoxShadow: const [
+                      BoxShadow(
+                        color: Color(0x30000000),
+                        blurRadius: 2.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          1.0,
+                          1.0,
+                        ),
+                      )
+                    ],
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
