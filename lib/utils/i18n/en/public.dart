@@ -139,5 +139,7 @@ const Map<String, String> enPublic = {
       'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
   'bridge.connecting.warn': 'Connection timeout. \ntry again later.',
   'hub.cover.evm':
-      'A simple tool to bing your Substrate and EVM addresses enjoy the two different constructional ecosystems in Polkawallet.'
+      'A simple tool to bing your Substrate and EVM addresses enjoy the two different constructional ecosystems in Polkawallet.',
+  'evm.bind': 'Bind',
+  'evm.claim.signature': 'Create Claim signature',
 };

@@ -314,7 +314,7 @@ class ApiAccount {
     };
 
     final dynamic res = await apiRoot.plugin.sdk.webView.evalJavascript(
-        'eth.keyring.signMessage(${jsonEncode(payload)},"$ethAddress","$password")');
+        'eth.keyring.signTypedData(${jsonEncode(payload)},"$ethAddress","$password")');
     return res;
   }
 

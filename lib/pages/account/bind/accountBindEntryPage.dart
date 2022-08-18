@@ -23,7 +23,7 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
         appBar: AppBar(
-            title: Text('Bind ${type == 0 ? "substrate" : "Evm"} account'),
+            title: Text('Bind ${type == 0 ? "Substrate" : "Evm"} account'),
             centerTitle: true,
             leading: const BackBtn(),
             elevation: 0),
@@ -35,11 +35,11 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                 title: dic['create'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.of(context).pushNamed(
-                      type == 0
-                          ? CreateAccountPage.route
-                          : CreateAccountPage.route,
-                      arguments: {"accountType": AccountType.Substrate});
+                  Navigator.of(context).pushNamed(CreateAccountPage.route,
+                      arguments: {
+                        "accountType":
+                            type == 0 ? AccountType.Substrate : AccountType.Evm
+                      });
                 },
               ),
             ),
@@ -49,11 +49,11 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                 title: dic['import'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.of(context).pushNamed(
-                      type == 0
-                          ? SelectImportTypePage.route
-                          : SelectImportTypePage.route,
-                      arguments: {"accountType": AccountType.Evm});
+                  Navigator.of(context).pushNamed(SelectImportTypePage.route,
+                      arguments: {
+                        "accountType":
+                            type == 0 ? AccountType.Substrate : AccountType.Evm
+                      });
                 },
               ),
             ),
