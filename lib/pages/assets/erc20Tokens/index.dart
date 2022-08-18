@@ -724,46 +724,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
-        final tokens = widget.service.plugin.balances.tokens.toList();
-        final tokensAll = widget.service.plugin.noneNativeTokensAll ?? [];
-        final defaultTokens = widget.service.plugin.defaultTokens;
+        final tokens = widget.service.plugin.noneNativeTokensAll ?? [];
 
-        // filter tokens by plugin.defaultTokens
-        if (defaultTokens.length > 0) {
-          tokens.retainWhere((e) =>
-              e.symbol.contains('-') ||
-              defaultTokens.indexOf(e.tokenNameId) > -1);
-        }
-        // remove empty LP tokens
-        if (tokens.length > 0) {
-          tokens.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
-        }
-        // add custom assets from user's config & tokensAll
         final customTokensConfig = widget.service.store.assets.customAssets;
-        final isStateMint =
-            widget.service.plugin.basic.name == para_chain_name_statemine ||
-                widget.service.plugin.basic.name == para_chain_name_statemint;
         if (customTokensConfig.keys.length > 0) {
-          tokens.retainWhere(
-              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
-
-          tokensAll.retainWhere(
-              (e) => customTokensConfig[isStateMint ? e.id : e.symbol]);
-          tokensAll.forEach((e) {
-            if (tokens.indexWhere((token) => token.symbol == e.symbol) < 0) {
-              tokens.add(e);
-            }
-          });
-        }
-        // sort the list
-        if (tokens.length > 0) {
-          // remove native token
-          tokens.removeWhere((element) => element.symbol == symbol);
-          tokens.sort((a, b) => a.symbol.contains('-')
-              ? 1
-              : b.symbol.contains('-')
-                  ? -1
-                  : a.symbol.compareTo(b.symbol));
+          tokens.retainWhere((e) => customTokensConfig[e.symbol]);
         }
 
         final extraTokens = widget.service.plugin.balances.extraTokens;
@@ -779,25 +744,6 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                       ? _rate
                       : 1.0) *
                   Fmt.bigIntToDouble(Fmt.balanceTotal(balancesInfo), decimals));
-        }
-
-        if (widget.service.plugin.basic.name != plugin_name_karura &&
-            widget.service.plugin.basic.name != plugin_name_acala) {
-          _assetsTypeIndex = 0;
-        }
-
-        if (_assetsTypeIndex != 0) {
-          var type = "Token";
-          if (assetsType[_assetsTypeIndex] == "Cross-chain") {
-            type = "ForeignAsset";
-          } else if (assetsType[_assetsTypeIndex] == "Taiga token") {
-            type = "TaigaAsset";
-          } else if (assetsType[_assetsTypeIndex] == "LP Tokens") {
-            type = "DexShare";
-          } else if (assetsType[_assetsTypeIndex] == "ERC-20") {
-            type = "Erc20";
-          }
-          tokens.retainWhere((element) => element.type == type);
         }
 
         return Scaffold(
@@ -1170,7 +1116,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                           detailPageRoute: i.detailPageRoute,
                                           marketPrice: price,
                                           icon: TokenIcon(
-                                            isStateMint ? i.id : i.symbol,
+                                            i.symbol,
                                             widget.service.plugin.tokenIcons,
                                             symbol: i.symbol,
                                             size: 30,
