@@ -227,12 +227,12 @@ class _SignMessagePageState extends State<SignMessagePage>
                         margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
                         child: AddressTextFormField(
                           widget.service.plugin.sdk.api,
-                          widget.service.store.account.accountType ==
-                                  AccountType.Evm
-                              ? widget.service.keyringEVM.keyPairs
-                                  .map((e) => e.toKeyPairData())
-                                  .toList()
-                              : widget.service.keyring.keyPairs,
+                          widget.service.keyring.allWithContacts,
+                          localEthAccounts:
+                              widget.service.store.account.accountType ==
+                                      AccountType.Evm
+                                  ? widget.service.keyringEVM.allWithContacts
+                                  : null,
                           labelText: dicCommon['submit.signer'],
                           hintText: dicCommon['submit.signer'],
                           initialValue:
@@ -242,6 +242,7 @@ class _SignMessagePageState extends State<SignMessagePage>
                               _verifySigner = acc;
                             });
                           },
+                          key: ValueKey<KeyPairData>(_verifySigner),
                         ),
                       ),
                       Container(
