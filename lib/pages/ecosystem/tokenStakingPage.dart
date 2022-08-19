@@ -13,14 +13,14 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 
 class TokenStaking extends StatefulWidget {
   TokenStaking(this.service, {Key key}) : super(key: key);
@@ -117,8 +117,21 @@ class _TokenStakingState extends State<TokenStaking> {
         body: SafeArea(
           child: Column(
             children: [
-              ConnectionChecker(widget.service.plugin,
-                  onConnected: _getBalance),
+              ConnectionChecker(
+                widget.service.plugin,
+                onConnected: _getBalance,
+                checker: () {
+                  final tokenWithBalances = (widget.service.plugin as dynamic)
+                          .store
+                          ?.assets
+                          ?.tokenBalanceMap
+                          ?.keys
+                          ?.length ??
+                      0;
+                  return widget.service.plugin.sdk.api.connectedNode != null &&
+                      tokenWithBalances > 0;
+                },
+              ),
               Container(
                 margin: EdgeInsets.fromLTRB(16, 16, 0, 16),
                 child: PluginPageTitleTaps(
