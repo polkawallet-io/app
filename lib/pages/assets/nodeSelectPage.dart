@@ -5,9 +5,11 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class NodeSelectPage extends StatefulWidget {
   NodeSelectPage(
@@ -109,17 +111,22 @@ class _NodeSelectPageState extends State<NodeSelectPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isEvm = !_isEvm;
-                      });
-                    },
-                    child: Padding(
-                        padding: EdgeInsets.only(right: 16.w),
-                        child: Image.asset(
-                            "assets/images/${_isEvm ? "evm" : "substrate"}.png",
-                            height: 31)),
-                  ),
+                      onTap: () {
+                        setState(() {
+                          _isEvm = !_isEvm;
+                        });
+                      },
+                      child: Container(
+                          width: 30,
+                          margin: EdgeInsets.only(right: 15.w),
+                          child: v3.IconButton(
+                              icon: SvgPicture.asset(
+                            "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
+                            color: UI.isDarkTheme(context)
+                                ? Colors.white
+                                : Theme.of(context).disabledColor,
+                            height: 20,
+                          )))),
                 )
               ],
             ),

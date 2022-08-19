@@ -569,7 +569,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                           Radius.circular(5.5))),
                                 ),
                           Text(
-                            widget.service.plugin.basic.name.toUpperCase(),
+                            "${widget.service.plugin.basic.name.split("-").last.toString().toUpperCase()} ${widget.service.plugin.basic.name.split("-").first.toString().toUpperCase()} +",
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4
@@ -721,6 +721,14 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         final symbol = (widget.service.plugin is PluginEvm)
             ? (widget.service.plugin as PluginEvm).nativeToken
             : '-';
+
+        final substratePubKey = (widget.service.plugin is PluginEvm)
+            ? (widget.service.plugin as PluginEvm)
+                    .store
+                    .account
+                    .substratePubKey ?? //三种状态，null代表正在请求，空字符串代表没有绑定,正常的pubKey就是有了
+                ""
+            : '-';
         const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
@@ -810,6 +818,10 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                   rate: _rate,
                                   hideBalance: widget
                                       .service.store.settings.isHideBalance),
+                        ),
+                        Text(
+                          substratePubKey,
+                          style: TextStyle(color: Colors.red),
                         ),
                         Container(
                           margin: EdgeInsets.only(left: 16.w, right: 16.w),

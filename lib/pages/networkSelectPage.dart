@@ -21,6 +21,7 @@ import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
@@ -82,13 +83,14 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     _isEvm = !_isEvm;
                   });
                 },
-                child: Center(
-                  child: Padding(
-                      padding: EdgeInsets.only(right: 16.w),
-                      child: Image.asset(
-                          "assets/images/${_isEvm ? "evm" : "substrate"}.png",
-                          height: 31)),
-                ))
+                child: v3.IconButton(
+                    icon: SvgPicture.asset(
+                  "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
+                  color: UI.isDarkTheme(context)
+                      ? Colors.white
+                      : Theme.of(context).disabledColor,
+                  height: 20,
+                )))
           ],
           elevation: 2),
       body: NetworkSelectWidget(
@@ -119,7 +121,10 @@ class _NetworkItemActive extends StatelessWidget {
               width: 51.w,
             )),
         Container(
-            padding: EdgeInsets.all(UI.isDarkTheme(context) ? 11 : 12),
+            padding: EdgeInsets.only(left: UI.isDarkTheme(context) ? 11 : 12),
+            width: 45.w,
+            height: 45.w,
+            alignment: Alignment.centerLeft,
             child: SizedBox(child: icon, height: 26, width: 26),
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -608,7 +613,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                                         isCurrent
                                             ? PluginEvm.getIcon(e)
                                             : Image.asset(
-                                                'assets/images/plugins/logo_${network.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
+                                                'assets/images/plugins/logo_evm_${network.toLowerCase()}_grey${UI.isDarkTheme(context) ? "_dark" : ""}.png'));
                               }
                             }).toList(),
                             ...(widget.isEvm ? [] : widget.disabledPlugins)
