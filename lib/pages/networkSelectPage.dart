@@ -83,14 +83,16 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                     _isEvm = !_isEvm;
                   });
                 },
-                child: v3.IconButton(
-                    icon: SvgPicture.asset(
-                  "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
-                  color: UI.isDarkTheme(context)
-                      ? Colors.white
-                      : Theme.of(context).disabledColor,
-                  height: 20,
-                )))
+                child: Padding(
+                    padding: EdgeInsets.only(right: 16.w),
+                    child: v3.IconButton(
+                        icon: SvgPicture.asset(
+                      "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
+                      color: UI.isDarkTheme(context)
+                          ? Colors.white
+                          : Theme.of(context).disabledColor,
+                      height: 20,
+                    ))))
           ],
           elevation: 2),
       body: NetworkSelectWidget(
@@ -121,11 +123,11 @@ class _NetworkItemActive extends StatelessWidget {
               width: 51.w,
             )),
         Container(
-            padding: EdgeInsets.only(left: UI.isDarkTheme(context) ? 11 : 12),
-            width: 45.w,
-            height: 45.w,
+            padding: EdgeInsets.only(left: UI.isDarkTheme(context) ? 11 : 13),
+            width: UI.isDarkTheme(context) ? 45.w : 50.w,
+            height: UI.isDarkTheme(context) ? 45.w : 50.w,
             alignment: Alignment.centerLeft,
-            child: SizedBox(child: icon, height: 26, width: 26),
+            child: SizedBox(child: icon, height: 30, width: 30),
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage(

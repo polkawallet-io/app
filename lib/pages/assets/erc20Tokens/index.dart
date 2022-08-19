@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/common/types/pluginDisabled.dart';
-import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
@@ -103,8 +101,14 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   }
 
   Future<void> _updateMarketPrices() async {
-    widget.service.assets
-        .fetchMarketPrices(widget.service.plugin.networkState.tokenSymbol);
+    final symbol = (widget.service.plugin is PluginEvm)
+        ? (widget.service.plugin as PluginEvm).nativeToken
+        : '-';
+    final tokens = widget.service.plugin.noneNativeTokensAll
+        .map((e) => e.symbol)
+        .toList()
+      ..add(symbol);
+    widget.service.assets.fetchMarketPrices(tokens);
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
@@ -435,61 +439,6 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
     }
   }
 
-  List<InstrumentData> _instrumentDatas() {
-    final List<InstrumentData> datas = [];
-
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final symbol = (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-    final title = "${dic['v3.my']} $symbol";
-
-    final instrument1 = InstrumentData(0, [], title: title);
-
-    final decimals =
-        (widget.service.plugin.networkState.tokenDecimals ?? [12])[0];
-    var marketPrice = widget.service.store.assets.marketPrices[symbol] ?? 0;
-    if (widget.service.store.settings.priceCurrency != "USD") {
-      marketPrice *= _rate;
-    }
-    final available = marketPrice *
-        Fmt.bigIntToDouble(
-          Fmt.balanceInt(
-              (widget.service.plugin.balances.native?.availableBalance ?? 0)
-                  .toString()),
-          decimals,
-        );
-
-    final reserved = marketPrice *
-        Fmt.bigIntToDouble(
-          Fmt.balanceInt(
-              (widget.service.plugin.balances.native?.reservedBalance ?? 0)
-                  .toString()),
-          decimals,
-        );
-
-    final locked = marketPrice *
-        Fmt.bigIntToDouble(
-          Fmt.balanceInt(
-              (widget.service.plugin.balances.native?.lockedBalance ?? 0)
-                  .toString()),
-          decimals,
-        );
-
-    InstrumentData totalBalance =
-        InstrumentData(available + reserved + locked, [], title: title);
-    totalBalance.items
-        .add(InstrumentItemData(Color(0xFFFF7647), dic['reserved'], reserved));
-    totalBalance.items
-        .add(InstrumentItemData(Color(0xFFFFC952), dic['locked'], locked));
-    totalBalance.items.add(
-        InstrumentItemData(Color(0xFF7D97EE), dic['available'], available));
-
-    datas.add(instrument1);
-    datas.add(totalBalance);
-    datas.add(instrument1);
-
-    return datas;
-  }
-
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       systemOverlayStyle: UI.isDarkTheme(context)
@@ -768,57 +717,108 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                     header: Container(),
                     content: Column(
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(16.w, 15.h, 16.w, 10.h),
-                          child: instrumentIndex == 0 ||
-                                  widget.service.plugin
-                                          .getAggregatedAssetsWidget(
-                                              onSwitchBack: null,
-                                              onSwitchHideBalance: null) ==
-                                      null
-                              ? InstrumentWidget(
-                                  _instrumentDatas(),
-                                  gradienColors: _gradienColors(),
-                                  switchDefi: widget.service.plugin
-                                          .getAggregatedAssetsWidget(
-                                              onSwitchBack: null,
-                                              onSwitchHideBalance: null) !=
-                                      null,
-                                  onSwitchChange: () {
-                                    setState(() {
-                                      instrumentIndex = 1;
-                                    });
-                                  },
-                                  onSwitchHideBalance: () {
-                                    widget.service.store.settings
-                                        .setIsHideBalance(!widget.service.store
-                                            .settings.isHideBalance);
-                                  },
-                                  enabled: widget.connectedNode != null,
-                                  hideBalance: widget
-                                      .service.store.settings.isHideBalance,
-                                  priceCurrency: widget
-                                      .service.store.settings.priceCurrency,
-                                  key: Key(
-                                      "${widget.service.keyring.current.address}_${widget.service.plugin.basic.name}"),
-                                )
-                              : widget.service.plugin.getAggregatedAssetsWidget(
-                                  onSwitchBack: () {
-                                    setState(() {
-                                      instrumentIndex = 0;
-                                    });
-                                  },
-                                  onSwitchHideBalance: () {
-                                    widget.service.store.settings
-                                        .setIsHideBalance(!widget.service.store
-                                            .settings.isHideBalance);
-                                  },
-                                  priceCurrency: widget
-                                      .service.store.settings.priceCurrency,
-                                  rate: _rate,
-                                  hideBalance: widget
-                                      .service.store.settings.isHideBalance),
-                        ),
+                        GestureDetector(
+                            onTap: () {
+                              widget.service.store.settings.setIsHideBalance(
+                                  !widget.service.store.settings.isHideBalance);
+                            },
+                            child: Container(
+                              margin:
+                                  EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
+                              width: 200,
+                              height: 54,
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(8)),
+                                  color: UI.isDarkTheme(context)
+                                      ? Color.fromARGB(255, 23, 25, 26)
+                                      : Colors.white,
+                                  border: UI.isDarkTheme(context)
+                                      ? Border.all(
+                                          color: const Color(0xFFFFFFFF)
+                                              .withAlpha(38),
+                                          width: 1)
+                                      : null,
+                                  boxShadow: UI.isDarkTheme(context)
+                                      ? [
+                                          BoxShadow(
+                                              color: Colors.white.withAlpha(84),
+                                              offset: const Offset(-1.0, -1.0),
+                                              blurRadius: 2.0,
+                                              spreadRadius: 0.0,
+                                              blurStyle: BlurStyle.inner),
+                                          BoxShadow(
+                                              color: Colors.white.withAlpha(84),
+                                              offset: const Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              spreadRadius: 0.0,
+                                              blurStyle: BlurStyle.inner),
+                                        ]
+                                      : [
+                                          BoxShadow(
+                                              color: Colors.black.withAlpha(84),
+                                              offset: const Offset(-1.0, -1.0),
+                                              blurRadius: 8.0,
+                                              spreadRadius: 0.0,
+                                              blurStyle: BlurStyle.inner),
+                                        ]),
+                              child: Stack(
+                                alignment: AlignmentDirectional.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: List.filled(
+                                        3,
+                                        Container(
+                                          height: double.infinity,
+                                          width: 0.5,
+                                          color: UI.isDarkTheme(context)
+                                              ? Colors.white.withAlpha(40)
+                                              : const Color(0xFF979797)
+                                                  .withAlpha(77),
+                                        )),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        balancesInfo != null &&
+                                                balancesInfo.freeBalance != null
+                                            ? widget.service.store.settings
+                                                    .isHideBalance
+                                                ? "******"
+                                                : Fmt.priceFloorBigIntFormatter(
+                                                    Fmt.balanceTotal(
+                                                        balancesInfo),
+                                                    decimals,
+                                                    lengthFixed: 4)
+                                            : '--.--',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1
+                                            ?.copyWith(
+                                                fontSize:
+                                                    UI.getTextSize(24, context),
+                                                height: 1.0),
+                                      ),
+                                      Padding(
+                                          padding: EdgeInsets.only(left: 5),
+                                          child: SvgPicture.asset(
+                                            "assets/images/hide_balance_${widget.service.store.settings.isHideBalance ? 'yes' : 'no'}.svg",
+                                            height: widget.service.store
+                                                    .settings.isHideBalance
+                                                ? 8
+                                                : 11,
+                                            color: UI.isDarkTheme(context)
+                                                ? Colors.white.withAlpha(127)
+                                                : Colors.black.withAlpha(127),
+                                          ))
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )),
                         Text(
                           substratePubKey,
                           style: TextStyle(color: Colors.red),
@@ -827,22 +827,6 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                           margin: EdgeInsets.only(left: 16.w, right: 16.w),
                           child: AdBanner(widget.service, widget.connectedNode),
                         ),
-                        // Container(
-                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                        //   child: RoundedButton(
-                        //     text: 'DApps Test',
-                        //     onPressed: () =>
-                        //         Navigator.of(context).pushNamed(DAppsTestPage.route),
-                        //   ),
-                        // ),
-                        // Container(
-                        //   margin: EdgeInsets.only(left: 16.w, right: 16.w),
-                        //   child: RoundedButton(
-                        //     text: 'Bridge Test',
-                        //     onPressed: () => Navigator.of(context)
-                        //         .pushNamed(BridgeTestPage.route),
-                        //   ),
-                        // ),
                         widget.service.plugin.basic.isTestNet
                             ? Padding(
                                 padding: EdgeInsets.only(top: 5.h),
