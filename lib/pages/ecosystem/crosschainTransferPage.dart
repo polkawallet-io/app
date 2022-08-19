@@ -17,6 +17,7 @@ import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
@@ -30,7 +31,6 @@ import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
   const CrossChainTransferPage(this.service, {Key key}) : super(key: key);
@@ -174,6 +174,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
               ),
             },
             params: xcmParams['params'],
+            txHex: xcmParams['txHex'],
             chainFrom: fromNetwork,
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
@@ -224,11 +225,15 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
     final xcmParams = await _getXcmParams(
-        Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString(),
+        Fmt.tokenInt(
+                _amountCtrl.text.trim().isEmpty ? '0' : _amountCtrl.text.trim(),
+                balance.decimals)
+            .toString(),
         feeEstimate: true);
     if (xcmParams == null) return '0';
 
-    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender,
+        txHex: xcmParams['txHex']);
 
     String fee = '0';
     if (fromNetwork == plugin_name_karura || fromNetwork == plugin_name_acala) {
@@ -237,9 +242,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
       fee = feeData.partialFee.toString();
     } else {
       final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
-      print(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, [])');
       if (feeData != null) {
         fee = feeData['partialFee'].toString();
       }
@@ -367,7 +370,9 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                   fromEd -
                   Fmt.tokenInt(
                       (Fmt.balanceDouble(
-                                  feeTokenSymbol == balance.symbol ? _fee : '0',
+                                  feeTokenSymbol == balance.symbol
+                                      ? _fee ?? '0'
+                                      : '0',
                                   balance.decimals) *
                               1.2)
                           .toString(),

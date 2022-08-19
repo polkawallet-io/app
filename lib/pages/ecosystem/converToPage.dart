@@ -126,6 +126,7 @@ class _ConverToPageState extends State<ConverToPage> {
               ),
             },
             params: xcmParams['params'],
+            txHex: xcmParams['txHex'],
             chainFrom: fromNetwork,
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
@@ -183,15 +184,13 @@ class _ConverToPageState extends State<ConverToPage> {
           Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
       if (xcmParams == null) return '0';
 
-      final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+      final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender,
+          txHex: xcmParams['txHex']);
 
       String fee = '0';
       final fromNetwork = data["fromNetwork"];
       final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
-
-      print(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, [])');
       if (feeData != null) {
         fee = feeData['partialFee'].toString();
       }
