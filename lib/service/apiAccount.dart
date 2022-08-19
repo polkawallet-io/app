@@ -287,7 +287,7 @@ class ApiAccount {
     return res;
   }
 
-  /// query evm address
+  /// evmSignTypedData
   Future<Map> evmSignMessage(
       Map data, String publicKey, String ethAddress, String password) async {
     ///

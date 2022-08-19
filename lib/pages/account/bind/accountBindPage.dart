@@ -2,15 +2,20 @@ import 'package:app/common/consts.dart';
 import 'package:app/pages/account/bind/accountBindStep1.dart';
 import 'package:app/pages/account/bind/accountBindStep2.dart';
 import 'package:app/pages/account/bind/accountBindStep3.dart';
+import 'package:app/pages/account/bind/accountBindSuccess.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/plugin/PluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class AccountBindPage extends StatefulWidget {
@@ -26,6 +31,97 @@ class _AccountBindPageState extends State<AccountBindPage> {
   int _step = 0;
   Map _signMessage;
   EthWalletData _ethWalletData;
+  KeyPairData _keyPairData;
+  BridgeTokenBalance _tokenBalance;
+  bool _isAcala;
+  String _bindError;
+  @override
+  initState() {
+    super.initState();
+    _ethWalletData = widget.service.keyringEVM.current;
+    _keyPairData = widget.service.keyring.current;
+    _isAcala = (widget.service.plugin is PluginEvm &&
+            (widget.service.plugin as PluginEvm).network ==
+                para_chain_name_acala) ||
+        widget.service.plugin.basic.name == para_chain_name_acala;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initBridge();
+    });
+  }
+
+  _initBridge() async {
+    final chain = _isAcala ? 'acala' : 'karura';
+    await widget.service.plugin.sdk.api.bridge.init();
+    await widget.service.plugin.sdk.api.bridge.connectFromChains([
+      chain
+    ], nodeList: {
+      // 'karura': ['wss://karura-dev.aca-dev.network/rpc/ws'],
+      // 'acala': ['wss://acala-dev.aca-dev.network/rpc/ws']
+    });
+    _subscribeBalance();
+    _queryBindAddress();
+  }
+
+  _unSubscribeBalance() {
+    final chain = _isAcala ? 'acala' : 'karura';
+    widget.service.plugin.sdk.api.bridge
+        .unsubscribeBalances(chain, _keyPairData.address);
+  }
+
+  _subscribeBalance() {
+    final chain = _isAcala ? 'acala' : 'karura';
+    widget.service.plugin.sdk.api.bridge
+        .subscribeBalances(chain, _keyPairData.address, (res) async {
+      final balance = res[_isAcala ? 'ACA' : 'KAR'];
+      setState(() {
+        _tokenBalance = balance;
+      });
+    });
+  }
+
+  void _queryBindAddress() async {
+    final chain = _isAcala ? 'acala' : 'karura';
+    final subAddress = await widget.service.plugin.sdk.api.bridge.service
+        .evalJavascript(
+            'bridge.getApi("$chain").query.evmAccounts.accounts("${_ethWalletData.address}")');
+
+    final evmAddress = await widget.service.plugin.sdk.api.bridge.service
+        .evalJavascript(
+            'bridge.getApi("$chain").query.evmAccounts.evmAddresses("${_keyPairData.address}")');
+
+    if (subAddress == null && evmAddress == null) {
+      setState(() {
+        _bindError = null;
+      });
+      return;
+    }
+    String addressName;
+    String address;
+    if (subAddress != null && evmAddress != null) {
+      addressName = "substrate/EVM";
+      address = "${Fmt.address(evmAddress)}/${Fmt.address(subAddress)}";
+    } else if (subAddress != null) {
+      addressName = "EVM";
+      address = Fmt.address(subAddress);
+    } else if (evmAddress != null) {
+      addressName = "substrate";
+      address = Fmt.address(evmAddress);
+    }
+    if (subAddress != null || evmAddress != null) {
+      setState(() {
+        _bindError =
+            "The above $addressName address has been bound to $address";
+      });
+    }
+  }
+
+  @override
+  dispose() {
+    widget.service.plugin.sdk.api.bridge.disconnectFromChains();
+    widget.service.plugin.sdk.api.bridge.dispose();
+    super.dispose();
+  }
 
   showStep2() {
     final controller =
@@ -37,7 +133,8 @@ class _AccountBindPageState extends State<AccountBindPage> {
         });
       }
     });
-    final isPlugin = ModalRoute.of(context).settings.arguments == true;
+    final isPlugin =
+        (ModalRoute.of(context).settings.arguments as Map)['isPlugin'] == true;
     showModalBottomSheet(
       isScrollControlled: true,
       isDismissible: true,
@@ -56,7 +153,8 @@ class _AccountBindPageState extends State<AccountBindPage> {
               kToolbarHeight -
               130,
           width: double.infinity,
-          child: AccountBindStep2(widget.service, isPlugin, _ethWalletData),
+          child: AccountBindStep2(
+              widget.service, isPlugin, _keyPairData, _ethWalletData),
         );
       },
       context: context,
@@ -70,14 +168,65 @@ class _AccountBindPageState extends State<AccountBindPage> {
     });
   }
 
+  Future<XcmTxConfirmParams> _getTxParams() async {
+    final isPlugin =
+        (ModalRoute.of(context).settings.arguments as Map)['isPlugin'] == true;
+    Map<String, Widget> txDisplayBold = {
+      "Substrate Address": Padding(
+        padding: const EdgeInsets.only(right: 30),
+        child: Container(
+            margin: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+            child: Text(
+              _keyPairData.address,
+              style: Theme.of(context).textTheme.headline4?.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isPlugin || UI.isDarkTheme(context)
+                      ? Colors.white
+                      : const Color(0xFF565554)),
+            )),
+      ),
+      "Binding EVM Account": Padding(
+          padding: const EdgeInsets.only(right: 30),
+          child: Container(
+              margin: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+              child: Text(
+                '${_signMessage['address']}',
+                style: Theme.of(context).textTheme.headline4?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isPlugin || UI.isDarkTheme(context)
+                        ? Colors.white
+                        : const Color(0xFF565554)),
+              ))),
+    };
+    final chain = _isAcala ? 'acala' : 'karura';
+
+    final txHex = await widget.service.plugin.sdk.api.bridge.service.evalJavascript(
+        'Promise.all([bridge.getApi("$chain").tx.evmAccounts.claimAccount("${_signMessage['address']}","${_signMessage['signature']}").toHex()])');
+
+    return XcmTxConfirmParams(
+        module: 'evmAccounts',
+        call: 'claimAccount',
+        txTitle: 'Bind account',
+        txDisplayBold: txDisplayBold,
+        params: [_signMessage['address'], _signMessage['signature']],
+        isPlugin: isPlugin,
+        isBridge: true,
+        txHex: txHex[0],
+        chainFrom: _isAcala ? "acala" : "karura",
+        sender: _keyPairData,
+        feeToken: TokenBalanceData(
+            amount: _tokenBalance.available,
+            symbol: _tokenBalance.token,
+            decimals: _tokenBalance.decimals));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isAcala = (widget.service.plugin is PluginEvm &&
-            (widget.service.plugin as PluginEvm).network ==
-                para_chain_name_acala) ||
-        widget.service.plugin.basic.name == para_chain_name_acala;
-    final isPlugin = ModalRoute.of(context).settings.arguments == true;
-    final title = '${(isAcala ? "Acala" : "Karura")} EVM+ Claim';
+    final isPlugin =
+        (ModalRoute.of(context).settings.arguments as Map)['isPlugin'] == true;
+    final title = '${(_isAcala ? "Acala" : "Karura")} EVM+ Claim';
 
     void backAction() {
       if (_step == 0) {
@@ -132,7 +281,8 @@ class _AccountBindPageState extends State<AccountBindPage> {
   }
 
   Widget _buildBody() {
-    final isPlugin = ModalRoute.of(context).settings.arguments == true;
+    final isPlugin =
+        (ModalRoute.of(context).settings.arguments as Map)['isPlugin'] == true;
     return Column(children: [
       SizedBox(
         width: double.infinity,
@@ -236,58 +386,37 @@ class _AccountBindPageState extends State<AccountBindPage> {
       ),
       Expanded(
           child: _step == 2
-              ? AccountBindStep3(
-                  widget.service, isPlugin, _signMessage, _ethWalletData,
-                  () async {
-                  Map<String, Widget> txDisplayBold = {
-                    "Substrate Address": Padding(
-                      padding: const EdgeInsets.only(right: 30),
-                      child: Text(
-                        widget.service.keyring.current.address,
-                        style: Theme.of(context).textTheme.headline4?.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: isPlugin || UI.isDarkTheme(context)
-                                ? Colors.white
-                                : const Color(0xFF565554)),
-                      ),
-                    ),
-                    "Binding EVM Account": Padding(
-                        padding: const EdgeInsets.only(right: 30),
-                        child: Text(
-                          '${_signMessage['address']}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline4
-                              ?.copyWith(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: isPlugin || UI.isDarkTheme(context)
-                                      ? Colors.white
-                                      : const Color(0xFF565554)),
-                        )),
-                  };
-                  final result =
-                      await Navigator.of(context).pushNamed(TxConfirmPage.route,
-                          arguments: TxConfirmParams(
-                            module: 'evmAccounts',
-                            call: 'claimAccount',
-                            txTitle: 'Bind account',
-                            txDisplayBold: txDisplayBold,
-                            params: [
-                              _signMessage['address'],
-                              _signMessage['signature']
-                            ],
-                            isPlugin: isPlugin,
-                          ));
+              ? AccountBindStep3(widget.service, isPlugin, _signMessage,
+                  _keyPairData, _ethWalletData, () async {
+                  final param = await _getTxParams();
+                  final result = await Navigator.of(context)
+                      .pushNamed(XcmTxConfirmPage.route, arguments: param);
                   if (result != null) {
+                    if (isPlugin) {
+                      await Navigator.of(context).pushNamed(
+                          AccountBindSuccess.route,
+                          arguments: {"ethAccount": _ethWalletData});
+                    }
                     Navigator.of(context).pop(result);
                   }
                 })
-              : AccountBindStep1(widget.service, isPlugin, (ethWalletData) {
+              : AccountBindStep1(
+                  widget.service,
+                  isPlugin,
+                  _tokenBalance,
+                  _keyPairData,
+                  _ethWalletData,
+                  _bindError, (keyPairData, ethWalletData) {
+                  _unSubscribeBalance();
+                  setState(() {
+                    _keyPairData = keyPairData;
+                    _ethWalletData = ethWalletData;
+                    _subscribeBalance();
+                    _queryBindAddress();
+                  });
+                }, () {
                   setState(() {
                     _step = _step + 1;
-                    _ethWalletData = ethWalletData;
                     if (_step == 1) {
                       showStep2();
                     }

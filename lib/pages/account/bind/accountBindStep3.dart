@@ -2,13 +2,14 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 
 class AccountBindStep3 extends StatefulWidget {
   const AccountBindStep3(this.service, this.isPlugin, this.signMessage,
-      this.ethWalletData, this.onNext,
+      this.keyPairData, this.ethWalletData, this.onNext,
       {Key key})
       : super(key: key);
   final AppService service;
@@ -16,6 +17,7 @@ class AccountBindStep3 extends StatefulWidget {
   final Function onNext;
   final bool isPlugin;
   final EthWalletData ethWalletData;
+  final KeyPairData keyPairData;
 
   @override
   State<AccountBindStep3> createState() => _AccountBindStep3State();
@@ -41,7 +43,7 @@ class _AccountBindStep3State extends State<AccountBindStep3> {
               Text("Substrate ${dicPublic['auction.address']}",
                   style: labelStyle),
               AddressFormItem(
-                widget.service.keyring.current,
+                widget.keyPairData,
                 isDarkTheme: widget.isPlugin,
               ),
               Padding(

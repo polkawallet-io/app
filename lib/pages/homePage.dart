@@ -20,6 +20,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -318,8 +319,23 @@ class _HomePageState extends State<HomePage> {
                 ))
           ]),
           onTap: () {
-            Navigator.of(context)
-                .pushNamed(AccountBindPage.route, arguments: true);
+            if (widget.service.plugin is PluginEvm) {
+              // Navigator.of(context).pushNamed(BrowserPage.route);
+              Navigator.of(context).pushNamed(AccountBindPage.route,
+                  arguments: {"isPlugin": false});
+              return;
+            } else if (widget.service.plugin.basic.name !=
+                    para_chain_name_acala &&
+                widget.service.plugin.basic.name != para_chain_name_karura) {
+              widget.service.plugin.appUtils.switchNetwork(
+                para_chain_name_acala,
+                pageRoute: PageRouteParams(AccountBindPage.route,
+                    args: {"isPlugin": true}),
+              );
+              return;
+            }
+            Navigator.of(context).pushNamed(AccountBindPage.route,
+                arguments: {"isPlugin": true});
           },
         ));
   }

@@ -4,6 +4,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -13,11 +14,13 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 class AccountBindStep2 extends StatefulWidget {
-  const AccountBindStep2(this.service, this.isPlugin, this.ethWalletData,
+  const AccountBindStep2(
+      this.service, this.isPlugin, this.keyPairData, this.ethWalletData,
       {Key key})
       : super(key: key);
   final AppService service;
   final EthWalletData ethWalletData;
+  final KeyPairData keyPairData;
   final bool isPlugin;
 
   @override
@@ -42,7 +45,7 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
     });
     Map res = await widget.service.account.evmSignMessage(
         isAcala ? metamask_acala_params : metamask_karura_params,
-        widget.service.keyring.current.pubKey,
+        widget.keyPairData.pubKey,
         widget.ethWalletData.address,
         password);
     final Map dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
@@ -241,7 +244,7 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
                                         : const Color(0xFF565554)),
                           )),
                       Text(
-                        Fmt.address(widget.service.keyring.current.address),
+                        Fmt.address(widget.keyPairData.address),
                         style: Theme.of(context).textTheme.headline5.copyWith(
                             color: widget.isPlugin || UI.isDarkTheme(context)
                                 ? Colors.white

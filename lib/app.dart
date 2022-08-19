@@ -6,6 +6,7 @@ import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindEntryPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/account/bind/accountBindSuccess.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
@@ -832,6 +833,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             txDisabledCalls: _service.store.settings
                 .getDisabledCalls(_service.plugin.basic.name),
           ),
+
+      AccountBindSuccess.route: (_) => AccountBindSuccess(),
 
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
