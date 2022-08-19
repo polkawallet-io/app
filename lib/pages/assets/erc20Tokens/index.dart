@@ -726,12 +726,14 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         final balancesInfo = widget.service.plugin.balances.native;
         final tokens = widget.service.plugin.noneNativeTokensAll ?? [];
 
-        final customTokensConfig = widget.service.store.assets.customAssets;
-        if (customTokensConfig.keys.length > 0) {
-          tokens.retainWhere((e) => customTokensConfig[e.symbol]);
+        final customTokensConfig = (widget.service.plugin is PluginEvm)
+            ? (widget.service.plugin as PluginEvm).store.assets.customAssets
+            : {};
+        if (customTokensConfig.keys.isNotEmpty) {
+          tokens.retainWhere((e) => customTokensConfig[e.id]);
         }
 
-        final extraTokens = widget.service.plugin.balances.extraTokens;
+        // final extraTokens = widget.service.plugin.balances.extraTokens;
         final isTokensFromCache =
             widget.service.plugin.balances.isTokensFromCache;
 
@@ -1116,9 +1118,9 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                           detailPageRoute: i.detailPageRoute,
                                           marketPrice: price,
                                           icon: TokenIcon(
-                                            i.symbol,
+                                            i.id,
                                             widget.service.plugin.tokenIcons,
-                                            symbol: i.symbol,
+                                            symbol: i.id,
                                             size: 30,
                                           ),
                                           isHideBalance: widget.service.store
@@ -1129,51 +1131,51 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                         );
                                       }).toList(),
                                     )),
-                                Visibility(
-                                  visible: extraTokens == null ||
-                                      extraTokens.length == 0,
-                                  child: Column(
-                                      children: (extraTokens ?? [])
-                                          .map((ExtraTokenData i) {
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 16.h),
-                                          child: BorderedTitle(
-                                            title: i.title,
-                                          ),
-                                        ),
-                                        Column(
-                                          children: i.tokens
-                                              .map((e) => TokenItem(
-                                                    e,
-                                                    e.decimals,
-                                                    isFromCache:
-                                                        isTokensFromCache,
-                                                    detailPageRoute:
-                                                        e.detailPageRoute,
-                                                    icon: widget.service.plugin
-                                                        .tokenIcons[e.symbol],
-                                                    isHideBalance: widget
-                                                        .service
-                                                        .store
-                                                        .settings
-                                                        .isHideBalance,
-                                                    priceCurrency: widget
-                                                        .service
-                                                        .store
-                                                        .settings
-                                                        .priceCurrency,
-                                                    priceRate: _rate,
-                                                  ))
-                                              .toList(),
-                                        )
-                                      ],
-                                    );
-                                  }).toList()),
-                                )
+                                // Visibility(
+                                //   visible: extraTokens == null ||
+                                //       extraTokens.length == 0,
+                                //   child: Column(
+                                //       children: (extraTokens ?? [])
+                                //           .map((ExtraTokenData i) {
+                                //     return Column(
+                                //       crossAxisAlignment:
+                                //           CrossAxisAlignment.start,
+                                //       children: [
+                                //         Padding(
+                                //           padding: EdgeInsets.only(top: 16.h),
+                                //           child: BorderedTitle(
+                                //             title: i.title,
+                                //           ),
+                                //         ),
+                                //         Column(
+                                //           children: i.tokens
+                                //               .map((e) => TokenItem(
+                                //                     e,
+                                //                     e.decimals,
+                                //                     isFromCache:
+                                //                         isTokensFromCache,
+                                //                     detailPageRoute:
+                                //                         e.detailPageRoute,
+                                //                     icon: widget.service.plugin
+                                //                         .tokenIcons[e.symbol],
+                                //                     isHideBalance: widget
+                                //                         .service
+                                //                         .store
+                                //                         .settings
+                                //                         .isHideBalance,
+                                //                     priceCurrency: widget
+                                //                         .service
+                                //                         .store
+                                //                         .settings
+                                //                         .priceCurrency,
+                                //                     priceRate: _rate,
+                                //                   ))
+                                //               .toList(),
+                                //         )
+                                //       ],
+                                //     );
+                                //   }).toList()),
+                                // )
                               ],
                             ),
                           ),
