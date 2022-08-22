@@ -52,7 +52,7 @@ class ApiAssets {
       WalletApi.getTokenPrices(tokens),
       WalletApi.getTokenPriceFromSubScan(apiRoot.plugin.basic.name)
     ]);
-    print("fetchMarketPrices====${res.toString()}");
+
     final Map<String, double> prices = {
       'KUSD': 1.0,
       'AUSD': 1.0,

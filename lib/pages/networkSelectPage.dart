@@ -360,35 +360,138 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                         AccountType.Substrate
                     ? widget.service.keyring.current.address
                     : widget.service.keyringEVM.current.address);
+
+        final substrate = (widget.service.plugin is PluginEvm)
+            ? (widget.service.plugin as PluginEvm).store.account.substrate
+            : null;
+        print("substrate====${substrate.toJson()}");
         return Column(
           children: [
-            Container(
-              color: Colors.transparent,
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                leading: AddressIcon(address, svg: i.icon),
-                title: Text(
-                  UI.accountName(context, i),
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                subtitle: Text('$accIndex${Fmt.address(address)}',
-                    maxLines: 2,
-                    style: TextStyle(
-                        fontSize: UI.getTextSize(10, context),
-                        fontWeight: FontWeight.w300,
-                        color: UI.isDarkTheme(context)
-                            ? Colors.white.withAlpha(191)
-                            : Color(0xFF565554),
-                        fontFamily: UI.getFontFamily('SF_Pro', context))),
-                trailing: Image.asset(
-                  "assets/images/${isCurrent ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
-                  fit: BoxFit.contain,
-                  width: 16.w,
-                ),
-                onTap: _networkChanging ? null : () => _onSelect(i),
-              ),
-            ),
+            isCurrent && widget.isEvm
+                ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                AddressIcon(address, svg: i.icon),
+                                Padding(
+                                    padding: EdgeInsets.only(left: 16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                            padding: EdgeInsets.only(bottom: 3),
+                                            child: Text(
+                                              UI.accountName(context, i),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5,
+                                            )),
+                                        Text('$accIndex${Fmt.address(address)}',
+                                            maxLines: 2,
+                                            style: TextStyle(
+                                                fontSize:
+                                                    UI.getTextSize(10, context),
+                                                fontWeight: FontWeight.w300,
+                                                color: UI.isDarkTheme(context)
+                                                    ? Colors.white
+                                                        .withAlpha(191)
+                                                    : Color(0xFF565554),
+                                                fontFamily: UI.getFontFamily(
+                                                    'SF_Pro', context)))
+                                      ],
+                                    ))
+                              ],
+                            ),
+                            Image.asset(
+                              "assets/images/${isCurrent ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
+                              fit: BoxFit.contain,
+                              width: 16.w,
+                            )
+                          ],
+                        ),
+                        Visibility(
+                            visible: substrate != null,
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 5),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 16, right: 12),
+                                        child: Stack(
+                                          alignment:
+                                              AlignmentDirectional.bottomStart,
+                                          children: [
+                                            Container(
+                                              width: 18,
+                                              height: 9,
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .toggleableActiveColor,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  2))),
+                                            ),
+                                            Container(
+                                              width: 18,
+                                              height: 9,
+                                              margin: const EdgeInsets.only(
+                                                  left: 1.5, bottom: 1.5),
+                                              decoration: BoxDecoration(
+                                                  color: UI.isDarkTheme(context)
+                                                      ? Color(0xFF18191B)
+                                                      : Colors.white,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  2))),
+                                            )
+                                          ],
+                                        )),
+                                    AddressIcon(
+                                      substrate.address,
+                                      svg: substrate.icon,
+                                      size: 18,
+                                    ),
+                                  ],
+                                )))
+                      ],
+                    ),
+                  )
+                : ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    minLeadingWidth: 0,
+                    leading: AddressIcon(address, svg: i.icon),
+                    title: Text(
+                      UI.accountName(context, i),
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    subtitle: Text('$accIndex${Fmt.address(address)}',
+                        maxLines: 2,
+                        style: TextStyle(
+                            fontSize: UI.getTextSize(10, context),
+                            fontWeight: FontWeight.w300,
+                            color: UI.isDarkTheme(context)
+                                ? Colors.white.withAlpha(191)
+                                : Color(0xFF565554),
+                            fontFamily: UI.getFontFamily('SF_Pro', context))),
+                    trailing: Image.asset(
+                      "assets/images/${isCurrent ? "icon_circle_select${UI.isDarkTheme(context) ? "_dark" : ""}.png" : "icon_circle_unselect${UI.isDarkTheme(context) ? "_dark" : ""}.png"}",
+                      fit: BoxFit.contain,
+                      width: 16.w,
+                    ),
+                    onTap: _networkChanging ? null : () => _onSelect(i),
+                  ),
             Divider(
               height: 1,
             )
