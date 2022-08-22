@@ -872,12 +872,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                   children: [
                                     v3.IconButton(
                                       onPressed: () => Navigator.of(context)
-                                          .pushNamed('evm/assets/manage',
-                                              arguments: {
-                                            "current": widget
-                                                .service.keyringEVM.current
-                                                .toKeyPairData()
-                                          }),
+                                          .pushNamed('evm/assets/manage'),
                                       icon: Icon(
                                         Icons.menu,
                                         color: Theme.of(context).disabledColor,
@@ -1093,8 +1088,29 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                         ],
                                       ),
                                       onTap: () {
-                                        Navigator.pushNamed(
-                                            context, AssetPage.route);
+                                        // Navigator.pushNamed(
+                                        //     context, AssetPage.route);
+
+                                        Navigator.of(context).pushNamed(
+                                            '/assets/token/detail',
+                                            arguments: TokenBalanceData(
+                                              amount:
+                                                  Fmt.balanceTotal(balancesInfo)
+                                                      .toString(),
+                                              decimals: decimals,
+                                              id: symbol.toUpperCase(),
+                                              symbol: symbol.toUpperCase(),
+                                              name: symbol.toUpperCase(),
+                                              tokenNameId: symbol.toUpperCase(),
+                                            )
+                                              ..priceCurrency = widget.service
+                                                  .store.settings.priceCurrency
+                                              ..priceRate = _rate
+                                              ..getPrice = () => widget
+                                                  .service
+                                                  .store
+                                                  .assets
+                                                  .marketPrices[symbol]);
                                       },
                                     )),
                                 Visibility(
@@ -1262,7 +1278,8 @@ class TokenItem extends StatelessWidget {
                   Navigator.of(context).pushNamed(detailPageRoute,
                       arguments: item
                         ..priceCurrency = priceCurrency
-                        ..priceRate = priceRate);
+                        ..priceRate = priceRate
+                        ..getPrice = () => marketPrice);
                 },
         )
       ],
