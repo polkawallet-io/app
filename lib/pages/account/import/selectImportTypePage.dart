@@ -33,6 +33,7 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
   Widget build(BuildContext context) {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final type = data['accountType'] as AccountType;
+    final needChange = data["needChange"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     if (type == AccountType.Evm) {
       _keyOptions = [
@@ -69,7 +70,8 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
                                       context, ImportAccountFormMnemonic.route,
                                       arguments: {
                                         "type": _keyOptions[index],
-                                        "accountType": type
+                                        "accountType": type,
+                                        "needChange": needChange
                                       });
                                   break;
                                 case 'rawSeed':
@@ -78,7 +80,8 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
                                       context, ImportAccountFromRawSeed.route,
                                       arguments: {
                                         "type": _keyOptions[index],
-                                        "accountType": type
+                                        "accountType": type,
+                                        "needChange": needChange
                                       });
                                   break;
                                 case 'keystore':
@@ -86,7 +89,8 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
                                       context, ImportAccountFormKeyStore.route,
                                       arguments: {
                                         "type": _keyOptions[index],
-                                        "accountType": type
+                                        "accountType": type,
+                                        "needChange": needChange
                                       });
                                   break;
                               }

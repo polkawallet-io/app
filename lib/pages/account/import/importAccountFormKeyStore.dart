@@ -143,6 +143,16 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                       context, widget.service);
                                 }
 
+                                final needChange = (ModalRoute.of(context)
+                                        .settings
+                                        .arguments as Map)['needChange'] ==
+                                    false;
+                                if (needChange) {
+                                  Navigator.popUntil(
+                                      context, ModalRoute.withName('/'));
+                                  return;
+                                }
+
                                 widget.service.plugin.changeAccount(
                                     type == AccountType.Substrate
                                         ? widget.service.keyring.current

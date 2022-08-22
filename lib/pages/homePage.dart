@@ -437,7 +437,7 @@ class _HomePageState extends State<HomePage> {
                 _setupWssNotifyTimer();
                 widget.checkJSCodeUpdate(context, plugin);
               }, widget.disabledPlugins, widget.changeNetwork,
-                _handleWalletConnect)
+                _handleWalletConnect, context)
             : AssetsPage(widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
                 _setupWssNotifyTimer();

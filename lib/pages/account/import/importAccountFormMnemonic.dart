@@ -48,9 +48,10 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
 
   @override
   Widget build(BuildContext context) {
-    selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
-    final type = (ModalRoute.of(context).settings.arguments
-        as Map)['accountType'] as AccountType;
+    final data = (ModalRoute.of(context).settings.arguments as Map);
+    selected = data["type"];
+    final type = data['accountType'] as AccountType;
+    final needChange = data["needChange"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
         appBar: AppBar(
@@ -135,7 +136,8 @@ class _ImportAccountFormMnemonicState extends State<ImportAccountFormMnemonic> {
                                     'cryptoType': _advanceOptions.type ??
                                         CryptoType.sr25519,
                                     'derivePath': _advanceOptions.path ?? '',
-                                    "accountType": type
+                                    "accountType": type,
+                                    "needChange": needChange
                                   });
                             }
                           },

@@ -27,6 +27,7 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = ModalRoute.of(context).settings.arguments as Map;
+    final needChange = data['needChange'] == false;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -35,6 +36,7 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
           widget.service,
           submitting: _submitting,
           type: data['accountType'] as AccountType,
+          needChange: !needChange,
           onSubmit: () {
             return ImportAccountAction.onSubmit(context, widget.service, data,
                 (submitting) {

@@ -45,10 +45,11 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
 
   @override
   Widget build(BuildContext context) {
-    selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
+    final data = (ModalRoute.of(context).settings.arguments as Map);
+    selected = data["type"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final type = (ModalRoute.of(context).settings.arguments
-        as Map)['accountType'] as AccountType;
+    final type = data['accountType'] as AccountType;
+    final needChange = data['needChange'];
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -129,7 +130,8 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                                     'cryptoType': _advanceOptions.type ??
                                         CryptoType.sr25519,
                                     'derivePath': _advanceOptions.path ?? '',
-                                    "accountType": type
+                                    "accountType": type,
+                                    "needChange": needChange
                                   });
                             }
                           },

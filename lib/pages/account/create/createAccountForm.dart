@@ -14,13 +14,16 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 
 class CreateAccountForm extends StatefulWidget {
   CreateAccountForm(this.service,
-      {this.submitting, this.onSubmit, this.type = AccountType.Substrate});
+      {this.submitting,
+      this.onSubmit,
+      this.type = AccountType.Substrate,
+      this.needChange = true});
 
   final AppService service;
   final Future<bool> Function() onSubmit;
   final bool submitting;
   final AccountType type;
-
+  final bool needChange;
   @override
   _CreateAccountFormState createState() => _CreateAccountFormState();
 }
@@ -53,6 +56,11 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       final success = await widget.onSubmit();
 
       if (success) {
+        if (!widget.needChange) {
+          Navigator.popUntil(context, ModalRoute.withName('/'));
+          return;
+        }
+
         widget.service.store.account.setAccountType(widget.type);
 
         /// save password with biometrics after import success

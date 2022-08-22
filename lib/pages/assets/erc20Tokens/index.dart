@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
@@ -9,8 +12,8 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
-import 'package:app/utils/InstrumentWidget.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,9 +22,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
+import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
@@ -51,14 +56,14 @@ final assetsType = [
 
 class AssetsEVMPage extends StatefulWidget {
   AssetsEVMPage(
-    this.service,
-    this.plugins,
-    this.connectedNode,
-    this.checkJSCodeUpdate,
-    this.disabledPlugins,
-    this.changeNetwork,
-    this.handleWalletConnect,
-  );
+      this.service,
+      this.plugins,
+      this.connectedNode,
+      this.checkJSCodeUpdate,
+      this.disabledPlugins,
+      this.changeNetwork,
+      this.handleWalletConnect,
+      this.homePageContext);
 
   final AppService service;
   final NetworkParams connectedNode;
@@ -68,7 +73,7 @@ class AssetsEVMPage extends StatefulWidget {
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
-
+  final BuildContext homePageContext;
   @override
   _AssetsEVMState createState() => _AssetsEVMState();
 }
@@ -417,7 +422,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   @override
   void dispose() {
     _priceUpdateTimer?.cancel();
-
+    Navigator.of(context).pop();
     super.dispose();
   }
 
@@ -439,7 +444,111 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
     }
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  List _evmMenuItem(KeyPairData substrate, KeyPairData account) {
+    final querying =
+        (widget.service.plugin as PluginEvm).store.account.querying == true;
+    if (querying) return [];
+
+    String buttonTitle;
+    String buttonIcon;
+
+    if (substrate == null) {
+      buttonTitle =
+          I18n.of(context).getDic(i18n_full_dic_app, 'assets')['bind'];
+      buttonIcon = "assets/images/bind.svg";
+    } else if (account != null) {
+      buttonTitle =
+          I18n.of(context).getDic(i18n_full_dic_app, 'assets')['change'];
+      buttonIcon = "assets/images/change.svg";
+    } else {
+      buttonTitle =
+          I18n.of(context).getDic(i18n_full_dic_app, 'assets')['import'];
+      buttonIcon = "assets/images/import.svg";
+    }
+
+    return [
+      const v3.PopupMenuDivider(height: 1.0),
+      v3.PopupMenuItem(
+        height: 34,
+        value: '2',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              buttonIcon,
+              color: UI.isDarkTheme(context)
+                  ? Colors.white
+                  : const Color(0xFF979797),
+              width: 22,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: Text(
+                buttonTitle,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  Future<void> _reloadNetwork(PolkawalletPlugin plugin) async {
+    showCupertinoDialog(
+      context: widget.homePageContext,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(
+              I18n.of(context).getDic(i18n_full_dic_ui, 'common')['loading']),
+          content:
+              const SizedBox(height: 64, child: CupertinoActivityIndicator()),
+        );
+      },
+    );
+    await widget.changeNetwork(plugin);
+
+    ///current context is disposed
+    Navigator.of(widget.homePageContext).pop();
+  }
+
+  void _evmMenuItemAction(KeyPairData substrate, KeyPairData account) async {
+    final querying =
+        (widget.service.plugin as PluginEvm).store.account.querying == true;
+    if (querying) return;
+    if (substrate == null) {
+      // bind
+      Navigator.of(context)
+          .pushNamed(AccountBindPage.route, arguments: {"isPlugin": false});
+    } else if (account != null) {
+      //change
+      widget.service.store.account.setAccountType(AccountType.Substrate);
+
+      /// set current account
+      widget.service.keyring.setCurrent(account);
+      final plugin = widget.service.allPlugins
+          .where((element) =>
+              widget.service.plugin.basic.name.contains(element.basic.name))
+          .first;
+
+      /// set new network and reload web view
+      await _reloadNetwork(plugin);
+      plugin.changeAccount(account);
+      widget.service.store.assets.loadCache(account, plugin.basic.name);
+    } else {
+      //import
+      await Navigator.of(context).pushNamed(SelectImportTypePage.route,
+          arguments: {
+            "accountType": AccountType.Substrate,
+            "needChange": false
+          });
+      setState(() {});
+    }
+  }
+
+  PreferredSizeWidget _buildAppBar(KeyPairData substrate) {
+    final account = widget.service.keyring.allAccounts
+        .firstWhereOrNull((element) => element.pubKey == substrate?.pubKey);
     return AppBar(
       systemOverlayStyle: UI.isDarkTheme(context)
           ? SystemUiOverlayStyle.light
@@ -579,7 +688,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                     : Theme.of(context).cardColor,
                 padding: EdgeInsets.zero,
                 elevation: 3,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   side: BorderSide(color: Color(0x21FFFFFF), width: 0.5),
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
@@ -590,29 +699,33 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                   if (widget.service.keyring.current.address != '') {
                     if (value == '0') {
                       _handleScan();
-                    } else {
+                    } else if (value == '1') {
                       Navigator.pushNamed(context, AccountQrCodePage.route);
+                    } else {
+                      _evmMenuItemAction(substrate, account);
                     }
                   }
                 },
+                itemWidth: 132.w,
                 itemBuilder: (BuildContext context) {
                   return <v3.PopupMenuEntry<String>>[
                     v3.PopupMenuItem(
                       height: 34,
+                      value: '0',
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                              padding: EdgeInsets.only(left: 2),
+                              padding: const EdgeInsets.only(left: 2),
                               child: SvgPicture.asset(
                                 'assets/images/scan.svg',
                                 color: UI.isDarkTheme(context)
                                     ? Colors.white
-                                    : Color(0xFF979797),
+                                    : const Color(0xFF979797),
                                 width: 20,
                               )),
                           Padding(
-                            padding: EdgeInsets.only(left: 5),
+                            padding: const EdgeInsets.only(left: 5),
                             child: Text(
                               I18n.of(context)
                                   .getDic(i18n_full_dic_app, 'assets')['scan'],
@@ -621,11 +734,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                           )
                         ],
                       ),
-                      value: '0',
                     ),
-                    v3.PopupMenuDivider(height: 1.0),
+                    const v3.PopupMenuDivider(height: 1.0),
                     v3.PopupMenuItem(
                       height: 34,
+                      value: '1',
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -633,11 +746,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                             'assets/images/qr.svg',
                             color: UI.isDarkTheme(context)
                                 ? Colors.white
-                                : Color(0xFF979797),
+                                : const Color(0xFF979797),
                             width: 22,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 5),
+                            padding: const EdgeInsets.only(left: 5),
                             child: Text(
                               I18n.of(context).getDic(
                                   i18n_full_dic_app, 'assets')['QRCode'],
@@ -646,8 +759,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                           )
                         ],
                       ),
-                      value: '1',
                     ),
+                    ..._evmMenuItem(substrate, account)
                   ];
                 },
                 icon: v3.IconButton(
@@ -670,6 +783,10 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         final symbol = (widget.service.plugin is PluginEvm)
             ? (widget.service.plugin as PluginEvm).nativeToken
             : '-';
+
+        final substrate =
+            (widget.service.plugin as PluginEvm).store.account.substrate;
+
         const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
@@ -718,7 +835,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: _buildAppBar(),
+          appBar: _buildAppBar(substrate),
           body: CustomRefreshIndicator(
               edgeOffset: 16,
               key: _refreshKey,

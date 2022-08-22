@@ -44,8 +44,6 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
   final _viewKey = GlobalKey<FormState>();
   var _isShowSelect = false;
 
-  String _bindError;
-
   @override
   void initState() {
     super.initState();
@@ -249,17 +247,19 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                                                 return GestureDetector(
                                                   behavior:
                                                       HitTestBehavior.opaque,
-                                                  onTap: () {
+                                                  onTap: () async {
                                                     setState(() {
-                                                      Navigator.of(context).pushNamed(
-                                                          AccountBindEntryPage
-                                                              .route,
-                                                          arguments: widget
-                                                                  .isPlugin
-                                                              ? 1
-                                                              : 0); //bind subStrate:0,bind Evm:1
                                                       _isShowSelect = false;
                                                     });
+                                                    await Navigator.of(context)
+                                                        .pushNamed(
+                                                            AccountBindEntryPage
+                                                                .route,
+                                                            arguments: widget
+                                                                    .isPlugin
+                                                                ? 1
+                                                                : 0); //bind subStrate:0,bind Evm:1
+                                                    setState(() {});
                                                   },
                                                   child: Container(
                                                     padding:
@@ -444,17 +444,19 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                                                 return GestureDetector(
                                                   behavior:
                                                       HitTestBehavior.opaque,
-                                                  onTap: () {
+                                                  onTap: () async {
                                                     setState(() {
-                                                      Navigator.of(context).pushNamed(
-                                                          AccountBindEntryPage
-                                                              .route,
-                                                          arguments: widget
-                                                                  .isPlugin
-                                                              ? 1
-                                                              : 0); //bind subStrate:0,bind Evm:1
                                                       _isShowSelect = false;
                                                     });
+                                                    await Navigator.of(context)
+                                                        .pushNamed(
+                                                            AccountBindEntryPage
+                                                                .route,
+                                                            arguments: widget
+                                                                    .isPlugin
+                                                                ? 1
+                                                                : 0); //bind subStrate:0,bind Evm:1
+                                                    setState(() {});
                                                   },
                                                   child: Container(
                                                     padding:
@@ -506,7 +508,7 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                       widget.isPlugin ? const Color(0xFF121212) : Colors.white),
               title: "Connect",
               onPressed: () {
-                if (_bindError != null || available <= BigInt.zero) {
+                if (widget.bindError != null || available <= BigInt.zero) {
                   return;
                 }
                 widget.onNext();

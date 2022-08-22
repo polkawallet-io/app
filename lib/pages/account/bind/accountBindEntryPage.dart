@@ -35,11 +35,12 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                 title: dic['create'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.of(context).pushNamed(CreateAccountPage.route,
-                      arguments: {
-                        "accountType":
-                            type == 0 ? AccountType.Substrate : AccountType.Evm
-                      });
+                  Navigator.of(context)
+                      .pushNamed(CreateAccountPage.route, arguments: {
+                    "accountType":
+                        type == 0 ? AccountType.Substrate : AccountType.Evm,
+                    "needChange": false
+                  });
                 },
               ),
             ),
@@ -49,11 +50,12 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                 title: dic['import'],
                 isBlueBg: true,
                 onPressed: () {
-                  Navigator.of(context).pushNamed(SelectImportTypePage.route,
-                      arguments: {
-                        "accountType":
-                            type == 0 ? AccountType.Substrate : AccountType.Evm
-                      });
+                  Navigator.of(context)
+                      .pushNamed(SelectImportTypePage.route, arguments: {
+                    "accountType":
+                        type == 0 ? AccountType.Substrate : AccountType.Evm,
+                    "needChange": false
+                  });
                 },
               ),
             ),

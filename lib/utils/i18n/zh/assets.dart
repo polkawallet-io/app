@@ -105,5 +105,8 @@ const Map<String, String> zhAssets = {
   'v3.changeNetwork.ing': '正在切换至',
   'v3.my': '我的',
   'v3.tap': '切换',
-  'v3.priceTrend': '价格趋势'
+  'v3.priceTrend': '价格趋势',
+  'bind': '绑定账户',
+  'import': '导入账户',
+  'change': '切换账户',
 };
