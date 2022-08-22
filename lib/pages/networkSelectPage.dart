@@ -364,7 +364,18 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         final substrate = (widget.service.plugin is PluginEvm)
             ? (widget.service.plugin as PluginEvm).store.account.substrate
             : null;
-        print("substrate====${substrate.toJson()}");
+        if (substrate != null && substrate.name == null) {
+          final index = widget.service.keyring.allAccounts
+              .indexWhere(((element) => element.pubKey == substrate.pubKey));
+          if (index >= 0) {
+            (widget.service.plugin as PluginEvm).store.account.setSubstrate(
+                substrate
+                  ..name = widget.service.keyring.allAccounts[index].name
+                  ..observation =
+                      widget.service.keyring.allAccounts[index].observation,
+                widget.service.keyringEVM.current.toKeyPairData());
+          }
+        }
         return Column(
           children: [
             isCurrent && widget.isEvm
@@ -415,10 +426,9 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                             )
                           ],
                         ),
-                        Visibility(
-                            visible: substrate != null,
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 5),
+                        substrate != null
+                            ? Padding(
+                                padding: EdgeInsets.only(top: 3),
                                 child: Row(
                                   children: [
                                     Padding(
@@ -462,8 +472,42 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                                       svg: substrate.icon,
                                       size: 18,
                                     ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            substrate.name != null
+                                                ? UI.accountName(
+                                                    context, substrate)
+                                                : "",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                ?.copyWith(
+                                                    fontSize: UI.getTextSize(
+                                                        10, context)),
+                                          ),
+                                          Text(Fmt.address(substrate.address),
+                                              maxLines: 2,
+                                              style: TextStyle(
+                                                  fontSize: UI.getTextSize(
+                                                      8, context),
+                                                  fontWeight: FontWeight.w300,
+                                                  color: UI.isDarkTheme(context)
+                                                      ? Colors.white
+                                                          .withAlpha(191)
+                                                      : Color(0xFF565554),
+                                                  fontFamily: UI.getFontFamily(
+                                                      'SF_Pro', context)))
+                                        ],
+                                      ),
+                                    )
                                   ],
-                                )))
+                                ))
+                            : Container()
                       ],
                     ),
                   )
