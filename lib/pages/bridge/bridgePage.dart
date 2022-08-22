@@ -144,6 +144,7 @@ class _BridgePageState extends State<BridgePage> {
     final chainInfo =
         await widget.service.plugin.sdk.api.bridge.getChainsInfo();
     final routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
+    chainFromAll.retainWhere((e) => routes.indexWhere((r) => r.from == e) > -1);
 
     for (BridgeRouteData element in routes) {
       final Set<String> from = _chainToMap[element.from] ?? {};
@@ -172,9 +173,9 @@ class _BridgePageState extends State<BridgePage> {
     final token = args?.token;
     final address = args?.address;
     _chainFrom = from ??
-        (chainFromAll.contains(widget.service.plugin.basic.name)
+        (_chainFromAll.contains(widget.service.plugin.basic.name)
             ? widget.service.plugin.basic.name
-            : chainFromAll.first);
+            : _chainFromAll.first);
     _chainTo = to ??
         (_chainToMap[_chainFrom].contains('acala')
             ? 'acala'
