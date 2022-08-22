@@ -673,13 +673,15 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
-        final tokens = widget.service.plugin.noneNativeTokensAll ?? [];
+        var tokens = widget.service.plugin.noneNativeTokensAll.toList() ?? [];
 
         final customTokensConfig = (widget.service.plugin is PluginEvm)
             ? (widget.service.plugin as PluginEvm).store.assets.customAssets
             : {};
         if (customTokensConfig.keys.isNotEmpty) {
           tokens.retainWhere((e) => customTokensConfig[e.id]);
+        } else {
+          tokens = [];
         }
 
         // final extraTokens = widget.service.plugin.balances.extraTokens;

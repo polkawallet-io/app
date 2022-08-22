@@ -13,7 +13,7 @@ class AppService {
 
   final List<PolkawalletPlugin> allPlugins;
   final PluginEvm pluginEvm;
-  final PolkawalletPlugin plugin;
+  PolkawalletPlugin plugin;
   final Keyring keyring;
   final KeyringEVM keyringEVM;
   final AppStore store;
