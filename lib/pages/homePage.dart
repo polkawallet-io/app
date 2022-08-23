@@ -450,16 +450,19 @@ class _HomePageState extends State<HomePage> {
     final pluginPages =
         widget.service.plugin.getNavItems(context, widget.service.keyring);
     if (pluginPages.length > 1 ||
-        (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
+        (pluginPages.length == 1 && pluginPages[0].isAdapter) ||
+        pluginPages.length == 0) {
       final List<MetaHubItem> items = [];
       items.add(buildMetaHubEVM());
-      if (widget.service.store.settings.dapps.length > 0) {
-        items.add(buildMetaHubBrowser());
-      }
-      items.add(buildMetaBridge());
-      final ecosystemItem = buildMetaHubEcosystem();
-      if (ecosystemItem != null) {
-        items.add(buildMetaHubEcosystem());
+      if (widget.service.store.account.accountType == AccountType.Substrate) {
+        if (widget.service.store.settings.dapps.length > 0) {
+          items.add(buildMetaHubBrowser());
+        }
+        items.add(buildMetaBridge());
+        final ecosystemItem = buildMetaHubEcosystem();
+        if (ecosystemItem != null) {
+          items.add(ecosystemItem);
+        }
       }
       pluginPages.forEach((element) {
         if (element.isAdapter) {
