@@ -127,5 +127,8 @@ const Map<String, String> zhPublic = {
   'bridge.connecting.warn': '网络连接超时，\n请稍后重试',
   'hub.cover.evm': '一个简单的工具，使您的Substrate和EVM地址享受Polkawallet中的两种不同的构造生态系统。',
   'evm.bind': '绑定',
+  'evm.bound': '绑定账户',
   'evm.claim.signature': '创建声明签名',
+  'evm.bind.success': '您已成功绑定您的 EVM 账户！',
+  'evm.more.features': '请继续关注更多功能\n即将推出！',
 };

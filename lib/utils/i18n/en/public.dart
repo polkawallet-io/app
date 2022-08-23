@@ -141,5 +141,8 @@ const Map<String, String> enPublic = {
   'hub.cover.evm':
       'A simple tool to bing your Substrate and EVM addresses enjoy the two different constructional ecosystems in Polkawallet.',
   'evm.bind': 'Bind',
+  'evm.bound': 'Bound Account',
   'evm.claim.signature': 'Create Claim signature',
+  'evm.more.features': 'Stay tuned for more features \ncoming !',
+  'evm.bind.success': 'You have bound your EVM account successfully!',
 };
