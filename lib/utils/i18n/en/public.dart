@@ -145,4 +145,7 @@ const Map<String, String> enPublic = {
   'evm.claim.signature': 'Create Claim signature',
   'evm.more.features': 'Stay tuned for more features \ncoming !',
   'evm.bind.success': 'You have bound your EVM account successfully!',
+  'evm.change.title': 'Change Account Genre',
+  'evm.change.tips':
+      'You will change into the bound substrate account directly',
 };

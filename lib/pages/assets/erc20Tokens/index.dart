@@ -5,7 +5,6 @@ import 'package:app/common/consts.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
-import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -22,7 +21,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -422,7 +420,6 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   @override
   void dispose() {
     _priceUpdateTimer?.cancel();
-    Navigator.of(context).pop();
     super.dispose();
   }
 
@@ -447,7 +444,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   List _evmMenuItem(KeyPairData substrate, KeyPairData account) {
     final querying =
         (widget.service.plugin as PluginEvm).store.account.querying == true;
-    if (querying) return [];
+    if (querying && substrate == null) return [];
 
     String buttonTitle;
     String buttonIcon;
@@ -521,6 +518,36 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
       Navigator.of(context)
           .pushNamed(AccountBindPage.route, arguments: {"isPlugin": false});
     } else if (account != null) {
+      final dicPublic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+      final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+      final confirmed = await showCupertinoDialog(
+        context: widget.homePageContext,
+        builder: (_) {
+          return PolkawalletAlertDialog(
+            title: Text(dicPublic['evm.change.title']),
+            content: Container(
+                margin: const EdgeInsets.only(top: 8),
+                child: Text(dicPublic['evm.change.tips'])),
+            actions: <Widget>[
+              PolkawalletActionSheetAction(
+                child: Text(dic['cancel']),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
+                child: Text(dic['ok']),
+                onPressed: () {
+                  Navigator.of(widget.homePageContext).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!confirmed) {
+        return;
+      }
       //change
       widget.service.store.account.setAccountType(AccountType.Substrate);
 
@@ -784,8 +811,9 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
             ? (widget.service.plugin as PluginEvm).nativeToken
             : '-';
 
-        final substrate =
-            (widget.service.plugin as PluginEvm).store.account.substrate;
+        final substrate = (widget.service.plugin is PluginEvm)
+            ? (widget.service.plugin as PluginEvm).store.account.substrate
+            : null;
 
         const decimals = 18;
 

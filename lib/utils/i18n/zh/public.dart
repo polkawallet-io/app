@@ -131,4 +131,6 @@ const Map<String, String> zhPublic = {
   'evm.claim.signature': '创建声明签名',
   'evm.bind.success': '您已成功绑定您的 EVM 账户！',
   'evm.more.features': '请继续关注更多功能\n即将推出！',
+  'evm.change.title': '切换账户体系',
+  'evm.change.tips': '您将切换至被绑定的Substrate账户',
 };

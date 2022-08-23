@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:app/common/consts.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/account/bind/accountBindSuccess.dart';
 import 'package:app/pages/assets/erc20Tokens/index.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
@@ -16,11 +17,14 @@ import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/BottomNavigationBar.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -285,59 +289,78 @@ class _HomePageState extends State<HomePage> {
     return MetaHubItem(
         "EVM+",
         GestureDetector(
-          child: Column(children: [
-            Expanded(
-                child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Image.asset('assets/images/public/hub_evm.png'),
-                  Container(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text(
-                      dic['hub.cover.evm'],
-                      textAlign: TextAlign.justify,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4
-                          .copyWith(fontSize: 14, color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            )),
-            Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(36, 255, 255, 255),
-                    borderRadius: BorderRadius.all(Radius.circular(4))),
-                alignment: AlignmentDirectional.center,
-                child: Text(
-                  dic['hub.enter'],
-                  style: Theme.of(context).textTheme.headline1.copyWith(
-                      fontSize: 20, color: Theme.of(context).errorColor),
-                ))
-          ]),
-          onTap: () {
-            if (widget.service.plugin is PluginEvm) {
-              // Navigator.of(context).pushNamed(BrowserPage.route);
-              Navigator.of(context).pushNamed(AccountBindPage.route,
-                  arguments: {"isPlugin": false});
-              return;
-            } else if (widget.service.plugin.basic.name !=
-                    para_chain_name_acala &&
-                widget.service.plugin.basic.name != para_chain_name_karura) {
-              widget.service.plugin.appUtils.switchNetwork(
-                para_chain_name_acala,
-                pageRoute: PageRouteParams(AccountBindPage.route,
-                    args: {"isPlugin": true}),
-              );
-              return;
-            }
-            Navigator.of(context).pushNamed(AccountBindPage.route,
-                arguments: {"isPlugin": true});
-          },
-        ));
+            child: Column(children: [
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Image.asset('assets/images/public/hub_evm.png'),
+                    Container(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text(
+                        dic['hub.cover.evm'],
+                        textAlign: TextAlign.justify,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .copyWith(fontSize: 14, color: Colors.white),
+                      ),
+                    )
+                  ],
+                ),
+              )),
+              Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(36, 255, 255, 255),
+                      borderRadius: BorderRadius.all(Radius.circular(4))),
+                  alignment: AlignmentDirectional.center,
+                  child: Text(
+                    dic['hub.enter'],
+                    style: Theme.of(context).textTheme.headline1.copyWith(
+                        fontSize: 20, color: Theme.of(context).errorColor),
+                  ))
+            ]),
+            onTap: () {
+              if (widget.service.plugin is PluginEvm) {
+                // Navigator.of(context).pushNamed(BrowserPage.route);
+                Navigator.of(context).pushNamed(AccountBindSuccess.route,
+                    arguments: {
+                      "ethAccount": widget.service.keyringEVM.current
+                    });
+                return;
+              } else if (widget.service.plugin is! PluginAcala &&
+                  widget.service.plugin is! PluginKarura) {
+                widget.service.plugin.appUtils.switchNetwork(
+                  para_chain_name_acala,
+                  pageRoute: PageRouteParams(AccountBindPage.route,
+                      args: {"isPlugin": true}),
+                );
+                return;
+              } else {
+                final ethWalletData = widget.service.plugin is PluginAcala
+                    ? (widget.service.plugin as PluginAcala)
+                        .store
+                        .accounts
+                        .ethWalletData
+                    : (widget.service.plugin as PluginKarura)
+                        .store
+                        .accounts
+                        .ethWalletData;
+                if (ethWalletData == null) {
+                  Navigator.of(context).pushNamed(AccountBindPage.route,
+                      arguments: {"isPlugin": true});
+                  return;
+                }
+                final current = widget.service.keyringEVM.allAccounts
+                    .firstWhereOrNull((element) =>
+                        element.address.toLowerCase() ==
+                        ethWalletData.address.toLowerCase());
+                Navigator.of(context).pushNamed(AccountBindSuccess.route,
+                    arguments: {"ethAccount": current ?? ethWalletData});
+              }
+            }));
   }
 
   MetaHubItem buildMetaHubEcosystem() {
