@@ -559,7 +559,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
           Text(
             name.toUpperCase(),
             style: Theme.of(context).textTheme.headline3?.copyWith(
-                fontSize: 36, fontWeight: FontWeight.bold, height: 1.0),
+                fontSize: 32, fontWeight: FontWeight.bold, height: 1.0),
           ),
         ],
       ),
@@ -568,7 +568,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
           child: _CommunityPluginNote(name, false)),
       Expanded(
           child: Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: SingleChildScrollView(
                 child: Column(
                   children: accountWidgets,

@@ -833,7 +833,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
             ? (widget.service.plugin as PluginEvm).store.assets.customAssets
             : {};
         if (customTokensConfig.keys.isNotEmpty) {
-          tokens.retainWhere((e) => customTokensConfig[e.id]);
+          tokens.retainWhere((e) => customTokensConfig[e.id.toLowerCase()]);
         } else {
           tokens = [];
         }
