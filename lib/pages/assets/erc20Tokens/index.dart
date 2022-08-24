@@ -442,6 +442,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   }
 
   List _evmMenuItem(KeyPairData substrate, KeyPairData account) {
+    if (!widget.service.plugin.basic.name.contains(para_chain_name_acala) &&
+        !widget.service.plugin.basic.name.contains(para_chain_name_karura)) {
+      return [];
+    }
+
     final querying =
         (widget.service.plugin as PluginEvm).store.account.querying == true;
     if (querying && substrate == null) return [];
@@ -515,8 +520,12 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
     if (querying) return;
     if (substrate == null) {
       // bind
-      Navigator.of(context)
+      final res = await Navigator.of(context)
           .pushNamed(AccountBindPage.route, arguments: {"isPlugin": false});
+      // update bindAccount
+      if (res != null) {
+        (widget.service.plugin as PluginEvm).updateSubstrateAccount();
+      }
     } else if (account != null) {
       final dicPublic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
       final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
