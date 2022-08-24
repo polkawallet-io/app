@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ImportAccountAction {
   static Future<void> authBiometric(
@@ -28,7 +28,7 @@ class ImportAccountAction {
               ? service.keyring.current.pubKey
               : service.keyringEVM.current.address);
     } catch (err) {
-      service.account.closeBiometricDisabled(
+      service.account.setBiometricDisabled(
           service.store.account.accountType == AccountType.Substrate
               ? service.keyring.current.pubKey
               : service.keyringEVM.current.address);
@@ -117,7 +117,7 @@ class ImportAccountAction {
             derivePath: _derivePath,
             type: _type,
             evmKeyType: _evmkeyType);
-        service.account.closeBiometricDisabled(acc['pubKey']);
+        service.account.setBiometricDisabled(acc['pubKey']);
       }
       obSubmittingChang(false);
       Navigator.of(context).pop();

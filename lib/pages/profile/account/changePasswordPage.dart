@@ -9,9 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   ChangePasswordPage(this.service);
@@ -58,10 +58,10 @@ class _ChangePassword extends State<ChangePasswordPage> {
         await storeFile.write(passNew);
         widget.service.account.setBiometricEnabled(pubKey);
       } catch (err) {
-        widget.service.account.closeBiometricDisabled(pubKey);
+        widget.service.account.setBiometricDisabled(pubKey);
       }
     } else {
-      widget.service.account.closeBiometricDisabled(pubKey);
+      widget.service.account.setBiometricDisabled(pubKey);
     }
 
     setState(() {

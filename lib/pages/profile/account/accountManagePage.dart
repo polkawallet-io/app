@@ -15,11 +15,11 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/index.dart' as v3;
-import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 
 class AccountManagePage extends StatefulWidget {
   AccountManagePage(this.service);
@@ -103,10 +103,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
       } catch (err) {
         print(err);
         // user may cancel the biometric auth. then we set biometric disabled
-        widget.service.account.closeBiometricDisabled(pubKey);
+        widget.service.account.setBiometricDisabled(pubKey);
       }
     } else {
-      widget.service.account.closeBiometricDisabled(pubKey);
+      widget.service.account.setBiometricDisabled(pubKey);
       result = enable;
     }
 
@@ -131,7 +131,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
     final storeFile =
         await widget.service.account.getBiometricPassStoreFile(context, pubKey);
     final isAuthorized =
-        !widget.service.account.isCloseBiometricDisabled(pubKey);
+        !widget.service.account.isBiometricDisabledByUser(pubKey);
     setState(() {
       _isBiometricAuthorized = isAuthorized;
       _authStorage = storeFile;

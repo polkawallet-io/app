@@ -14,8 +14,8 @@ import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ApiAccount {
   ApiAccount(this.apiRoot);
@@ -100,11 +100,11 @@ class ApiAccount {
   // }
 
   // Actively turn off the function and will not be automatically unlocked again
-  void closeBiometricDisabled(String pubKey) {
+  void setBiometricDisabled(String pubKey) {
     apiRoot.store.storage.write('$_biometricEnabledKey$pubKey', 0);
   }
 
-  bool isCloseBiometricDisabled(String pubKey) {
+  bool isBiometricDisabledByUser(String pubKey) {
     final timestamp =
         apiRoot.store.storage.read('$_biometricEnabledKey$pubKey');
     if (timestamp == null || timestamp == 0) {
@@ -172,7 +172,7 @@ class ApiAccount {
 
   Future<String> getPassword(BuildContext context, KeyPairData acc) async {
     final bioPass = await getPasswordWithBiometricAuth(context, acc.pubKey);
-    final isClose = isCloseBiometricDisabled(acc.pubKey);
+    final isClose = isBiometricDisabledByUser(acc.pubKey);
     if (bioPass == null && !isClose) {
       await showCupertinoDialog(
         context: context,
@@ -234,7 +234,7 @@ class ApiAccount {
 
   Future<String> getEvmPassword(BuildContext context, EthWalletData acc) async {
     final bioPass = await getPasswordWithBiometricAuth(context, acc.address);
-    final isClose = isCloseBiometricDisabled(acc.address);
+    final isClose = isBiometricDisabledByUser(acc.address);
     if (bioPass == null && !isClose) {
       await showCupertinoDialog(
         context: context,
