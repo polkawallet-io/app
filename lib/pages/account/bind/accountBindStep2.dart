@@ -256,8 +256,9 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
               ],
             ),
           )),
-          Container(
-            margin: const EdgeInsets.only(top: 10, bottom: 60),
+          SafeArea(
+              child: Container(
+            margin: const EdgeInsets.only(top: 10, bottom: 16),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
@@ -292,7 +293,7 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
                 ))
               ],
             ),
-          )
+          ))
         ],
       ),
     );

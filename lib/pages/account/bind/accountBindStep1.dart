@@ -1,4 +1,3 @@
-import 'package:app/common/consts.dart';
 import 'package:app/pages/account/bind/accountBindEntryPage.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
@@ -520,7 +519,7 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                       ],
               )),
               SafeArea(
-                minimum: const EdgeInsets.only(bottom: 70),
+                minimum: const EdgeInsets.only(bottom: 24),
                 child: Button(
                   isDarkTheme: widget.isPlugin,
                   style: Theme.of(context).textTheme.button.copyWith(

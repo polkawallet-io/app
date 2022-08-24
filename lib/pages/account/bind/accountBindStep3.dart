@@ -70,7 +70,7 @@ class _AccountBindStep3State extends State<AccountBindStep3> {
             ],
           )),
           SafeArea(
-              minimum: const EdgeInsets.only(bottom: 70),
+              minimum: const EdgeInsets.only(bottom: 24),
               child: Button(
                 title: dicPublic['evm.bind'],
                 isDarkTheme: widget.isPlugin,

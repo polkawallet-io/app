@@ -821,7 +821,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
             : '-';
 
         final substrate = (widget.service.plugin is PluginEvm)
-            ? (widget.service.plugin as PluginEvm).store.account.substrate
+            ? (widget.service.plugin as PluginEvm)?.store?.account?.substrate
             : null;
 
         const decimals = 18;
@@ -830,9 +830,9 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         var tokens = widget.service.plugin.noneNativeTokensAll.toList() ?? [];
 
         final customTokensConfig = (widget.service.plugin is PluginEvm)
-            ? (widget.service.plugin as PluginEvm).store.assets.customAssets
+            ? (widget.service.plugin as PluginEvm).store?.assets?.customAssets
             : {};
-        if (customTokensConfig.keys.isNotEmpty) {
+        if (customTokensConfig?.keys?.isNotEmpty == true) {
           tokens.retainWhere((e) => customTokensConfig[e.id.toLowerCase()]);
         } else {
           tokens = [];
@@ -844,9 +844,9 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
         String tokenPrice;
         double allPrice = 0.0;
-        if (widget.service.store.assets.marketPrices[symbol] != null &&
+        if (widget.service.store?.assets?.marketPrices[symbol] != null &&
             balancesInfo != null) {
-          allPrice = widget.service.store.assets.marketPrices[symbol] *
+          allPrice = widget.service.store?.assets?.marketPrices[symbol] *
               (widget.service.store.settings.priceCurrency != "USD"
                   ? _rate
                   : 1.0) *
@@ -856,11 +856,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
         tokens.forEach(
           (element) {
-            if (widget.service.store.assets
-                    .marketPrices[element.symbol.toUpperCase()] !=
+            if (widget.service.store?.assets
+                    ?.marketPrices[element.symbol.toUpperCase()] !=
                 null) {
-              allPrice += widget.service.store.assets
-                      .marketPrices[element.symbol.toUpperCase()] *
+              allPrice += widget.service.store?.assets
+                      ?.marketPrices[element.symbol.toUpperCase()] *
                   (widget.service.store.settings.priceCurrency != "USD"
                       ? _rate
                       : 1.0) *
