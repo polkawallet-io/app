@@ -32,89 +32,85 @@ class _AccountBindSuccessState extends State<AccountBindSuccess> {
 
   @override
   Widget build(BuildContext context) {
-    final EthWalletData ethWalletData =
-        (ModalRoute.of(context).settings.arguments as Map)['ethAccount'];
+    final arg = ModalRoute.of(context).settings?.arguments as Map;
+    final EthWalletData ethWalletData = arg != null ? arg['ethAccount'] : null;
     final dicPublic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    return Stack(children: [
-      PluginScaffold(
-        appBar: const PluginAppBar(
-          title: Text("EVM+"),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-          child: Column(
+    return PluginScaffold(
+      appBar: const PluginAppBar(
+        title: Text("EVM+"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+        child: Stack(children: [
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 16),
-                child: Text(
-                  dicPublic['evm.bind.success'],
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4
-                      .copyWith(color: Colors.white),
-                ),
-              ),
-              PluginAddressFormItem(
-                  account: ethWalletData.toKeyPairData(),
-                  label: dicPublic['evm.bound']),
-              Padding(
-                padding: const EdgeInsets.only(top: 80),
-                child: GestureDetector(
-                    onTap: () =>
-                        _isPlaying ? null : _controller.isActive = true,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 96,
-                            width: 310,
-                            margin: const EdgeInsets.only(top: 160),
-                            child: const RiveAnimation.asset(
-                              'assets/images/streamer_card.riv',
-                              fit: BoxFit.none,
-                            ),
-                          ),
-                        ),
-                        Center(
-                            child: Container(
-                          margin: const EdgeInsets.only(top: 160),
-                          width: 308,
-                          height: 94,
-                          alignment: Alignment.center,
-                          child: Text(
-                            dicPublic['evm.more.features'],
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline3
-                                .copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                          ),
-                        )),
-                      ],
-                    )),
-              )
+              Visibility(
+                  visible: ethWalletData != null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      dicPublic['evm.bind.success'],
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(color: Colors.white),
+                    ),
+                  )),
+              Visibility(
+                  visible: ethWalletData != null,
+                  child: PluginAddressFormItem(
+                      account: ethWalletData?.toKeyPairData(),
+                      label: dicPublic['evm.bound'])),
             ],
           ),
-        ),
+          Align(
+              alignment: Alignment.topCenter,
+              child: GestureDetector(
+                  onTap: () => _isPlaying ? null : _controller.isActive = true,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 96,
+                        width: 310,
+                        margin: const EdgeInsets.only(top: 365),
+                        child: const RiveAnimation.asset(
+                          'assets/images/streamer_card.riv',
+                          fit: BoxFit.none,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 365),
+                        width: 308,
+                        height: 94,
+                        alignment: Alignment.center,
+                        child: Text(
+                          dicPublic['evm.more.features'],
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline3.copyWith(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ))),
+          Align(
+            alignment: Alignment.topCenter,
+            child: GestureDetector(
+                onTap: () => _isPlaying ? null : _controller.isActive = true,
+                child: SizedBox(
+                  height: 380,
+                  width: 110,
+                  child: RiveAnimation.asset(
+                    'assets/images/small_rocket.riv',
+                    fit: BoxFit.fitWidth,
+                    animations:
+                        _controller.isActive ? const ['Animation 1'] : [],
+                    controllers: [_controller],
+                  ),
+                )),
+          ),
+        ]),
       ),
-      Align(
-        alignment: Alignment.topCenter,
-        child: GestureDetector(
-            onTap: () => _isPlaying ? null : _controller.isActive = true,
-            child: SizedBox(
-              height: 600,
-              width: 110,
-              child: RiveAnimation.asset(
-                'assets/images/small_rocket.riv',
-                fit: BoxFit.fitWidth,
-                animations: _controller.isActive ? const ['Animation 1'] : [],
-                controllers: [_controller],
-              ),
-            )),
-      ),
-    ]);
+    );
   }
 }

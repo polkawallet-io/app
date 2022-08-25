@@ -52,11 +52,13 @@ class _AccountBindPageState extends State<AccountBindPage> {
   _initBridge() async {
     final chain = _isAcala ? 'acala' : 'karura';
     await widget.service.plugin.sdk.api.bridge.init();
+
+    // todo: remove testnet before release
     await widget.service.plugin.sdk.api.bridge.connectFromChains([
       chain
     ], nodeList: {
-      // 'karura': ['wss://karura-dev.aca-dev.network/rpc/ws'],
-      // 'acala': ['wss://acala-dev.aca-dev.network/rpc/ws']
+      'karura': ['wss://karura-dev.aca-dev.network/rpc/ws'],
+      'acala': ['wss://acala-dev.aca-dev.network/rpc/ws']
     });
     _subscribeBalance();
     _queryBindAddress();

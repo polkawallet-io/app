@@ -43,8 +43,15 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
     setState(() {
       _submitting = true;
     });
+
+    // todo: remove testnet before release
     Map res = await widget.service.account.evmSignMessage(
-        isAcala ? metamask_acala_params : metamask_karura_params,
+        // isAcala
+        //     ? metamask_acala_params
+        //     : metamask_karura_params,
+        isAcala
+            ? metamask_acala_testnet_params
+            : metamask_karura_testnet_params,
         widget.keyPairData.pubKey,
         widget.ethWalletData.address,
         password);

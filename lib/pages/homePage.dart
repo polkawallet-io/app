@@ -298,7 +298,9 @@ class _HomePageState extends State<HomePage> {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Image.asset('assets/images/public/hub_evm.png'),
+                    widget.service.plugin is PluginEvm
+                        ? Image.asset('assets/images/public/hub_plugin_evm.png')
+                        : Image.asset('assets/images/public/hub_evm.png'),
                     Container(
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
@@ -329,10 +331,7 @@ class _HomePageState extends State<HomePage> {
             onTap: () {
               if (widget.service.plugin is PluginEvm) {
                 // Navigator.of(context).pushNamed(BrowserPage.route);
-                Navigator.of(context).pushNamed(AccountBindSuccess.route,
-                    arguments: {
-                      "ethAccount": widget.service.keyringEVM.current
-                    });
+                Navigator.of(context).pushNamed(AccountBindSuccess.route);
                 return;
               } else if (widget.service.plugin is! PluginAcala &&
                   widget.service.plugin is! PluginKarura) {
