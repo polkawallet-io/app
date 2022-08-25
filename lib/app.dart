@@ -429,8 +429,18 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
     _service.plugin.dispose();
 
-    final service = AppService(widget.plugins, network, _keyring, _store,
-        _keyringEVM, PluginEvm(networkName: _store.settings.evmNetwork));
+    final service = AppService(
+        widget.plugins,
+        network
+          ..appUtils.switchNetwork ??= (String network,
+              {PageRouteParams pageRoute, int accountType = 0}) async {
+            _switchNetwork(network,
+                pageRoute: pageRoute, accountType: accountType);
+          },
+        _keyring,
+        _store,
+        _keyringEVM,
+        PluginEvm(networkName: _store.settings.evmNetwork));
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -454,7 +464,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _switchNetwork(String networkName,
-      {NetworkParams node, PageRouteParams pageRoute}) async {
+      {NetworkParams node,
+      PageRouteParams pageRoute,
+      int accountType = 0}) async {
     final isNetworkChanged = networkName != _service.plugin.basic.name;
 
     if (isNetworkChanged) {
@@ -515,9 +527,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             );
           });
     }
-
+    if (_store.account.accountType.index != accountType) {
+      _store.account.setAccountType(AccountType.values.elementAt(accountType));
+    }
     await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == networkName),
+        accountType == 0
+            ? widget.plugins.firstWhere((e) => e.basic.name == networkName)
+            : PluginEvm(networkName: networkName.split("-").last),
         node: node);
     await _service.store.assets.loadCache(_keyring.current, networkName);
 
@@ -620,7 +636,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       final service = AppService(
           widget.plugins,
           store.account.accountType == AccountType.Evm
-              ? PluginEvm(networkName: store.settings.evmNetwork)
+              ? (PluginEvm(networkName: store.settings.evmNetwork)
+                ..appUtils.switchNetwork ??= (String network,
+                    {PageRouteParams pageRoute, int accountType = 0}) async {
+                  _switchNetwork(network,
+                      pageRoute: pageRoute, accountType: accountType);
+                })
               : widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           store,
@@ -864,8 +885,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
 
       if (network != null && network != _service.plugin.basic.name) {
+        //TODO: share url add accountType
         _switchNetwork(network,
-            pageRoute: PageRouteParams(pathDatas[0], args: args));
+            pageRoute: PageRouteParams(pathDatas[0], args: args),
+            accountType: 0);
       } else {
         _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
         WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
@@ -914,14 +937,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _setupPluginsNetworkSwitch() {
-    widget.plugins.forEach((e) {
-      if (e.appUtils.switchNetwork == null) {
-        e.appUtils.switchNetwork =
-            (String network, {PageRouteParams pageRoute}) async {
-          _switchNetwork(network, pageRoute: pageRoute);
-        };
-      }
-    });
+    for (var e in widget.plugins) {
+      e.appUtils.switchNetwork ??= (String network,
+          {PageRouteParams pageRoute, int accountType = 0}) async {
+        _switchNetwork(network, pageRoute: pageRoute, accountType: accountType);
+      };
+    }
   }
 
   void _doAutoRouting() {

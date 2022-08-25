@@ -53,7 +53,9 @@ class HomePage extends StatefulWidget {
   final Future<void> Function(BuildContext, PolkawalletPlugin,
       {bool needReload}) checkJSCodeUpdate;
   final Future<void> Function(String,
-      {NetworkParams node, PageRouteParams pageRoute}) switchNetwork;
+      {NetworkParams node,
+      PageRouteParams pageRoute,
+      int accountType}) switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
@@ -114,12 +116,14 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _onOpenNotification(Map params) async {
     final network = params['network'];
+    //accountType(0:Substrate,1:evm)
+    final accountType = params['accountType'] ?? 0;
     final tab = params['tab'];
     if (network != null && network != widget.service.plugin.basic.name) {
       Navigator.popUntil(context, ModalRoute.withName('/'));
 
       _setupWssNotifyTimer();
-      await widget.switchNetwork(network);
+      await widget.switchNetwork(network, accountType: accountType);
     }
     if (tab != null) {
       final initialTab = int.parse(tab);
