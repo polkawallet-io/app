@@ -125,20 +125,23 @@ class _AssetsState extends State<AssetsPage> {
       }
 
       if (data.type == QRCodeResultType.address) {
-        if (widget.service.plugin.basic.name == para_chain_name_karura ||
-            widget.service.plugin.basic.name == para_chain_name_acala) {
-          final symbol =
-              (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-          Navigator.of(context).pushNamed('/assets/token/transfer', arguments: {
-            'tokenNameId': symbol,
-            'address': data.address.address
-          });
-          return;
+        if (data.address.chainType == "substrate") {
+          if (widget.service.plugin.basic.name == para_chain_name_karura ||
+              widget.service.plugin.basic.name == para_chain_name_acala) {
+            final symbol =
+                (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+            Navigator.of(context).pushNamed('/assets/token/transfer',
+                arguments: {
+                  'tokenNameId': symbol,
+                  'address': data.address.address
+                });
+            return;
+          }
+          Navigator.of(context).pushNamed(
+            TransferPage.route,
+            arguments: TransferPageParams(address: data.address.address),
+          );
         }
-        Navigator.of(context).pushNamed(
-          TransferPage.route,
-          arguments: TransferPageParams(address: data.address.address),
-        );
         return;
       }
 

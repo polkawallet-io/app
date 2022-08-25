@@ -871,24 +871,26 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
     if (paths.length > 1) {
       String network;
+      int accountType = 0;
       final pathDatas = paths[1].split("?");
       if (pathDatas.length > 1) {
         final datas = pathDatas[1].split("&");
-        datas.forEach((element) {
+        for (var element in datas) {
           if (element.split("=")[0] == "network") {
             network = Uri.decodeComponent(element.split("=")[1]);
+          } else if (element.split("=")[0] == "accountType") {
+            accountType = int.parse(Uri.decodeComponent(element.split("=")[1]));
           } else {
             args[element.split("=")[0]] =
                 Uri.decodeComponent(element.split("=")[1]);
           }
-        });
+        }
       }
 
       if (network != null && network != _service.plugin.basic.name) {
-        //TODO: share url add accountType
         _switchNetwork(network,
             pageRoute: PageRouteParams(pathDatas[0], args: args),
-            accountType: 0);
+            accountType: accountType);
       } else {
         _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
         WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
