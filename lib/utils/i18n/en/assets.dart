@@ -118,4 +118,8 @@ const Map<String, String> enAssets = {
   'bind': 'Bind Account',
   'import': 'Import Account',
   'change': 'Change Account',
+  'evm.send.0': 'Send To',
+  'evm.send.1': 'Set Amount',
+  'evm.send.2': 'Confirm',
+  'evm.send.time': 'Likely in',
 };

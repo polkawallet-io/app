@@ -13,6 +13,8 @@ import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTransferPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -802,6 +804,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),
+      EthTransferPage.route: (_) => EthTransferPage(_service),
+      EthTransferConfirmPage.route: (_) => EthTransferConfirmPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
       AnnouncementPage.route: (_) => AnnouncementPage(),

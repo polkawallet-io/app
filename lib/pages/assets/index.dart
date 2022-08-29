@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
-import 'package:app/pages/account/accountTypeSelectPage.dart';
-import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -96,9 +95,11 @@ class _AssetsState extends State<AssetsPage> {
       _refreshing = true;
     });
     await widget.service.plugin.updateBalances(widget.service.keyring.current);
-    setState(() {
-      _refreshing = false;
-    });
+    if (mounted) {
+      setState(() {
+        _refreshing = false;
+      });
+    }
   }
 
   Future<void> _updateMarketPrices() async {
@@ -384,9 +385,11 @@ class _AssetsState extends State<AssetsPage> {
     if (oldWidget.connectedNode?.endpoint != widget.connectedNode?.endpoint) {
       if (_refreshing) {
         _refreshKey.currentState.dismiss(CustomRefreshIndicatorMode.canceled);
-        setState(() {
-          _refreshing = false;
-        });
+        if (mounted) {
+          setState(() {
+            _refreshing = false;
+          });
+        }
       }
     }
   }

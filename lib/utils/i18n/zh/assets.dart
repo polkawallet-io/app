@@ -109,4 +109,8 @@ const Map<String, String> zhAssets = {
   'bind': '绑定账户',
   'import': '导入账户',
   'change': '切换账户',
+  'evm.send.0': '发送',
+  'evm.send.1': '发送数量',
+  'evm.send.2': '确认',
+  'evm.send.time': '预估时间',
 };
