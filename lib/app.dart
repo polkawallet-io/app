@@ -122,7 +122,7 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
-  final _analytics = FirebaseAnalytics();
+  final _analytics = FirebaseAnalytics.instance;
 
   Keyring _keyring;
 
