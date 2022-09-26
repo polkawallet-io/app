@@ -17,6 +17,7 @@ import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/bottomSheetContainer.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
@@ -30,13 +31,12 @@ import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
-  CrossChainTransferPage(this.service, {Key key}) : super(key: key);
+  const CrossChainTransferPage(this.service, {Key key}) : super(key: key);
   final AppService service;
 
-  static final String route = '/ecosystem/crosschainTransfer';
+  static const String route = '/ecosystem/crosschainTransfer';
 
   @override
   State<CrossChainTransferPage> createState() => _CrossChainTransferPageState();
@@ -174,6 +174,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
               ),
             },
             params: xcmParams['params'],
+            txHex: xcmParams['txHex'],
             chainFrom: fromNetwork,
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
@@ -219,13 +220,20 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
     });
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
 
     final sender = TxSenderData(widget.service.keyring.current.address,
         widget.service.keyring.current.pubKey);
-    final xcmParams = await _getXcmParams('100000000', feeEstimate: true);
+    final xcmParams = await _getXcmParams(
+        Fmt.tokenInt(
+                _amountCtrl.text.trim().isEmpty ? '0' : _amountCtrl.text.trim(),
+                balance.decimals)
+            .toString(),
+        feeEstimate: true);
     if (xcmParams == null) return '0';
 
-    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender,
+        txHex: xcmParams['txHex']);
 
     String fee = '0';
     if (fromNetwork == plugin_name_karura || fromNetwork == plugin_name_acala) {
@@ -234,7 +242,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
       fee = feeData.partialFee.toString();
     } else {
       final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, [])');
       if (feeData != null) {
         fee = feeData['partialFee'].toString();
       }
@@ -320,7 +328,8 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
 
           final destChainName = _chainTo;
 
-          final isFromKar = fromNetwork == plugin_name_karura;
+          final isFromKar = fromNetwork == plugin_name_karura ||
+              fromNetwork == plugin_name_acala;
 
           final tokenXcmInfo = (tokensConfig['xcmInfo'] ??
                   {})[isFromKar ? destChainName : fromNetwork] ??
@@ -341,21 +350,35 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                   : Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['fee'])
               : Fmt.balanceInt(
                   (tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
-          final sendFee =
-              List.of((tokenXcmInfo[balance.symbol] ?? {})['sendFee'] ?? []);
-
-          final sendFeeAmount =
-              sendFee.length > 0 ? Fmt.balanceInt(sendFee[1]) : BigInt.zero;
 
           final feeTokenSymbol =
               ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
                   {})['nativeToken'];
 
-          final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
-          final nativeTokenDecimals =
-              widget.service.plugin.networkState.tokenDecimals[widget
-                  .service.plugin.networkState.tokenSymbol
-                  .indexOf(nativeToken)];
+          final feeTokenIndex = widget.service.plugin.balances.tokens
+              .indexWhere((e) => e.symbol == feeTokenSymbol);
+          final nativeTokenDecimals = feeTokenIndex >= 0
+              ? widget.service.plugin.balances.tokens[feeTokenIndex].decimals
+              : 12;
+
+          final fromEd = isFromKar
+              ? BigInt.zero
+              : Fmt.balanceInt(tokensConfig['xcmInfo'][fromNetwork]
+                  [balance.symbol]['existentialDeposit']);
+
+          final max = (BigInt.parse(balance.amount) -
+                  fromEd -
+                  Fmt.tokenInt(
+                      (Fmt.balanceDouble(
+                                  feeTokenSymbol == balance.symbol
+                                      ? _fee ?? '0'
+                                      : '0',
+                                  balance.decimals) *
+                              1.2)
+                          .toString(),
+                      balance.decimals))
+              .toString();
+          final min = (destExistDeposit + destFee).toString();
           return SafeArea(
               child: Padding(
                   padding: EdgeInsets.all(16),
@@ -369,9 +392,9 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                               ChainSelected(dic['ecosystem.from'], fromNetwork),
                               isFromKar
                                   ? PluginTagCard(
-                                      margin: EdgeInsets.only(top: 24),
+                                      margin: const EdgeInsets.only(top: 24),
                                       titleTag: dic['ecosystem.to'],
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 16),
                                       child: GestureDetector(
                                         onTap: () {
@@ -412,11 +435,30 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
+                                onSetMax: BigInt.parse(max) > BigInt.zero
+                                    ? (maxValue) {
+                                        _amountCtrl.text = Fmt.priceFloorBigInt(
+                                            BigInt.parse(max), balance.decimals,
+                                            lengthMax: 10);
+                                        setState(() {
+                                          _error1 = null;
+                                        });
+                                      }
+                                    : null,
                                 onInputChange: (v) {
                                   var error = _validateAmount(
                                       v,
                                       Fmt.balanceInt(balance.amount),
                                       balance.decimals);
+                                  if (Fmt.tokenInt(v, balance.decimals) >
+                                      BigInt.parse(max)) {
+                                    error =
+                                        '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max) < BigInt.zero ? BigInt.zero : BigInt.parse(max), balance.decimals, lengthMax: 6)}';
+                                  } else if (Fmt.tokenInt(v, balance.decimals) <
+                                      BigInt.parse(min)) {
+                                    error =
+                                        '${dic['bridge.min']} ${Fmt.priceFloorBigInt(BigInt.parse(min), balance.decimals, lengthMax: 6)}';
+                                  }
                                   setState(() {
                                     _error1 = error;
                                   });
@@ -446,90 +488,6 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                     width: double.infinity,
                                     child: PluginLoadingWidget(),
                                   )),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                        padding: EdgeInsets.only(right: 40),
-                                        child: Text(dicAcala['cross.exist'],
-                                            style: labelStyle)),
-                                  ),
-                                  Expanded(
-                                      flex: 0,
-                                      child: Text(
-                                          '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                          style: infoValueStyle)),
-                                ],
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(right: 4),
-                                        child: Text(dicAcala['cross.fee'],
-                                            style: labelStyle),
-                                      ),
-                                    ),
-                                    Text(
-                                      '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                      style: infoValueStyle,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Visibility(
-                                visible: isFromKar && sendFee.length > 0,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(right: 4),
-                                          child: Text('XCM fee',
-                                              style: labelStyle),
-                                        ),
-                                      ),
-                                      Text(
-                                          '${Fmt.priceFloorBigInt(sendFeeAmount, balance.decimals ?? 12, lengthMax: 6)} ${balance.symbol}',
-                                          style: infoValueStyle),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Visibility(
-                                visible: isFromKar,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                            padding: EdgeInsets.only(right: 60),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(dicAcala['transfer.exist'],
-                                                    style: labelStyle),
-                                                Text(
-                                                    dicAcala['cross.exist.msg'],
-                                                    style: subTitleStyle),
-                                              ],
-                                            )),
-                                      ),
-                                      Text(
-                                          '${Fmt.priceCeilBigInt(existDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                                          style: infoValueStyle),
-                                    ],
-                                  ),
-                                ),
-                              ),
                               Visibility(
                                   visible: _fee != null,
                                   child: Padding(
@@ -541,7 +499,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                           child: Padding(
                                             padding: EdgeInsets.only(right: 4),
                                             child: Text(
-                                                dicAcala['transfer.fee'],
+                                                dic['hub.origin.transfer.fee'],
                                                 style: labelStyle),
                                           ),
                                         ),
@@ -551,6 +509,26 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                       ],
                                     ),
                                   )),
+                              Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(right: 4),
+                                        child: Text(
+                                            dic['hub.destination.transfer.fee'],
+                                            style: labelStyle),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                      style: infoValueStyle,
+                                    )
+                                  ],
+                                ),
+                              ),
                             ]),
                       )),
                       Padding(

@@ -10,7 +10,6 @@ import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/InstrumentWidget.dart';
-import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -168,8 +167,8 @@ class _AssetsState extends State<AssetsPage> {
                 Text(dic['uos.parse']),
                 Container(
                   margin: EdgeInsets.only(top: 16.h),
-                  child: CupertinoActivityIndicator(
-                      color: const Color(0xFF3C3C44)),
+                  child: const CupertinoActivityIndicator(
+                      color: Color(0xFF3C3C44)),
                 )
               ],
             ),
@@ -195,51 +194,59 @@ class _AssetsState extends State<AssetsPage> {
             networkIndex < 0
                 ? Container()
                 : Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 8),
+                    margin: const EdgeInsets.only(top: 8, bottom: 8),
                     child: Text(dic['uos.network']),
                   ),
             networkIndex < 0
                 ? Container()
                 : Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                         border: Border.all(
                             color: Theme.of(context).dividerColor, width: 0.5),
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8))),
                     child: Row(
                       children: [
                         Container(
-                            margin: EdgeInsets.only(right: 8),
+                            margin: const EdgeInsets.only(right: 8),
+                            height: 32,
                             width: 32,
                             child: widget.plugins[networkIndex].basic.icon),
                         Text(
                           widget.plugins[networkIndex].basic.name.toUpperCase(),
-                          style: Theme.of(context).textTheme.headline4,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4
+                              ?.copyWith(color: Colors.black),
                         )
                       ],
                     ),
                   ),
             Container(
-              margin: EdgeInsets.only(top: 12, bottom: 8),
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
               child: Text(dic['uos.signer']),
             ),
             Container(
-              padding: EdgeInsets.all(8),
-              margin: EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                   border: Border.all(
                       color: Theme.of(context).dividerColor, width: 0.5),
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
               child: Row(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(right: 8),
+                    margin: const EdgeInsets.only(right: 8),
                     width: 32,
                     child: AddressIcon(sender.address, svg: sender.icon),
                   ),
                   Text(
                     Fmt.address(sender.address),
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4
+                        ?.copyWith(color: Colors.black),
                   ),
                 ],
               ),
@@ -261,6 +268,7 @@ class _AssetsState extends State<AssetsPage> {
                 title: Text(dic['uos.title']),
                 content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: confirmMsg),
                 actions: <Widget>[
                   PolkawalletActionSheetAction(

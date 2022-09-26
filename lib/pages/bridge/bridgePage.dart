@@ -17,16 +17,16 @@ import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/addressIcon.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
-import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart' as v3;
 import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
-import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
+import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -144,6 +144,7 @@ class _BridgePageState extends State<BridgePage> {
     final chainInfo =
         await widget.service.plugin.sdk.api.bridge.getChainsInfo();
     final routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
+    chainFromAll.retainWhere((e) => routes.indexWhere((r) => r.from == e) > -1);
 
     for (BridgeRouteData element in routes) {
       final Set<String> from = _chainToMap[element.from] ?? {};
@@ -172,9 +173,9 @@ class _BridgePageState extends State<BridgePage> {
     final token = args?.token;
     final address = args?.address;
     _chainFrom = from ??
-        (chainFromAll.contains(widget.service.plugin.basic.name)
+        (_chainFromAll.contains(widget.service.plugin.basic.name)
             ? widget.service.plugin.basic.name
-            : chainFromAll.first);
+            : _chainFromAll.first);
     _chainTo = to ??
         (_chainToMap[_chainFrom].contains('acala')
             ? 'acala'
@@ -479,7 +480,7 @@ class _BridgePageState extends State<BridgePage> {
                       color: Colors.white)),
               dicAss['address']: Row(
                 children: [
-                  AddressIcon(_accountTo.address, svg: _accountTo.icon),
+                  v3.AddressIcon(_accountTo.address, svg: _accountTo.icon),
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(8, 16, 0, 16),
@@ -507,9 +508,10 @@ class _BridgePageState extends State<BridgePage> {
 
   void _changeSenderAccount() async {
     final res = await Navigator.of(context).pushNamed(
-      AccountListPage.route,
-      arguments: AccountListPageParams(
-          list: widget.service.keyring.allAccounts.toList()),
+      PluginAccountListPage.route,
+      arguments: PluginAccountListPageParams(
+          list: widget.service.keyring.allAccounts.toList(),
+          current: widget.service.keyring.current),
     );
     final sender = res as KeyPairData;
     if (sender != null &&
@@ -558,9 +560,29 @@ class _BridgePageState extends State<BridgePage> {
         title: Text(dic["hub.bridge"] ?? "Bridge"),
         centerTitle: true,
         actions: [
-          PluginAccountInfoAction(
-            widget.service.keyring,
-            onSelected: (index) => _changeSenderAccount(),
+          Center(
+            child: Container(
+              width: 30,
+              height: 30,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                  color: const Color(0x24FFFFFF),
+                  borderRadius: BorderRadius.circular(8)),
+              child: IconButton(
+                onPressed: () => _changeSenderAccount(),
+                padding: EdgeInsets.zero,
+                iconSize: 30,
+                // bgColor: const Color(0x24FFFFFF),
+                icon: AddressIcon(
+                  widget.service.keyring.current.address,
+                  svg: widget.service.keyring.current.icon,
+                  size: 22,
+                  tapToCopy: false,
+                  borderColor: const Color(0xFF242528),
+                  borderWidth: 2,
+                ),
+              ),
+            ),
           )
         ],
       ),
@@ -700,6 +722,7 @@ class _BridgePageState extends State<BridgePage> {
                                   ),
                                 ),
                                 PluginInputBalance(
+                                  canSearch: false,
                                   margin: EdgeInsets.only(
                                       bottom: _amountError == null ? 24 : 2),
                                   titleTag: dic['hub.amount'],

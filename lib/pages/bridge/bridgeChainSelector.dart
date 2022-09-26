@@ -7,6 +7,7 @@ import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
 import 'package:rive/rive.dart';
 
@@ -570,7 +571,7 @@ class BridgePopupRoute<T> extends PopupRoute<T> {
   }
 }
 
-class ChainSelectorList extends StatelessWidget {
+class ChainSelectorList extends StatefulWidget {
   const ChainSelectorList(
       {this.options,
       this.crossChainIcons,
@@ -585,34 +586,122 @@ class ChainSelectorList extends StatelessWidget {
   final Map<String, BridgeChainData> chainsInfo;
   final String selected;
   final Function(String) onSelect;
+  @override
+  State<ChainSelectorList> createState() => _ChainSelectorListState();
+}
+
+class _ChainSelectorListState extends State<ChainSelectorList> {
+  final TextEditingController searchCtl = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  List<String> searchList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    searchList = widget.options;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: options.map((i) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: const Color(0x24FFFFFF)),
-              child: ListTile(
-                selected: i == selected,
-                title: CurrencyWithIcon(
-                  chainsInfo[i].display,
-                  TokenIcon(i, crossChainIcons),
-                  textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      fontFamily: 'Titillium Web SemiBold'),
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    return Column(children: [
+      Container(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+          alignment: Alignment.center,
+          height: 40,
+          child: Stack(
+            children: [
+              Align(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: const Color(0xFF424447)),
                 ),
-                onTap: () {
-                  onSelect(i);
-                },
-              )),
-        );
-      }).toList(),
-    );
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: TextField(
+                  focusNode: focusNode,
+                  controller: searchCtl,
+                  onChanged: (value) {
+                    var list = widget.options
+                        .where((element) => element
+                            .toUpperCase()
+                            .contains(searchCtl.text.toUpperCase()))
+                        .toList();
+                    if (searchCtl.text.isEmpty) {
+                      list = widget.options;
+                    }
+                    setState(() {
+                      searchList = list;
+                    });
+                  },
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  cursorColor: Colors.white,
+                  textInputAction: TextInputAction.search,
+                  maxLines: 1,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: const EdgeInsets.only(left: 8, right: 30),
+                    hintText: dic['bridge.search.chain'],
+                    hintStyle: TextStyle(
+                        fontFamily: 'Titillium Web Light',
+                        fontWeight: FontWeight.w300,
+                        fontSize: UI.getTextSize(14, context),
+                        color: Colors.white.withOpacity(0.5)),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              const Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                    padding: EdgeInsets.only(right: 5),
+                    child: Icon(
+                      Icons.search,
+                      size: 24,
+                      color: Color(0xFF979797),
+                    )),
+              )
+            ],
+          )),
+      Expanded(
+          child: ListView(
+        children: searchList.map((i) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0x24FFFFFF)),
+                foregroundDecoration: i == widget.selected
+                    ? BoxDecoration(
+                        color: const Color(0xFFFF7849).withOpacity(0.09),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: const Color(0xFFFF7849),
+                        ))
+                    : null,
+                child: ListTile(
+                  selected: i == widget.selected,
+                  title: CurrencyWithIcon(
+                    widget.chainsInfo[i].display,
+                    TokenIcon(i, widget.crossChainIcons),
+                    textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontFamily: 'Titillium Web SemiBold'),
+                  ),
+                  onTap: () {
+                    widget.onSelect(i);
+                  },
+                )),
+          );
+        }).toList(),
+      ))
+    ]);
   }
 }

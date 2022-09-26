@@ -46,7 +46,6 @@ import 'package:app/pages/profile/recovery/vouchRecoveryPage.dart';
 import 'package:app/pages/profile/settings/remoteNodeListPage.dart';
 import 'package:app/pages/profile/settings/settingsPage.dart';
 import 'package:app/pages/public/DAppsTestPage.dart';
-import 'package:app/pages/public/acalaBridgePage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
@@ -72,6 +71,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/service/localServer.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -122,7 +122,7 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
-  final _analytics = FirebaseAnalytics();
+  final _analytics = FirebaseAnalytics.instance;
 
   Keyring _keyring;
 
@@ -545,8 +545,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _checkJSCodeUpdate(
-      BuildContext context, PolkawalletPlugin plugin,
-      {bool needReload = true}) async {
+      BuildContext context, PolkawalletPlugin plugin) async {
     _checkBadAddressAndWarn(context);
     // check js code update
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
@@ -566,7 +565,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     if (needUpdate) {
       final res =
           await AppUI.updateJSCode(context, _store.storage, network, version);
-      if (needReload && res) {
+      if (res) {
         _changeNetwork(plugin);
       }
     }
@@ -658,8 +657,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     if (snapshot.hasData && _service != null) {
                       if (WalletApp.isInitial == 1) {
                         WalletApp.isInitial++;
-                        _checkJSCodeUpdate(context, _service.plugin,
-                            needReload: false);
+                        _checkJSCodeUpdate(context, _service.plugin);
                         WalletApp.checkUpdate(context);
                         _queryPluginsConfig();
                       }
@@ -699,7 +697,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       WalletConnectSignPage.route: (_) =>
           WalletConnectSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
-      AcalaBridgePage.route: (_) => AcalaBridgePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
       StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 
@@ -860,12 +857,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
   void _setupPluginsNetworkSwitch() {
     widget.plugins.forEach((e) {
-      if (e.appUtils.switchNetwork == null) {
-        e.appUtils.switchNetwork =
-            (String network, {PageRouteParams pageRoute}) async {
-          _switchNetwork(network, pageRoute: pageRoute);
-        };
-      }
+      e.appUtils.switchNetwork ??=
+          (String network, {PageRouteParams pageRoute, int accountType}) async {
+        _switchNetwork(network, pageRoute: pageRoute);
+      };
     });
   }
 
@@ -907,6 +902,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         _dropsService();
+        LocalServer.getInstance().startLocalServer();
         break;
       case AppLifecycleState.paused:
         _dropsServiceCancel();

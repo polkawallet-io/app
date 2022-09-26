@@ -126,6 +126,7 @@ class _ConverToPageState extends State<ConverToPage> {
               ),
             },
             params: xcmParams['params'],
+            txHex: xcmParams['txHex'],
             chainFrom: fromNetwork,
             chainFromIcon: fromIcon.contains('.svg')
                 ? SvgPicture.network(fromIcon)
@@ -183,12 +184,13 @@ class _ConverToPageState extends State<ConverToPage> {
           Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
       if (xcmParams == null) return '0';
 
-      final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender);
+      final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender,
+          txHex: xcmParams['txHex']);
 
       String fee = '0';
       final fromNetwork = data["fromNetwork"];
       final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, ${jsonEncode(xcmParams['params'])})');
+          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, [])');
       if (feeData != null) {
         fee = feeData['partialFee'].toString();
       }
@@ -227,7 +229,6 @@ class _ConverToPageState extends State<ConverToPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
     final fromNetwork = data["fromNetwork"];
@@ -244,15 +245,21 @@ class _ConverToPageState extends State<ConverToPage> {
 
     final tokenXcmInfo = (tokensConfig['xcmInfo'] ?? {})[fromNetwork] ?? {};
 
-    final destExistDeposit = Fmt.balanceInt(
-        plugin.store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
     final destFee =
         Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
+    final destExistDeposit = Fmt.balanceInt(
+        (tokenXcmInfo[balance.symbol] ?? {})['existentialDeposit']);
 
-    final nativeToken = widget.service.plugin.networkState.tokenSymbol[0];
-    final nativeTokenDecimals = widget
-            .service.plugin.networkState.tokenDecimals[
-        widget.service.plugin.networkState.tokenSymbol.indexOf(nativeToken)];
+    final max = (BigInt.parse(balance.amount) -
+            destExistDeposit -
+            Fmt.tokenInt(
+                (Fmt.balanceDouble(_fee, balance.decimals) * 1.2).toString(),
+                balance.decimals))
+        .toString();
+    final min = (Fmt.balanceInt(plugin
+                .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance) +
+            destFee)
+        .toString();
 
     final feeTokenSymbol =
         ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {})['nativeToken'];
@@ -271,7 +278,7 @@ class _ConverToPageState extends State<ConverToPage> {
         ),
         body: SafeArea(
             child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Expanded(
@@ -285,9 +292,9 @@ class _ConverToPageState extends State<ConverToPage> {
                   ),
                   Container(
                       width: double.infinity,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      decoration: const BoxDecoration(
                           color: Color(0x0FFFFFFF),
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(4),
@@ -306,13 +313,28 @@ class _ConverToPageState extends State<ConverToPage> {
                     titleTag:
                         "${dic['ecosystem.bringTo']} ${widget.service.plugin.basic.name}",
                     inputCtrl: _amountCtrl,
-                    // onSetMax: (Fmt.balanceInt(balance.amount) ?? BigInt.zero) >
-                    //         BigInt.zero
-                    //     ? (max) => _onSetMax(max, balance.decimals)
-                    //     : null,
+                    onSetMax: BigInt.parse(max) > BigInt.zero
+                        ? (maxValue) {
+                            _amountCtrl.text = Fmt.priceFloorBigInt(
+                                BigInt.parse(max), balance.decimals,
+                                lengthMax: 10);
+                            setState(() {
+                              _error1 = null;
+                            });
+                          }
+                        : null,
                     onInputChange: (v) {
                       var error = _validateAmount(
                           v, Fmt.balanceInt(balance.amount), balance.decimals);
+                      if (Fmt.tokenInt(v, balance.decimals) >
+                          BigInt.parse(max)) {
+                        error =
+                            '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max) < BigInt.zero ? BigInt.zero : BigInt.parse(max), balance.decimals, lengthMax: 6)}';
+                      } else if (Fmt.tokenInt(v, balance.decimals) <
+                          BigInt.parse(min)) {
+                        error =
+                            '${dic['bridge.min']} ${Fmt.priceFloorBigInt(BigInt.parse(min), balance.decimals, lengthMax: 6)}';
+                      }
                       if (error == null) {
                         _getTxFee(_amountCtrl.text);
                       }
@@ -335,10 +357,10 @@ class _ConverToPageState extends State<ConverToPage> {
                   ),
                   ErrorMessage(
                     _error1,
-                    margin: EdgeInsets.only(bottom: 24),
+                    margin: const EdgeInsets.only(bottom: 24),
                   ),
                   Padding(
-                      padding: EdgeInsets.only(bottom: 24),
+                      padding: const EdgeInsets.only(bottom: 24),
                       child: PluginAddressFormItem(
                         label: dic['ecosystem.destinationAccount'],
                         account: widget.service.keyring.current,
@@ -347,33 +369,53 @@ class _ConverToPageState extends State<ConverToPage> {
                       visible: _isLoading,
                       child: Container(
                         width: double.infinity,
-                        child: PluginLoadingWidget(),
+                        child: const PluginLoadingWidget(),
                       )),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                            padding: EdgeInsets.only(right: 40),
-                            child: Text(dicAcala['cross.exist'],
-                                style: labelStyle)),
-                      ),
-                      Expanded(
-                          flex: 0,
-                          child: Text(
-                              '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
-                              style: infoValueStyle)),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: Container(
+                  //           padding: EdgeInsets.only(right: 40),
+                  //           child: Text(dicAcala['cross.exist'],
+                  //               style: labelStyle)),
+                  //     ),
+                  //     Expanded(
+                  //         flex: 0,
+                  //         child: Text(
+                  //             '${Fmt.priceCeilBigInt(destExistDeposit, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                  //             style: infoValueStyle)),
+                  //   ],
+                  // ),
+                  Visibility(
+                      visible: _fee != null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: Text(dic['hub.origin.transfer.fee'],
+                                    style: labelStyle),
+                              ),
+                            ),
+                            Text(
+                                '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), balance.decimals, lengthMax: 6)} $feeTokenSymbol',
+                                style: infoValueStyle),
+                          ],
+                        ),
+                      )),
                   Padding(
-                    padding: EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child:
-                                Text(dicAcala['cross.fee'], style: labelStyle),
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Text(dic['hub.destination.transfer.fee'],
+                                style: labelStyle),
                           ),
                         ),
                         Text(
@@ -383,30 +425,10 @@ class _ConverToPageState extends State<ConverToPage> {
                       ],
                     ),
                   ),
-                  Visibility(
-                      visible: _fee != null,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Text(dicAcala['transfer.fee'],
-                                    style: labelStyle),
-                              ),
-                            ),
-                            Text(
-                                '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeTokenSymbol',
-                                style: infoValueStyle),
-                          ],
-                        ),
-                      )),
                 ],
               ))),
               Padding(
-                  padding: EdgeInsets.only(top: 37, bottom: 38),
+                  padding: const EdgeInsets.only(top: 37, bottom: 38),
                   child: PluginButton(
                     title: dic['auction.submit'],
                     onPressed: () async {

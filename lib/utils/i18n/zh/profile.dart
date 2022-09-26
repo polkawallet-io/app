@@ -28,7 +28,7 @@ const Map<String, String> zhProfile = {
   'setting.lang.auto': '自动检测',
   'setting.network': '选择钱包',
   'setting.network.node': '选择网络节点',
-  'setting.currency': '价格单位',
+  'setting.currency': '货币',
   'setting.currency.tip': '仅影响资产主页',
   'setting.balance.hide': '隐藏余额',
   'community': '加入社区',

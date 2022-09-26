@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
@@ -68,10 +66,12 @@ class BrowserApi {
     var dappLatest = getDappLatestStore(service);
     List<dynamic> datas = [];
     dappLatest.forEach((key, value) {
-      var data = service.store.settings.dapps
-          .firstWhere((element) => element["name"] == key);
-      data["time"] = DateTime.parse(value);
-      datas.add(data);
+      try {
+        var data = service.store.settings.dapps
+            .firstWhere((element) => element["name"] == key);
+        data["time"] = DateTime.parse(value);
+        datas.add(data);
+      } catch (_) {}
     });
     datas.sort((left, right) => right["time"].compareTo(left["time"]));
     return datas;
