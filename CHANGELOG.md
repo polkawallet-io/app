@@ -1,3 +1,8 @@
+# [3.3.6-beta] - 20220926
+1. Fix known bugs.
+2. UX enhancement.
+3. bump sdk/ui v0.5.0.
+
 # [3.3.5-beta] - 20220817
 1. Multiple fiat display #125
 2. 发送交易失败错误信息解析修复 #341

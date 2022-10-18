@@ -37,6 +37,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E4D234E2858EBC700DD86B0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ED134C0D91BB7828B5F4BF52 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +89,7 @@
 				97C146EF1CF9000F007C117D /* Products */,
 				1FD2E3A1CEA090246F2BAEC6 /* Pods */,
 				58532947E51871803BF4B379 /* Frameworks */,
+				ED134C0D91BB7828B5F4BF52 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -367,7 +369,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3352;
+				CURRENT_PROJECT_VERSION = 3361;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -386,7 +388,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 3.3.5;
+				MARKETING_VERSION = 3.3.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -515,7 +517,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3352;
+				CURRENT_PROJECT_VERSION = 3361;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -534,7 +536,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 3.3.5;
+				MARKETING_VERSION = 3.3.6;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -556,7 +558,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3352;
+				CURRENT_PROJECT_VERSION = 3361;
 				DEVELOPMENT_TEAM = WQ5H736A22;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = armv7;
@@ -575,7 +577,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 3.3.5;
+				MARKETING_VERSION = 3.3.6;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.polkawallet.polkawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";

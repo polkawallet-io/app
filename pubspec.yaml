@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.3.5+3354
+version: 3.3.6+3361
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -33,12 +33,12 @@ dependencies:
   # device_info: ^2.0.1
   package_info: ^2.0.2
   uni_links: ^0.5.1
-  firebase_core: 1.5.0
-  firebase_analytics: 8.3.0
+  firebase_core: ^1.21.1
+  firebase_analytics: ^9.3.3
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
-  polkawallet_ui: ^0.4.8
-  polkawallet_sdk: ^0.4.8
+  polkawallet_ui: ^0.5.0
+  polkawallet_sdk: ^0.5.0
   ethereum_addresses: ^1.0.2
   update_app:
     git:
@@ -51,15 +51,15 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: c80eca534d3041ab1f2ff1674febbf63fb6c1e24
+      ref: 8eb1eb01ca1085b5f2a3dce40dfc58740f564949
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: a609b218b4b93743c77016841d8ffc8e29ba8898
+      ref: 3265d09d7cebaaf9527575a7c2d0b322da968527
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: 9c8bf1aba91caa69d1fd8cdd5dbfd28cf20962bf
+      ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -100,20 +100,20 @@ dependencies:
   sticky_headers: ^0.2.0
 
 dependency_overrides:
-  polkawallet_plugin_kusama:
-    path: ../../coding/polkawallet/polkawallet_plugin_kusama
-  polkawallet_plugin_acala:
-    path: ../../coding/polkawallet/polkawallet_plugin_acala
-  polkawallet_plugin_karura:
-    path: ../../coding/polkawallet/polkawallet_plugin_karura
-  polkawallet_plugin_statemine:
-    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-#  polkawallet_ui: ^0.4.9
-#  polkawallet_sdk: ^0.4.9
-  polkawallet_ui:
-     path: ../../coding/polkawallet/ui
-  polkawallet_sdk:
-     path: ../../coding/polkawallet/sdk
+#  polkawallet_plugin_kusama:
+#    path: ../../coding/polkawallet/polkawallet_plugin_kusama
+#  polkawallet_plugin_acala:
+#    path: ../../coding/polkawallet/polkawallet_plugin_acala
+#  polkawallet_plugin_karura:
+#    path: ../../coding/polkawallet/polkawallet_plugin_karura
+#  polkawallet_plugin_statemine:
+#    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+  polkawallet_ui: ^0.5.0
+  polkawallet_sdk: ^0.5.0
+#  polkawallet_ui:
+#     path: ../../coding/polkawallet/ui
+#  polkawallet_sdk:
+#     path: ../../coding/polkawallet/sdk
   transformer_page_view:
     git:
       url: https://github.com/polkawallet-io/transformer_page_view.git

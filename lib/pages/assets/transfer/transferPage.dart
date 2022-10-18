@@ -122,7 +122,10 @@ class TransferPageState extends State<TransferPage> {
         (await Navigator.of(context).pushNamed(ScanPage.route) as QRCodeResult);
     if (to == null) return;
 
-    _updateAccountTo(to.address.address, name: to.address.name);
+    _updateAccountTo(to.address.address,
+        name: to.address.name.isNotEmpty
+            ? to.address.name
+            : Fmt.address(to.address.address));
   }
 
   Future<TxConfirmParams> _getTxParams() async {

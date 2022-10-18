@@ -722,6 +722,7 @@ class _BridgePageState extends State<BridgePage> {
                                   ),
                                 ),
                                 PluginInputBalance(
+                                  canSearch: false,
                                   margin: EdgeInsets.only(
                                       bottom: _amountError == null ? 24 : 2),
                                   titleTag: dic['hub.amount'],

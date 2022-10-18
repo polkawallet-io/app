@@ -388,55 +388,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
-  firebase:
-    dependency: transitive
-    description:
-      name: firebase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "9.0.3"
   firebase_analytics:
     dependency: "direct main"
     description:
       name: firebase_analytics
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.3.0"
+    version: "9.3.3"
   firebase_analytics_platform_interface:
     dependency: transitive
     description:
       name: firebase_analytics_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "3.3.3"
   firebase_analytics_web:
     dependency: transitive
     description:
       name: firebase_analytics_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0+1"
+    version: "0.4.2+3"
   firebase_core:
     dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.0"
+    version: "1.21.1"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "4.5.1"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.4"
+    version: "1.7.2"
   fixnum:
     dependency: transitive
     description:
@@ -497,7 +490,7 @@ packages:
       name: flutter_inappwebview
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.3.2"
+    version: "5.4.3+7"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -852,7 +845,7 @@ packages:
       name: matcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.11"
+    version: "0.12.12"
   material_color_utilities:
     dependency: transitive
     description:
@@ -1066,9 +1059,11 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
+      path: "."
+      ref: "3265d09d7cebaaf9527575a7c2d0b322da968527"
+      resolved-ref: "3265d09d7cebaaf9527575a7c2d0b322da968527"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
     version: "0.4.9"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
@@ -1116,16 +1111,20 @@ packages:
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_karura"
-      relative: true
-    source: path
+      path: "."
+      ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
+      resolved-ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
+    source: git
     version: "0.4.9"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
+      path: "."
+      ref: "8eb1eb01ca1085b5f2a3dce40dfc58740f564949"
+      resolved-ref: "8eb1eb01ca1085b5f2a3dce40dfc58740f564949"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
     version: "0.4.9"
   polkawallet_plugin_robonomics:
     dependency: "direct main"
@@ -1139,24 +1138,26 @@ packages:
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
-      relative: true
-    source: path
-    version: "0.4.6"
+      path: "."
+      ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      resolved-ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
+    source: git
+    version: "0.4.9"
   polkawallet_sdk:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.4.9"
+      name: polkawallet_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.4.9"
+      name: polkawallet_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   pool:
     dependency: transitive
     description:
@@ -1462,7 +1463,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.9"
+    version: "0.4.12"
   timing:
     dependency: transitive
     description:

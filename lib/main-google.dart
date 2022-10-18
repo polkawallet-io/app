@@ -16,6 +16,8 @@ import 'package:polkawallet_plugin_robonomics/polkawallet_plugin_robonomics.dart
 import 'package:polkawallet_plugin_statemine/polkawallet_plugin_statemine.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
+import 'firebase_options.dart';
+
 void main() async {
   // FlutterBugly.postCatchedException(() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,9 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
   await GetStorage.init(get_storage_container);
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final plugins = [
     PluginKusama(name: 'polkadot'),

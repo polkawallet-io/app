@@ -130,7 +130,7 @@ class WalletApp extends StatefulWidget {
 }
 
 class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
-  final _analytics = FirebaseAnalytics();
+  final _analytics = FirebaseAnalytics.instance;
 
   Keyring _keyring;
   KeyringEVM _keyringEVM;
@@ -590,8 +590,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _checkJSCodeUpdate(
-      BuildContext context, PolkawalletPlugin plugin,
-      {bool needReload = true}) async {
+      BuildContext context, PolkawalletPlugin plugin) async {
     _checkBadAddressAndWarn(context);
     // check js code update
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
@@ -613,7 +612,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     if (needUpdate) {
       final res =
           await AppUI.updateJSCode(context, _store.storage, network, version);
-      if (needReload && res) {
+      if (res) {
         _changeNetwork(plugin);
       }
     }
@@ -720,8 +719,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                     if (snapshot.hasData && _service != null) {
                       if (WalletApp.isInitial == 1) {
                         WalletApp.isInitial++;
-                        _checkJSCodeUpdate(context, _service.plugin,
-                            needReload: false);
+                        _checkJSCodeUpdate(context, _service.plugin);
                         WalletApp.checkUpdate(context);
                         _queryPluginsConfig();
                       }
