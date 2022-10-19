@@ -619,7 +619,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<int> _startApp(BuildContext context) async {
-    final isEvm = _store.account.accountType == AccountType.Evm;
     if (_keyring == null) {
       _keyring = Keyring();
       await _keyring
@@ -678,9 +677,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _dropsServiceCancel();
           _restartWebConnect();
         });
-      }, isEVM: isEvm);
+      }, isEVM: _store.account.accountType == AccountType.Evm);
 
-      if (_keyring.keyPairs.length > 0) {
+      if (_keyring.keyPairs.isNotEmpty) {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
       }
 
@@ -689,7 +688,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       service.assets.updateStakingConfig();
     }
 
-    return isEvm ? _keyringEVM.allAccounts.length : _keyring.allAccounts.length;
+    return _keyring.allAccounts.isNotEmpty
+        ? _keyring.allAccounts.length
+        : _keyringEVM.allAccounts.length;
   }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {

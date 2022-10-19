@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
-import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
@@ -20,6 +20,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -41,7 +42,6 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 final assetsType = [
   "All",
@@ -91,6 +91,11 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
   ScrollController _scrollController;
 
+  bool _isAcala() {
+    return widget.service.pluginEvm.basic.name.contains('acala') ||
+        widget.service.pluginEvm.basic.name.contains('karura');
+  }
+
   Future<void> _updateBalances() async {
     if (widget.connectedNode == null) return;
 
@@ -111,7 +116,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         .map((e) => e.symbol.toUpperCase())
         .toList()
       ..add(symbol.toUpperCase());
-    widget.service.assets.fetchMarketPrices(tokens);
+    // widget.service.assets.fetchMarketPrices(tokens);
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;
@@ -444,28 +449,33 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          widget.connectedNode == null
+                          widget.service.store.account.accountType ==
+                                      AccountType.Substrate &&
+                                  widget.connectedNode == null
                               ? Container(
                                   width: 9,
                                   height: 9,
                                   margin: EdgeInsets.only(right: 4),
-                                  child: Center(
+                                  child: const Center(
                                       child: RiveAnimation.asset(
                                     'assets/images/connecting.riv',
                                   )))
                               : Container(
                                   width: 9,
                                   height: 9,
-                                  margin: EdgeInsets.only(right: 4),
+                                  margin: const EdgeInsets.only(right: 4),
                                   decoration: BoxDecoration(
                                       color: UI.isDarkTheme(context)
-                                          ? Color(0xFF82FF99)
-                                          : Color(0xFF7D97EE),
-                                      borderRadius: BorderRadius.all(
+                                          ? const Color(0xFF82FF99)
+                                          : const Color(0xFF7D97EE),
+                                      borderRadius: const BorderRadius.all(
                                           Radius.circular(5.5))),
                                 ),
                           Text(
-                            "${widget.service.plugin.basic.name.split("-").last.toString().toUpperCase()} ${widget.service.plugin.basic.name.split("-").first.toString().toUpperCase()} +",
+                            _isAcala()
+                                ? "${widget.service.plugin.basic.name.split("-").last.toString().toUpperCase()} EVM+"
+                                : widget.service.plugin.basic.name
+                                    .toUpperCase(),
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4
