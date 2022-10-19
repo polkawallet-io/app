@@ -18,12 +18,12 @@ class EthTransferConfirmPageParams {
     this.tokenSymbol,
     this.contractAddress,
     this.amount,
-    this.accountTo,
+    this.addressTo,
   });
   final String tokenSymbol;
   final String contractAddress;
   final double amount;
-  final EthWalletData accountTo;
+  final String addressTo;
 }
 
 class EthTransferConfirmPage extends StatefulWidget {
@@ -37,8 +37,30 @@ class EthTransferConfirmPage extends StatefulWidget {
 }
 
 class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
+  EthWalletData _accountTo;
   EvmGasParams _fee;
   Map _gasOptions;
+
+  Future<void> _updateAccountTo(String address) async {
+    final acc = EthWalletData()..address = address;
+
+    try {
+      final plugin = widget.service.plugin as PluginEvm;
+      final res = await Future.wait([
+        plugin.sdk.api.service.eth.account.getAddress(address),
+        plugin.sdk.api.service.eth.account.getAddressIcons([address])
+      ]);
+      if (res[1] != null) {
+        acc.icon = (res[1] as List)[0][1];
+      }
+
+      setState(() {
+        _accountTo = acc;
+      });
+    } catch (err) {
+      print(err.toString());
+    }
+  }
 
   Future<void> _onSubmit() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
@@ -77,7 +99,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
     // );
   }
 
-  Future<String> _getTxFee() async {
+  Future<void> _getTxFee() async {
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
     EvmGasParams gasParams;
@@ -97,7 +119,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                   ? args.tokenSymbol
                   : args.contractAddress,
               amount: args.amount,
-              to: args.accountTo.address);
+              to: args.addressTo);
       gasParams = await widget.service.plugin.sdk.api.eth.account
           .queryEthGasParams(gasLimit: gasLimit);
       _gasOptions = {
@@ -126,6 +148,10 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getTxFee();
+
+      final EthTransferConfirmPageParams args =
+          ModalRoute.of(context).settings.arguments;
+      _updateAccountTo(args.addressTo);
     });
   }
 
@@ -179,15 +205,15 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                     Text(dic['to'], style: labelStyle),
                     Padding(
                         padding: const EdgeInsets.only(top: 3),
-                        child: AddressFormItem(args.accountTo)),
+                        child: AddressFormItem(_accountTo)),
                     Container(
-                      margin: EdgeInsets.only(top: 8, bottom: 4),
+                      margin: const EdgeInsets.only(top: 8, bottom: 4),
                       child: Text(dic['amount'], style: labelStyle),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: 16),
                       height: 88,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(
                                   'assets/images/public/flex_text_form_field_bg.png'),
@@ -202,7 +228,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                                 .copyWith(fontSize: 40),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 8, top: 8),
+                            padding: const EdgeInsets.only(left: 8, top: 8),
                             child: Text(args.tokenSymbol),
                           ),
                         ],

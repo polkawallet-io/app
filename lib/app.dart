@@ -13,7 +13,7 @@ import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
-import 'package:app/pages/assets/ethTransfer/ethTransferPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTransferStep1.dart';
 import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
@@ -619,6 +619,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<int> _startApp(BuildContext context) async {
+    final isEvm = _store.account.accountType == AccountType.Evm;
     if (_keyring == null) {
       _keyring = Keyring();
       await _keyring
@@ -677,7 +678,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _dropsServiceCancel();
           _restartWebConnect();
         });
-      }, isEVM: _store.account.accountType == AccountType.Evm);
+      }, isEVM: isEvm);
 
       if (_keyring.keyPairs.length > 0) {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
@@ -688,7 +689,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       service.assets.updateStakingConfig();
     }
 
-    return _keyring.allAccounts.length;
+    return isEvm ? _keyringEVM.allAccounts.length : _keyring.allAccounts.length;
   }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
@@ -802,7 +803,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),
-      EthTransferPage.route: (_) => EthTransferPage(_service),
+      EthTransferStep1.route: (_) => EthTransferStep1(_service),
       EthTransferConfirmPage.route: (_) => EthTransferConfirmPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),

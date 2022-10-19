@@ -162,7 +162,8 @@ class ImportAccountAction {
       AppService service, String pubKey, AccountType type) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final index = type == AccountType.Substrate
+    final isSubstrate = type == AccountType.Substrate;
+    final index = isSubstrate
         ? service.keyring.keyPairs.indexWhere((i) => i.pubKey == pubKey)
         : service.keyringEVM.keyPairs.indexWhere((i) => i.address == pubKey);
     if (index > -1) {
@@ -170,7 +171,9 @@ class ImportAccountAction {
         context: context,
         builder: (BuildContext context) {
           return PolkawalletAlertDialog(
-            title: Text(Fmt.address(service.keyring.keyPairs[index].address)),
+            title: Text(Fmt.address(isSubstrate
+                ? service.keyring.keyPairs[index].address
+                : service.keyringEVM.keyPairs[index].address)),
             content: Text(dic['import.duplicate']),
             actions: <Widget>[
               // CupertinoButton(
