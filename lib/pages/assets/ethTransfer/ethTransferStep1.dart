@@ -1,3 +1,4 @@
+import 'package:app/pages/assets/ethTransfer/ethTransferStep2.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
@@ -207,7 +208,7 @@ class EthTransferStep1State extends State<EthTransferStep1> {
                 onPressed: connected
                     ? () {
                         pageParams.address = _accountTo.address;
-                        Navigator.of(context).pushNamed(EthTransferStep1.route,
+                        Navigator.of(context).pushNamed(EthTransferStep2.route,
                             arguments: pageParams);
                       }
                     : () => null,

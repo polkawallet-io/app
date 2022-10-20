@@ -449,9 +449,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          widget.service.store.account.accountType ==
-                                      AccountType.Substrate &&
-                                  widget.connectedNode == null
+                          widget.connectedNode == null
                               ? Container(
                                   width: 9,
                                   height: 9,

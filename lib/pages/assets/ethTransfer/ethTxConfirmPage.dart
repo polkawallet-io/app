@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -41,6 +42,11 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   EvmGasParams _fee;
   Map _gasOptions;
 
+  bool _isAcala() {
+    return widget.service.pluginEvm.basic.name.contains('acala') ||
+        widget.service.pluginEvm.basic.name.contains('karura');
+  }
+
   Future<void> _updateAccountTo(String address) async {
     final acc = EthWalletData()..address = address;
 
@@ -65,6 +71,24 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   Future<void> _onSubmit() async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     print('on submit');
+
+    final EthTransferConfirmPageParams args =
+        ModalRoute.of(context).settings.arguments;
+
+    final pass = await widget.service.account
+        .getEvmPassword(context, widget.service.keyringEVM.current);
+
+    if (pass == null) return;
+
+    widget.service.plugin.sdk.api.eth.keyring.transfer(
+        token: args.contractAddress.isNotEmpty
+            ? args.contractAddress
+            : args.tokenSymbol,
+        amount: args.amount,
+        to: args.addressTo,
+        sender: widget.service.keyringEVM.current.address,
+        pass: pass,
+        gasOptions: _gasOptions);
 
     // // params: [to, amount]
     // final params = [
@@ -102,38 +126,43 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   Future<void> _getTxFee() async {
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
+
+    final gasLimit = await widget.service.plugin.sdk.api.eth.keyring
+        .estimateTransferGas(
+            token: args.contractAddress.isEmpty
+                ? args.tokenSymbol
+                : args.contractAddress,
+            amount: args.amount,
+            to: args.addressTo);
     EvmGasParams gasParams;
-    if (widget.service.pluginEvm.basic.name.contains('acala') ||
-        widget.service.pluginEvm.basic.name.contains('karura')) {
+    if (_isAcala()) {
       /// in acala/karura we use const gasLimit & gasPrice
-      _gasOptions =
-          widget.service.plugin.sdk.api.eth.account.getAcalaGasParams();
+      final gasPrice =
+          await widget.service.plugin.sdk.api.eth.keyring.getGasPrice();
       gasParams = EvmGasParams(
-          gasLimit: int.parse(_gasOptions['gasLimit']),
-          gasPrice: Fmt.balanceDouble(_gasOptions['gasPrice'], 9));
+          gasLimit: gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
+      _gasOptions = {
+        'gasLimit': gasLimit,
+        'gasPrice': gasPrice,
+      };
     } else {
       /// in ethereum we use dynamic gas estimate
-      final gasLimit = await widget.service.plugin.sdk.api.eth.keyring
-          .estimateTransferGas(
-              token: args.contractAddress.isEmpty
-                  ? args.tokenSymbol
-                  : args.contractAddress,
-              amount: args.amount,
-              to: args.addressTo);
       gasParams = await widget.service.plugin.sdk.api.eth.account
           .queryEthGasParams(gasLimit: gasLimit);
       _gasOptions = {
         'gasLimit': gasLimit,
-        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9),
+        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
         'maxFeePerGas': Fmt.tokenInt(
-            gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
-                .toString(),
-            9),
+                gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
+                    .toString(),
+                9)
+            .toString(),
         'maxPriorityFeePerGas': Fmt.tokenInt(
-            gasParams
-                .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
-                .toString(),
-            9),
+                gasParams
+                    .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
+                    .toString(),
+                9)
+            .toString(),
       };
     }
 
@@ -160,6 +189,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
     final plugin = widget.service.plugin as PluginEvm;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final nativeToken = widget.service.pluginEvm.nativeToken;
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
 
@@ -183,6 +213,11 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
         .headline5
         .copyWith(fontWeight: FontWeight.w600);
 
+    BigInt gasFee = BigInt.zero;
+    if (_fee != null) {
+      gasFee = BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000);
+    }
+
     return Scaffold(
       appBar: AppBar(
           systemOverlayStyle: UI.isDarkTheme(context)
@@ -202,10 +237,17 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(dic['from'], style: labelStyle),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 3, bottom: 8),
+                        child:
+                            AddressFormItem(widget.service.keyringEVM.current)),
                     Text(dic['to'], style: labelStyle),
                     Padding(
                         padding: const EdgeInsets.only(top: 3),
-                        child: AddressFormItem(_accountTo)),
+                        child: _accountTo != null
+                            ? AddressFormItem(_accountTo)
+                            : Container()),
                     Container(
                       margin: const EdgeInsets.only(top: 8, bottom: 4),
                       child: Text(dic['amount'], style: labelStyle),
@@ -234,51 +276,51 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                         ],
                       ),
                     ),
-                    // RoundedCard(
-                    //   margin: EdgeInsets.only(top: 20),
-                    //   padding: const EdgeInsets.all(16),
-                    //   child: Column(
-                    //     children: [
-                    //       Container(
-                    //         child: Row(
-                    //           mainAxisAlignment: MainAxisAlignment.end,
-                    //           children: [
-                    //             Expanded(
-                    //               child: Padding(
-                    //                 padding: const EdgeInsets.only(right: 4),
-                    //                 child: Text(dic['amount.fee'],
-                    //                     style: labelStyle?.copyWith(
-                    //                         fontWeight: FontWeight.w400)),
-                    //               ),
-                    //             ),
-                    //             Text(
-                    //                 '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                    //                 style: infoValueStyle),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       Divider(),
-                    //       Container(
-                    //         child: Row(
-                    //           mainAxisAlignment: MainAxisAlignment.end,
-                    //           children: [
-                    //             Expanded(
-                    //               child: Padding(
-                    //                 padding: const EdgeInsets.only(right: 4),
-                    //                 child: Text(dic['amount.fee'],
-                    //                     style: labelStyle?.copyWith(
-                    //                         fontWeight: FontWeight.w400)),
-                    //               ),
-                    //             ),
-                    //             Text(
-                    //                 '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                    //                 style: infoValueStyle),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+                    RoundedCard(
+                      margin: EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: Text(dic['amount.fee'],
+                                        style: labelStyle?.copyWith(
+                                            fontWeight: FontWeight.w400)),
+                                  ),
+                                ),
+                                Text(
+                                    '${Fmt.priceCeilBigInt(gasFee, 18, lengthMax: 6)} $nativeToken',
+                                    style: infoValueStyle),
+                              ],
+                            ),
+                          ),
+                          // Divider(),
+                          // Container(
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.end,
+                          //     children: [
+                          //       Expanded(
+                          //         child: Padding(
+                          //           padding: const EdgeInsets.only(right: 4),
+                          //           child: Text(dic['amount.fee'],
+                          //               style: labelStyle?.copyWith(
+                          //                   fontWeight: FontWeight.w400)),
+                          //         ),
+                          //       ),
+                          //       Text(
+                          //           '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
+                          //           style: infoValueStyle),
+                          //     ],
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

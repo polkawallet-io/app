@@ -30,8 +30,6 @@ class EthTransferStep2State extends State<EthTransferStep2> {
 
   String _amountError;
 
-  EthTransferPageParams pageParams;
-
   EvmGasParams _fee;
   Map _gasOptions;
 
@@ -41,39 +39,43 @@ class EthTransferStep2State extends State<EthTransferStep2> {
   }
 
   Future<void> _getTxFee() async {
-    final EthTransferConfirmPageParams args =
+    final EthTransferPageParams args =
         ModalRoute.of(context).settings.arguments;
+
+    final gasLimit = await widget.service.plugin.sdk.api.eth.keyring
+        .estimateTransferGas(
+            token: args.token.id ?? args.token.symbol,
+            amount: 1,
+            to: args.address);
     EvmGasParams gasParams;
     if (_isAcala()) {
       /// in acala/karura we use const gasLimit & gasPrice
-      _gasOptions =
-          widget.service.plugin.sdk.api.eth.account.getAcalaGasParams();
+      final gasPrice =
+          await widget.service.plugin.sdk.api.eth.keyring.getGasPrice();
       gasParams = EvmGasParams(
-          gasLimit: int.parse(_gasOptions['gasLimit']),
-          gasPrice: Fmt.balanceDouble(_gasOptions['gasPrice'], 9));
+          gasLimit: gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
+      _gasOptions = {
+        'gasLimit': gasLimit,
+        'gasPrice': gasPrice,
+      };
     } else {
       /// in ethereum we use dynamic gas estimate
-      final gasLimit = await widget.service.plugin.sdk.api.eth.keyring
-          .estimateTransferGas(
-              token: args.contractAddress.isEmpty
-                  ? args.tokenSymbol
-                  : args.contractAddress,
-              amount: args.amount,
-              to: args.addressTo);
       gasParams = await widget.service.plugin.sdk.api.eth.account
           .queryEthGasParams(gasLimit: gasLimit);
       _gasOptions = {
         'gasLimit': gasLimit,
-        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9),
+        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
         'maxFeePerGas': Fmt.tokenInt(
-            gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
-                .toString(),
-            9),
+                gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
+                    .toString(),
+                9)
+            .toString(),
         'maxPriorityFeePerGas': Fmt.tokenInt(
-            gasParams
-                .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
-                .toString(),
-            9),
+                gasParams
+                    .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
+                    .toString(),
+                9)
+            .toString(),
       };
     }
 
@@ -83,12 +85,14 @@ class EthTransferStep2State extends State<EthTransferStep2> {
   }
 
   Future<void> _onSubmit() async {
+    if (_amountError != null) return;
+
     final EthTransferPageParams args =
         ModalRoute.of(context).settings.arguments;
     final params = EthTransferConfirmPageParams(
-        tokenSymbol: pageParams.token.symbol,
+        tokenSymbol: args.token.symbol,
         contractAddress:
-            pageParams.token.id.startsWith('0x') ? pageParams.token.id : '',
+            (args.token.id ?? '').startsWith('0x') ? args.token.id : '',
         addressTo: args.address,
         amount: double.tryParse(_amountCtrl.text.trim()) ?? '0');
     final res = await Navigator.of(context)
@@ -112,35 +116,34 @@ class EthTransferStep2State extends State<EthTransferStep2> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTxFee();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final plugin = widget.service.plugin as PluginEvm;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final symbol = pageParams?.token?.symbol ?? 'ACA';
-    final decimals = pageParams?.token?.decimals ?? 18;
-
-    final connected = plugin.sdk.api.connectedNode != null;
+    final EthTransferPageParams args =
+        ModalRoute.of(context).settings.arguments;
+    final isERC20 = args.token.id?.startsWith('0x') == true;
+    final symbol = args?.token?.symbol ?? 'ACA';
+    final decimals = args?.token?.decimals ?? 18;
 
     final available = Fmt.balanceInt(
         (plugin.balances.native?.availableBalance ?? 0).toString());
 
-    final labelStyle = Theme.of(context)
-        .textTheme
-        .headline4
-        ?.copyWith(fontWeight: FontWeight.bold);
-    final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
-        height: 1,
-        fontWeight: FontWeight.w300,
-        fontSize: 12,
-        color:
-            UI.isDarkTheme(context) ? Colors.white : const Color(0xBF565554));
-    final infoValueStyle = Theme.of(context)
-        .textTheme
-        .headline5
-        .copyWith(fontWeight: FontWeight.w600);
-
-    print('gas fee');
-    print(_fee.gasLimit * _fee.gasPrice);
+    BigInt gasFee = BigInt.zero;
+    if (_fee != null &&
+        !isERC20 &&
+        symbol == widget.service.pluginEvm.nativeToken) {
+      gasFee = BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000);
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -166,11 +169,17 @@ class EthTransferStep2State extends State<EthTransferStep2> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TokenIcon(
-                          pageParams?.token?.id ?? '',
+                          args?.token?.id ?? args?.token?.symbol ?? '',
                           widget.service.plugin.tokenIcons,
-                          symbol: pageParams?.token?.symbol,
+                          symbol: args?.token?.symbol,
                         ),
-                        Text(pageParams?.token?.symbol ?? symbol)
+                        Container(
+                          margin: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            args?.token?.symbol ?? symbol,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        )
                       ],
                     ),
                     Container(
@@ -189,7 +198,7 @@ class EthTransferStep2State extends State<EthTransferStep2> {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '0',
-                          prefix: Container(width: 32, height: 24),
+                          prefix: const SizedBox(width: 32, height: 24),
                           suffixIcon: GestureDetector(
                             child: Container(
                               margin: const EdgeInsets.only(top: 8),
@@ -215,7 +224,7 @@ class EthTransferStep2State extends State<EthTransferStep2> {
                           }
                           final input = Fmt.tokenInt(v, decimals);
                           final feeLeft = available - input;
-                          if (feeLeft < BigInt.zero) {
+                          if (feeLeft < gasFee) {
                             _amountError = dic['amount.low'];
                           }
 

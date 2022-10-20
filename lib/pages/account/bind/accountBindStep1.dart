@@ -8,12 +8,12 @@ import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
-import 'package:polkawallet_ui/components/v3/addressIcon.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class AccountBindStep1 extends StatefulWidget {
   const AccountBindStep1(
@@ -64,6 +64,7 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
             ? Colors.white.withOpacity(0.6)
             : Theme.of(context).textTheme.headline6?.color);
 
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final dicPublic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
 
     final available =
@@ -526,7 +527,7 @@ class _AccountBindStep1State extends State<AccountBindStep1> {
                       color: widget.isPlugin
                           ? const Color(0xFF121212)
                           : Colors.white),
-                  title: "Connect",
+                  title: dic['guide.next'],
                   onPressed: () {
                     if (widget.bindError != null || available <= BigInt.zero) {
                       return;
