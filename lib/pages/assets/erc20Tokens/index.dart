@@ -116,7 +116,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         .map((e) => e.symbol.toUpperCase())
         .toList()
       ..add(symbol.toUpperCase());
-    // widget.service.assets.fetchMarketPrices(tokens);
+    widget.service.assets.fetchMarketPrices(tokens);
 
     final duration =
         widget.service.store.assets.marketPrices.keys.length > 0 ? 60 : 6;

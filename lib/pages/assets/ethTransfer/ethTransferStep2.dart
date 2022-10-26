@@ -31,7 +31,6 @@ class EthTransferStep2State extends State<EthTransferStep2> {
   String _amountError;
 
   EvmGasParams _fee;
-  Map _gasOptions;
 
   bool _isAcala() {
     return widget.service.pluginEvm.basic.name.contains('acala') ||
@@ -54,29 +53,10 @@ class EthTransferStep2State extends State<EthTransferStep2> {
           await widget.service.plugin.sdk.api.eth.keyring.getGasPrice();
       gasParams = EvmGasParams(
           gasLimit: gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
-      _gasOptions = {
-        'gasLimit': gasLimit,
-        'gasPrice': gasPrice,
-      };
     } else {
       /// in ethereum we use dynamic gas estimate
       gasParams = await widget.service.plugin.sdk.api.eth.account
           .queryEthGasParams(gasLimit: gasLimit);
-      _gasOptions = {
-        'gasLimit': gasLimit,
-        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
-        'maxFeePerGas': Fmt.tokenInt(
-                gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-        'maxPriorityFeePerGas': Fmt.tokenInt(
-                gasParams
-                    .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-      };
     }
 
     setState(() {

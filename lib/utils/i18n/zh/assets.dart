@@ -113,4 +113,11 @@ const Map<String, String> zhAssets = {
   'evm.send.1': '发送数量',
   'evm.send.2': '确认',
   'evm.send.time': '预估时间',
+  'evm.send.time.0': '30 秒',
+  'evm.send.time.1': '3 分钟',
+  'evm.send.time.2': '10 分钟',
+  'evm.send.gas': '交易费设置',
+  'evm.send.gas.0': '最快',
+  'evm.send.gas.1': '标准',
+  'evm.send.gas.2': '慢速',
 };

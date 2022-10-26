@@ -1,5 +1,10 @@
+import 'dart:async';
+
+import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
@@ -41,10 +46,19 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   EthWalletData _accountTo;
   EvmGasParams _fee;
   Map _gasOptions;
+  int _gasLimit = 21000;
+
+  int _gasLevel = 1;
+
+  Timer _gasQueryTimer;
 
   bool _isAcala() {
     return widget.service.pluginEvm.basic.name.contains('acala') ||
         widget.service.pluginEvm.basic.name.contains('karura');
+  }
+
+  bool _gasEditable() {
+    return !_isAcala();
   }
 
   Future<void> _updateAccountTo(String address) async {
@@ -127,7 +141,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
 
-    final gasLimit = await widget.service.plugin.sdk.api.eth.keyring
+    _gasLimit = await widget.service.plugin.sdk.api.eth.keyring
         .estimateTransferGas(
             token: args.contractAddress.isEmpty
                 ? args.tokenSymbol
@@ -140,26 +154,26 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
       final gasPrice =
           await widget.service.plugin.sdk.api.eth.keyring.getGasPrice();
       gasParams = EvmGasParams(
-          gasLimit: gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
+          gasLimit: _gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
       _gasOptions = {
-        'gasLimit': gasLimit,
+        'gas': _gasLimit,
         'gasPrice': gasPrice,
       };
     } else {
       /// in ethereum we use dynamic gas estimate
       gasParams = await widget.service.plugin.sdk.api.eth.account
-          .queryEthGasParams(gasLimit: gasLimit);
+          .queryEthGasParams(gasLimit: _gasLimit);
       _gasOptions = {
-        'gasLimit': gasLimit,
+        'gas': gasParams.gasLimit,
         'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
         'maxFeePerGas': Fmt.tokenInt(
-                gasParams.estimatedFee[EstimatedFeeLevel.medium].maxFeePerGas
+                gasParams.estimatedFee[EstimatedFeeLevel.high].maxFeePerGas
                     .toString(),
                 9)
             .toString(),
         'maxPriorityFeePerGas': Fmt.tokenInt(
                 gasParams
-                    .estimatedFee[EstimatedFeeLevel.medium].maxPriorityFeePerGas
+                    .estimatedFee[EstimatedFeeLevel.high].maxPriorityFeePerGas
                     .toString(),
                 9)
             .toString(),
@@ -169,6 +183,16 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
     setState(() {
       _fee = gasParams;
     });
+  }
+
+  Future<void> _onSetGas() async {
+    final gasLevel = await Navigator.of(context)
+        .pushNamed(GasSettingsPage.route, arguments: _fee?.gasLimit);
+    if (gasLevel != null && gasLevel != _gasLevel) {
+      setState(() {
+        _gasLevel = gasLevel;
+      });
+    }
   }
 
   @override
@@ -181,7 +205,18 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
       final EthTransferConfirmPageParams args =
           ModalRoute.of(context).settings.arguments;
       _updateAccountTo(args.addressTo);
+
+      if (_gasEditable()) {
+        _gasQueryTimer = Timer(const Duration(seconds: 7), _getTxFee);
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _gasQueryTimer?.cancel();
   }
 
   @override
@@ -213,9 +248,28 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
         .headline5
         .copyWith(fontWeight: FontWeight.w600);
 
-    BigInt gasFee = BigInt.zero;
+    final gasTokenPrice =
+        widget.service.store.assets.marketPrices[nativeToken] ?? 0;
+    print(gasTokenPrice);
+    List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
     if (_fee != null) {
-      gasFee = BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000);
+      gasFee = _gasEditable()
+          ? Utils.calcGasFee(_fee, _gasLevel)
+          : [
+              BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000),
+              BigInt.zero
+            ];
+    }
+
+    String gasValue =
+        '\$${Fmt.priceFloor(Fmt.bigIntToDouble(gasFee[0], 18) * gasTokenPrice, lengthMax: 2)}';
+    String gasAmount =
+        '${Fmt.priceCeilBigInt(gasFee[0], 18, lengthFixed: 6)} $nativeToken';
+    if (_fee != null && _gasEditable()) {
+      gasValue =
+          '$gasValue ~ \$${Fmt.priceFloor(Fmt.bigIntToDouble(gasFee[1], 18) * gasTokenPrice, lengthMax: 2)}';
+      gasAmount =
+          '$gasAmount ~ ${Fmt.priceCeilBigInt(gasFee[1], 18, lengthFixed: 6)} $nativeToken';
     }
 
     return Scaffold(
@@ -276,51 +330,43 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                         ],
                       ),
                     ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
+                      child: Text(dic['amount.fee'], style: labelStyle),
+                    ),
                     RoundedCard(
-                      margin: EdgeInsets.only(top: 20),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 4),
-                                    child: Text(dic['amount.fee'],
-                                        style: labelStyle?.copyWith(
-                                            fontWeight: FontWeight.w400)),
+                        child: _fee != null
+                            ? ListTile(
+                                title: EstimatedGasFeeValue(
+                                  gasFee: gasFee,
+                                  gasTokenPrice: gasTokenPrice,
+                                  style: infoValueStyle,
+                                ),
+                                subtitle: EstimatedGasFeeAmount(
+                                  gasFee: gasFee,
+                                  gasTokenSymbol: nativeToken,
+                                  style: subTitleStyle,
+                                ),
+                                trailing: Container(
+                                  width: 80,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(dic['evm.send.gas.$_gasLevel']),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 16,
+                                      )
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                    '${Fmt.priceCeilBigInt(gasFee, 18, lengthMax: 6)} $nativeToken',
-                                    style: infoValueStyle),
-                              ],
-                            ),
-                          ),
-                          // Divider(),
-                          // Container(
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.end,
-                          //     children: [
-                          //       Expanded(
-                          //         child: Padding(
-                          //           padding: const EdgeInsets.only(right: 4),
-                          //           child: Text(dic['amount.fee'],
-                          //               style: labelStyle?.copyWith(
-                          //                   fontWeight: FontWeight.w400)),
-                          //         ),
-                          //       ),
-                          //       Text(
-                          //           '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee?.toString() ?? "0")), decimals, lengthMax: 6)} $symbol',
-                          //           style: infoValueStyle),
-                          //     ],
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
+                                onTap: _gasEditable() ? _onSetGas : null,
+                              )
+                            : const SizedBox(
+                                width: double.infinity,
+                                height: 72,
+                                child: CupertinoActivityIndicator(),
+                              )),
                   ],
                 ),
               ),
