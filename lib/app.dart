@@ -16,6 +16,7 @@ import 'package:app/pages/assets/asset/locksDetailPage.dart';
 import 'package:app/pages/assets/ethTransfer/ethTransferStep1.dart';
 import 'package:app/pages/assets/ethTransfer/ethTransferStep2.dart';
 import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
+import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
@@ -691,7 +692,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
     return _keyring.allAccounts.isNotEmpty
         ? _keyring.allAccounts.length
-        : _keyringEVM.allAccounts.length;
+        : _keyringEVM?.allAccounts?.length;
   }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
@@ -808,6 +809,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       EthTransferStep1.route: (_) => EthTransferStep1(_service),
       EthTransferStep2.route: (_) => EthTransferStep2(_service),
       EthTransferConfirmPage.route: (_) => EthTransferConfirmPage(_service),
+      GasSettingsPage.route: (_) => GasSettingsPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
       AnnouncementPage.route: (_) => AnnouncementPage(),

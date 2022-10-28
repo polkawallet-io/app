@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class ApiAssets {
   ApiAssets(this.apiRoot);
@@ -79,5 +81,20 @@ class ApiAssets {
     WalletApi.getTokenStakingConfig().then((value) {
       apiRoot.store.settings.setTokenStakingConfig(value);
     });
+  }
+
+  Future<void> updateEvmGasParams(int gasLimit,
+      {bool isFixedGas = true}) async {
+    EvmGasParams gasParams;
+    if (isFixedGas) {
+      final gasPrice = await apiRoot.plugin.sdk.api.eth.keyring.getGasPrice();
+      gasParams = EvmGasParams(
+          gasLimit: gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
+    } else {
+      gasParams = await apiRoot.plugin.sdk.api.eth.account
+          .queryEthGasParams(gasLimit: gasLimit);
+    }
+
+    apiRoot.store.assets.setEvmGasParams(gasParams);
   }
 }

@@ -13,10 +13,14 @@ class Utils {
   }
 
   static List<BigInt> calcGasFee(EvmGasParams params, int gasLevel) {
+    if (params?.estimatedFee == null) return [BigInt.zero, BigInt.zero];
+
+    /// [_level]: 0|1|2|3 for fast|medium|slow|custom.
+    /// custom(level 3) not supported.
     final levels = [
-      EstimatedFeeLevel.low,
+      EstimatedFeeLevel.high,
       EstimatedFeeLevel.medium,
-      EstimatedFeeLevel.high
+      EstimatedFeeLevel.low,
     ];
     final base = BigInt.from(params.gasLimit *
         (params.estimatedBaseFee +

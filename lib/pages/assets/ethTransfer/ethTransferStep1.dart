@@ -86,9 +86,10 @@ class EthTransferStep1State extends State<EthTransferStep1> {
       final argsObj = (ModalRoute.of(context).settings.arguments as Map) ?? {};
       pageParams = EthTransferPageParams(
           token: TokenBalanceData(
-              symbol: argsObj['symbol'] ?? widget.service.pluginEvm.nativeToken,
-              id: argsObj['id'],
-              decimals: argsObj['decimals']),
+              symbol: argsObj['token']['symbol'] ??
+                  widget.service.pluginEvm.nativeToken,
+              id: argsObj['token']['id'],
+              decimals: argsObj['token']['decimals']),
           address: argsObj['address']);
       if (pageParams.address != null) {
         _updateAccountTo(pageParams.address);

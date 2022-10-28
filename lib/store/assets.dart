@@ -1,6 +1,7 @@
 import 'package:app/store/types/transferData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
+import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 part 'assets.g.dart';
@@ -26,6 +27,9 @@ abstract class _AssetsStore with Store {
 
   @observable
   Map<String, bool> customAssets = {};
+
+  @observable
+  EvmGasParams gasParams;
 
   @action
   Future<void> clearTxs() async {
@@ -63,6 +67,11 @@ abstract class _AssetsStore with Store {
     customAssets = data;
 
     _storeCustomAssets(acc, pluginName, data);
+  }
+
+  @action
+  void setEvmGasParams(EvmGasParams data) {
+    gasParams = data;
   }
 
   @action

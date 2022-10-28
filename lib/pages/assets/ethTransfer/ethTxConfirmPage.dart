@@ -7,6 +7,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
@@ -44,8 +45,7 @@ class EthTransferConfirmPage extends StatefulWidget {
 
 class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   EthWalletData _accountTo;
-  EvmGasParams _fee;
-  Map _gasOptions;
+
   int _gasLimit = 21000;
 
   int _gasLevel = 1;
@@ -94,6 +94,42 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
 
     if (pass == null) return;
 
+    Map gasOptions;
+    if (_isAcala()) {
+      /// in acala/karura we use const gasLimit & gasPrice
+      gasOptions = {
+        'gas': _gasLimit,
+        'gasPrice': Fmt.tokenInt(
+                widget.service.store.assets.gasParams.gasPrice.toString(), 9)
+            .toString(),
+      };
+    } else {
+      /// in ethereum we use dynamic gas estimate
+      final levels = [
+        EstimatedFeeLevel.high,
+        EstimatedFeeLevel.medium,
+        EstimatedFeeLevel.low,
+      ];
+      gasOptions = {
+        'gas': _gasLimit,
+        'gasPrice': Fmt.tokenInt(
+                widget.service.store.assets.gasParams.gasPrice.toString(), 9)
+            .toString(),
+        'maxFeePerGas': Fmt.tokenInt(
+                widget.service.store.assets.gasParams
+                    .estimatedFee[levels[_gasLevel]].maxFeePerGas
+                    .toString(),
+                9)
+            .toString(),
+        'maxPriorityFeePerGas': Fmt.tokenInt(
+                widget.service.store.assets.gasParams
+                    .estimatedFee[levels[_gasLevel]].maxPriorityFeePerGas
+                    .toString(),
+                9)
+            .toString(),
+      };
+    }
+
     widget.service.plugin.sdk.api.eth.keyring.transfer(
         token: args.contractAddress.isNotEmpty
             ? args.contractAddress
@@ -102,42 +138,12 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
         to: args.addressTo,
         sender: widget.service.keyringEVM.current.address,
         pass: pass,
-        gasOptions: _gasOptions);
-
-    // // params: [to, amount]
-    // final params = [
-    //   _accountTo.address,
-    //   Fmt.tokenInt(_amountCtrl.text.trim(), decimals).toString(),
-    // ];
-    // return TxConfirmParams(
-    //   txTitle: '${dic['transfer']} $symbol',
-    //   module: 'balances',
-    //   call: 'transfer',
-    //   txDisplayBold: {
-    //     dic['to']: Row(
-    //       children: [
-    //         AddressIcon(_accountTo.address, svg: _accountTo.icon),
-    //         Expanded(
-    //           child: Container(
-    //             margin: const EdgeInsets.fromLTRB(8, 16, 0, 16),
-    //             child: Text(
-    //               Fmt.address(_accountTo.address, pad: 8),
-    //               style: Theme.of(context).textTheme.headline4,
-    //             ),
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //     dic['amount']: Text(
-    //       '${_amountCtrl.text.trim()} $symbol',
-    //       style: Theme.of(context).textTheme.headline1,
-    //     ),
-    //   },
-    //   params: params,
-    // );
+        gasOptions: gasOptions);
   }
 
-  Future<void> _getTxFee() async {
+  Future<void> _updateTxFee() async {
+    if (!mounted) return;
+
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
 
@@ -147,47 +153,19 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                 ? args.tokenSymbol
                 : args.contractAddress,
             amount: args.amount,
-            to: args.addressTo);
-    EvmGasParams gasParams;
-    if (_isAcala()) {
-      /// in acala/karura we use const gasLimit & gasPrice
-      final gasPrice =
-          await widget.service.plugin.sdk.api.eth.keyring.getGasPrice();
-      gasParams = EvmGasParams(
-          gasLimit: _gasLimit, gasPrice: Fmt.balanceDouble(gasPrice, 9));
-      _gasOptions = {
-        'gas': _gasLimit,
-        'gasPrice': gasPrice,
-      };
-    } else {
-      /// in ethereum we use dynamic gas estimate
-      gasParams = await widget.service.plugin.sdk.api.eth.account
-          .queryEthGasParams(gasLimit: _gasLimit);
-      _gasOptions = {
-        'gas': gasParams.gasLimit,
-        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
-        'maxFeePerGas': Fmt.tokenInt(
-                gasParams.estimatedFee[EstimatedFeeLevel.high].maxFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-        'maxPriorityFeePerGas': Fmt.tokenInt(
-                gasParams
-                    .estimatedFee[EstimatedFeeLevel.high].maxPriorityFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-      };
-    }
+            to: args.addressTo,
+            from: widget.service.keyringEVM.current.address);
+    await widget.service.assets
+        .updateEvmGasParams(_gasLimit, isFixedGas: !_gasEditable());
 
-    setState(() {
-      _fee = gasParams;
-    });
+    if (_gasEditable()) {
+      _gasQueryTimer = Timer(const Duration(seconds: 7), _updateTxFee);
+    }
   }
 
   Future<void> _onSetGas() async {
     final gasLevel = await Navigator.of(context)
-        .pushNamed(GasSettingsPage.route, arguments: _fee?.gasLimit);
+        .pushNamed(GasSettingsPage.route, arguments: _gasLevel);
     if (gasLevel != null && gasLevel != _gasLevel) {
       setState(() {
         _gasLevel = gasLevel;
@@ -200,15 +178,11 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _getTxFee();
+      _updateTxFee();
 
       final EthTransferConfirmPageParams args =
           ModalRoute.of(context).settings.arguments;
       _updateAccountTo(args.addressTo);
-
-      if (_gasEditable()) {
-        _gasQueryTimer = Timer(const Duration(seconds: 7), _getTxFee);
-      }
     });
   }
 
@@ -220,167 +194,162 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final plugin = widget.service.plugin as PluginEvm;
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final nativeToken = widget.service.pluginEvm.nativeToken;
-    final EthTransferConfirmPageParams args =
-        ModalRoute.of(context).settings.arguments;
+  Widget build(BuildContext context) => Observer(builder: (_) {
+        final plugin = widget.service.plugin as PluginEvm;
+        final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+        final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+        final nativeToken = widget.service.pluginEvm.nativeToken;
+        final EthTransferConfirmPageParams args =
+            ModalRoute.of(context).settings.arguments;
 
-    final connected = plugin.sdk.api.connectedNode != null;
+        final connected = plugin.sdk.api.connectedNode != null;
 
-    final available = Fmt.balanceInt(
-        (plugin.balances.native?.availableBalance ?? 0).toString());
+        final available = Fmt.balanceInt(
+            (plugin.balances.native?.availableBalance ?? 0).toString());
 
-    final labelStyle = Theme.of(context)
-        .textTheme
-        .headline4
-        ?.copyWith(fontWeight: FontWeight.bold);
-    final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
-        height: 1,
-        fontWeight: FontWeight.w300,
-        fontSize: 12,
-        color:
-            UI.isDarkTheme(context) ? Colors.white : const Color(0xBF565554));
-    final infoValueStyle = Theme.of(context)
-        .textTheme
-        .headline5
-        .copyWith(fontWeight: FontWeight.w600);
+        final labelStyle = Theme.of(context)
+            .textTheme
+            .headline4
+            ?.copyWith(fontWeight: FontWeight.bold);
+        final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
+            height: 1,
+            fontWeight: FontWeight.w300,
+            fontSize: 12,
+            color: UI.isDarkTheme(context)
+                ? Colors.white
+                : const Color(0xBF565554));
+        final infoValueStyle = Theme.of(context)
+            .textTheme
+            .headline5
+            .copyWith(fontWeight: FontWeight.w600);
 
-    final gasTokenPrice =
-        widget.service.store.assets.marketPrices[nativeToken] ?? 0;
-    print(gasTokenPrice);
-    List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
-    if (_fee != null) {
-      gasFee = _gasEditable()
-          ? Utils.calcGasFee(_fee, _gasLevel)
-          : [
-              BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000),
-              BigInt.zero
-            ];
-    }
+        final gasParams = widget.service.store.assets.gasParams;
+        final gasTokenPrice =
+            widget.service.store.assets.marketPrices[nativeToken] ?? 0;
 
-    String gasValue =
-        '\$${Fmt.priceFloor(Fmt.bigIntToDouble(gasFee[0], 18) * gasTokenPrice, lengthMax: 2)}';
-    String gasAmount =
-        '${Fmt.priceCeilBigInt(gasFee[0], 18, lengthFixed: 6)} $nativeToken';
-    if (_fee != null && _gasEditable()) {
-      gasValue =
-          '$gasValue ~ \$${Fmt.priceFloor(Fmt.bigIntToDouble(gasFee[1], 18) * gasTokenPrice, lengthMax: 2)}';
-      gasAmount =
-          '$gasAmount ~ ${Fmt.priceCeilBigInt(gasFee[1], 18, lengthFixed: 6)} $nativeToken';
-    }
+        List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
+        if (gasParams != null) {
+          gasFee = _gasEditable()
+              ? Utils.calcGasFee(gasParams, _gasLevel)
+              : [
+                  BigInt.from(
+                      gasParams.gasLimit * gasParams.gasPrice * 1000000000),
+                  BigInt.zero
+                ];
+        }
 
-    return Scaffold(
-      appBar: AppBar(
-          systemOverlayStyle: UI.isDarkTheme(context)
-              ? SystemUiOverlayStyle.light
-              : SystemUiOverlayStyle.dark,
-          title: Text(dic['evm.send.2'] ?? ''),
-          centerTitle: true,
-          leading: const BackBtn()),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(dic['from'], style: labelStyle),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 3, bottom: 8),
-                        child:
-                            AddressFormItem(widget.service.keyringEVM.current)),
-                    Text(dic['to'], style: labelStyle),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 3),
-                        child: _accountTo != null
-                            ? AddressFormItem(_accountTo)
-                            : Container()),
-                    Container(
-                      margin: const EdgeInsets.only(top: 8, bottom: 4),
-                      child: Text(dic['amount'], style: labelStyle),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 16),
-                      height: 88,
-                      decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/images/public/flex_text_form_field_bg.png'),
-                              fit: BoxFit.fill)),
-                      child: Row(
-                        children: [
-                          Text(
-                            args.amount.toStringAsFixed(4),
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline1
-                                .copyWith(fontSize: 40),
+        return Scaffold(
+          appBar: AppBar(
+              systemOverlayStyle: UI.isDarkTheme(context)
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark,
+              title: Text(dic['evm.send.2'] ?? ''),
+              centerTitle: true,
+              leading: const BackBtn()),
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(dic['from'], style: labelStyle),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 3, bottom: 8),
+                            child: AddressFormItem(
+                                widget.service.keyringEVM.current)),
+                        Text(dic['to'], style: labelStyle),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: _accountTo != null
+                                ? AddressFormItem(_accountTo)
+                                : Container()),
+                        Container(
+                          margin: const EdgeInsets.only(top: 8, bottom: 4),
+                          child: Text(dic['amount'], style: labelStyle),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(left: 16),
+                          height: 88,
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/public/flex_text_form_field_bg.png'),
+                                  fit: BoxFit.fill)),
+                          child: Row(
+                            children: [
+                              Text(
+                                args.amount.toStringAsFixed(4),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline1
+                                    .copyWith(fontSize: 40),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8, top: 8),
+                                child: Text(args.tokenSymbol),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 8),
-                            child: Text(args.tokenSymbol),
-                          ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          child: Text(dic['amount.fee'], style: labelStyle),
+                        ),
+                        RoundedCard(
+                            child: gasParams != null
+                                ? ListTile(
+                                    title: EstimatedGasFeeValue(
+                                      gasFee: gasFee,
+                                      gasTokenPrice: gasTokenPrice,
+                                      style: infoValueStyle,
+                                    ),
+                                    subtitle: EstimatedGasFeeAmount(
+                                      gasFee: gasFee,
+                                      gasTokenSymbol: nativeToken,
+                                      style: subTitleStyle,
+                                    ),
+                                    trailing: _gasEditable()
+                                        ? Container(
+                                            width: 80,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(dic[
+                                                    'evm.send.gas.$_gasLevel']),
+                                                const Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 16)
+                                              ],
+                                            ),
+                                          )
+                                        : Container(width: 8),
+                                    onTap: _gasEditable() ? _onSetGas : null,
+                                  )
+                                : const SizedBox(
+                                    width: double.infinity,
+                                    height: 72,
+                                    child: CupertinoActivityIndicator(),
+                                  )),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 16, bottom: 8),
-                      child: Text(dic['amount.fee'], style: labelStyle),
-                    ),
-                    RoundedCard(
-                        child: _fee != null
-                            ? ListTile(
-                                title: EstimatedGasFeeValue(
-                                  gasFee: gasFee,
-                                  gasTokenPrice: gasTokenPrice,
-                                  style: infoValueStyle,
-                                ),
-                                subtitle: EstimatedGasFeeAmount(
-                                  gasFee: gasFee,
-                                  gasTokenSymbol: nativeToken,
-                                  style: subTitleStyle,
-                                ),
-                                trailing: Container(
-                                  width: 80,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(dic['evm.send.gas.$_gasLevel']),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 16,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                onTap: _gasEditable() ? _onSetGas : null,
-                              )
-                            : const SizedBox(
-                                width: double.infinity,
-                                height: 72,
-                                child: CupertinoActivityIndicator(),
-                              )),
-                  ],
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  child: v3.Button(
+                    title: dicUI['dApp.confirm'],
+                    onPressed: connected ? _onSubmit : () => null,
+                  ),
+                )
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: v3.Button(
-                title: dicUI['dApp.confirm'],
-                onPressed: connected ? _onSubmit : () => null,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+          ),
+        );
+      });
 }

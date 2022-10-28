@@ -45,7 +45,8 @@ class EthTransferStep2State extends State<EthTransferStep2> {
         .estimateTransferGas(
             token: args.token.id ?? args.token.symbol,
             amount: 1,
-            to: args.address);
+            to: args.address,
+            from: widget.service.keyringEVM.current.address);
     EvmGasParams gasParams;
     if (_isAcala()) {
       /// in acala/karura we use const gasLimit & gasPrice
@@ -75,10 +76,8 @@ class EthTransferStep2State extends State<EthTransferStep2> {
             (args.token.id ?? '').startsWith('0x') ? args.token.id : '',
         addressTo: args.address,
         amount: double.tryParse(_amountCtrl.text.trim()) ?? '0');
-    final res = await Navigator.of(context)
+    Navigator.of(context)
         .pushNamed(EthTransferConfirmPage.route, arguments: params);
-    print('eth transfer sending ============================');
-    print(res);
   }
 
   BigInt _getExistAmount(BigInt notTransferable, BigInt existentialDeposit) {
@@ -115,8 +114,12 @@ class EthTransferStep2State extends State<EthTransferStep2> {
     final symbol = args?.token?.symbol ?? 'ACA';
     final decimals = args?.token?.decimals ?? 18;
 
-    final available = Fmt.balanceInt(
-        (plugin.balances.native?.availableBalance ?? 0).toString());
+    final available = Fmt.balanceInt((symbol == plugin.nativeToken
+            ? (plugin.balances.native?.availableBalance ?? 0)
+            : plugin.noneNativeTokensAll
+                .firstWhere((e) => e.id == args.token.id)
+                .amount)
+        .toString());
 
     BigInt gasFee = BigInt.zero;
     if (_fee != null &&

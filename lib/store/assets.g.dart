@@ -54,6 +54,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$gasParamsAtom = Atom(name: '_AssetsStore.gasParams');
+
+  @override
+  EvmGasParams get gasParams {
+    _$gasParamsAtom.reportRead();
+    return super.gasParams;
+  }
+
+  @override
+  set gasParams(EvmGasParams value) {
+    _$gasParamsAtom.reportWrite(value, super.gasParams, () {
+      super.gasParams = value;
+    });
+  }
+
   final _$clearTxsAsyncAction = AsyncAction('_AssetsStore.clearTxs');
 
   @override
@@ -107,6 +122,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
         name: '_AssetsStore.setCustomAssets');
     try {
       return super.setCustomAssets(acc, pluginName, data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setEvmGasParams(EvmGasParams data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setEvmGasParams');
+    try {
+      return super.setEvmGasParams(data);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }

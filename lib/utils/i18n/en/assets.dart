@@ -126,6 +126,7 @@ const Map<String, String> enAssets = {
   'evm.send.time.1': '3 minutes',
   'evm.send.time.2': '10 minutes',
   'evm.send.gas': 'Gas Settings',
+  'evm.send.gas.option': 'Options',
   'evm.send.gas.0': 'Fast',
   'evm.send.gas.1': 'Standard',
   'evm.send.gas.2': 'Slow',
