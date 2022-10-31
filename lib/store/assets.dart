@@ -1,7 +1,9 @@
+import 'package:app/store/types/localTxData.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
+import 'package:polkawallet_sdk/api/types/evmTxData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 part 'assets.g.dart';
@@ -31,6 +33,9 @@ abstract class _AssetsStore with Store {
   @observable
   EvmGasParams gasParams;
 
+  @observable
+  ObservableMap<String, EvmTxData> pendingTx = ObservableMap();
+
   @action
   Future<void> clearTxs() async {
     txs.clear();
@@ -54,6 +59,11 @@ abstract class _AssetsStore with Store {
     if (shouldCache) {
       storage.write('${pluginName}_$acc', ls);
     }
+  }
+
+  @action
+  void setPendingTx(KeyPairData acc, EvmTxData data) {
+    pendingTx.addAll({acc.pubKey: data});
   }
 
   @action

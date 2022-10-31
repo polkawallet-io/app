@@ -69,6 +69,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$pendingTxAtom = Atom(name: '_AssetsStore.pendingTx');
+
+  @override
+  ObservableMap<String, EvmTxData> get pendingTx {
+    _$pendingTxAtom.reportRead();
+    return super.pendingTx;
+  }
+
+  @override
+  set pendingTx(ObservableMap<String, EvmTxData> value) {
+    _$pendingTxAtom.reportWrite(value, super.pendingTx, () {
+      super.pendingTx = value;
+    });
+  }
+
   final _$clearTxsAsyncAction = AsyncAction('_AssetsStore.clearTxs');
 
   @override
@@ -133,6 +148,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
         name: '_AssetsStore.setEvmGasParams');
     try {
       return super.setEvmGasParams(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPendingTx(KeyPairData acc, EvmTxData data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setPendingTx');
+    try {
+      return super.setPendingTx(acc, data);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }

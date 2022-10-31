@@ -72,6 +72,7 @@ class EthTransferStep2State extends State<EthTransferStep2> {
         ModalRoute.of(context).settings.arguments;
     final params = EthTransferConfirmPageParams(
         tokenSymbol: args.token.symbol,
+        tokenDecimals: args.token.decimals,
         contractAddress:
             (args.token.id ?? '').startsWith('0x') ? args.token.id : '',
         addressTo: args.address,

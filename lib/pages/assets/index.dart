@@ -5,7 +5,6 @@ import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
-import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -508,93 +507,51 @@ class _AssetsState extends State<AssetsPage> {
             child: AddressIcon(widget.service.keyring.current.address,
                 svg: widget.service.keyring.current.icon),
           ),
-          Padding(
-              padding: EdgeInsets.only(bottom: 5),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    Fmt.address(widget.service.keyring.current.address),
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (BuildContext context) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10)),
-                            ),
-                            height: MediaQuery.of(context).size.height -
-                                MediaQuery.of(context).padding.top -
-                                MediaQuery.of(context).padding.bottom -
-                                kToolbarHeight -
-                                10.h,
-                            width: double.infinity,
-                            child: NodeSelectPage(
-                                widget.service,
-                                widget.plugins,
-                                widget.changeNetwork,
-                                widget.disabledPlugins),
-                          );
-                        },
-                        context: context,
-                      );
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      margin: EdgeInsets.only(top: 2),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          widget.connectedNode == null
-                              ? Container(
-                                  width: 9,
-                                  height: 9,
-                                  margin: EdgeInsets.only(right: 4),
-                                  child: Center(
-                                      child: RiveAnimation.asset(
-                                    'assets/images/connecting.riv',
-                                  )))
-                              : Container(
-                                  width: 9,
-                                  height: 9,
-                                  margin: EdgeInsets.only(right: 4),
-                                  decoration: BoxDecoration(
-                                      color: UI.isDarkTheme(context)
-                                          ? Color(0xFF82FF99)
-                                          : Color(0xFF7D97EE),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.5))),
-                                ),
-                          Text(
-                            widget.service.plugin.basic.name.toUpperCase(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4
-                                .copyWith(
-                                    fontWeight: FontWeight.w600, height: 1.1),
-                          ),
-                          Container(
-                            width: 14,
-                            margin: EdgeInsets.only(left: 9),
-                            child: SvgPicture.asset(
-                              'assets/images/icon_changenetwork.svg',
-                              width: 14,
-                            ),
-                          )
-                        ],
-                      ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                Fmt.address(widget.service.keyring.current.address),
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              Container(
+                color: Colors.transparent,
+                margin: EdgeInsets.only(top: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    widget.connectedNode == null
+                        ? Container(
+                        width: 9,
+                        height: 9,
+                        margin: EdgeInsets.only(right: 4),
+                        child: Center(
+                            child: RiveAnimation.asset(
+                              'assets/images/connecting.riv',
+                            )))
+                        : Container(
+                      width: 9,
+                      height: 9,
+                      margin: EdgeInsets.only(right: 4),
+                      decoration: BoxDecoration(
+                          color: UI.isDarkTheme(context)
+                              ? Color(0xFF82FF99)
+                              : Color(0xFF7D97EE),
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(5.5))),
                     ),
-                  )
-                ],
-              )),
+                    Text(
+                      widget.service.plugin.basic.name.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                          fontWeight: FontWeight.w600, height: 1.1),
+                    ),
+                    const SizedBox(width: 8)
+                  ],
+                ),
+              )
+            ],
+          ),
         ],
       ),
       centerTitle: true,
@@ -610,7 +567,7 @@ class _AssetsState extends State<AssetsPage> {
                 color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
                 height: 22,
               ),
-              onPressed: widget.service.keyring.allAccounts.length > 0
+              onPressed: widget.service.keyring.allAccounts.isNotEmpty
                   ? () async {
                       final selected = (await Navigator.of(context)
                               .pushNamed(NetworkSelectPage.route))

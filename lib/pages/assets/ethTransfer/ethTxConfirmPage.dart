@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/pages/assets/ethTransfer/ethTxDetailPage.dart';
 import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/Utils.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
@@ -23,11 +25,13 @@ import 'package:polkawallet_ui/utils/index.dart';
 class EthTransferConfirmPageParams {
   EthTransferConfirmPageParams({
     this.tokenSymbol,
+    this.tokenDecimals,
     this.contractAddress,
     this.amount,
     this.addressTo,
   });
   final String tokenSymbol;
+  final int tokenDecimals;
   final String contractAddress;
   final double amount;
   final String addressTo;
@@ -49,6 +53,8 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   int _gasLimit = 21000;
 
   int _gasLevel = 1;
+
+  bool _submitting = false;
 
   Timer _gasQueryTimer;
 
@@ -83,9 +89,6 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   }
 
   Future<void> _onSubmit() async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    print('on submit');
-
     final EthTransferConfirmPageParams args =
         ModalRoute.of(context).settings.arguments;
 
@@ -130,15 +133,22 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
       };
     }
 
-    widget.service.plugin.sdk.api.eth.keyring.transfer(
-        token: args.contractAddress.isNotEmpty
-            ? args.contractAddress
-            : args.tokenSymbol,
-        amount: args.amount,
-        to: args.addressTo,
-        sender: widget.service.keyringEVM.current.address,
-        pass: pass,
-        gasOptions: gasOptions);
+    setState(() {
+      _submitting = true;
+    });
+
+    final res = await widget.service.assets.evmTransfer(args, pass, gasOptions);
+    if (res != null && res['hash'] != null) {
+      Navigator.popUntil(context, ModalRoute.withName(ethTokenDetailPageRoute));
+
+      final pendingTx = widget.service.store.assets
+          .pendingTx[widget.service.keyringEVM.current.address];
+      Navigator.of(context)
+          .pushNamed(EthTxDetailPage.route, arguments: pendingTx);
+    }
+    setState(() {
+      _submitting = false;
+    });
   }
 
   Future<void> _updateTxFee() async {
@@ -201,11 +211,6 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
         final nativeToken = widget.service.pluginEvm.nativeToken;
         final EthTransferConfirmPageParams args =
             ModalRoute.of(context).settings.arguments;
-
-        final connected = plugin.sdk.api.connectedNode != null;
-
-        final available = Fmt.balanceInt(
-            (plugin.balances.native?.availableBalance ?? 0).toString());
 
         final labelStyle = Theme.of(context)
             .textTheme
@@ -344,7 +349,10 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                   padding: const EdgeInsets.all(16),
                   child: v3.Button(
                     title: dicUI['dApp.confirm'],
-                    onPressed: connected ? _onSubmit : () => null,
+                    isBlueBg: _submitting ? false : true,
+                    icon:
+                        _submitting ? const CupertinoActivityIndicator() : null,
+                    onPressed: !_submitting ? _onSubmit : () => null,
                   ),
                 )
               ],

@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
+import 'package:polkawallet_sdk/api/types/evmTxData.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class ApiAssets {
@@ -96,5 +99,57 @@ class ApiAssets {
     }
 
     apiRoot.store.assets.setEvmGasParams(gasParams);
+  }
+
+  Future<Map> evmTransfer(
+      EthTransferConfirmPageParams args, String pass, Map gasOptions) async {
+    final token = args.contractAddress.isNotEmpty
+        ? args.contractAddress
+        : args.tokenSymbol;
+    final res = await apiRoot.plugin.sdk.api.eth.keyring.transfer(
+        token: token,
+        amount: args.amount,
+        to: args.addressTo,
+        sender: apiRoot.keyringEVM.current.address,
+        pass: pass,
+        gasOptions: gasOptions,
+        onStatusChange: (res) {
+          if (res['confirmNumber'] > -1) {
+            (apiRoot.plugin as PluginEvm)
+                .updateBalances(apiRoot.keyringEVM.current.toKeyPairData());
+            (apiRoot.plugin as PluginEvm).updateBalanceNoneNativeTokensAll();
+
+            apiRoot.store.assets.setPendingTx(
+                apiRoot.keyringEVM.current.toKeyPairData(),
+                EvmTxData(
+                  hash: res['hash'],
+                  contractAddress: args.contractAddress,
+                  tokenSymbol: args.tokenSymbol,
+                  tokenDecimal: (args.tokenDecimals ?? 18).toString(),
+                  value:
+                      Fmt.tokenInt(args.amount.toString(), args.tokenDecimals)
+                          .toString(),
+                  from: apiRoot.keyringEVM.current.address,
+                  to: args.addressTo,
+                  confirmations: res['confirmNumber'].toString(),
+                ));
+          }
+        });
+    if (res != null && res['hash'] != null) {
+      apiRoot.store.assets.setPendingTx(
+          apiRoot.keyringEVM.current.toKeyPairData(),
+          EvmTxData(
+            hash: res['hash'],
+            contractAddress: args.contractAddress,
+            tokenSymbol: args.tokenSymbol,
+            tokenDecimal: (args.tokenDecimals ?? 18).toString(),
+            value: Fmt.tokenInt(args.amount.toString(), args.tokenDecimals)
+                .toString(),
+            from: apiRoot.keyringEVM.current.address,
+            to: args.addressTo,
+            confirmations: '-1',
+          ));
+    }
+    return res;
   }
 }
