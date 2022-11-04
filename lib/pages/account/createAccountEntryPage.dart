@@ -1,25 +1,23 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
-import 'package:app/pages/account/create/createAccountPage.dart';
+import 'package:app/pages/networkSelectPage.dart';
+import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 
-import 'import/selectImportTypePage.dart';
-
 class CreateAccountEntryPage extends StatelessWidget {
-  CreateAccountEntryPage(this.plugin);
+  CreateAccountEntryPage(this.service);
 
   static final String route = '/account/entry';
 
-  final PolkawalletPlugin plugin;
+  final AppService service;
 
   void _checkJsCodeStarted(BuildContext context) {
-    if (plugin.sdk.webView.webViewLoaded) {
-      if (plugin.sdk.webView.jsCodeStarted == 0) {
+    if (service.plugin.sdk.webView.webViewLoaded) {
+      if (service.plugin.sdk.webView.jsCodeStarted == 0) {
         showCupertinoDialog(
             context: context,
             builder: (_) {
@@ -32,11 +30,30 @@ class CreateAccountEntryPage extends StatelessWidget {
     }
   }
 
+  void _autoSwitchAccountType(BuildContext context) {
+    /// if we are in a specific account type(substrate or evm), but account is empty,
+    /// then we check if we can switch to another plugin with another account type.
+    if (service.store.account.accountType == AccountType.Evm) {
+      if (service.keyringEVM.allAccounts.isEmpty &&
+          service.keyring.allAccounts.isNotEmpty) {
+        Navigator.of(context).pushNamed(NetworkSelectPage.route);
+      }
+    } else {
+      if (service.keyring.allAccounts.isEmpty &&
+          service.keyringEVM.allAccounts.isNotEmpty) {
+        Navigator.of(context).pushNamed(NetworkSelectPage.route);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkJsCodeStarted(context);
+
+      _autoSwitchAccountType(context);
     });
+
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

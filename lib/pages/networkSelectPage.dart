@@ -275,8 +275,8 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     }
     await widget.changeNetwork(_selectedNetwork);
 
+    Navigator.of(context).pop();
     if (mounted) {
-      Navigator.of(context).pop();
       setState(() {
         _networkChanging = false;
       });
@@ -284,18 +284,27 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
   }
 
   Future<void> _onCreateAccount(int isImport) async {
-    bool isCurrentNetwork =
-        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-    if (!isCurrentNetwork) {
-      await _reloadNetwork();
+    if (widget.isEvm) {
+      /// we reloadNetwork(change plugin) after create account
+      /// if is EVM
+      await Navigator.of(context).pushNamed(
+          isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
+          arguments: {"accountType": AccountType.Evm});
+
+      if (widget.service.keyringEVM.allAccounts.isNotEmpty) {
+        await _reloadNetwork();
+      }
+    } else {
+      /// we reloadNetwork(change plugin) before create account
+      /// if is Substrate
+      if (_selectedNetwork.basic.name != widget.service.plugin.basic.name) {
+        await _reloadNetwork();
+      }
+
+      Navigator.of(context).pushNamed(
+          isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
+          arguments: {"accountType": AccountType.Substrate});
     }
-    // Navigator.of(context)
-    //     .pushNamed(AccountTypeSelectPage.route, arguments: isImport);
-    Navigator.of(context).pushNamed(
-        isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
-        arguments: {
-          "accountType": widget.isEvm ? AccountType.Evm : AccountType.Substrate
-        });
   }
 
   Widget netWorkItem(Function() onTap, Widget icon) {

@@ -737,7 +737,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                               _changeNode,
                               widget.disabledPlugins,
                               _changeNetwork)
-                          : CreateAccountEntryPage(_service.plugin);
+                          : CreateAccountEntryPage(_service);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);
                     }
@@ -779,8 +779,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 
       /// account
-      CreateAccountEntryPage.route: (_) =>
-          CreateAccountEntryPage(_service.plugin),
+      CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(_service),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
       DAppWrapperPage.route: (_) => DAppWrapperPage(

@@ -12,10 +12,10 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -47,9 +47,11 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
             key: key)
         : await widget.service.plugin.sdk.api.eth.keyring
             .generateMnemonic(mnemonic: key.isEmpty ? null : key, index: 0);
-    setState(() {
-      _addressIcon = addressInfo;
-    });
+    if (mounted) {
+      setState(() {
+        _addressIcon = addressInfo;
+      });
+    }
 
     if (key.isEmpty) {
       widget.service.store.account.setNewAccountKey(addressInfo.mnemonic);

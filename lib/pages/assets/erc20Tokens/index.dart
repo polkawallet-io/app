@@ -468,21 +468,17 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                 color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
                 height: 22,
               ),
-              onPressed: widget.service.keyringEVM.allAccounts.isNotEmpty
-                  ? () async {
-                      final selected = (await Navigator.of(context)
-                              .pushNamed(NetworkSelectPage.route))
-                          as PolkawalletPlugin;
-                      if (!mounted) return;
+              onPressed: () async {
+                final selected = (await Navigator.of(context)
+                    .pushNamed(NetworkSelectPage.route)) as PolkawalletPlugin;
+                if (!mounted) return;
 
-                      setState(() {});
-                      if (selected != null &&
-                          selected.basic.name !=
-                              widget.service.plugin.basic.name) {
-                        widget.checkJSCodeUpdate(selected);
-                      }
-                    }
-                  : null,
+                setState(() {});
+                if (selected != null &&
+                    selected.basic.name != widget.service.plugin.basic.name) {
+                  widget.checkJSCodeUpdate(selected);
+                }
+              },
             )
           ])),
       actions: <Widget>[
