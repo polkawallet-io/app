@@ -50,6 +50,24 @@ class ApiAssets {
     return res;
   }
 
+  Future<List<EvmTxData>> updateEvmTxs(String tokenId) async {
+    final address = apiRoot.keyringEVM.current.address;
+    if (address == null) {
+      return null;
+    }
+    final data = await WalletApi.getEvmTokenTxs(
+        (apiRoot.plugin as PluginEvm).network, address,
+        contractAddress: tokenId.startsWith('0x') ? tokenId : null);
+    if (data != null && data['result'] != null) {
+      print(data['result']);
+      final list =
+          (data['result'] as List).map((e) => EvmTxData.fromJson(e)).toList();
+      apiRoot.store.assets.setEvmTxs(list, tokenId, address);
+      return list;
+    }
+    return null;
+  }
+
   Future<void> fetchMarketPrices(List<String> tokens) async {
     if (tokens == null) return;
 

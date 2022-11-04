@@ -5,14 +5,12 @@ import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
-import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 
 class AppService {
-  AppService(this.allPlugins, this.plugin, this.keyring, this.store,
-      this.keyringEVM, this.pluginEvm);
+  AppService(
+      this.allPlugins, this.plugin, this.keyring, this.store, this.keyringEVM);
 
   final List<PolkawalletPlugin> allPlugins;
-  final PluginEvm pluginEvm;
   PolkawalletPlugin plugin;
   final Keyring keyring;
   final KeyringEVM keyringEVM;

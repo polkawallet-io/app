@@ -13,9 +13,11 @@ import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/erc20Tokens/tokenDetailPage.dart';
 import 'package:app/pages/assets/ethTransfer/ethTransferStep1.dart';
 import 'package:app/pages/assets/ethTransfer/ethTransferStep2.dart';
 import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTxDetailPage.dart';
 import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
@@ -443,8 +445,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           },
         _keyring,
         _store,
-        _keyringEVM,
-        PluginEvm(networkName: _store.settings.evmNetwork));
+        _keyringEVM);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
@@ -648,8 +649,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               : widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
           _keyring,
           store,
-          _keyringEVM,
-          PluginEvm(networkName: store.settings.evmNetwork));
+          _keyringEVM);
       service.init();
       setState(() {
         _store = store;
@@ -806,9 +806,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),
+      EthTokenDetailPage.route: (_) => EthTokenDetailPage(_service),
       EthTransferStep1.route: (_) => EthTransferStep1(_service),
       EthTransferStep2.route: (_) => EthTransferStep2(_service),
       EthTransferConfirmPage.route: (_) => EthTransferConfirmPage(_service),
+      EthTxDetailPage.route: (_) => EthTxDetailPage(_service),
       GasSettingsPage.route: (_) => GasSettingsPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),

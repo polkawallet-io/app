@@ -211,8 +211,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       setState(() {
-        _selectedNetwork =
-            widget.isEvm ? widget.service.pluginEvm : widget.service.plugin;
+        _selectedNetwork = widget.service.plugin;
       });
     });
   }
@@ -735,7 +734,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                               ),
                             ),
                             ...(widget.isEvm
-                                    ? widget.service.pluginEvm.networkList()
+                                    ? PluginEvm().networkList()
                                     : widget.plugins)
                                 .map((e) {
                               if (e is PolkawalletPlugin) {

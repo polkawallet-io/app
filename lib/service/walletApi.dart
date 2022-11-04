@@ -5,6 +5,7 @@ import 'package:app/common/consts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
+import 'package:polkawallet_plugin_evm/common/constants.dart';
 
 const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
@@ -311,6 +312,24 @@ class WalletApi {
         return null;
       } else {
         return jsonDecode(utf8.decode(res.bodyBytes)) as Map;
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getEvmTokenTxs(String network, String address,
+      {String contractAddress}) async {
+    final url = contractAddress != null
+        ? '${block_explorer_url[network]['api']}/api?module=account&action=tokentx&address=$address&contractaddress=$contractAddress&sort=desc'
+        : '${block_explorer_url[network]['api']}/api?module=account&action=txlist&address=$address&sort=desc';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
       }
     } catch (err) {
       print(err);

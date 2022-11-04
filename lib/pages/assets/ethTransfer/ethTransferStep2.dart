@@ -33,8 +33,8 @@ class EthTransferStep2State extends State<EthTransferStep2> {
   EvmGasParams _fee;
 
   bool _isAcala() {
-    return widget.service.pluginEvm.basic.name.contains('acala') ||
-        widget.service.pluginEvm.basic.name.contains('karura');
+    final pluginName = (widget.service.plugin as PluginEvm).basic.name;
+    return pluginName.contains('acala') || pluginName.contains('karura');
   }
 
   Future<void> _getTxFee() async {
@@ -123,9 +123,7 @@ class EthTransferStep2State extends State<EthTransferStep2> {
         .toString());
 
     BigInt gasFee = BigInt.zero;
-    if (_fee != null &&
-        !isERC20 &&
-        symbol == widget.service.pluginEvm.nativeToken) {
+    if (_fee != null && !isERC20 && symbol == plugin.nativeToken) {
       gasFee = BigInt.from(_fee.gasLimit * _fee.gasPrice * 1000000000);
     }
 

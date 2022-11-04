@@ -87,7 +87,7 @@ class EthTransferStep1State extends State<EthTransferStep1> {
       pageParams = EthTransferPageParams(
           token: TokenBalanceData(
               symbol: argsObj['token']['symbol'] ??
-                  widget.service.pluginEvm.nativeToken,
+                  (widget.service.plugin as PluginEvm).nativeToken,
               id: argsObj['token']['id'],
               decimals: argsObj['token']['decimals']),
           address: argsObj['address']);

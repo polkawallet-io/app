@@ -523,28 +523,30 @@ class _AssetsState extends State<AssetsPage> {
                   children: [
                     widget.connectedNode == null
                         ? Container(
-                        width: 9,
-                        height: 9,
-                        margin: EdgeInsets.only(right: 4),
-                        child: Center(
-                            child: RiveAnimation.asset(
+                            width: 9,
+                            height: 9,
+                            margin: EdgeInsets.only(right: 4),
+                            child: Center(
+                                child: RiveAnimation.asset(
                               'assets/images/connecting.riv',
                             )))
                         : Container(
-                      width: 9,
-                      height: 9,
-                      margin: EdgeInsets.only(right: 4),
-                      decoration: BoxDecoration(
-                          color: UI.isDarkTheme(context)
-                              ? Color(0xFF82FF99)
-                              : Color(0xFF7D97EE),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(5.5))),
-                    ),
+                            width: 9,
+                            height: 9,
+                            margin: EdgeInsets.only(right: 4),
+                            decoration: BoxDecoration(
+                                color: UI.isDarkTheme(context)
+                                    ? Color(0xFF82FF99)
+                                    : Color(0xFF7D97EE),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.5))),
+                          ),
                     Text(
                       widget.service.plugin.basic.name.toUpperCase(),
-                      style: Theme.of(context).textTheme.headline4.copyWith(
-                          fontWeight: FontWeight.w600, height: 1.1),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontWeight: FontWeight.w600, height: 1.1),
                     ),
                     const SizedBox(width: 8)
                   ],
@@ -572,6 +574,8 @@ class _AssetsState extends State<AssetsPage> {
                       final selected = (await Navigator.of(context)
                               .pushNamed(NetworkSelectPage.route))
                           as PolkawalletPlugin;
+                      if (!mounted) return;
+
                       setState(() {});
                       if (selected != null &&
                           selected.basic.name !=

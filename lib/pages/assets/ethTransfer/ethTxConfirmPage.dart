@@ -59,8 +59,8 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
   Timer _gasQueryTimer;
 
   bool _isAcala() {
-    return widget.service.pluginEvm.basic.name.contains('acala') ||
-        widget.service.pluginEvm.basic.name.contains('karura');
+    final pluginName = (widget.service.plugin as PluginEvm).basic.name;
+    return pluginName.contains('acala') || pluginName.contains('karura');
   }
 
   bool _gasEditable() {
@@ -208,7 +208,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
         final plugin = widget.service.plugin as PluginEvm;
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
         final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-        final nativeToken = widget.service.pluginEvm.nativeToken;
+
         final EthTransferConfirmPageParams args =
             ModalRoute.of(context).settings.arguments;
 
@@ -230,7 +230,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
 
         final gasParams = widget.service.store.assets.gasParams;
         final gasTokenPrice =
-            widget.service.store.assets.marketPrices[nativeToken] ?? 0;
+            widget.service.store.assets.marketPrices[plugin.nativeToken] ?? 0;
 
         List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
         if (gasParams != null) {
@@ -315,7 +315,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                                     ),
                                     subtitle: EstimatedGasFeeAmount(
                                       gasFee: gasFee,
-                                      gasTokenSymbol: nativeToken,
+                                      gasTokenSymbol: plugin.nativeToken,
                                       style: subTitleStyle,
                                     ),
                                     trailing: _gasEditable()

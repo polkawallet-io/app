@@ -6,6 +6,7 @@ import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
+import 'package:app/pages/assets/erc20Tokens/tokenDetailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -91,8 +92,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
   ScrollController _scrollController;
 
   bool _isAcala() {
-    return widget.service.pluginEvm.basic.name.contains('acala') ||
-        widget.service.pluginEvm.basic.name.contains('karura');
+    final pluginName = (widget.service.plugin as PluginEvm).basic.name;
+    return pluginName.contains('acala') || pluginName.contains('karura');
   }
 
   Future<void> _updateBalances() async {
@@ -472,6 +473,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                       final selected = (await Navigator.of(context)
                               .pushNamed(NetworkSelectPage.route))
                           as PolkawalletPlugin;
+                      if (!mounted) return;
+
                       setState(() {});
                       if (selected != null &&
                           selected.basic.name !=
@@ -582,24 +585,22 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.service.plugin is! PluginEvm) {
+      return Container();
+    }
+    final plugin = widget.service.plugin as PluginEvm;
     return Observer(
       builder: (_) {
-        final symbol = (widget.service.plugin is PluginEvm)
-            ? (widget.service.plugin as PluginEvm).nativeToken
-            : '-';
+        final symbol = plugin.nativeToken;
 
-        final substrate = (widget.service.plugin is PluginEvm)
-            ? (widget.service.plugin as PluginEvm)?.store?.account?.substrate
-            : null;
+        final substrate = plugin.store?.account?.substrate;
 
         const decimals = 18;
 
         final balancesInfo = widget.service.plugin.balances.native;
         var tokens = widget.service.plugin.noneNativeTokensAll.toList() ?? [];
 
-        final customTokensConfig = (widget.service.plugin is PluginEvm)
-            ? (widget.service.plugin as PluginEvm).store?.assets?.customAssets
-            : {};
+        final customTokensConfig = plugin.store?.assets?.customAssets;
         if (customTokensConfig?.keys?.isNotEmpty == true) {
           tokens.retainWhere((e) => customTokensConfig[e.id.toLowerCase()]);
         } else {
@@ -1014,7 +1015,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                         //     context, AssetPage.route);
 
                                         Navigator.of(context).pushNamed(
-                                            '/assets/token/detail',
+                                            EthTokenDetailPage.route,
                                             arguments: TokenBalanceData(
                                               amount:
                                                   Fmt.balanceTotal(balancesInfo)
@@ -1053,7 +1054,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
                                           i,
                                           i.decimals,
                                           isFromCache: isTokensFromCache,
-                                          detailPageRoute: i.detailPageRoute,
+                                          detailPageRoute:
+                                              EthTokenDetailPage.route,
                                           marketPrice: price,
                                           icon: TokenIcon(
                                             i.id,

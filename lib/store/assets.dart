@@ -1,4 +1,3 @@
-import 'package:app/store/types/localTxData.dart';
 import 'package:app/store/types/transferData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
@@ -23,6 +22,9 @@ abstract class _AssetsStore with Store {
 
   @observable
   ObservableList<TransferData> txs = ObservableList<TransferData>();
+
+  @observable
+  Map<String, Map<String, List<EvmTxData>>> evmTxs = {};
 
   @observable
   ObservableMap<String, double> marketPrices = ObservableMap<String, double>();
@@ -59,6 +61,17 @@ abstract class _AssetsStore with Store {
     if (shouldCache) {
       storage.write('${pluginName}_$acc', ls);
     }
+  }
+
+  @action
+  void setEvmTxs(List<EvmTxData> data, String token, String address) {
+    final historyData = evmTxs;
+    if (historyData[address] != null) {
+      historyData[address][token] = data;
+    } else {
+      historyData[address] = {token: data};
+    }
+    evmTxs = historyData;
   }
 
   @action

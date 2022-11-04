@@ -24,6 +24,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$evmTxsAtom = Atom(name: '_AssetsStore.evmTxs');
+
+  @override
+  Map<String, Map<String, List<EvmTxData>>> get evmTxs {
+    _$evmTxsAtom.reportRead();
+    return super.evmTxs;
+  }
+
+  @override
+  set evmTxs(Map<String, Map<String, List<EvmTxData>>> value) {
+    _$evmTxsAtom.reportWrite(value, super.evmTxs, () {
+      super.evmTxs = value;
+    });
+  }
+
   final _$marketPricesAtom = Atom(name: '_AssetsStore.marketPrices');
 
   @override
@@ -118,6 +133,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   final _$_AssetsStoreActionController = ActionController(name: '_AssetsStore');
+
+  @override
+  void setEvmTxs(List<EvmTxData> data, String token, String address) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setEvmTxs');
+    try {
+      return super.setEvmTxs(data, token, address);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setMarketPrices(Map<String, double> data) {

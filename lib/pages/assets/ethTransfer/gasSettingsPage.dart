@@ -33,7 +33,6 @@ class GasSettingsPageState extends State<GasSettingsPage> {
         final plugin = widget.service.plugin as PluginEvm;
         final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
         final dicUI = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-        final nativeToken = widget.service.pluginEvm.nativeToken;
 
         final int initialLevel = ModalRoute.of(context).settings.arguments;
         final gasLevel = _level ?? initialLevel;
@@ -56,7 +55,7 @@ class GasSettingsPageState extends State<GasSettingsPage> {
 
         final gasParams = widget.service.store.assets.gasParams;
         final gasTokenPrice =
-            widget.service.store.assets.marketPrices[nativeToken] ?? 0;
+            widget.service.store.assets.marketPrices[plugin.nativeToken] ?? 0;
         List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
         if (gasParams != null) {
           gasFee = Utils.calcGasFee(gasParams, gasLevel);
@@ -102,7 +101,7 @@ class GasSettingsPageState extends State<GasSettingsPage> {
                                   ),
                                   EstimatedGasFeeAmount(
                                     gasFee: gasFee,
-                                    gasTokenSymbol: nativeToken,
+                                    gasTokenSymbol: plugin.nativeToken,
                                     style: subTitleStyle,
                                   ),
                                 ],
@@ -141,7 +140,7 @@ class GasSettingsPageState extends State<GasSettingsPage> {
                               ),
                               subtitle: EstimatedGasFeeAmount(
                                 gasFee: gasFeeAmount,
-                                gasTokenSymbol: nativeToken,
+                                gasTokenSymbol: plugin.nativeToken,
                               ),
                               trailing: Text(dic['evm.send.gas.$level']),
                               onTap: () {
