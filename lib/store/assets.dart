@@ -65,18 +65,39 @@ abstract class _AssetsStore with Store {
 
   @action
   void setEvmTxs(List<EvmTxData> data, String token, String address) {
+    /// if we got the pending tx from txs api, we remove the local cache.
+    if (pendingTx[address] != null && data[0].hash == pendingTx[address].hash) {
+      pendingTx.remove(address);
+    }
+
+    final allData =
+        pendingTx[address] == null ? data : [pendingTx[address], ...data];
     final historyData = evmTxs;
     if (historyData[address] != null) {
-      historyData[address][token] = data;
+      historyData[address][token] = allData;
     } else {
-      historyData[address] = {token: data};
+      historyData[address] = {token: allData};
     }
     evmTxs = historyData;
   }
 
   @action
   void setPendingTx(KeyPairData acc, EvmTxData data) {
-    pendingTx.addAll({acc.pubKey: data});
+    if (data.confirmations != '-1') {
+      /// only update pending tx status if we the local cache exists
+      if (pendingTx[acc.address] != null &&
+          pendingTx[acc.address].hash == data.hash) {
+        pendingTx.addAll({acc.address: data});
+      }
+    } else {
+      pendingTx.addAll({acc.address: data});
+
+      /// update evm txs with pending tx data
+      final tokenId = data.contractAddress ?? data.tokenSymbol;
+      if (evmTxs[acc.address] != null && evmTxs[acc.address][tokenId] != null) {
+        setEvmTxs(evmTxs[acc.address][tokenId], tokenId, acc.address);
+      }
+    }
   }
 
   @action

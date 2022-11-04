@@ -70,9 +70,11 @@ class FlexTextFormFieldState extends State<FlexTextFormField> {
                   inputFormatters: widget.inputFormatters,
                   validator: (v) {
                     Timer(const Duration(milliseconds: 100), () {
-                      setState(() {
-                        _error = widget.validator(v);
-                      });
+                      if (mounted) {
+                        setState(() {
+                          _error = widget.validator(v);
+                        });
+                      }
                     });
                     return null;
                   },

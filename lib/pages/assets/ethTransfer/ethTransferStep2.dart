@@ -74,7 +74,7 @@ class EthTransferStep2State extends State<EthTransferStep2> {
         tokenSymbol: args.token.symbol,
         tokenDecimals: args.token.decimals,
         contractAddress:
-            (args.token.id ?? '').startsWith('0x') ? args.token.id : '',
+            (args.token.id ?? '').startsWith('0x') ? args.token.id : null,
         addressTo: args.address,
         amount: double.tryParse(_amountCtrl.text.trim()) ?? '0');
     Navigator.of(context)

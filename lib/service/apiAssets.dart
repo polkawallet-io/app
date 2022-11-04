@@ -121,9 +121,7 @@ class ApiAssets {
 
   Future<Map> evmTransfer(
       EthTransferConfirmPageParams args, String pass, Map gasOptions) async {
-    final token = args.contractAddress.isNotEmpty
-        ? args.contractAddress
-        : args.tokenSymbol;
+    final token = args.contractAddress ?? args.tokenSymbol;
     final res = await apiRoot.plugin.sdk.api.eth.keyring.transfer(
         token: token,
         amount: args.amount,
@@ -151,6 +149,8 @@ class ApiAssets {
                   to: args.addressTo,
                   confirmations: res['confirmNumber'].toString(),
                 ));
+
+            updateEvmTxs(token);
           }
         });
     if (res != null && res['hash'] != null) {

@@ -159,9 +159,7 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
 
     _gasLimit = await widget.service.plugin.sdk.api.eth.keyring
         .estimateTransferGas(
-            token: args.contractAddress.isEmpty
-                ? args.tokenSymbol
-                : args.contractAddress,
+            token: args.contractAddress ?? args.tokenSymbol,
             amount: args.amount,
             to: args.addressTo,
             from: widget.service.keyringEVM.current.address);

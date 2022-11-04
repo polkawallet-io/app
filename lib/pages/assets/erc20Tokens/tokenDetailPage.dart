@@ -121,18 +121,10 @@ class _TokenDetailPageSate extends State<EthTokenDetailPage> {
                   fullName: '${plugin.basic.name} ${dic['manage.native']}');
           plugin.store.assets.customAssets;
 
-          // final tokensConfig =
-          //     widget.plugin.store!.setting.remoteConfig['tokens'] ?? {};
-          // final disabledTokens = tokensConfig['disabled'];
-          // bool transferDisabled = false;
-          // if (disabledTokens != null) {
-          //   transferDisabled = List.of(disabledTokens).contains(tokenSymbol);
-          // }
-
-          final list = (widget.service.store.assets.evmTxs[acc.address] ??
-                  {})[token.id] ??
-              [];
-          final txs = list.toList();
+          final txs = ((widget.service.store.assets.evmTxs[acc.address] ??
+                      {})[token.id] ??
+                  [])
+              .toList();
           if (_txFilterIndex > 0) {
             txs.retainWhere((e) =>
                 (_txFilterIndex == 1
@@ -516,6 +508,7 @@ class TransferListItem extends StatelessWidget {
       data.tokenSymbol = token.symbol;
     }
 
+    final isPending = data.confirmations == '-1';
     return ListTile(
       dense: true,
       minLeadingWidth: 32,
@@ -533,9 +526,13 @@ class TransferListItem extends StatelessWidget {
                   bgColor: Theme.of(context).cardColor),
       title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}',
           style: Theme.of(context).textTheme.headline4),
-      subtitle: Text(Fmt.dateTime(DateTime.fromMillisecondsSinceEpoch(
-          int.parse(data.timeStamp) * 1000,
-          isUtc: true))),
+      subtitle: Text(isPending
+          ? 'Pending...'
+          : Fmt.dateTime(data.timeStamp != null
+              ? DateTime.fromMillisecondsSinceEpoch(
+                  int.parse(data.timeStamp) * 1000,
+                  isUtc: true)
+              : DateTime.now())),
       trailing: SizedBox(
         width: 110,
         child: Row(
@@ -544,7 +541,9 @@ class TransferListItem extends StatelessWidget {
               child: Text(
                 '${isOut == true ? '-' : '+'} $amount',
                 style: Theme.of(context).textTheme.headline5.copyWith(
-                    color: Theme.of(context).toggleableActiveColor,
+                    color: isPending
+                        ? null
+                        : Theme.of(context).toggleableActiveColor,
                     fontWeight: FontWeight.w600),
                 textAlign: TextAlign.right,
               ),
