@@ -287,12 +287,16 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     if (widget.isEvm) {
       /// we reloadNetwork(change plugin) after create account
       /// if is EVM
+      final accountCount = widget.service.keyringEVM.allAccounts.length;
       await Navigator.of(context).pushNamed(
           isImport == 0 ? CreateAccountPage.route : SelectImportTypePage.route,
           arguments: {"accountType": AccountType.Evm});
-
-      if (widget.service.keyringEVM.allAccounts.isNotEmpty) {
+      final newAccountCreated =
+          widget.service.keyringEVM.allAccounts.length > accountCount;
+      if (newAccountCreated &&
+          !widget.service.plugin.basic.name.contains('evm-')) {
         await _reloadNetwork();
+        Navigator.of(context).pop();
       }
     } else {
       /// we reloadNetwork(change plugin) before create account

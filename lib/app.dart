@@ -471,40 +471,43 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Future<void> _switchNetwork(String networkName,
       {NetworkParams node,
       PageRouteParams pageRoute,
-      int accountType = 0}) async {
+      int accountType = 0,
+      bool askBeforeChange = true}) async {
     final isNetworkChanged = networkName != _service.plugin.basic.name;
 
     if (isNetworkChanged) {
-      final confirmed = await showCupertinoDialog(
-          context: _homePageContext,
-          builder: (BuildContext context) {
-            final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-            return PolkawalletAlertDialog(
-              title: Text(dic['v3.changeNetwork']),
-              content: Container(
-                margin: EdgeInsets.only(top: 8),
-                child: Text(
-                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
-              ),
-              actions: [
-                PolkawalletActionSheetAction(
+      if (askBeforeChange) {
+        final confirmed = await showCupertinoDialog(
+            context: _homePageContext,
+            builder: (BuildContext context) {
+              final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+              return PolkawalletAlertDialog(
+                title: Text(dic['v3.changeNetwork']),
+                content: Container(
+                  margin: EdgeInsets.only(top: 8),
                   child: Text(
-                    I18n.of(context)
-                        .getDic(i18n_full_dic_ui, 'common')['cancel'],
-                  ),
-                  onPressed: () => Navigator.of(context).pop(false),
+                      '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
                 ),
-                PolkawalletActionSheetAction(
-                  isDefaultAction: true,
-                  child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                actions: [
+                  PolkawalletActionSheetAction(
+                    child: Text(
+                      I18n.of(context)
+                          .getDic(i18n_full_dic_ui, 'common')['cancel'],
+                    ),
+                    onPressed: () => Navigator.of(context).pop(false),
                   ),
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ],
-            );
-          });
-      if (!confirmed) return;
+                  PolkawalletActionSheetAction(
+                    isDefaultAction: true,
+                    child: Text(
+                      I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                    ),
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              );
+            });
+        if (!confirmed) return;
+      }
 
       // display a dialog while changing network
       showCupertinoDialog(

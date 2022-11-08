@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/bind/accountBindSuccess.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -35,7 +37,6 @@ import 'package:polkawallet_ui/components/v3/plugin/metaHubPage.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
 import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:app/common/types/pluginDisabled.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(
@@ -55,7 +56,8 @@ class HomePage extends StatefulWidget {
   final Future<void> Function(String,
       {NetworkParams node,
       PageRouteParams pageRoute,
-      int accountType}) switchNetwork;
+      int accountType,
+      bool askBeforeChange}) switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
@@ -178,6 +180,12 @@ class _HomePageState extends State<HomePage> {
       _setupJPush();
       _setupWssNotifyTimer();
       widget.service.store.settings.initDapps();
+
+      if (widget.service.store.account.accountType == AccountType.Evm &&
+          !widget.service.plugin.basic.name.contains('evm-')) {
+        widget.switchNetwork(network_ethereum,
+            accountType: 1, askBeforeChange: false);
+      }
     });
   }
 

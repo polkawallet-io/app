@@ -1,5 +1,6 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/import/importAccountAction.dart';
+import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -73,7 +74,13 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
             : widget.service.keyringEVM.current.toKeyPairData());
         widget.service.store.account.resetNewAccount();
         widget.service.store.account.setAccountCreated();
-        Navigator.popUntil(context, ModalRoute.withName('/'));
+        if (widget.type == AccountType.Evm &&
+            widget.service.keyringEVM.allAccounts.length > 1) {
+          Navigator.popUntil(
+              context, ModalRoute.withName(NetworkSelectPage.route));
+        } else {
+          Navigator.popUntil(context, ModalRoute.withName('/'));
+        }
       }
     }
   }
