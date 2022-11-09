@@ -245,10 +245,17 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
   }
 
   String _validateInput(String v) {
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     bool passed = false;
     try {
-      jsonDecode(v);
-      passed = true;
+      final json = jsonDecode(v);
+      if (type == AccountType.Evm) {
+        passed = json['id'] != null &&
+            (json['crypto'] != null || json['Crypto'] != null);
+      } else {
+        passed = json['encoded'] != null && json['encoding'] != null;
+      }
     } catch (_) {
       // ignore
     }
@@ -259,7 +266,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
   void _onKeyChange(String v) {
     try {
       final keyStoreString = v.trim();
-      var json = jsonDecode(keyStoreString);
+      final json = jsonDecode(keyStoreString);
       _refreshAccountAddress(json);
       if (json['meta']['name'] != null) {
         setState(() {
