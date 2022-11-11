@@ -81,14 +81,6 @@ class EthTransferStep2State extends State<EthTransferStep2> {
         .pushNamed(EthTransferConfirmPage.route, arguments: params);
   }
 
-  BigInt _getExistAmount(BigInt notTransferable, BigInt existentialDeposit) {
-    return notTransferable > BigInt.zero
-        ? notTransferable >= existentialDeposit
-            ? BigInt.zero
-            : existentialDeposit - notTransferable
-        : existentialDeposit;
-  }
-
   @override
   void dispose() {
     _amountCtrl.dispose();
@@ -179,8 +171,8 @@ class EthTransferStep2State extends State<EthTransferStep2> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: '0',
-                          prefix: const SizedBox(width: 32, height: 24),
+                          hintText: '  0',
+                          prefix: const SizedBox(width: 16, height: 24),
                           suffixIcon: GestureDetector(
                             child: Container(
                               margin: const EdgeInsets.only(top: 8),

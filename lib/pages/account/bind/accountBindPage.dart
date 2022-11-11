@@ -100,13 +100,16 @@ class _AccountBindPageState extends State<AccountBindPage> {
     String addressName;
     String address;
     if (subAddress != null && evmAddress != null) {
-      addressName = "substrate/EVM";
-      address = "${Fmt.address(evmAddress)}/${Fmt.address(subAddress)}";
+      if (subAddress == widget.service.keyring.current.address) {
+        Navigator.of(context).popAndPushNamed(AccountBindSuccess.route,
+            arguments: {'ethAccount': _ethWalletData});
+        return;
+      }
     } else if (subAddress != null) {
       addressName = "EVM";
       address = Fmt.address(subAddress);
     } else if (evmAddress != null) {
-      addressName = "substrate";
+      addressName = "Substrate";
       address = Fmt.address(evmAddress);
     }
     if (subAddress != null || evmAddress != null) {
@@ -333,7 +336,7 @@ class _AccountBindPageState extends State<AccountBindPage> {
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: Text(
                                   index == 0
-                                      ? "Binding EVM/substrate account"
+                                      ? "Binding ${isPlugin ? 'EVM' : 'Substrate'} account"
                                       : index == 1
                                           ? "Create Claim signature"
                                           : "Claim\naccount",
