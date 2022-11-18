@@ -278,55 +278,51 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
   }
 
-  void _initWalletConnect() {
-    _service.plugin.sdk.api.walletConnect.initClient((WCPairingData proposal) {
+  void _initWalletConnect(String uri) {
+    _service.plugin.sdk.api.walletConnect
+        .initClient(uri, _service.keyringEVM.current.address,
+            onPairing: (WCPeerMetaData peerMetaData) {
       print('get wc pairing');
-      _handleWCPairing(proposal);
-    }, (WCPairedData session) {
-      print('get wc session');
-      _service.store.account.createWCSession(session);
+      _handleWCPairing(peerMetaData);
+    }, onPaired: () {
+      print('wc connected');
       _service.store.account.setWCPairing(false);
-    }, (WCPayloadData payload) {
-      print('get wc payload');
-      _handleWCPayload(payload);
+    }, onCallRequest: (WCCallRequestData result) {
+      print('get wc callRequest');
+      _handleWCCallRequest(result);
+    }, onDisconnect: () {
+      print('wc disconnected');
     });
   }
 
-  Future<void> _handleWCPairing(WCPairingData pairingReq) async {
+  Future<void> _handleWCPairing(WCPeerMetaData peerMetaData) async {
     final approved = await Navigator.of(context)
-        .pushNamed(WCPairingConfirmPage.route, arguments: pairingReq);
-    final address = _service.keyring.current.address;
+        .pushNamed(WCPairingConfirmPage.route, arguments: peerMetaData);
     if (approved ?? false) {
       _service.store.account.setWCPairing(true);
-      await _service.plugin.sdk.api.walletConnect
-          .approvePairing(pairingReq, '$address@polkadot:acalatc5');
-      print('wallet connect alive');
+      await _service.plugin.sdk.api.walletConnect.confirmPairing(true);
+      print('wallet connect approved');
     } else {
-      _service.plugin.sdk.api.walletConnect.rejectPairing(pairingReq);
+      _service.plugin.sdk.api.walletConnect.confirmPairing(false);
     }
   }
 
-  Future<void> _handleWCPayload(WCPayloadData payload) async {
+  Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
     final res = await Navigator.of(context)
         .pushNamed(WalletConnectSignPage.route, arguments: payload);
     if (res == null) {
       print('user rejected signing');
       await _service.plugin.sdk.api.walletConnect
-          .payloadRespond(payload, error: {
-        'code': -32000,
-        'message': "User rejected JSON-RPC request",
-      });
+          .confirmPayload(payload.id, false, '');
     } else {
       print('user signed payload:');
       print(res);
       // await _service.plugin.sdk.api.walletConnect
-      //     .payloadRespond(payload, response: );
+      //     .confirmPayload();
     }
   }
 
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
-    // _initWalletConnect();
-
     setState(() {
       _connectedNode = null;
     });
@@ -913,6 +909,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   void _handleIncomingAppLinks() {
     uriLinkStream.listen((Uri uri) {
       if (!mounted) return;
+      if (uri.scheme == 'wc') {
+        _initWalletConnect(uri.toString());
+        return;
+      }
+
       closeInAppWebView();
       _toPageByUri(uri);
       print('got uri: $uri');

@@ -6,14 +6,14 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_ui/components/addressFormItem.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class WalletConnectSignPage extends StatefulWidget {
   WalletConnectSignPage(this.service, this.getPassword);
@@ -43,9 +43,9 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
     setState(() {
       _submitting = true;
     });
-    final WCPayloadData args = ModalRoute.of(context).settings.arguments;
+    final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
     final res = await widget.service.plugin.sdk.api.walletConnect
-        .signPayload(args, password);
+        .confirmPayload(args.id, true, password);
     if (mounted) {
       setState(() {
         _submitting = false;
