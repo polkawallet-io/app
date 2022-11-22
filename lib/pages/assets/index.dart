@@ -62,7 +62,7 @@ class AssetsPage extends StatefulWidget {
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Future<void> Function(String) handleWalletConnect;
+  final Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
@@ -120,7 +120,8 @@ class _AssetsState extends State<AssetsPage> {
     if (data != null) {
       if (data.type == QRCodeResultType.rawData &&
           data.rawData.substring(0, 3) == 'wc:') {
-        widget.handleWalletConnect(data.rawData);
+        // TODO: wallet-connect not enabled for substrate wallet
+        // widget.handleWalletConnect(data.rawData);
         return;
       }
 

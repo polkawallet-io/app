@@ -58,8 +58,7 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final WCPayloadData args = ModalRoute.of(context).settings.arguments;
-    final session = widget.service.store.account.wcSessions
-        .firstWhere((e) => e.topic == args.topic);
+    final session = widget.service.store.account.wcSession;
     final address = args.payload.params[0];
     final KeyPairData acc = widget.service.keyring.keyPairs.firstWhere((acc) {
       bool matched = false;
@@ -92,7 +91,7 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
                     child: AddressFormItem(acc,
                         svg: acc.icon, label: dic['submit.signer']),
                   ),
-                  SignExtrinsicInfo(args, session.peer),
+                  SignExtrinsicInfo(args, session),
                 ],
               ),
             ),
@@ -143,7 +142,7 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
 class SignExtrinsicInfo extends StatelessWidget {
   SignExtrinsicInfo(this.payload, this.peer);
   final WCPayloadData payload;
-  final WCProposerInfo peer;
+  final WCPeerMetaData peer;
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');

@@ -101,18 +101,33 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
-  final _$wcSessionsAtom = Atom(name: '_AccountStore.wcSessions');
+  final _$wcSessionURIAtom = Atom(name: '_AccountStore.wcSessionURI');
 
   @override
-  ObservableList<WCPairedData> get wcSessions {
-    _$wcSessionsAtom.reportRead();
-    return super.wcSessions;
+  String get wcSessionURI {
+    _$wcSessionURIAtom.reportRead();
+    return super.wcSessionURI;
   }
 
   @override
-  set wcSessions(ObservableList<WCPairedData> value) {
-    _$wcSessionsAtom.reportWrite(value, super.wcSessions, () {
-      super.wcSessions = value;
+  set wcSessionURI(String value) {
+    _$wcSessionURIAtom.reportWrite(value, super.wcSessionURI, () {
+      super.wcSessionURI = value;
+    });
+  }
+
+  final _$wcSessionAtom = Atom(name: '_AccountStore.wcSession');
+
+  @override
+  WCPeerMetaData get wcSession {
+    _$wcSessionAtom.reportRead();
+    return super.wcSession;
+  }
+
+  @override
+  set wcSession(WCPeerMetaData value) {
+    _$wcSessionAtom.reportWrite(value, super.wcSession, () {
+      super.wcSession = value;
     });
   }
 
@@ -229,33 +244,22 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setWCSessions(List<WCPairedData> sessions) {
+  void setWCSessionURI(String uri) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.setWCSessions');
+        name: '_AccountStore.setWCSessionURI');
     try {
-      return super.setWCSessions(sessions);
+      return super.setWCSessionURI(uri);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void createWCSession(WCPairedData session) {
+  void setWCSession(WCPeerMetaData session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.createWCSession');
+        name: '_AccountStore.setWCSession');
     try {
-      return super.createWCSession(session);
-    } finally {
-      _$_AccountStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void deleteWCSession(WCPairedData session) {
-    final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.deleteWCSession');
-    try {
-      return super.deleteWCSession(session);
+      return super.setWCSession(session);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
@@ -281,7 +285,8 @@ pubKeyAddressMap: ${pubKeyAddressMap},
 addressIconsMap: ${addressIconsMap},
 recoveryInfo: ${recoveryInfo},
 walletConnectPairing: ${walletConnectPairing},
-wcSessions: ${wcSessions},
+wcSessionURI: ${wcSessionURI},
+wcSession: ${wcSession.toJson()},
 accountType: ${accountType}
     ''';
   }

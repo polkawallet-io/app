@@ -279,27 +279,35 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _initWalletConnect(String uri) {
+    _service.store.account.setWCPairing(true);
+
+    WCPeerMetaData peer;
     _service.plugin.sdk.api.walletConnect
         .initClient(uri, _service.keyringEVM.current.address,
             onPairing: (WCPeerMetaData peerMetaData) {
       print('get wc pairing');
       _handleWCPairing(peerMetaData);
+      peer = peerMetaData;
     }, onPaired: () {
       print('wc connected');
       _service.store.account.setWCPairing(false);
+      _service.store.account.setWCSessionURI(uri);
+      _service.store.account.setWCSession(peer);
     }, onCallRequest: (WCCallRequestData result) {
       print('get wc callRequest');
       _handleWCCallRequest(result);
     }, onDisconnect: () {
       print('wc disconnected');
+      _service.store.account.setWCPairing(false);
+      _service.store.account.setWCSessionURI(null);
+      _service.store.account.setWCSession(null);
     });
   }
 
   Future<void> _handleWCPairing(WCPeerMetaData peerMetaData) async {
-    final approved = await Navigator.of(context)
+    final approved = await Navigator.of(_homePageContext)
         .pushNamed(WCPairingConfirmPage.route, arguments: peerMetaData);
     if (approved ?? false) {
-      _service.store.account.setWCPairing(true);
       await _service.plugin.sdk.api.walletConnect.confirmPairing(true);
       print('wallet connect approved');
     } else {
@@ -735,7 +743,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                               _switchNetwork,
                               _changeNode,
                               widget.disabledPlugins,
-                              _changeNetwork)
+                              _changeNetwork,
+                              _initWalletConnect)
                           : CreateAccountEntryPage(_service);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);

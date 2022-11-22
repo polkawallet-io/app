@@ -47,7 +47,8 @@ class HomePage extends StatefulWidget {
       this.switchNetwork,
       this.changeNode,
       this.disabledPlugins,
-      this.changeNetwork);
+      this.changeNetwork,
+      this.initWalletConnect);
 
   final AppService service;
   final NetworkParams connectedNode;
@@ -63,6 +64,7 @@ class HomePage extends StatefulWidget {
   final Future<void> Function(NetworkParams) changeNode;
   final List<PluginDisabled> disabledPlugins;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
+  final Function(String) initWalletConnect;
 
   static final String route = '/';
 
@@ -76,12 +78,6 @@ class _HomePageState extends State<HomePage> {
 
   int _tabIndex = 0;
   Timer _wssNotifyTimer;
-
-  Future<void> _handleWalletConnect(String uri) async {
-    print('wallet connect uri:');
-    print(uri);
-    // await widget.service.plugin.sdk.api.walletConnect.connect(uri);
-  }
 
   Future<void> _setupJPush() async {
     _jPush.addEventHandler(
@@ -471,13 +467,13 @@ class _HomePageState extends State<HomePage> {
                 _setupWssNotifyTimer();
                 widget.checkJSCodeUpdate(context, plugin);
               }, widget.disabledPlugins, widget.changeNetwork,
-                _handleWalletConnect, context)
+                widget.initWalletConnect, context)
             : AssetsPage(widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
                 _setupWssNotifyTimer();
                 widget.checkJSCodeUpdate(context, plugin);
               }, widget.disabledPlugins, widget.changeNetwork,
-                _handleWalletConnect),
+                widget.initWalletConnect),
         // content: Container(),
       )
     ];
@@ -649,26 +645,49 @@ class _HomePageState extends State<HomePage> {
           ),
           Observer(builder: (_) {
             final walletConnectAlive =
-                widget.service.store.account.wcSessions.length > 0;
+                widget.service.store.account.wcSessionURI != null;
             final walletConnecting =
                 widget.service.store.account.walletConnectPairing;
+            print(
+                'walletConnectAlive: ${widget.service.store.account.wcSessionURI}');
+            print(
+                'walletConnectPairing: ${widget.service.store.account.walletConnectPairing}');
             return Visibility(
                 visible: walletConnectAlive || walletConnecting,
                 child: Container(
                   margin: EdgeInsets.only(
                       bottom: MediaQuery.of(context).size.height / 4),
                   child: FloatingActionButton(
+                    heroTag: 'walletConnectFloatingButton',
                     backgroundColor: Theme.of(context).cardColor,
-                    child: walletConnecting
-                        ? CupertinoActivityIndicator(
-                            color: const Color(0xFF3C3C44))
-                        : Image.asset('assets/images/wallet_connect_logo.png'),
                     onPressed: walletConnectAlive
-                        ? () {
-                            Navigator.of(context)
+                        ? () async {
+                            final res = await Navigator.of(context)
                                 .pushNamed(WCSessionsPage.route);
+
+                            /// if disconnect:
+                            if (res == false) {
+                              widget.service.store.account
+                                  .setWCSessionURI(null);
+                              widget.service.store.account.setWCSession(null);
+                              widget.service.plugin.sdk.api.walletConnect
+                                  .disconnect();
+                            }
                           }
                         : () => null,
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          'assets/images/wallet_connect_logo.png',
+                          width: 32,
+                          height: 32,
+                        ),
+                        walletConnecting
+                            ? const CupertinoActivityIndicator(
+                                color: Color(0xFF3C3C44))
+                            : const SizedBox(width: 8, height: 8),
+                      ],
+                    ),
                   ),
                 ));
           })

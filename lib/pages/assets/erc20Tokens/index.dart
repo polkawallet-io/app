@@ -66,7 +66,7 @@ class AssetsEVMPage extends StatefulWidget {
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Future<void> Function(String) handleWalletConnect;
+  final Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;

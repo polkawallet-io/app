@@ -22,7 +22,7 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
-    final WCPairingData args = ModalRoute.of(context).settings.arguments;
+    final WCPeerMetaData args = ModalRoute.of(context).settings.arguments;
     // TODO: fix this page to implement wallet-connect
     // final permissions = List.of(args.permissions.jsonrpc['methods']);
 
@@ -47,7 +47,7 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 16, right: 16),
-                  child: WCPairingSourceInfo(args.params.proposer),
+                  child: WCPairingSourceInfo(args),
                 ),
                 Padding(
                   padding: EdgeInsets.all(16),
@@ -115,14 +115,16 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
 }
 
 class WCPairingSourceInfo extends StatelessWidget {
-  WCPairingSourceInfo(this.peer);
-  final WCProposerInfo peer;
+  WCPairingSourceInfo(this.metadata);
+  final WCPeerMetaData metadata;
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Image.network(peer.metadata.icons[0]),
-      title: Text(peer.metadata.name),
-      subtitle: Text(peer.metadata.description),
-    );
+    return metadata != null
+        ? ListTile(
+            leading: Image.network(metadata.icons[0]),
+            title: Text(metadata.name),
+            subtitle: Text(metadata.description),
+          )
+        : Container();
   }
 }

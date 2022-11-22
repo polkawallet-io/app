@@ -16,7 +16,8 @@ abstract class _AccountStore with Store {
   _AccountStore(this.storage);
   final GetStorage storage;
 
-  final String localStorageIsAccountTypeKey = 'accountType';
+  final String localStorageAccountTypeKey = 'accountType';
+  final String localStorageWCSessionKey = 'wcSessionURI';
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -39,7 +40,10 @@ abstract class _AccountStore with Store {
   bool walletConnectPairing = false;
 
   @observable
-  ObservableList<WCPairedData> wcSessions = ObservableList<WCPairedData>();
+  String wcSessionURI;
+
+  @observable
+  WCPeerMetaData wcSession;
 
   @observable
   AccountType accountType = AccountType.Substrate;
@@ -98,32 +102,33 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setWCSessions(List<WCPairedData> sessions) {
-    wcSessions = sessions;
+  void setWCSessionURI(String uri) {
+    wcSessionURI = uri;
   }
 
   @action
-  void createWCSession(WCPairedData session) {
-    wcSessions.add(session);
-  }
-
-  @action
-  void deleteWCSession(WCPairedData session) {
-    wcSessions.removeWhere((e) => e.topic == session.topic);
+  void setWCSession(WCPeerMetaData session) {
+    wcSession = session;
+    storage.write(localStorageWCSessionKey, wcSessionURI);
   }
 
   @action
   void setAccountType(AccountType type) {
     accountType = type;
-    storage.write(localStorageIsAccountTypeKey, accountType.name.toString());
+    storage.write(localStorageAccountTypeKey, accountType.name.toString());
   }
 
   @action
   Future<void> init() async {
-    final stored = storage.read(localStorageIsAccountTypeKey);
-    if (stored != null) {
+    final accType = storage.read(localStorageAccountTypeKey);
+    if (accType != null) {
       accountType =
-          AccountType.values.firstWhere((e) => e.toString().contains(stored));
+          AccountType.values.firstWhere((e) => e.toString().contains(accType));
+    }
+
+    final wcSession = storage.read(localStorageWCSessionKey);
+    if (wcSession != null) {
+      wcSessionURI = wcSession;
     }
   }
 }
