@@ -27,7 +27,7 @@ apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -107,7 +107,8 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
 
 //    implementation 'cn.jiguang.sdk.plugin:fcm:4.0.8'
 //    implementation 'cn.jiguang.sdk.plugin:xiaomi:4.0.8'
