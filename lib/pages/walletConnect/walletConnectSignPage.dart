@@ -1,18 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressFormItem.dart';
-import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart';
+import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class WalletConnectSignPage extends StatefulWidget {
@@ -32,8 +31,9 @@ class WalletConnectSignPage extends StatefulWidget {
 class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
   bool _submitting = false;
 
-  Future<void> _showPasswordDialog(KeyPairData acc) async {
-    final password = await widget.getPassword(context, acc);
+  Future<void> _showPasswordDialog() async {
+    final password = await widget.service.account
+        .getEvmPassword(context, widget.service.keyringEVM.current);
     if (password != null) {
       _sign(password);
     }
@@ -57,23 +57,12 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final WCPayloadData args = ModalRoute.of(context).settings.arguments;
+    final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
     final session = widget.service.store.account.wcSession;
-    final address = args.payload.params[0];
-    final KeyPairData acc = widget.service.keyring.keyPairs.firstWhere((acc) {
-      bool matched = false;
-      widget.service.keyring.store.pubKeyAddressMap.values.forEach((e) {
-        e.forEach((k, v) {
-          if (acc.pubKey == k && address == v) {
-            matched = true;
-          }
-        });
-      });
-      return matched;
-    });
+    final acc = widget.service.keyringEVM.current.toKeyPairData();
     return Scaffold(
       appBar: AppBar(
-          title: Text(dic[args.payload.method == 'signExtrinsic'
+          title: Text(dic[args.event.contains('Transaction')
               ? 'submit.sign.tx'
               : 'submit.sign.msg']),
           centerTitle: true,
@@ -82,30 +71,30 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
+              child: SingleChildScrollView(
                 physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.all(16),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 8),
-                    child: AddressFormItem(acc,
-                        svg: acc.icon, label: dic['submit.signer']),
-                  ),
-                  SignExtrinsicInfo(args, session),
-                ],
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(dic['submit.signer']),
+                      Padding(
+                        padding: EdgeInsets.only(top: 8, bottom: 16),
+                        child: AddressFormItem(acc, svg: acc.icon),
+                      ),
+                      SignExtrinsicInfo(args, session),
+                    ]),
               ),
             ),
             Row(
               children: <Widget>[
                 Expanded(
                   child: Container(
-                    color: _submitting ? Colors.black12 : Colors.orange,
-                    child: TextButton(
-                      style: ButtonStyle(
-                          padding:
-                              MaterialStateProperty.all(EdgeInsets.all(16))),
+                    margin: const EdgeInsets.fromLTRB(16, 8, 8, 16),
+                    child: Button(
+                      isBlueBg: false,
                       child: Text(dic['cancel'],
-                          style: TextStyle(color: Colors.white)),
+                          style: Theme.of(context).textTheme.headline3),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -114,19 +103,13 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
                 ),
                 Expanded(
                   child: Container(
-                    color: _submitting
-                        ? Theme.of(context).disabledColor
-                        : Theme.of(context).primaryColor,
-                    child: TextButton(
-                      style: ButtonStyle(
-                          padding:
-                              MaterialStateProperty.all(EdgeInsets.all(16))),
-                      child: Text(
-                        dic['submit.sign'],
-                        style: TextStyle(color: Colors.white),
-                      ),
+                    margin: const EdgeInsets.fromLTRB(8, 8, 16, 16),
+                    child: Button(
+                      isBlueBg: !_submitting,
                       onPressed:
-                          _submitting ? null : () => _showPasswordDialog(acc),
+                          _submitting ? null : () => _showPasswordDialog(),
+                      child: Text(dic['submit.sign'],
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -140,18 +123,17 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
 }
 
 class SignExtrinsicInfo extends StatelessWidget {
-  SignExtrinsicInfo(this.payload, this.peer);
-  final WCPayloadData payload;
+  SignExtrinsicInfo(this.callRequest, this.peer);
+  final WCCallRequestData callRequest;
   final WCPeerMetaData peer;
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final data = payload.payload.params[1];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(bottom: 8),
           child: Text(
             dic['wc.source'],
             style: Theme.of(context).textTheme.headline4,
@@ -165,18 +147,13 @@ class SignExtrinsicInfo extends StatelessWidget {
             style: Theme.of(context).textTheme.headline4,
           ),
         ),
-        payload.payload.method == 'signExtrinsic'
-            ? Column(
-                children: [
-                  InfoItemRow('call', '${data['module']}.${data['call']}'),
-                  InfoItemRow(
-                    'params',
-                    JsonEncoder.withIndent('  ').convert(data['params']),
-                  ),
-                  InfoItemRow('tip', data['tip']),
-                ],
-              )
-            : InfoItemRow('message', data)
+        Column(
+            children: callRequest.params.map((e) {
+          return Container(
+            margin: EdgeInsets.only(bottom: 8),
+            child: InfoItemRow(e.label, e.value.toString()),
+          );
+        }).toList())
       ],
     );
   }

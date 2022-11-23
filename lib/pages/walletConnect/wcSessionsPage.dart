@@ -1,19 +1,19 @@
+import 'package:app/common/components/jumpToLink.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class WCSessionsPage extends StatefulWidget {
   const WCSessionsPage(this.service);
   final AppService service;
 
-  static final String route = '/wc/session';
+  static const String route = '/wc/session';
 
   @override
   _WCSessionsPageState createState() => _WCSessionsPageState();
@@ -31,7 +31,7 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
       return Scaffold(
         appBar: AppBar(
             title: Image.asset('assets/images/wallet_connect_banner.png',
-                height: 24),
+                height: 20),
             centerTitle: true,
             leading: BackBtn()),
         body: SafeArea(
@@ -51,7 +51,7 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 16, right: 16),
-                          child: WCPairingSourceInfo(session),
+                          child: WCPairingSourceInfoDetail(session),
                         ),
                         // Padding(
                         //   padding: EdgeInsets.all(16),
@@ -83,11 +83,22 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                         Text(dic['wc.connected'])
                       ],
                     ),
+                    Container(
+                      margin: EdgeInsets.only(top: 24, bottom: 8),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            JumpToLink(
+                              'https://walletconnect.com/',
+                              text: dic['wc.service'],
+                              color: Theme.of(context).disabledColor,
+                            ),
+                          ]),
+                    ),
                     Padding(
                       padding: EdgeInsets.all(16),
-                      child: RoundedButton(
-                        text: dic['wc.disconnect'],
-                        color: Colors.red,
+                      child: Button(
+                        title: dic['wc.disconnect'],
                         onPressed: () {
                           Navigator.of(context).pop(false);
                         },

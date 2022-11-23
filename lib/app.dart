@@ -316,7 +316,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
-    final res = await Navigator.of(context)
+    final res = await Navigator.of(_homePageContext)
         .pushNamed(WalletConnectSignPage.route, arguments: payload);
     if (res == null) {
       print('user rejected signing');
@@ -324,7 +324,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           .confirmPayload(payload.id, false, '');
     } else {
       print('user signed payload:');
-      print(res);
+      print((res as WCCallRequestResult).result);
       // await _service.plugin.sdk.api.walletConnect
       //     .confirmPayload();
     }
