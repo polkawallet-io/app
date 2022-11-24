@@ -648,10 +648,7 @@ class _HomePageState extends State<HomePage> {
                 widget.service.store.account.wcSessionURI != null;
             final walletConnecting =
                 widget.service.store.account.walletConnectPairing;
-            print(
-                'walletConnectAlive: ${widget.service.store.account.wcSessionURI}');
-            print(
-                'walletConnectPairing: ${widget.service.store.account.walletConnectPairing}');
+
             return Visibility(
                 visible: walletConnectAlive || walletConnecting,
                 child: Container(
@@ -676,6 +673,7 @@ class _HomePageState extends State<HomePage> {
                           }
                         : () => null,
                     child: Stack(
+                      alignment: Alignment.center,
                       children: [
                         Image.asset(
                           'assets/images/wallet_connect_logo.png',

@@ -2,6 +2,7 @@ import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
 import 'package:package_info/package_info.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class Utils {
   static Future<int> getBuildNumber() async {
@@ -31,5 +32,40 @@ class Utils {
         params.estimatedFee[levels[gasLevel]].maxFeePerGas *
         1000000000);
     return [base, max];
+  }
+
+  static Map getGasOptionsForTx(
+    int gasLimit,
+    EvmGasParams gasParams,
+    int gasLevel,
+    bool isGasEditable,
+  ) {
+    if (!isGasEditable) {
+      /// in acala/karura we use const gasLimit & gasPrice
+      return {
+        'gas': gasLimit,
+        'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
+      };
+    }
+
+    /// in ethereum we use dynamic gas estimate
+    final levels = [
+      EstimatedFeeLevel.high,
+      EstimatedFeeLevel.medium,
+      EstimatedFeeLevel.low,
+    ];
+    return {
+      'gas': gasLimit,
+      'gasPrice': Fmt.tokenInt(gasParams.gasPrice.toString(), 9).toString(),
+      'maxFeePerGas': Fmt.tokenInt(
+              gasParams.estimatedFee[levels[gasLevel]].maxFeePerGas.toString(),
+              9)
+          .toString(),
+      'maxPriorityFeePerGas': Fmt.tokenInt(
+              gasParams.estimatedFee[levels[gasLevel]].maxPriorityFeePerGas
+                  .toString(),
+              9)
+          .toString(),
+    };
   }
 }

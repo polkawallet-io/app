@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/components/ethGasConfirmPanel.dart';
 import 'package:app/pages/assets/ethTransfer/ethTxDetailPage.dart';
 import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/service/index.dart';
@@ -11,14 +12,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
-import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
@@ -97,41 +95,8 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
 
     if (pass == null) return;
 
-    Map gasOptions;
-    if (_isAcala()) {
-      /// in acala/karura we use const gasLimit & gasPrice
-      gasOptions = {
-        'gas': _gasLimit,
-        'gasPrice': Fmt.tokenInt(
-                widget.service.store.assets.gasParams.gasPrice.toString(), 9)
-            .toString(),
-      };
-    } else {
-      /// in ethereum we use dynamic gas estimate
-      final levels = [
-        EstimatedFeeLevel.high,
-        EstimatedFeeLevel.medium,
-        EstimatedFeeLevel.low,
-      ];
-      gasOptions = {
-        'gas': _gasLimit,
-        'gasPrice': Fmt.tokenInt(
-                widget.service.store.assets.gasParams.gasPrice.toString(), 9)
-            .toString(),
-        'maxFeePerGas': Fmt.tokenInt(
-                widget.service.store.assets.gasParams
-                    .estimatedFee[levels[_gasLevel]].maxFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-        'maxPriorityFeePerGas': Fmt.tokenInt(
-                widget.service.store.assets.gasParams
-                    .estimatedFee[levels[_gasLevel]].maxPriorityFeePerGas
-                    .toString(),
-                9)
-            .toString(),
-      };
-    }
+    final gasOptions = Utils.getGasOptionsForTx(_gasLimit,
+        widget.service.store.assets.gasParams, _gasLevel, _gasEditable());
 
     setState(() {
       _submitting = true;
@@ -214,32 +179,10 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
             .textTheme
             .headline4
             ?.copyWith(fontWeight: FontWeight.bold);
-        final subTitleStyle = Theme.of(context).textTheme.headline5?.copyWith(
-            height: 1,
-            fontWeight: FontWeight.w300,
-            fontSize: 12,
-            color: UI.isDarkTheme(context)
-                ? Colors.white
-                : const Color(0xBF565554));
-        final infoValueStyle = Theme.of(context)
-            .textTheme
-            .headline5
-            .copyWith(fontWeight: FontWeight.w600);
 
         final gasParams = widget.service.store.assets.gasParams;
         final gasTokenPrice =
             widget.service.store.assets.marketPrices[plugin.nativeToken] ?? 0;
-
-        List<BigInt> gasFee = [BigInt.zero, BigInt.zero];
-        if (gasParams != null) {
-          gasFee = _gasEditable()
-              ? Utils.calcGasFee(gasParams, _gasLevel)
-              : [
-                  BigInt.from(
-                      gasParams.gasLimit * gasParams.gasPrice * 1000000000),
-                  BigInt.zero
-                ];
-        }
 
         return Scaffold(
           appBar: AppBar(
@@ -303,42 +246,14 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                           padding: const EdgeInsets.only(top: 16, bottom: 8),
                           child: Text(dic['amount.fee'], style: labelStyle),
                         ),
-                        RoundedCard(
-                            child: gasParams != null
-                                ? ListTile(
-                                    title: EstimatedGasFeeValue(
-                                      gasFee: gasFee,
-                                      gasTokenPrice: gasTokenPrice,
-                                      style: infoValueStyle,
-                                    ),
-                                    subtitle: EstimatedGasFeeAmount(
-                                      gasFee: gasFee,
-                                      gasTokenSymbol: plugin.nativeToken,
-                                      style: subTitleStyle,
-                                    ),
-                                    trailing: _gasEditable()
-                                        ? Container(
-                                            width: 80,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Text(dic[
-                                                    'evm.send.gas.$_gasLevel']),
-                                                const Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    size: 16)
-                                              ],
-                                            ),
-                                          )
-                                        : Container(width: 8),
-                                    onTap: _gasEditable() ? _onSetGas : null,
-                                  )
-                                : const SizedBox(
-                                    width: double.infinity,
-                                    height: 72,
-                                    child: CupertinoActivityIndicator(),
-                                  )),
+                        EthGasConfirmPanel(
+                          gasParams: gasParams,
+                          gasLevel: _gasLevel,
+                          isGasEditable: _gasEditable(),
+                          gasTokenSymbol: plugin.nativeToken,
+                          gasTokenPrice: gasTokenPrice,
+                          onTap: _onSetGas,
+                        ),
                       ],
                     ),
                   ),

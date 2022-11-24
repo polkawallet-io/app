@@ -321,7 +321,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     if (res == null) {
       print('user rejected signing');
       await _service.plugin.sdk.api.walletConnect
-          .confirmPayload(payload.id, false, '');
+          .confirmPayload(payload.id, false, '', {});
     } else {
       print('user signed payload:');
       print((res as WCCallRequestResult).result);
@@ -695,6 +695,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _startPlugin(service);
 
       service.assets.updateStakingConfig();
+
+      if (_service.store.account.wcSessionURI != null) {
+        _initWalletConnect(_service.store.account.wcSessionURI);
+      }
     }
 
     return _keyring.allAccounts.isNotEmpty
