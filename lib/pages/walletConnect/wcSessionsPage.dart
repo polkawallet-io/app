@@ -1,4 +1,5 @@
 import 'package:app/common/components/jumpToLink.dart';
+import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class WCSessionsPage extends StatefulWidget {
@@ -28,6 +30,8 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
 
     return Observer(builder: (_) {
       final session = widget.service.store.account.wcSession;
+      final pairing = widget.service.store.account.walletConnectPairing;
+      final callRequests = widget.service.store.account.wcCallRequests;
       return Scaffold(
         appBar: AppBar(
             title: Image.asset('assets/images/wallet_connect_banner.png',
@@ -35,67 +39,87 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
             centerTitle: true,
             leading: BackBtn()),
         body: SafeArea(
-          child: RoundedCard(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView(
-                      physics: BouncingScrollPhysics(),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           child: Text(
                             dic['wc.connect'],
                             style: Theme.of(context).textTheme.headline4,
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
+                          padding: const EdgeInsets.only(left: 16, right: 16),
                           child: WCPairingSourceInfoDetail(session),
                         ),
-                        // Padding(
-                        //   padding: EdgeInsets.all(16),
-                        //   child: Text(
-                        //     dic['wc.permission'],
-                        //     style: Theme.of(context).textTheme.headline4,
-                        //   ),
-                        // ),
-                        // Padding(
-                        //   padding: EdgeInsets.only(left: 24),
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: permissions.map((e) {
-                        //       return Text('- $e');
-                        //     }).toList(),
-                        //   ),
-                        // )
-                      ]),
-                ),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.lightGreen,
-                        ),
-                        Text(dic['wc.connected'])
+                        Visibility(
+                          visible: callRequests.isNotEmpty,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+                                child: Text(dic['wc.calls']),
+                              ),
+                              RoundedCard(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  children: callRequests.map((e) {
+                                    return ListTile(
+                                      dense: true,
+                                      title: Text(e.params[0].value),
+                                      trailing: const Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 14),
+                                      onTap: () => Navigator.of(context)
+                                          .pushNamed(
+                                              WalletConnectSignPage.route,
+                                              arguments: e),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
                       ],
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 24, bottom: 8),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            JumpToLink(
-                              'https://walletconnect.com/',
-                              text: dic['wc.service'],
-                              color: Theme.of(context).disabledColor,
+                    )),
+              ),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      pairing
+                          ? const PluginLoadingWidget()
+                          : const Icon(
+                              Icons.check_circle,
+                              color: Colors.lightGreen,
                             ),
-                          ]),
-                    ),
-                    Padding(
+                      Text(dic[pairing ? 'wc.connecting' : 'wc.connected'])
+                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 24, bottom: pairing ? 24 : 8),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          JumpToLink(
+                            'https://walletconnect.com/',
+                            text: dic['wc.service'],
+                            color: Theme.of(context).disabledColor,
+                          ),
+                        ]),
+                  ),
+                  Visibility(
+                    visible: !pairing,
+                    child: Padding(
                       padding: EdgeInsets.all(16),
                       child: Button(
                         title: dic['wc.disconnect'],
@@ -103,11 +127,11 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                           Navigator.of(context).pop(false);
                         },
                       ),
-                    )
-                  ],
-                )
-              ],
-            ),
+                    ),
+                  )
+                ],
+              )
+            ],
           ),
         ),
       );

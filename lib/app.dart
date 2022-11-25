@@ -278,8 +278,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
   }
 
-  void _initWalletConnect(String uri) {
-    _service.store.account.setWCPairing(true);
+  void _initWalletConnect(String uri, {Map cachedSession}) {
+    if (cachedSession == null) {
+      _service.store.account.setWCPairing(true);
+    }
 
     WCPeerMetaData peer;
     _service.plugin.sdk.api.walletConnect
@@ -288,46 +290,38 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       print('get wc pairing');
       _handleWCPairing(peerMetaData);
       peer = peerMetaData;
-    }, onPaired: () {
+    }, onPaired: (Map session) {
       print('wc connected');
       _service.store.account.setWCPairing(false);
-      _service.store.account.setWCSessionURI(uri);
-      _service.store.account.setWCSession(peer);
+      _service.store.account.setWCSession(uri, peer, session);
     }, onCallRequest: (WCCallRequestData result) {
       print('get wc callRequest');
       _handleWCCallRequest(result);
     }, onDisconnect: () {
       print('wc disconnected');
       _service.store.account.setWCPairing(false);
-      _service.store.account.setWCSessionURI(null);
-      _service.store.account.setWCSession(null);
-    });
+      _service.store.account.setWCSession(null, null, null);
+    }, cachedSession: cachedSession);
   }
 
   Future<void> _handleWCPairing(WCPeerMetaData peerMetaData) async {
-    final approved = await Navigator.of(_homePageContext)
-        .pushNamed(WCPairingConfirmPage.route, arguments: peerMetaData);
+    final navigator = Navigator.of(_homePageContext);
+    final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
+        arguments: peerMetaData);
     if (approved ?? false) {
-      await _service.plugin.sdk.api.walletConnect.confirmPairing(true);
+      _service.plugin.sdk.api.walletConnect.confirmPairing(true);
       print('wallet connect approved');
+      navigator.pushNamed(WCSessionsPage.route);
     } else {
       _service.plugin.sdk.api.walletConnect.confirmPairing(false);
     }
   }
 
   Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
-    final res = await Navigator.of(_homePageContext)
+    _service.store.account.addCallRequest(payload);
+
+    Navigator.of(_homePageContext)
         .pushNamed(WalletConnectSignPage.route, arguments: payload);
-    if (res == null) {
-      print('user rejected signing');
-      await _service.plugin.sdk.api.walletConnect
-          .confirmPayload(payload.id, false, '', {});
-    } else {
-      print('user signed payload:');
-      print((res as WCCallRequestResult).result);
-      // await _service.plugin.sdk.api.walletConnect
-      //     .confirmPayload();
-    }
   }
 
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
@@ -697,7 +691,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       service.assets.updateStakingConfig();
 
       if (_service.store.account.wcSessionURI != null) {
-        _initWalletConnect(_service.store.account.wcSessionURI);
+        final cachedWCSession = _service.store.storage
+            .read(_service.store.account.localStorageWCSessionKey);
+        if (cachedWCSession != null) {
+          print('getCachedSession');
+          _initWalletConnect(_service.store.account.wcSessionURI,
+              cachedSession: cachedWCSession);
+        }
       }
     }
 

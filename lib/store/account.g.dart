@@ -131,6 +131,21 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
+  final _$wcCallRequestsAtom = Atom(name: '_AccountStore.wcCallRequests');
+
+  @override
+  ObservableList<WCCallRequestData> get wcCallRequests {
+    _$wcCallRequestsAtom.reportRead();
+    return super.wcCallRequests;
+  }
+
+  @override
+  set wcCallRequests(ObservableList<WCCallRequestData> value) {
+    _$wcCallRequestsAtom.reportWrite(value, super.wcCallRequests, () {
+      super.wcCallRequests = value;
+    });
+  }
+
   final _$accountTypeAtom = Atom(name: '_AccountStore.accountType');
 
   @override
@@ -244,22 +259,44 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setWCSessionURI(String uri) {
+  void setWCSession(String uri, WCPeerMetaData peerMeta, Map session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.setWCSessionURI');
+        name: '_AccountStore.setWCSession');
     try {
-      return super.setWCSessionURI(uri);
+      return super.setWCSession(uri, peerMeta, session);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setWCSession(WCPeerMetaData session) {
+  void addCallRequest(WCCallRequestData data) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.setWCSession');
+        name: '_AccountStore.addCallRequest');
     try {
-      return super.setWCSession(session);
+      return super.addCallRequest(data);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void closeCallRequest(int id) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.closeCallRequest');
+    try {
+      return super.closeCallRequest(id);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearCallRequests() {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.clearCallRequests');
+    try {
+      return super.clearCallRequests();
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }

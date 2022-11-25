@@ -54,16 +54,23 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
     });
     final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
 
-    final gasOptions = Utils.getGasOptionsForTx(args.params[3].value,
-        widget.service.store.assets.gasParams, _gasLevel, _gasEditable());
+    final gasOptions = _isRequestSendTx(args)
+        ? Utils.getGasOptionsForTx(args.params[3].value,
+            widget.service.store.assets.gasParams, _gasLevel, _gasEditable())
+        : {};
     final res = await widget.service.plugin.sdk.api.walletConnect
         .confirmPayload(args.id, true, password, gasOptions);
+    print('user signed payload:');
+    print((res as WCCallRequestResult).result);
+
+    widget.service.store.account.closeCallRequest(args.id);
+
     if (mounted) {
       setState(() {
         _submitting = false;
       });
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop(res);
   }
 
   bool _isRequestSendTx(WCCallRequestData args) {
@@ -181,9 +188,16 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
                       margin: const EdgeInsets.fromLTRB(16, 8, 8, 16),
                       child: Button(
                         isBlueBg: false,
-                        child: Text(dic['cancel'],
+                        child: Text(
+                            I18n.of(context).getDic(
+                                i18n_full_dic_app, 'account')['wc.reject'],
                             style: Theme.of(context).textTheme.headline3),
                         onPressed: () {
+                          widget.service.plugin.sdk.api.walletConnect
+                              .confirmPayload(args.id, false, '', {});
+
+                          widget.service.store.account
+                              .closeCallRequest(args.id);
                           Navigator.of(context).pop();
                         },
                       ),

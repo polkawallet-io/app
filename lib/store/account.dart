@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 
 part 'account.g.dart';
 
@@ -17,7 +18,8 @@ abstract class _AccountStore with Store {
   final GetStorage storage;
 
   final String localStorageAccountTypeKey = 'accountType';
-  final String localStorageWCSessionKey = 'wcSessionURI';
+  final String localStorageWCSessionURIKey = 'wcSessionURI';
+  final String localStorageWCSessionKey = 'wcSession';
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -44,6 +46,10 @@ abstract class _AccountStore with Store {
 
   @observable
   WCPeerMetaData wcSession;
+
+  @observable
+  ObservableList<WCCallRequestData> wcCallRequests =
+      ObservableList<WCCallRequestData>();
 
   @observable
   AccountType accountType = AccountType.Substrate;
@@ -102,14 +108,31 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setWCSessionURI(String uri) {
+  void setWCSession(String uri, WCPeerMetaData peerMeta, Map session) {
     wcSessionURI = uri;
+    wcSession = peerMeta;
+
+    storage.write(localStorageWCSessionURIKey, wcSessionURI);
+    storage.write(localStorageWCSessionKey, session);
+
+    if (uri == null) {
+      clearCallRequests();
+    }
   }
 
   @action
-  void setWCSession(WCPeerMetaData session) {
-    wcSession = session;
-    storage.write(localStorageWCSessionKey, wcSessionURI);
+  void addCallRequest(WCCallRequestData data) {
+    wcCallRequests.add(data);
+  }
+
+  @action
+  void closeCallRequest(int id) {
+    wcCallRequests.removeWhere((e) => e.id == id);
+  }
+
+  @action
+  void clearCallRequests() {
+    wcCallRequests.clear();
   }
 
   @action
@@ -126,9 +149,14 @@ abstract class _AccountStore with Store {
           AccountType.values.firstWhere((e) => e.toString().contains(accType));
     }
 
-    final wcSession = storage.read(localStorageWCSessionKey);
-    if (wcSession != null) {
-      wcSessionURI = wcSession;
+    final cachedURI = storage.read(localStorageWCSessionURIKey);
+    if (cachedURI != null) {
+      wcSessionURI = cachedURI;
+    }
+
+    final session = storage.read(localStorageWCSessionKey);
+    if (session != null) {
+      wcSession = WCPeerMetaData.fromJson(session['peerMeta']);
     }
   }
 }
