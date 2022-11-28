@@ -10,6 +10,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class WCSessionsPage extends StatefulWidget {
   const WCSessionsPage(this.service);
@@ -117,16 +118,16 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                           ),
                         ]),
                   ),
-                  Visibility(
-                    visible: !pairing,
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Button(
-                        title: dic['wc.disconnect'],
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Button(
+                      title: pairing
+                          ? I18n.of(context)
+                              .getDic(i18n_full_dic_ui, 'common')['cancel']
+                          : dic['wc.disconnect'],
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
                     ),
                   )
                 ],

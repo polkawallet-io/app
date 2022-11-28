@@ -919,18 +919,32 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
   }
 
-  void _handleIncomingAppLinks() {
-    uriLinkStream.listen((Uri uri) {
-      if (!mounted) return;
-      if (uri.scheme == 'wc') {
+  void _handleIncomingAppLinks(Uri uri) {
+    if (!mounted) return;
+    print('IncomingAppLinks:');
+    print(uri.toString());
+    print(uri.query.substring(4));
+
+    if (_service.plugin.sdk.api != null) {
+      /// if wallet-connect android
+      if (uri.scheme == 'wc' && uri.query != null) {
         _initWalletConnect(uri.toString());
         return;
       }
 
-      closeInAppWebView();
-      _toPageByUri(uri);
-      print('got uri: $uri');
-    }, onError: (Object err) {
+      /// if wallet-connect iOS
+      if (uri.path == '/wc' && uri.query != null) {
+        _initWalletConnect(uri.query.substring(4));
+        return;
+      }
+    }
+
+    closeInAppWebView();
+    _toPageByUri(uri);
+  }
+
+  void _setupIncomingAppLinksHandler() {
+    uriLinkStream.listen(_handleIncomingAppLinks, onError: (Object err) {
       if (!mounted) return;
       print('got err: $err');
     });
@@ -948,7 +962,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           Timer.periodic(Duration(milliseconds: 1000), (timer) {
             if (WalletApp.isInitial > 0) {
               timer.cancel();
-              _toPageByUri(uri);
+
+              _handleIncomingAppLinks(uri);
             }
           });
           print('got initial uri: $uri');
@@ -991,7 +1006,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _handleIncomingAppLinks();
+    _setupIncomingAppLinksHandler();
     _handleInitialAppLinks();
     WidgetsBinding.instance.addObserver(this);
 

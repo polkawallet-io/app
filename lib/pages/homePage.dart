@@ -14,6 +14,7 @@ import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/index.dart';
+import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/BottomNavigationBar.dart';
@@ -334,8 +335,8 @@ class _HomePageState extends State<HomePage> {
             ]),
             onTap: () {
               if (widget.service.plugin is PluginEvm) {
-                // Navigator.of(context).pushNamed(BrowserPage.route);
-                Navigator.of(context).pushNamed(AccountBindSuccess.route);
+                Navigator.of(context).pushNamed(DAppsTestPage.route);
+                // Navigator.of(context).pushNamed(AccountBindSuccess.route);
                 return;
               } else if (widget.service.plugin is! PluginAcala &&
                   widget.service.plugin is! PluginKarura) {
@@ -657,13 +658,14 @@ class _HomePageState extends State<HomePage> {
                   child: FloatingActionButton(
                     heroTag: 'walletConnectFloatingButton',
                     backgroundColor: Theme.of(context).cardColor,
-                    onPressed: walletConnectAlive
+                    onPressed: walletConnectAlive || walletConnecting
                         ? () async {
                             final res = await Navigator.of(context)
                                 .pushNamed(WCSessionsPage.route);
 
                             /// if disconnect:
                             if (res == false) {
+                              widget.service.store.account.setWCPairing(false);
                               widget.service.store.account
                                   .setWCSession(null, null, null);
                               widget.service.plugin.sdk.api.walletConnect
