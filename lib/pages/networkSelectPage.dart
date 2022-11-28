@@ -255,6 +255,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
   }
 
   Future<void> _reloadNetwork() async {
+    final pageNavigator = Navigator.of(context);
     setState(() {
       _networkChanging = true;
     });
@@ -275,7 +276,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     }
     await widget.changeNetwork(_selectedNetwork);
 
-    Navigator.of(context).pop();
+    pageNavigator.pop();
     if (mounted) {
       setState(() {
         _networkChanging = false;
