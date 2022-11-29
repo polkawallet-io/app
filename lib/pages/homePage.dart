@@ -665,11 +665,7 @@ class _HomePageState extends State<HomePage> {
 
                             /// if disconnect:
                             if (res == false) {
-                              widget.service.store.account.setWCPairing(false);
-                              widget.service.store.account
-                                  .setWCSession(null, null, null);
-                              widget.service.plugin.sdk.api.walletConnect
-                                  .disconnect();
+                              widget.service.wc.disconnect();
                             }
                           }
                         : () => null,

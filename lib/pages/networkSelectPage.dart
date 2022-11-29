@@ -14,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
@@ -216,42 +217,63 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     });
   }
 
-  Future<void> _onSelect(dynamic i) async {
-    bool isCurrentNetwork = widget.isEvm
-        ? widget.service.plugin is PluginEvm &&
-            (_selectedNetwork as PluginEvm).network ==
-                (widget.service.plugin as PluginEvm).network
-        : _selectedNetwork.basic.name == widget.service.plugin.basic.name;
-    final currentAddress =
-        widget.service.store.account.accountType == AccountType.Evm
-            ? widget.service.keyringEVM.current.address
-            : widget.service.keyring.current.address;
+  Future<void> _doSelect(KeyPairData i) async {
+    final isCurrentNetwork =
+        _selectedNetwork.basic.name == widget.service.plugin.basic.name;
+    final currentAddress = widget.service.keyring.current.address;
     if (i.address != currentAddress || !isCurrentNetwork) {
-      widget.service.store.account.setAccountType(
-          widget.isEvm ? AccountType.Evm : AccountType.Substrate);
-
-      /// set current account
-      if (widget.isEvm) {
-        widget.service.keyringEVM.setCurrent(i);
-      } else {
-        widget.service.keyring.setCurrent(i);
+      if (widget.service.store.account.wcSessionURI != null) {
+        widget.service.wc.disconnect();
       }
 
+      widget.service.store.account.setAccountType(AccountType.Substrate);
+      widget.service.keyring.setCurrent(i);
       if (!isCurrentNetwork) {
         /// set new network and reload web view
         await _reloadNetwork();
 
-        _selectedNetwork.changeAccount(
-            (i is EthWalletData) ? (i as EthWalletData).toKeyPairData() : i);
+        _selectedNetwork.changeAccount(i);
       } else {
-        widget.service.plugin.changeAccount(
-            (i is EthWalletData) ? (i as EthWalletData).toKeyPairData() : i);
+        widget.service.plugin.changeAccount(i);
       }
-      if (!widget.isEvm) {
-        widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
+
+      widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
+    }
+  }
+
+  Future<void> _doSelectEvm(EthWalletData i) async {
+    final isCurrentNetwork = widget.service.plugin is PluginEvm &&
+        (_selectedNetwork as PluginEvm).network ==
+            (widget.service.plugin as PluginEvm).network;
+    final currentAddress = widget.service.keyringEVM.current.address;
+    final isWalletConnectAlive =
+        widget.service.store.account.wcSessionURI != null;
+    if (i.address != currentAddress || !isCurrentNetwork) {
+      widget.service.store.account.setAccountType(AccountType.Evm);
+      widget.service.keyringEVM.setCurrent(i);
+      if (!isCurrentNetwork) {
+        /// set new network and reload web view
+        await _reloadNetwork();
+
+        _selectedNetwork.changeAccount(i.toKeyPairData());
+      } else {
+        widget.service.plugin.changeAccount(i.toKeyPairData());
+      }
+
+      if (isWalletConnectAlive) {
+        widget.service.wc.updateSession(i.address);
       }
     }
-    Navigator.of(context).pop(_selectedNetwork);
+  }
+
+  Future<void> _onSelect(dynamic i) async {
+    final navigator = Navigator.of(context);
+    if (widget.isEvm) {
+      await _doSelectEvm(i as EthWalletData);
+    } else {
+      await _doSelect(i as KeyPairData);
+    }
+    navigator.pop(_selectedNetwork);
   }
 
   Future<void> _reloadNetwork() async {

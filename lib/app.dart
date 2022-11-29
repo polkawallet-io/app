@@ -325,6 +325,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
+    final chainIdBefore = _connectedNode?.chainId;
+
     setState(() {
       _connectedNode = null;
     });
@@ -338,6 +340,21 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     setState(() {
       _connectedNode = connected;
     });
+
+    /// send wallet-connect session update if wc alive
+    if (_store.account.wcSessionURI != null) {
+      final cachedWCSession = _service.store.storage
+          .read(_service.store.account.localStorageWCSessionKey);
+      if (cachedWCSession != null) {
+        print('getCachedSession');
+        _initWalletConnect(_service.store.account.wcSessionURI,
+            cachedSession: cachedWCSession);
+      }
+      if (connected.chainId.isNotEmpty && connected.chainId != chainIdBefore) {
+        _service.wc.updateSession(_keyringEVM.current.address,
+            chainId: int.parse(connected.chainId));
+      }
+    }
 
     _dropsService();
   }
@@ -689,16 +706,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _startPlugin(service);
 
       service.assets.updateStakingConfig();
-
-      if (_service.store.account.wcSessionURI != null) {
-        final cachedWCSession = _service.store.storage
-            .read(_service.store.account.localStorageWCSessionKey);
-        if (cachedWCSession != null) {
-          print('getCachedSession');
-          _initWalletConnect(_service.store.account.wcSessionURI,
-              cachedSession: cachedWCSession);
-        }
-      }
     }
 
     return _keyring.allAccounts.isNotEmpty
