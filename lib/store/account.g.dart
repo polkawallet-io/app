@@ -204,11 +204,11 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setAccountCreated() {
+  void setAccountCreated(bool created) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setAccountCreated');
     try {
-      return super.setAccountCreated();
+      return super.setAccountCreated(created);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }

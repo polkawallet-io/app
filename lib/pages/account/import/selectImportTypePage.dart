@@ -30,6 +30,15 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      widget.service.store.account.setAccountCreated(false);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final type = data['accountType'] as AccountType;

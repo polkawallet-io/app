@@ -163,7 +163,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                     widget.service.plugin.basic.name);
                                 widget.service.store.account.resetNewAccount();
                                 widget.service.store.account
-                                    .setAccountCreated();
+                                    .setAccountCreated(true);
                                 Navigator.popUntil(
                                     context, ModalRoute.withName('/'));
                               }

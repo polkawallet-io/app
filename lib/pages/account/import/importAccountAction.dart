@@ -1,6 +1,5 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
-import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -125,35 +124,34 @@ class ImportAccountAction {
     } on Exception catch (err) {
       Navigator.of(context).pop();
       obSubmittingChang(false);
-      if (err.toString().contains('Invalid')) {
-        await showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return PolkawalletAlertDialog(
-              title: Container(),
-              content: Text(
-                  '${dic['import.invalid']} ${dic[_keyType.toString().split('.')[1]]}'),
-              actions: <Widget>[
-                PolkawalletActionSheetAction(
-                  child: Text(dicCommon['ok']),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        await AppUI.alertWASM(
-          context,
-          () {
-            Navigator.of(context).pop();
-          },
-          isImport: true,
-        );
-      }
+      // if (err.toString().contains('Invalid')) {
+      await showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return PolkawalletAlertDialog(
+            title: Container(),
+            content: Text(err.toString()),
+            actions: <Widget>[
+              PolkawalletActionSheetAction(
+                child: Text(dicCommon['ok']),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // } else {
+      //   await AppUI.alertWASM(
+      //     context,
+      //     () {
+      //       Navigator.of(context).pop();
+      //     },
+      //     isImport: true,
+      //   );
+      // }
       return false;
     }
   }

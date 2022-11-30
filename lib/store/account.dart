@@ -71,8 +71,8 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setAccountCreated() {
-    accountCreated = true;
+  void setAccountCreated(bool created) {
+    accountCreated = created;
   }
 
   @action

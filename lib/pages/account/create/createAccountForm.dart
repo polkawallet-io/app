@@ -73,9 +73,11 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
             ? widget.service.keyring.current
             : widget.service.keyringEVM.current.toKeyPairData());
         widget.service.store.account.resetNewAccount();
-        widget.service.store.account.setAccountCreated();
-        if (widget.type == AccountType.Evm &&
-            widget.service.keyringEVM.allAccounts.length > 1) {
+        widget.service.store.account.setAccountCreated(true);
+        if ((widget.type == AccountType.Evm &&
+                widget.service.keyringEVM.allAccounts.length > 1) ||
+            widget.type == AccountType.Substrate &&
+                widget.service.keyring.allAccounts.length > 1) {
           Navigator.popUntil(
               context, ModalRoute.withName(NetworkSelectPage.route));
         } else {
