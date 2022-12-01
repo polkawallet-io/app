@@ -136,19 +136,20 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                   },
                                   (p0) {});
                               if (saved) {
-                                widget.service.store.account
-                                    .setAccountType(accountType);
-                                if (_supportBiometric && _enableBiometric) {
-                                  await ImportAccountAction.authBiometric(
-                                      context, widget.service);
-                                }
-
                                 if (args['needChange'] == false) {
                                   Navigator.popUntil(
                                       context,
                                       ModalRoute.withName(
                                           args['redirect'] ?? '/'));
                                   return;
+                                }
+
+                                widget.service.store.account
+                                    .setAccountType(accountType);
+
+                                if (_supportBiometric && _enableBiometric) {
+                                  await ImportAccountAction.authBiometric(
+                                      context, widget.service);
                                 }
 
                                 widget.service.plugin.changeAccount(

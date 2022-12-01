@@ -53,14 +53,14 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       final success = await widget.onSubmit();
 
       if (success) {
-        final accType = (widget.args['accountType'] as AccountType) ??
-            AccountType.Substrate;
         if (widget.args['needChange'] == false) {
           Navigator.popUntil(
               context, ModalRoute.withName(widget.args['redirect'] ?? '/'));
           return;
         }
 
+        final accType = (widget.args['accountType'] as AccountType) ??
+            AccountType.Substrate;
         widget.service.store.account.setAccountType(accType);
 
         /// save password with biometrics after import success
