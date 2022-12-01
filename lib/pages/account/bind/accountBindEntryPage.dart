@@ -1,11 +1,12 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 
 class AccountBindEntryPage extends StatefulWidget {
   const AccountBindEntryPage({Key key}) : super(key: key);
@@ -39,7 +40,8 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                       .pushNamed(CreateAccountPage.route, arguments: {
                     "accountType":
                         type == 0 ? AccountType.Substrate : AccountType.Evm,
-                    "needChange": false
+                    "needChange": false,
+                    "redirect": AccountBindPage.route,
                   });
                 },
               ),
@@ -54,7 +56,8 @@ class _AccountBindEntryPageState extends State<AccountBindEntryPage> {
                       .pushNamed(SelectImportTypePage.route, arguments: {
                     "accountType":
                         type == 0 ? AccountType.Substrate : AccountType.Evm,
-                    "needChange": false
+                    "needChange": false,
+                    "redirect": AccountBindPage.route,
                   });
                 },
               ),

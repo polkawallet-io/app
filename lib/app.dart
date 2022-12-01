@@ -283,9 +283,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _service.store.account.setWCPairing(true);
     }
 
+    final chainId = int.tryParse(_service.plugin.nodeList[0].chainId) ?? 1;
+
     WCPeerMetaData peer;
     _service.plugin.sdk.api.walletConnect
-        .initClient(uri, _service.keyringEVM.current.address,
+        .initClient(uri, _service.keyringEVM.current.address, chainId,
             onPairing: (WCPeerMetaData peerMetaData) {
       print('get wc pairing');
       _handleWCPairing(peerMetaData);

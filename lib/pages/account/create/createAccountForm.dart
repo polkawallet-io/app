@@ -1,6 +1,5 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/import/importAccountAction.dart';
-import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -14,17 +13,14 @@ import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class CreateAccountForm extends StatefulWidget {
-  CreateAccountForm(this.service,
-      {this.submitting,
-      this.onSubmit,
-      this.type = AccountType.Substrate,
-      this.needChange = true});
+  const CreateAccountForm(this.service,
+      {Key key, this.submitting, this.onSubmit, this.args})
+      : super(key: key);
 
   final AppService service;
   final Future<bool> Function() onSubmit;
   final bool submitting;
-  final AccountType type;
-  final bool needChange;
+  final Map args;
   @override
   _CreateAccountFormState createState() => _CreateAccountFormState();
 }
@@ -32,9 +28,9 @@ class CreateAccountForm extends StatefulWidget {
 class _CreateAccountFormState extends State<CreateAccountForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _nameCtrl = new TextEditingController();
-  final TextEditingController _passCtrl = new TextEditingController();
-  final TextEditingController _pass2Ctrl = new TextEditingController();
+  final TextEditingController _nameCtrl = TextEditingController();
+  final TextEditingController _passCtrl = TextEditingController();
+  final TextEditingController _pass2Ctrl = TextEditingController();
 
   bool _supportBiometric = false;
   bool _enableBiometric = true; // if the biometric usage checkbox checked
@@ -57,32 +53,28 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       final success = await widget.onSubmit();
 
       if (success) {
-        if (!widget.needChange) {
-          Navigator.popUntil(context, ModalRoute.withName('/'));
+        final accType = (widget.args['accountType'] as AccountType) ??
+            AccountType.Substrate;
+        if (widget.args['needChange'] == false) {
+          Navigator.popUntil(
+              context, ModalRoute.withName(widget.args['redirect'] ?? '/'));
           return;
         }
 
-        widget.service.store.account.setAccountType(widget.type);
+        widget.service.store.account.setAccountType(accType);
 
         /// save password with biometrics after import success
         if (_supportBiometric && _enableBiometric) {
           await ImportAccountAction.authBiometric(context, widget.service);
         }
 
-        widget.service.plugin.changeAccount(widget.type == AccountType.Substrate
+        widget.service.plugin.changeAccount(accType == AccountType.Substrate
             ? widget.service.keyring.current
             : widget.service.keyringEVM.current.toKeyPairData());
         widget.service.store.account.resetNewAccount();
         widget.service.store.account.setAccountCreated(true);
-        if ((widget.type == AccountType.Evm &&
-                widget.service.keyringEVM.allAccounts.length > 1) ||
-            widget.type == AccountType.Substrate &&
-                widget.service.keyring.allAccounts.length > 1) {
-          Navigator.popUntil(
-              context, ModalRoute.withName(NetworkSelectPage.route));
-        } else {
-          Navigator.popUntil(context, ModalRoute.withName('/'));
-        }
+
+        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     }
   }

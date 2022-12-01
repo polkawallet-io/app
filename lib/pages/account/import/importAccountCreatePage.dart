@@ -1,4 +1,3 @@
-import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/createAccountForm.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -11,7 +10,7 @@ import 'importAccountAction.dart';
 class ImportAccountCreatePage extends StatefulWidget {
   final AppService service;
 
-  static final String route = '/account/ImportAccountCreatePage';
+  static const String route = '/account/ImportAccountCreatePage';
 
   ImportAccountCreatePage(this.service, {Key key}) : super(key: key);
 
@@ -27,7 +26,6 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final needChange = data['needChange'] == false;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -35,10 +33,10 @@ class _ImportAccountCreatePageState extends State<ImportAccountCreatePage> {
         child: CreateAccountForm(
           widget.service,
           submitting: _submitting,
-          type: data['accountType'] as AccountType,
-          needChange: !needChange,
+          args: data,
           onSubmit: () {
-            return ImportAccountAction.onSubmit(context, widget.service, data,
+            return ImportAccountAction.onSubmit(
+                context, widget.service, Map<String, dynamic>.from(data),
                 (submitting) {
               setState(() {
                 this._submitting = submitting;

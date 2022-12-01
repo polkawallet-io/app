@@ -19,7 +19,7 @@ import 'importAccountCreatePage.dart';
 class ImportAccountFromRawSeed extends StatefulWidget {
   final AppService service;
 
-  static final String route = '/account/importAccountFormRawSeed';
+  static const String route = '/account/importAccountFormRawSeed';
 
   ImportAccountFromRawSeed(this.service, {Key key}) : super(key: key);
 
@@ -44,11 +44,10 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
 
   @override
   Widget build(BuildContext context) {
-    final data = (ModalRoute.of(context).settings.arguments as Map);
-    selected = data["type"];
+    final args = (ModalRoute.of(context).settings.arguments as Map);
+    selected = args["type"];
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    final type = data['accountType'] as AccountType;
-    final needChange = data['needChange'];
+    final type = args['accountType'] as AccountType;
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -129,8 +128,7 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
                         'cryptoType':
                             _advanceOptions.type ?? CryptoType.sr25519,
                         'derivePath': _advanceOptions.path ?? '',
-                        "accountType": type,
-                        "needChange": needChange
+                        ...args
                       });
                 }
               },

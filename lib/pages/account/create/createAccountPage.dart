@@ -219,8 +219,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       return _generateSeed(context);
     }
     final data = ModalRoute.of(context).settings.arguments as Map;
-    final type = data['accountType'] as AccountType;
-    final needChange = data['needChange'] == false;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -239,8 +237,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           widget.service,
           submitting: _submitting,
           onSubmit: _importAccount,
-          needChange: !needChange,
-          type: type,
+          args: data,
         ),
       ),
     );
