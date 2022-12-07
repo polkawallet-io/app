@@ -258,16 +258,18 @@ class EthTransferConfirmPageState extends State<EthTransferConfirmPage> {
                     ),
                   ),
                 ),
-                Container(
+                Visibility(
+                  visible: widget.service.keyringEVM.current.observation != true,
+                  child: Container(
                   padding: const EdgeInsets.all(16),
                   child: v3.Button(
                     title: dicUI['dApp.confirm'],
                     isBlueBg: _submitting ? false : true,
                     icon:
-                        _submitting ? const CupertinoActivityIndicator() : null,
+                    _submitting ? const CupertinoActivityIndicator() : null,
                     onPressed: !_submitting ? _onSubmit : () => null,
                   ),
-                )
+                ),)
               ],
             ),
           ),

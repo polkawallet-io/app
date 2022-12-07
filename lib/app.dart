@@ -279,6 +279,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _initWalletConnect(String uri, {Map cachedSession}) {
+    /// disconnect session before init new session to ensure only one alive.
+    if (_store.account.wcSessionURI != null) {
+      _service.wc.disconnect();
+    }
+
     if (cachedSession == null) {
       _service.store.account.setWCPairing(true);
     }
