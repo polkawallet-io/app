@@ -6,7 +6,6 @@ import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
 class WCPairingConfirmPage extends StatefulWidget {
   const WCPairingConfirmPage(this.service);
@@ -121,24 +120,6 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
         ),
       ),
     );
-  }
-}
-
-class WCPairingSourceInfo extends StatelessWidget {
-  WCPairingSourceInfo(this.metadata);
-  final WCPeerMetaData metadata;
-  @override
-  Widget build(BuildContext context) {
-    return metadata != null
-        ? RoundedCard(
-            child: ListTile(
-              dense: true,
-              leading: Image.network(metadata.icons[0], width: 40),
-              title: Text(metadata.name),
-              subtitle: Text(metadata.url),
-            ),
-          )
-        : Container();
   }
 }
 

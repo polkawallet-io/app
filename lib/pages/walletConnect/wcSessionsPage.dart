@@ -1,5 +1,5 @@
 import 'package:app/common/components/jumpToLink.dart';
-import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
+import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -33,6 +33,10 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
       final session = widget.service.store.account.wcSession;
       final pairing = widget.service.store.account.walletConnectPairing;
       final callRequests = widget.service.store.account.wcCallRequests;
+
+      final originUri = widget.service.store.account.wcSession != null
+          ? Uri.parse(widget.service.store.account.wcSession.url)
+          : null;
       return Scaffold(
         appBar: AppBar(
             title: Image.asset('assets/images/wallet_connect_banner.png',
@@ -79,9 +83,10 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                                           Icons.arrow_forward_ios,
                                           size: 14),
                                       onTap: () => Navigator.of(context)
-                                          .pushNamed(
-                                              WalletConnectSignPage.route,
-                                              arguments: e),
+                                          .pushNamed(EthRequestSignPage.route,
+                                              arguments:
+                                                  EthRequestSignPageParams(
+                                                      e, originUri)),
                                     );
                                   }).toList(),
                                 ),

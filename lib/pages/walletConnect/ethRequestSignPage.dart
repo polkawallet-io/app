@@ -2,25 +2,31 @@ import 'dart:async';
 
 import 'package:app/common/components/ethGasConfirmPanel.dart';
 import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
-import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
-import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
-class WalletConnectSignPage extends StatefulWidget {
-  WalletConnectSignPage(this.service, this.getPassword);
+class EthRequestSignPageParams {
+  EthRequestSignPageParams(this.request, this.originUri, {this.requestRaw});
+  final Uri originUri;
+  final WCCallRequestData request;
+  final Map requestRaw;
+}
+
+class EthRequestSignPage extends StatefulWidget {
+  const EthRequestSignPage(this.service, this.getPassword, {Key key})
+      : super(key: key);
   final AppService service;
   final Future<String> Function(BuildContext, KeyPairData) getPassword;
 
@@ -30,46 +36,83 @@ class WalletConnectSignPage extends StatefulWidget {
   static const String signTypeExtrinsic = 'pub(extrinsic.sign)';
 
   @override
-  _WalletConnectSignPageState createState() => _WalletConnectSignPageState();
+  _EthRequestSignPageState createState() => _EthRequestSignPageState();
 }
 
-class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
+class _EthRequestSignPageState extends State<EthRequestSignPage> {
   Timer _gasQueryTimer;
 
   int _gasLevel = 1;
 
   bool _submitting = false;
 
+  void _rejectRequest() {
+    final EthRequestSignPageParams args =
+        ModalRoute.of(context).settings.arguments;
+    if (args.requestRaw == null) {
+      widget.service.plugin.sdk.api.walletConnect
+          .confirmPayload(args.request.id, false, '', {});
+
+      widget.service.store.account.closeCallRequest(args.request.id);
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).pop(WCCallRequestResult.fromJson(
+          Map<String, dynamic>.of({'error': 'User rejected request.'})));
+    }
+  }
+
   Future<void> _showPasswordDialog() async {
     final password = await widget.service.account
         .getEvmPassword(context, widget.service.keyringEVM.current);
     if (password != null) {
-      _sign(password);
+      setState(() {
+        _submitting = true;
+      });
+      final EthRequestSignPageParams args =
+          ModalRoute.of(context).settings.arguments;
+
+      final gasOptions = _isRequestSendTx(args.request)
+          ? Utils.getGasOptionsForTx(args.request.params[3].value,
+              widget.service.store.assets.gasParams, _gasLevel, _gasEditable())
+          : {};
+      if (args.requestRaw == null) {
+        _signWC(args.request.id, password, gasOptions);
+      } else {
+        _sign(args.requestRaw, password, gasOptions);
+      }
     }
   }
 
-  Future<void> _sign(String password) async {
-    setState(() {
-      _submitting = true;
-    });
-    final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
-
-    final gasOptions = _isRequestSendTx(args)
-        ? Utils.getGasOptionsForTx(args.params[3].value,
-            widget.service.store.assets.gasParams, _gasLevel, _gasEditable())
-        : {};
+  Future<void> _signWC(int id, String password, Map gasOptions) async {
     final res = await widget.service.plugin.sdk.api.walletConnect
-        .confirmPayload(args.id, true, password, gasOptions);
-    print('user signed payload:');
+        .confirmPayload(id, true, password, gasOptions);
+    print('user signed WC payload:');
     print((res as WCCallRequestResult).result);
 
-    widget.service.store.account.closeCallRequest(args.id);
+    widget.service.store.account.closeCallRequest(id);
 
     if (mounted) {
       setState(() {
         _submitting = false;
       });
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _sign(Map request, String password, Map gasOptions) async {
+    final res = await widget.service.plugin.sdk.api.eth.keyring.signEthRequest(
+        request,
+        widget.service.keyringEVM.current.address,
+        password,
+        gasOptions);
+    print('user signed browser payload:');
+    print((res as WCCallRequestResult).result);
+
+    if (mounted) {
+      setState(() {
+        _submitting = false;
+      });
+      Navigator.of(context).pop(res);
     }
   }
 
@@ -85,9 +128,10 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
   Future<void> _updateTxFee() async {
     if (!mounted) return;
 
-    final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
+    final EthRequestSignPageParams args =
+        ModalRoute.of(context).settings.arguments;
 
-    final gasLimit = args.params[3].value;
+    final gasLimit = args.request.params[3].value;
     await widget.service.assets
         .updateEvmGasParams(gasLimit, isFixedGas: !_gasEditable());
 
@@ -111,8 +155,9 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
-      if (_isRequestSendTx(args)) {
+      final EthRequestSignPageParams args =
+          ModalRoute.of(context).settings.arguments;
+      if (_isRequestSendTx(args.request)) {
         _updateTxFee();
       }
     });
@@ -129,7 +174,8 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
       final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-      final WCCallRequestData args = ModalRoute.of(context).settings.arguments;
+      final EthRequestSignPageParams args =
+          ModalRoute.of(context).settings.arguments;
       final session = widget.service.store.account.wcSession;
       final acc = widget.service.keyringEVM.current.toKeyPairData();
 
@@ -138,13 +184,12 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
       final gasTokenPrice =
           widget.service.store.assets.marketPrices[gasTokenSymbol] ?? 0;
 
-      return Scaffold(
-        appBar: AppBar(
-            title: Text(dic[args.event.contains('Transaction')
+      return PluginScaffold(
+        appBar: PluginAppBar(
+            title: Text(dic[args.request.event.contains('Transaction')
                 ? 'submit.sign.tx'
                 : 'submit.sign.msg']),
-            centerTitle: true,
-            leading: BackBtn()),
+            centerTitle: true),
         body: SafeArea(
           child: Column(
             children: [
@@ -160,15 +205,19 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
                           padding: EdgeInsets.only(top: 8, bottom: 16),
                           child: AddressFormItem(acc, svg: acc.icon),
                         ),
-                        SignExtrinsicInfo(args, session),
-                        _isRequestSendTx(args)
+                        EthSignRequestInfo(
+                          args.request,
+                          peer: session,
+                          originUri: args.originUri,
+                        ),
+                        _isRequestSendTx(args.request)
                             ? Container(
                                 margin:
                                     const EdgeInsets.only(top: 8, bottom: 8),
                                 child: const Text('Gas'),
                               )
                             : Container(),
-                        _isRequestSendTx(args)
+                        _isRequestSendTx(args.request)
                             ? EthGasConfirmPanel(
                                 gasParams: gasParams,
                                 gasLevel: _gasLevel,
@@ -181,90 +230,42 @@ class _WalletConnectSignPageState extends State<WalletConnectSignPage> {
                       ]),
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(16, 8, 8, 16),
-                      child: Button(
-                        isBlueBg: false,
-                        child: Text(
-                            I18n.of(context).getDic(
-                                i18n_full_dic_app, 'account')['wc.reject'],
-                            style: Theme.of(context).textTheme.headline3),
-                        onPressed: () {
-                          widget.service.plugin.sdk.api.walletConnect
-                              .confirmPayload(args.id, false, '', {});
-
-                          widget.service.store.account
-                              .closeCallRequest(args.id);
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(8, 8, 16, 16),
-                      child: Button(
-                        isBlueBg: !_submitting,
-                        onPressed:
-                            _submitting ? null : () => _showPasswordDialog(),
-                        child: Text(dic['submit.sign'],
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ),
-                  ),
-                ],
-              )
+              widget.service.keyringEVM.current.observation == true
+                  ? Container()
+                  : Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(16, 8, 8, 16),
+                            child: Button(
+                              isBlueBg: false,
+                              onPressed: _rejectRequest,
+                              child: Text(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'account')['wc.reject'],
+                                  style: Theme.of(context).textTheme.headline3),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(8, 8, 16, 16),
+                            child: Button(
+                              isBlueBg: !_submitting,
+                              onPressed: _submitting
+                                  ? null
+                                  : () => _showPasswordDialog(),
+                              child: Text(dic['submit.sign'],
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
             ],
           ),
         ),
       );
     });
-  }
-}
-
-class SignExtrinsicInfo extends StatelessWidget {
-  SignExtrinsicInfo(this.callRequest, this.peer);
-  final WCCallRequestData callRequest;
-  final WCPeerMetaData peer;
-  @override
-  Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    List<WCCallRequestParamItem> params = callRequest.params;
-    if (callRequest.params[0].value == 'eth_sendTransaction') {
-      params = [
-        ...callRequest.params.sublist(0, 3),
-        ...callRequest.params.sublist(5)
-      ];
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            dic['wc.source'],
-            style: Theme.of(context).textTheme.headline4,
-          ),
-        ),
-        WCPairingSourceInfo(peer),
-        Padding(
-          padding: EdgeInsets.only(bottom: 16, top: 16),
-          child: Text(
-            dic['wc.data'],
-            style: Theme.of(context).textTheme.headline4,
-          ),
-        ),
-        Column(
-            children: params.map((e) {
-          return Container(
-            margin: EdgeInsets.only(bottom: 8),
-            child: InfoItemRow(e.label, e.value.toString()),
-          );
-        }).toList())
-      ],
-    );
   }
 }

@@ -25,6 +25,7 @@ import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
+import 'package:app/pages/browser/dAppEthWrapperPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
@@ -59,7 +60,7 @@ import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
-import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
+import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
@@ -279,11 +280,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _initWalletConnect(String uri, {Map cachedSession}) {
-    /// disconnect session before init new session to ensure only one alive.
-    if (_store.account.wcSessionURI != null) {
-      _service.wc.disconnect();
-    }
-
     if (cachedSession == null) {
       _service.store.account.setWCPairing(true);
     }
@@ -304,10 +300,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }, onCallRequest: (WCCallRequestData result) {
       print('get wc callRequest');
       _handleWCCallRequest(result);
-    }, onDisconnect: () {
+    }, onDisconnect: (disconnectedUri) {
       print('wc disconnected');
-      _service.store.account.setWCPairing(false);
-      _service.store.account.setWCSession(null, null, null);
+      if (_service.store.account.wcSessionURI == disconnectedUri) {
+        _service.store.account.setWCPairing(false);
+        _service.store.account.setWCSession(null, null, null);
+      }
     }, cachedSession: cachedSession);
   }
 
@@ -327,8 +325,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
     _service.store.account.addCallRequest(payload);
 
-    Navigator.of(_homePageContext)
-        .pushNamed(WalletConnectSignPage.route, arguments: payload);
+    Navigator.of(_homePageContext).pushNamed(EthRequestSignPage.route,
+        arguments: EthRequestSignPageParams(
+            payload, Uri.parse(_service.store.account.wcSession.url)));
   }
 
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
@@ -798,8 +797,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
-      WalletConnectSignPage.route: (_) =>
-          WalletConnectSignPage(_service, _service.account.getPassword),
+      EthRequestSignPage.route: (_) =>
+          EthRequestSignPage(_service, _service.account.getPassword),
       GuidePage.route: (_) => GuidePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
       StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
@@ -812,6 +811,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             _service.plugin,
             _keyring,
             getPassword: _service.account.getPassword,
+            checkAuth: _store.settings.checkDAppAuth,
+            updateAuth: _store.settings.updateDAppAuth,
+          ),
+      DAppEthWrapperPage.route: (_) => DAppEthWrapperPage(
+            _service.plugin,
+            _keyringEVM,
+            getPassword: _service.account.getEvmPassword,
             checkAuth: _store.settings.checkDAppAuth,
             updateAuth: _store.settings.updateDAppAuth,
           ),
