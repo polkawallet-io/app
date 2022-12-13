@@ -5,9 +5,13 @@ class ApiWC {
 
   final AppService apiRoot;
 
-  void disconnect() {
+  void resetState() {
     apiRoot.store.account.setWCPairing(false);
     apiRoot.store.account.setWCSession(null, null, null);
+  }
+
+  void disconnect() {
+    resetState();
     apiRoot.plugin.sdk.api.walletConnect.disconnect();
   }
 

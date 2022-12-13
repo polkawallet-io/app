@@ -302,9 +302,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _handleWCCallRequest(result);
     }, onDisconnect: (disconnectedUri) {
       print('wc disconnected');
-      if (_service.store.account.wcSessionURI == disconnectedUri) {
-        _service.store.account.setWCPairing(false);
-        _service.store.account.setWCSession(null, null, null);
+      if (_service.store.account.wcSessionURI == null ||
+          _service.store.account.wcSessionURI == disconnectedUri) {
+        _service.wc.resetState();
       }
     }, cachedSession: cachedSession);
   }
@@ -319,6 +319,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       navigator.pushNamed(WCSessionsPage.route);
     } else {
       _service.plugin.sdk.api.walletConnect.confirmPairing(false);
+
+      _service.wc.resetState();
     }
   }
 
