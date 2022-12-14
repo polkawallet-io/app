@@ -21,9 +21,6 @@ class WalletApi {
     String url = "$realmName$path";
     targets = targets ?? WalletApp.buildTarget;
     if (targets == BuildTargets.dev) {
-      if (!path.endsWith(".json")) {
-        path = "$path.json";
-      }
       url = "$_endpoint/devConfiguration$path";
     }
     return Uri.parse(url);

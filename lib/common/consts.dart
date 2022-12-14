@@ -66,6 +66,8 @@ const bridge_account = {
   'acala': '13YMK2eYoAvStnzReuxBjMrAvPXmmdsURwZvc62PrdXimbNy'
 };
 
+const bridge_sdk_version = 33501;
+
 const show_guide_status_key = 'show_guide_status';
 
 const JPUSH_APP_KEY = 'dfa60080aa05c5c7b7dc7aa0';

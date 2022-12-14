@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:app/common/consts.dart';
 import 'package:app/pages/bridge/bridgeChainSelector.dart';
 import 'package:app/pages/bridge/bridgePageParams.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/service/walletApi.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:async/async.dart';
@@ -132,8 +134,23 @@ class _BridgePageState extends State<BridgePage> {
     super.dispose();
   }
 
+  Future<void> initBridgeRunner() async {
+    final useLocalJS = WalletApi.getPolkadotJSVersion(
+          widget.service.store.storage,
+          'bridge',
+          bridge_sdk_version,
+        ) >
+        bridge_sdk_version;
+
+    await widget.service.plugin.sdk.api.bridge.init(
+        jsCode: useLocalJS
+            ? WalletApi.getPolkadotJSCode(
+                widget.service.store.storage, 'bridge')
+            : null);
+  }
+
   void loadConfig(BridgePageParams args) async {
-    await widget.service.plugin.sdk.api.bridge.init();
+    await initBridgeRunner();
     widget.service.plugin.sdk.api.bridge.subscribeReloadAction(reloadKey,
         () async {
       await _connectFromChain(_chainFrom);

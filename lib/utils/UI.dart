@@ -356,57 +356,51 @@ class AppUI {
     );
   }
 
-  static Future<bool> checkJSCodeUpdate(
+  static Future<bool> confirmJSCodeUpdate(
     BuildContext context,
-    GetStorage jsStorage,
     int jsVersionApp,
     jsVersionLatest,
     jsVersionMin,
-    String network,
   ) async {
-    if (jsVersionLatest != null) {
-      if (jsVersionLatest > jsVersionApp) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-        final bool isOk = await showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return PolkawalletAlertDialog(
-              title: Text('metadata v$jsVersionLatest'),
-              content: Text(I18n.of(context)
-                  .getDic(i18n_full_dic_app, 'profile')['update.js.up']),
-              actions: <Widget>[
-                PolkawalletActionSheetAction(
-                  child: Text(dic['cancel']),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                    if (jsVersionMin != null && jsVersionApp < jsVersionMin) {
-                      exit(0);
-                    }
-                  },
-                ),
-                PolkawalletActionSheetAction(
-                  isDefaultAction: true,
-                  child: Text(dic['ok']),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
-            );
-          },
+    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    return showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return PolkawalletAlertDialog(
+          title: Text('metadata v$jsVersionLatest'),
+          content: Text(I18n.of(context)
+              .getDic(i18n_full_dic_app, 'profile')['update.js.up']),
+          actions: <Widget>[
+            PolkawalletActionSheetAction(
+              child: Text(dic['cancel']),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                if (jsVersionMin != null && jsVersionApp < jsVersionMin) {
+                  exit(0);
+                }
+              },
+            ),
+            PolkawalletActionSheetAction(
+              isDefaultAction: true,
+              child: Text(dic['ok']),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
         );
-        return isOk;
-      }
-    }
-    return false;
+      },
+    );
   }
 
   static Future<bool> updateJSCode(
     BuildContext context,
     GetStorage jsStorage,
     String network,
-    int version,
-  ) async {
+    int version, {
+    int bridgeVersion,
+    bool withBridgeUpdate = false,
+  }) async {
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     showCupertinoDialog(
@@ -418,8 +412,14 @@ class AppUI {
         );
       },
     );
-    final String code = await WalletApi.fetchPolkadotJSCode(network);
-    print('downloaded jsCode for $network:');
+    final code = await WalletApi.fetchPolkadotJSCode(network);
+    print('downloaded jsCode for $network');
+    String bridgeCode = '';
+    if (withBridgeUpdate) {
+      bridgeCode = await WalletApi.fetchPolkadotJSCode('bridge');
+      print('downloaded jsCode for bridge');
+    }
+
     Navigator.of(context).pop();
     await showCupertinoDialog(
       context: context,
@@ -436,6 +436,10 @@ class AppUI {
                 if (code != null) {
                   WalletApi.setPolkadotJSCode(
                       jsStorage, network, code, version);
+                }
+                if (bridgeCode.isNotEmpty) {
+                  WalletApi.setPolkadotJSCode(
+                      jsStorage, 'bridge', bridgeCode, bridgeVersion);
                 }
                 Navigator.of(context).pop();
               },
