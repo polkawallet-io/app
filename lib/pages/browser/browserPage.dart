@@ -1,15 +1,17 @@
 import 'package:app/pages/browser/browserApi.dart';
 import 'package:app/pages/browser/browserSearch.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
+import 'package:app/pages/browser/manageAccessPage.dart';
+import 'package:app/pages/browser/search.dart' as search;
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
-import 'package:app/pages/browser/search.dart' as search;
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class BrowserPage extends StatefulWidget {
@@ -37,8 +39,57 @@ class _BrowserPageState extends State<BrowserPage> {
             .toList();
     var dappLatests = BrowserApi.getDappLatest(widget.service);
     return PluginScaffold(
-        appBar:
-            PluginAppBar(title: Text(dic['hub.browser']), centerTitle: true),
+        appBar: PluginAppBar(
+          title: Text(dic['hub.browser']),
+          centerTitle: true,
+          actions: [
+            Container(
+              margin: EdgeInsets.only(right: 8),
+              child: v3.PopupMenuButton(
+                  offset: Offset(-12, 52),
+                  color: UI.isDarkTheme(context)
+                      ? Color(0xA63A3B3D)
+                      : Theme.of(context).cardColor,
+                  padding: EdgeInsets.zero,
+                  elevation: 3,
+                  shape: const RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0x21FFFFFF), width: 0.5),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
+                  ),
+                  onSelected: (value) {
+                    if (widget.service.keyring.current.address != '') {
+                      if (value == '0') {
+                        Navigator.pushNamed(context, ManageWebAccessPage.route);
+                      }
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return <v3.PopupMenuEntry<String>>[
+                      v3.PopupMenuItem(
+                        height: 34,
+                        value: '0',
+                        child: Text(
+                          dic['hub.browser.access'],
+                          style: Theme.of(context).textTheme.headline5,
+                        ),
+                      )
+                    ];
+                  },
+                  icon: v3.IconButton(
+                    icon: Icon(
+                      Icons.more_horiz,
+                      color: UI.isDarkTheme(context)
+                          ? Colors.white
+                          : Theme.of(context).disabledColor,
+                      size: 20,
+                    ),
+                  )),
+            )
+          ],
+        ),
         body: SafeArea(
             child: Column(
           children: [

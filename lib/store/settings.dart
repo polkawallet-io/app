@@ -74,6 +74,9 @@ abstract class _SettingsStore with Store {
   @observable
   List<dynamic> dapps = [];
 
+  @observable
+  Map<String, bool> websiteAccess = {};
+
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": true},
     "KSM": ["kusama", "calamari"],
@@ -267,6 +270,11 @@ abstract class _SettingsStore with Store {
       loadIsHideBalance(),
       loadIsDarkTheme(),
     ]);
+
+    if (storage.read(localStorageDAppAuthUrlsKey) != null) {
+      websiteAccess =
+          storage.read(localStorageDAppAuthUrlsKey) as Map<String, bool>;
+    }
   }
 
   @action
@@ -330,18 +338,21 @@ abstract class _SettingsStore with Store {
     pluginsConfig = value ?? {};
   }
 
-  void updateDAppAuth(String url) {
-    final authed = (storage.read(localStorageDAppAuthUrlsKey) as Map) ?? {};
-    authed[url] = true;
-    storage.write(localStorageDAppAuthUrlsKey, authed);
+  @action
+  void updateDAppAuth(String url, {bool auth = true}) {
+    final mapNew = {...websiteAccess};
+    if (auth != null) {
+      mapNew[url] = auth;
+    } else {
+      mapNew.remove(url);
+    }
+    websiteAccess = mapNew;
+
+    storage.write(localStorageDAppAuthUrlsKey, mapNew);
   }
 
   bool checkDAppAuth(String url) {
-    final authed = storage.read(localStorageDAppAuthUrlsKey) as Map;
-    if (authed != null) {
-      return authed[url] ?? false;
-    }
-    return false;
+    return websiteAccess[url] ?? false;
   }
 
   @action

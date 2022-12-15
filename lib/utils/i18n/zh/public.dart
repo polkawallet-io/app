@@ -107,6 +107,8 @@ const Map<String, String> zhPublic = {
   'hub.browser.clearAllMessage': '您确定要清除所有浏览历史记录吗？您以后无法恢复。',
   'hub.browser.clearMessage': '您确定要从浏览历史记录中删除该项吗?',
   'hub.browser.searchingHistory': '搜索历史',
+  'hub.browser.access': '网站权限',
+  'hub.browser.confirm': '移除该网站的访问权限:',
   'hub.bridge': '跨链桥',
   'hub.route': '路由',
   'hub.to.address': '收款地址',

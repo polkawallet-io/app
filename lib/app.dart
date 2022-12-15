@@ -16,6 +16,7 @@ import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
+import 'package:app/pages/browser/manageAccessPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
@@ -800,6 +801,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
+      ManageWebAccessPage.route: (_) => ManageWebAccessPage(_service),
 
       //bridge
       BridgePage.route: (_) => BridgePage(_service),
