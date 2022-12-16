@@ -15,10 +15,10 @@ import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class BrowserPage extends StatefulWidget {
-  BrowserPage(this.service, {Key key}) : super(key: key);
+  const BrowserPage(this.service, {Key key}) : super(key: key);
   final AppService service;
 
-  static final String route = '/browser';
+  static const String route = '/browser';
 
   @override
   State<BrowserPage> createState() => _BrowserPageState();
@@ -44,11 +44,11 @@ class _BrowserPageState extends State<BrowserPage> {
           centerTitle: true,
           actions: [
             Container(
-              margin: EdgeInsets.only(right: 8),
+              margin: const EdgeInsets.only(right: 8),
               child: v3.PopupMenuButton(
-                  offset: Offset(-12, 52),
+                  offset: const Offset(-12, 52),
                   color: UI.isDarkTheme(context)
-                      ? Color(0xA63A3B3D)
+                      ? const Color(0xA63A3B3D)
                       : Theme.of(context).cardColor,
                   padding: EdgeInsets.zero,
                   elevation: 3,
@@ -71,20 +71,21 @@ class _BrowserPageState extends State<BrowserPage> {
                       v3.PopupMenuItem(
                         height: 34,
                         value: '0',
-                        child: Text(
-                          dic['hub.browser.access'],
-                          style: Theme.of(context).textTheme.headline5,
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            dic['hub.browser.access'],
+                            style: Theme.of(context).textTheme.headline5,
+                          ),
                         ),
                       )
                     ];
                   },
-                  icon: v3.IconButton(
-                    icon: Icon(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    child: const Icon(
                       Icons.more_horiz,
-                      color: UI.isDarkTheme(context)
-                          ? Colors.white
-                          : Theme.of(context).disabledColor,
-                      size: 20,
+                      color: Colors.white,
                     ),
                   )),
             )
@@ -93,7 +94,7 @@ class _BrowserPageState extends State<BrowserPage> {
         body: SafeArea(
             child: Column(
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               height: MediaQuery.of(context).size.width * 184 / 390.0,
               child: Stack(
@@ -106,14 +107,14 @@ class _BrowserPageState extends State<BrowserPage> {
                         fit: BoxFit.cover,
                         alignment: Alignment.topCenter,
                       )),
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     height: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${dic['hub.browser'].toUpperCase()}",
+                          dic['hub.browser'].toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
                               .headline1
@@ -123,7 +124,7 @@ class _BrowserPageState extends State<BrowserPage> {
                                   fontWeight: FontWeight.bold),
                         ),
                         Padding(
-                            padding: EdgeInsets.only(top: 5),
+                            padding: const EdgeInsets.only(top: 5),
                             child: Text(dic['hub.browser.welcome'],
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context)
@@ -144,18 +145,18 @@ class _BrowserPageState extends State<BrowserPage> {
                                           .textTheme
                                           .headline5
                                           ?.copyWith(
-                                              color: Color(0x80FFFFFF))));
+                                              color: const Color(0x80FFFFFF))));
                               if (result != null) {
                                 setState(() {});
                               }
                             },
                             child: Container(
-                              margin:
-                                  EdgeInsets.only(left: 34, right: 34, top: 11),
-                              padding: EdgeInsets.all(10),
+                              margin: const EdgeInsets.only(
+                                  left: 34, right: 34, top: 11),
+                              padding: const EdgeInsets.all(10),
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Color(0x80FFFFFF),
+                                color: const Color(0x80FFFFFF),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -171,7 +172,7 @@ class _BrowserPageState extends State<BrowserPage> {
                                                 fontSize:
                                                     UI.getTextSize(12, context),
                                               ))),
-                                  Icon(
+                                  const Icon(
                                     Icons.search,
                                     color: PluginColorsDark.headline1,
                                     size: 20,
@@ -187,12 +188,13 @@ class _BrowserPageState extends State<BrowserPage> {
             ),
             Expanded(
                 child: Container(
-              margin: EdgeInsets.only(left: 16, top: 20, right: 16, bottom: 24),
+              margin: const EdgeInsets.only(
+                  left: 16, top: 20, right: 16, bottom: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Visibility(
-                      visible: dappLatests.length > 0,
+                      visible: dappLatests.isNotEmpty,
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,7 +212,8 @@ class _BrowserPageState extends State<BrowserPage> {
                                   }
                                 },
                                 child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 3),
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 3),
                                     child: Image.asset(
                                       "assets/images/browser_latest.png",
                                       height: 10,
@@ -219,16 +222,16 @@ class _BrowserPageState extends State<BrowserPage> {
                         ),
                         Container(
                             width: double.infinity,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 16, horizontal: 14),
-                            margin: EdgeInsets.only(bottom: 25),
+                            margin: const EdgeInsets.only(bottom: 25),
                             decoration: BoxDecoration(
-                                color: Color(0xFFFFFFFF).withAlpha(18),
-                                borderRadius: BorderRadius.only(
+                                color: const Color(0xFFFFFFFF).withAlpha(18),
+                                borderRadius: const BorderRadius.only(
                                     bottomLeft: Radius.circular(8),
                                     topRight: Radius.circular(8),
                                     bottomRight: Radius.circular(8))),
-                            child: Container(
+                            child: SizedBox(
                                 height: 73,
                                 width: double.infinity,
                                 child: ListView.separated(
@@ -245,36 +248,33 @@ class _BrowserPageState extends State<BrowserPage> {
                                                 .then(
                                                     (value) => setState(() {}));
                                           },
-                                          child: Container(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    margin: EdgeInsets.only(
-                                                        bottom: 5),
-                                                    child: (e["icon"] as String)
-                                                            .contains('.svg')
-                                                        ? SvgPicture.network(
-                                                            e["icon"])
-                                                        : Image.network(
-                                                            e["icon"])),
-                                                Text(
-                                                  e["name"],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline4
-                                                      ?.copyWith(
-                                                          color:
-                                                              PluginColorsDark
-                                                                  .headline1,
-                                                          fontSize:
-                                                              UI.getTextSize(
-                                                                  12, context)),
-                                                )
-                                              ],
-                                            ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  margin: const EdgeInsets.only(
+                                                      bottom: 5),
+                                                  child: (e["icon"] as String)
+                                                          .contains('.svg')
+                                                      ? SvgPicture.network(
+                                                          e["icon"])
+                                                      : Image.network(
+                                                          e["icon"])),
+                                              Text(
+                                                e["name"],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4
+                                                    ?.copyWith(
+                                                        color: PluginColorsDark
+                                                            .headline1,
+                                                        fontSize:
+                                                            UI.getTextSize(
+                                                                12, context)),
+                                              )
+                                            ],
                                           ));
                                     })))
                       ])),
@@ -283,7 +283,7 @@ class _BrowserPageState extends State<BrowserPage> {
                     backgroundColor: PluginColorsDark.headline1,
                   ),
                   Container(
-                      margin: EdgeInsets.only(top: 14, bottom: 18),
+                      margin: const EdgeInsets.only(top: 14, bottom: 18),
                       height: 22,
                       width: double.infinity,
                       child: ListView.separated(
@@ -303,6 +303,14 @@ class _BrowserPageState extends State<BrowserPage> {
                                   }
                                 },
                                 child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 7, vertical: 3),
+                                    decoration: BoxDecoration(
+                                        color: _tag == index
+                                            ? PluginColorsDark.primary
+                                            : const Color(0xFFFFFFFF)
+                                                .withAlpha(43),
+                                        borderRadius: BorderRadius.circular(4)),
                                     child: Center(
                                         child: Text(
                                       index == 0
@@ -322,21 +330,13 @@ class _BrowserPageState extends State<BrowserPage> {
                                               color: _tag == index
                                                   ? Colors.black
                                                   : PluginColorsDark.headline1),
-                                    )),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 7, vertical: 3),
-                                    decoration: BoxDecoration(
-                                        color: _tag == index
-                                            ? PluginColorsDark.primary
-                                            : Color(0xFFFFFFFF).withAlpha(43),
-                                        borderRadius:
-                                            BorderRadius.circular(4))));
+                                    ))));
                           })),
                   Expanded(
                       child: GridView.builder(
                           itemCount: dapps.length,
                           gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
                                   mainAxisSpacing: 16.0,
                                   crossAxisSpacing: 18.0,
@@ -350,16 +350,17 @@ class _BrowserPageState extends State<BrowserPage> {
                                       .then((value) => setState(() {}));
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      color: Color(0x24FFFFFF),
+                                      color: const Color(0x24FFFFFF),
                                       borderRadius: BorderRadius.circular(6)),
                                   child: Row(
                                     children: [
                                       Container(
                                           width: 32,
                                           height: 32,
-                                          margin: EdgeInsets.only(right: 8),
+                                          margin:
+                                              const EdgeInsets.only(right: 8),
                                           child: (dapp["icon"] as String)
                                                   .contains('.svg')
                                               ? SvgPicture.network(dapp["icon"])

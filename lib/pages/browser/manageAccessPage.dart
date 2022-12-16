@@ -29,13 +29,15 @@ class ManageWebAccessPage extends StatelessWidget {
               '${I18n.of(context).getDic(i18n_full_dic_app, "public")["hub.browser.confirm"]} $url ?'),
           actions: [
             CupertinoButton(
-                child: Text(I18n.of(context)
-                    .getDic(i18n_full_dic_ui, 'common')['cancel']),
+                child: Text(
+                  I18n.of(context).getDic(i18n_full_dic_ui, 'common')['cancel'],
+                  style: const TextStyle(color: Colors.black54),
+                ),
                 onPressed: () => Navigator.of(context).pop(false)),
             CupertinoButton(
                 child: Text(
                   I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
-                  style: TextStyle(color: PluginColorsDark.primary),
+                  style: const TextStyle(color: PluginColorsDark.primary),
                 ),
                 onPressed: () => Navigator.of(context).pop(true)),
           ],
@@ -67,14 +69,26 @@ class ManageWebAccessPage extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
-                      Expanded(child: Text(list[i])),
+                      Expanded(
+                          child: Text(list[i],
+                              style: const TextStyle(color: Colors.white))),
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        child: Text(
+                          dic['hub.browser.access.${state[list[i]]}'],
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
                       v3.CupertinoSwitch(
                         value: state[list[i]],
                         onChanged: (auth) => _onChange(list[i], auth),
                       ),
                       IconButton(
                           onPressed: () => _onDelete(context, list[i]),
-                          icon: const Icon(Icons.delete_outline, size: 20))
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: PluginColorsDark.primary,
+                          ))
                     ],
                   ),
                 );
