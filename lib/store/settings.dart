@@ -273,7 +273,7 @@ abstract class _SettingsStore with Store {
 
     if (storage.read(localStorageDAppAuthUrlsKey) != null) {
       websiteAccess =
-          storage.read(localStorageDAppAuthUrlsKey) as Map<String, bool>;
+          Map<String, bool>.from(storage.read(localStorageDAppAuthUrlsKey));
     }
   }
 
