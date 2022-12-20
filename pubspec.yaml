@@ -37,8 +37,8 @@ dependencies:
   firebase_analytics: ^9.3.3
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
-  polkawallet_ui: ^0.5.0
-  polkawallet_sdk: ^0.5.0
+  polkawallet_ui: ^0.5.1
+  polkawallet_sdk: ^0.5.1
   ethereum_addresses: ^1.0.2
   update_app:
     git:
@@ -108,8 +108,6 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-  polkawallet_ui: ^0.5.0
-  polkawallet_sdk: ^0.5.0
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
