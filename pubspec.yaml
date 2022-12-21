@@ -51,15 +51,15 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 8eb1eb01ca1085b5f2a3dce40dfc58740f564949
+      ref: c7b7d057f898d4b0b72143effe0b88e1969a599c
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 3265d09d7cebaaf9527575a7c2d0b322da968527
+      ref: 93ec2762edd37f5b19dd5418f89d04da9034b2b0
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
+      ref: e6df975389250e189f57e77c3bb34683d54e8857
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -108,6 +108,8 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+  polkawallet_ui: ^0.5.1
+  polkawallet_sdk: ^0.5.1
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
