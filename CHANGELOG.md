@@ -1,3 +1,8 @@
+# [3.3.8-beta] - 20221220
+1. Fix known bugs.
+2. UX enhancement.
+3. bump sdk/ui v0.5.1.
+
 # [3.3.6-beta] - 20220926
 1. Fix known bugs.
 2. UX enhancement.

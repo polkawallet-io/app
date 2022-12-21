@@ -490,7 +490,7 @@ packages:
       name: flutter_inappwebview
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.4.3+7"
+    version: "5.7.2+2"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -1060,11 +1060,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "3265d09d7cebaaf9527575a7c2d0b322da968527"
-      resolved-ref: "3265d09d7cebaaf9527575a7c2d0b322da968527"
+      ref: "93ec2762edd37f5b19dd5418f89d04da9034b2b0"
+      resolved-ref: "93ec2762edd37f5b19dd5418f89d04da9034b2b0"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
-    version: "0.4.9"
+    version: "0.5.1"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
     description:
@@ -1112,20 +1112,20 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
-      resolved-ref: f3537a27d8c620ba7ff7da6c9f623d5309a15e4f
+      ref: e6df975389250e189f57e77c3bb34683d54e8857
+      resolved-ref: e6df975389250e189f57e77c3bb34683d54e8857
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
     source: git
-    version: "0.4.9"
+    version: "0.5.1"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
       path: "."
-      ref: "8eb1eb01ca1085b5f2a3dce40dfc58740f564949"
-      resolved-ref: "8eb1eb01ca1085b5f2a3dce40dfc58740f564949"
+      ref: c7b7d057f898d4b0b72143effe0b88e1969a599c
+      resolved-ref: c7b7d057f898d4b0b72143effe0b88e1969a599c
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
-    version: "0.4.9"
+    version: "0.5.1"
   polkawallet_plugin_robonomics:
     dependency: "direct main"
     description:
@@ -1150,14 +1150,14 @@ packages:
       name: polkawallet_sdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1"
   polkawallet_ui:
     dependency: "direct main"
     description:
       name: polkawallet_ui
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1"
   pool:
     dependency: transitive
     description:

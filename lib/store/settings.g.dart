@@ -148,6 +148,24 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$websiteAccessAtom = Atom(name: '_SettingsStore.websiteAccess');
+
+  @override
+  Map<String, bool> get websiteAccess {
+    _$websiteAccessAtom.reportRead();
+    return super.websiteAccess;
+  }
+
+  @override
+  set websiteAccess(Map<String, bool> value) {
+    _$websiteAccessAtom.reportWrite(value, super.websiteAccess, () {
+      super.websiteAccess = value;
+    });
+  }
+
+  final _$_SettingsStoreActionController =
+      ActionController(name: '_SettingsStore');
+
   final _$setTokenStakingConfigAsyncAction =
       AsyncAction('_SettingsStore.setTokenStakingConfig');
 
@@ -230,6 +248,17 @@ mixin _$SettingsStore on _SettingsStore, Store {
   @override
   Future<void> loadIsHideBalance() {
     return _$loadIsHideBalanceAsyncAction.run(() => super.loadIsHideBalance());
+  }
+
+  @override
+  void updateDAppAuth(String url, {bool auth = true}) {
+    final _$actionInfo = _$_SettingsStoreActionController.startAction(
+        name: '_AccountStore.updateDAppAuth');
+    try {
+      return super.updateDAppAuth(url, auth: auth);
+    } finally {
+      _$_SettingsStoreActionController.endAction(_$actionInfo);
+    }
   }
 
   final _$setIsDarkThemeAsyncAction =

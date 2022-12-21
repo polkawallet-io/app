@@ -27,6 +27,7 @@ import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/browser/dAppEthWrapperPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
+import 'package:app/pages/browser/manageAccessPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
@@ -636,11 +637,44 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       plugin.basic.jsCodeVersion,
     );
     print('js update: $network $currentVersion $version $versionMin');
-    final bool needUpdate = await AppUI.checkJSCodeUpdate(
-        context, _store.storage, currentVersion, version, versionMin, network);
-    if (needUpdate) {
-      final res =
-          await AppUI.updateJSCode(context, _store.storage, network, version);
+    final bridgeVersion = jsVersions['bridge'];
+    final currentBridgeVersion = WalletApi.getPolkadotJSVersion(
+      _store.storage,
+      'bridge',
+      bridge_sdk_version,
+    );
+    print('bridge js update: $currentBridgeVersion $bridgeVersion');
+    final needUpdate = version != null ? version > currentVersion : false;
+    final needUpdateBridge =
+        bridgeVersion != null ? bridgeVersion > currentBridgeVersion : false;
+
+    bool confirmed = false;
+    if (needUpdate || needUpdateBridge) {
+      confirmed = await AppUI.confirmJSCodeUpdate(
+          context,
+          needUpdate ? currentVersion : currentBridgeVersion,
+          needUpdate ? version : bridgeVersion,
+          needUpdate ? versionMin : 0);
+    }
+    if (confirmed) {
+      bool res = false;
+      if (needUpdate) {
+        if (needUpdateBridge) {
+          /// update both plugin & bridge js code
+          res = await AppUI.updateJSCode(
+              context, _store.storage, network, version,
+              withBridgeUpdate: true, bridgeVersion: bridgeVersion);
+        } else {
+          /// update plugin js code only
+          res = await AppUI.updateJSCode(
+              context, _store.storage, network, version);
+        }
+      } else if (needUpdateBridge) {
+        /// update bridge js code only
+        res = await AppUI.updateJSCode(
+            context, _store.storage, 'bridge', bridgeVersion);
+      }
+
       if (res) {
         _changeNetwork(plugin);
       }
@@ -887,6 +921,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
+      ManageWebAccessPage.route: (_) => ManageWebAccessPage(_service),
 
       //bridge
       BridgePage.route: (_) => BridgePage(_service),

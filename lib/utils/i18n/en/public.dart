@@ -118,6 +118,10 @@ const Map<String, String> enPublic = {
   'hub.browser.clearMessage':
       'Are you sure you want to delete the item from browsing history?',
   'hub.browser.searchingHistory': 'Searching History',
+  'hub.browser.access': 'Website Access',
+  'hub.browser.access.true': 'allowed',
+  'hub.browser.access.false': 'denied',
+  'hub.browser.confirm': 'Remove access auth of',
   'hub.bridge': 'Bridge',
   'hub.route': 'Route',
   'hub.to.address': 'To Address',
