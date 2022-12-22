@@ -3,6 +3,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
@@ -17,7 +18,8 @@ class ManageWebAccessPage extends StatelessWidget {
   static const String route = '/browser/access';
 
   void _onChange(String url, bool auth) {
-    service.store.settings.updateDAppAuth(url, auth: auth);
+    service.store.settings
+        .updateDAppAuth(url, auth: auth, isEvm: service.plugin is PluginEvm);
   }
 
   void _onDelete(BuildContext context, String url) async {
@@ -45,7 +47,8 @@ class ManageWebAccessPage extends StatelessWidget {
       },
     );
     if (confirmed) {
-      service.store.settings.updateDAppAuth(url, auth: null);
+      service.store.settings
+          .updateDAppAuth(url, auth: null, isEvm: service.plugin is PluginEvm);
     }
   }
 

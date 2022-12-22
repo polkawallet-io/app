@@ -251,11 +251,22 @@ mixin _$SettingsStore on _SettingsStore, Store {
   }
 
   @override
-  void updateDAppAuth(String url, {bool auth = true}) {
+  void updateDAppAuth(String url, {bool auth = true, bool isEvm = false}) {
     final _$actionInfo = _$_SettingsStoreActionController.startAction(
         name: '_AccountStore.updateDAppAuth');
     try {
-      return super.updateDAppAuth(url, auth: auth);
+      return super.updateDAppAuth(url, auth: auth, isEvm: isEvm);
+    } finally {
+      _$_SettingsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void loadDAppAuth(bool isEvm) {
+    final _$actionInfo = _$_SettingsStoreActionController.startAction(
+        name: '_AccountStore.loadDAppAuth');
+    try {
+      return super.loadDAppAuth(isEvm);
     } finally {
       _$_SettingsStoreActionController.endAction(_$actionInfo);
     }

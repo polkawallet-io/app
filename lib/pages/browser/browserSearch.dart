@@ -4,10 +4,10 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
@@ -81,15 +81,12 @@ class SearchBarDelegate extends SearchDelegate<String> {
     if (dapps.length == 0 && query.trim().length > 0) {
       final url = query.startsWith("http") ? query : "https://$query";
       Future.delayed(Duration.zero, () {
-        Navigator.of(context).pushNamed(
-          DAppWrapperPage.route,
-          arguments: {"url": url, "isPlugin": true},
-        );
+        BrowserApi.openBrowser(context, {"detailUrl": url}, service);
       });
       query = "";
       showResults(context);
     }
-    return dapps.length == 0
+    return dapps.length == 0 || service.plugin is PluginEvm
         ? ListTail(
             isEmpty: true,
             isLoading: false,

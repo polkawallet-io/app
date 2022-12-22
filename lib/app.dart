@@ -855,7 +855,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             _keyringEVM,
             getPassword: _service.account.getEvmPassword,
             checkAuth: _store.settings.checkDAppAuth,
-            updateAuth: _store.settings.updateDAppAuth,
+            updateAuth: (url) =>
+                _store.settings.updateDAppAuth(url, isEvm: true),
           ),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>

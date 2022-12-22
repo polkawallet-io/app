@@ -14,7 +14,6 @@ import 'package:app/pages/browser/browserPage.dart';
 import 'package:app/pages/ecosystem/tokenStakingPage.dart';
 import 'package:app/pages/pluginPage.dart';
 import 'package:app/pages/profile/index.dart';
-import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/BottomNavigationBar.dart';
@@ -335,8 +334,7 @@ class _HomePageState extends State<HomePage> {
             ]),
             onTap: () {
               if (widget.service.plugin is PluginEvm) {
-                Navigator.of(context).pushNamed(DAppsTestPage.route);
-                // Navigator.of(context).pushNamed(AccountBindSuccess.route);
+                Navigator.of(context).pushNamed(AccountBindSuccess.route);
                 return;
               } else if (widget.service.plugin is! PluginAcala &&
                   widget.service.plugin is! PluginKarura) {
@@ -485,10 +483,8 @@ class _HomePageState extends State<HomePage> {
         pluginPages.length == 0) {
       final List<MetaHubItem> items = [];
       items.add(buildMetaHubEVM());
+      items.add(buildMetaHubBrowser());
       if (widget.service.store.account.accountType == AccountType.Substrate) {
-        if (widget.service.store.settings.dapps.length > 0) {
-          items.add(buildMetaHubBrowser());
-        }
         items.add(buildMetaBridge());
         final ecosystemItem = buildMetaHubEcosystem();
         if (ecosystemItem != null) {
