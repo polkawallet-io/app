@@ -66,7 +66,7 @@ class BrowserApi {
   static deleteAllLatest(AppService service) {
     service.store.storage.write(
         service.plugin is PluginEvm ? _dappEvmLatestKey : _dappLatestKey,
-        Map<String, String>());
+        <String, String>{});
   }
 
   static Map<String, String> getDappLatestStore(AppService service) {

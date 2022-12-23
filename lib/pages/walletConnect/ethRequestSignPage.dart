@@ -86,8 +86,6 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   Future<void> _signWC(int id, String password, Map gasOptions) async {
     final res = await widget.service.plugin.sdk.api.walletConnect
         .confirmPayload(id, true, password, gasOptions);
-    print('user signed WC payload:');
-    print((res as WCCallRequestResult).result);
 
     widget.service.store.account.closeCallRequest(id);
 
@@ -105,8 +103,6 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
         widget.service.keyringEVM.current.address,
         password,
         gasOptions);
-    print('user signed browser payload:');
-    print((res as WCCallRequestResult).result);
 
     if (mounted) {
       setState(() {
@@ -132,8 +128,9 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
         ModalRoute.of(context).settings.arguments;
 
     final gasLimit = args.request.params[3].value;
-    await widget.service.assets
-        .updateEvmGasParams(gasLimit, isFixedGas: !_gasEditable());
+    await widget.service.assets.updateEvmGasParams(
+        double.parse(gasLimit.toString()).toInt(),
+        isFixedGas: !_gasEditable());
 
     if (_gasEditable()) {
       _gasQueryTimer = Timer(const Duration(seconds: 7), _updateTxFee);
@@ -186,7 +183,7 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
 
       return PluginScaffold(
         appBar: PluginAppBar(
-            title: Text(dic[args.request.event.contains('Transaction')
+            title: Text(dic[_isRequestSendTx(args.request)
                 ? 'submit.sign.tx'
                 : 'submit.sign.msg']),
             centerTitle: true),
@@ -195,14 +192,14 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(dic['submit.signer']),
                         Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 16),
+                          padding: const EdgeInsets.only(top: 8, bottom: 16),
                           child: AddressFormItem(acc, svg: acc.icon),
                         ),
                         EthSignRequestInfo(
@@ -255,8 +252,11 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
                               onPressed: _submitting
                                   ? null
                                   : () => _showPasswordDialog(),
-                              child: Text(dic['submit.sign'],
-                                  style: TextStyle(color: Colors.white)),
+                              child: Text(
+                                  _isRequestSendTx(args.request)
+                                      ? dic['submit.sign.send']
+                                      : dic['submit.sign'],
+                                  style: const TextStyle(color: Colors.white)),
                             ),
                           ),
                         ),

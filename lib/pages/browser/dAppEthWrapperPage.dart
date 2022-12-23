@@ -222,7 +222,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
         await widget.plugin.sdk.api.eth.keyring.renderEthRequest(payload);
     final res = await Navigator.of(context).pushNamed(EthRequestSignPage.route,
         arguments: EthRequestSignPageParams(
-            WCCallRequestData.fromJson(Map<String, dynamic>.of({
+            WCCallRequestData.fromJson(Map<String, dynamic>.from({
               'id': payload['id'],
               'event': 'call_request',
               'params': humanParams,
