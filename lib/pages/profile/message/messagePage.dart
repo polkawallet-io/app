@@ -7,13 +7,12 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/mainTabBar.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
-import 'package:polkawallet_ui/utils/index.dart' as polkawallet_ui;
+import 'package:polkawallet_ui/utils/index.dart';
 
 class MessagePage extends StatefulWidget {
   MessagePage(this.service, {Key key}) : super(key: key);
@@ -65,12 +64,11 @@ class _MessagePageState extends State<MessagePage> {
                       child: Text(
                         dic['message.readAll'],
                         style: TextStyle(
-                          color: polkawallet_ui.UI.isDarkTheme(context)
+                          color: UI.isDarkTheme(context)
                               ? Colors.white
                               : Theme.of(context).cardColor,
-                          fontSize: polkawallet_ui.UI.getTextSize(12, context),
-                          fontFamily: polkawallet_ui.UI
-                              .getFontFamily('TitilliumWeb', context),
+                          fontSize: UI.getTextSize(12, context),
+                          fontFamily: UI.getFontFamily('TitilliumWeb', context),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -111,9 +109,7 @@ class _MessagePageState extends State<MessagePage> {
             ),
             Expanded(
                 child: Container(
-              color: polkawallet_ui.UI.isDarkTheme(context)
-                  ? Color(0xFF353638)
-                  : Colors.white,
+              color: UI.isDarkTheme(context) ? Color(0xFF353638) : Colors.white,
               child: Observer(builder: (_) {
                 final List<MessageData> datas = [];
                 if (_tabIndex == 0) {
@@ -158,10 +154,8 @@ class _MessagePageState extends State<MessagePage> {
                                     .textTheme
                                     .headline6
                                     ?.copyWith(
-                                        fontSize: polkawallet_ui.UI
-                                            .getTextSize(10, context),
-                                        color: polkawallet_ui.UI
-                                                .isDarkTheme(context)
+                                        fontSize: UI.getTextSize(10, context),
+                                        color: UI.isDarkTheme(context)
                                             ? Colors.white
                                             : Theme.of(context)
                                                 .textTheme
@@ -175,11 +169,10 @@ class _MessagePageState extends State<MessagePage> {
                                   },
                                   child: RoundedCard(
                                     borderWidth: 0.5,
-                                    color:
-                                        polkawallet_ui.UI.isDarkTheme(context)
-                                            ? Color(0xFF444547)
-                                            : Theme.of(context)
-                                                .scaffoldBackgroundColor,
+                                    color: UI.isDarkTheme(context)
+                                        ? Color(0xFF444547)
+                                        : Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                     margin: EdgeInsets.only(top: 22),
                                     child: Column(
                                       children: [
@@ -205,9 +198,8 @@ class _MessagePageState extends State<MessagePage> {
                                                 .textTheme
                                                 .headline6
                                                 ?.copyWith(
-                                                    fontSize: polkawallet_ui.UI
-                                                        .getTextSize(
-                                                            14, context),
+                                                    fontSize: UI.getTextSize(
+                                                        14, context),
                                                     fontWeight:
                                                         FontWeight.w500),
                                           ),
@@ -230,16 +222,14 @@ class _MessagePageState extends State<MessagePage> {
                                   .textTheme
                                   .headline6
                                   ?.copyWith(
-                                      fontSize: polkawallet_ui.UI
-                                          .getTextSize(10, context),
-                                      color:
-                                          polkawallet_ui.UI.isDarkTheme(context)
-                                              ? Colors.white
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .headline1
-                                                  .color
-                                                  .withAlpha(66)),
+                                      fontSize: UI.getTextSize(10, context),
+                                      color: UI.isDarkTheme(context)
+                                          ? Colors.white
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .headline1
+                                              .color
+                                              .withAlpha(66)),
                             ),
                             Container(
                               margin: EdgeInsets.only(top: 22, right: 65),
@@ -266,13 +256,12 @@ class _MessagePageState extends State<MessagePage> {
                                             .textTheme
                                             .bodyText1
                                             .copyWith(
-                                                fontSize: polkawallet_ui.UI
-                                                    .getTextSize(14, context)),
+                                                fontSize: UI.getTextSize(
+                                                    14, context)),
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: polkawallet_ui.UI
-                                                  .isDarkTheme(context)
+                                          color: UI.isDarkTheme(context)
                                               ? Color(0x24FFFFFF)
                                               : Theme.of(context)
                                                   .scaffoldBackgroundColor,

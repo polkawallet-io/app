@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
-import 'package:polkawallet_plugin_chainx/polkawallet_plugin_chainx.dart';
 import 'package:polkawallet_plugin_dbc/polkawallet_plugin_dbc.dart';
 import 'package:polkawallet_plugin_edgeware/polkawallet_plugin_edgeware.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
@@ -36,20 +35,13 @@ void main() async {
     PluginStatemine(),
     PluginStatemine(name: 'statemint'),
     PluginBifrost(),
-    PluginChainX(),
     PluginEdgeware(),
     // PluginLaminar(),
     PluginDBC(),
     PluginRobonomics(),
   ];
 
-  runApp(WalletApp(
-      plugins,
-      [
-        // PluginDisabled(
-        //     'chainx', Image.asset('assets/images/public/chainx_gray.png'))
-      ],
-      BuildTargets.playStore));
+  runApp(WalletApp(plugins, const [], BuildTargets.playStore));
   //   FlutterBugly.init(
   //     androidAppId: "64c2d01918",
   //     iOSAppId: "3803dd717e",

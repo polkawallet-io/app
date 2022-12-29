@@ -1,7 +1,7 @@
+import 'package:app/service/walletApi.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:polkawallet_plugin_chainx/common/components/UI.dart';
-import 'package:app/service/walletApi.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 part 'messageData.g.dart';
 
