@@ -655,15 +655,8 @@ class _HomePageState extends State<HomePage> {
                     heroTag: 'walletConnectFloatingButton',
                     backgroundColor: Theme.of(context).cardColor,
                     onPressed: walletConnectAlive || walletConnecting
-                        ? () async {
-                            final res = await Navigator.of(context)
-                                .pushNamed(WCSessionsPage.route);
-
-                            /// if disconnect:
-                            if (res == false) {
-                              widget.service.wc.disconnect();
-                            }
-                          }
+                        ? () => Navigator.of(context)
+                            .pushNamed(WCSessionsPage.route)
                         : () => null,
                     child: Stack(
                       alignment: Alignment.center,

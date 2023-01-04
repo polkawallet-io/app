@@ -131,7 +131,9 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                               .getDic(i18n_full_dic_ui, 'common')['cancel']
                           : dic['wc.disconnect'],
                       onPressed: () {
-                        Navigator.of(context).pop(false);
+                        widget.service.wc.disconnect();
+
+                        Navigator.of(context).pop();
                       },
                     ),
                   )
