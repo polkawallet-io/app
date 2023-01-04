@@ -68,10 +68,6 @@ dependencies:
     git:
       url: https://github.com/bifrost-finance/polkawallet_plugin_bifrost.git
       ref: b5677954c17432ca6b32da4dd31929b0fa0c3171
-  polkawallet_plugin_chainx:
-    git:
-      url: https://github.com/chainx-org/polkawallet_plugin_chainx.git
-      ref: 2cc634bc4f0b873e7fe0801d5d3fba46756f5315
   polkawallet_plugin_edgeware:
     git:
       url: https://github.com/remzrn/polkawallet_plugin_edgeware.git
