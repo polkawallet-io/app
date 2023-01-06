@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/crosschainTransferPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
@@ -23,64 +21,90 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class TokenStaking extends StatefulWidget {
-  TokenStaking(this.service, {Key key}) : super(key: key);
+  const TokenStaking(this.service, {Key key}) : super(key: key);
   final AppService service;
 
-  static final String route = '/ecosystem/tokenStaking';
+  static String route = '/ecosystem/tokenStaking';
 
   @override
   State<TokenStaking> createState() => _TokenStakingState();
 }
 
 class _TokenStakingState extends State<TokenStaking> {
+  ///handle androidOnRenderProcessGone crash
+  static const String reloadKey = 'BridgeWebReloadKey';
+
   int _tab = 0;
 
   List _fromChains = [];
   bool _connected = false;
-  bool _dataLoaded = false;
+
+  Map<String, TokenBalanceData> _tokenBalances = {}; // DOT/KSM
+  Map<String, TokenBalanceData> _stakingTokenBalances = {}; // LDOT/LKSM
 
   Future<bool> _connectFromChains() async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
-    final fromChains =
-        List.of(widget.service.store.settings.tokenStakingConfig[token]);
-    fromChains.addAll(
-        List.of(widget.service.store.settings.tokenStakingConfig["L$token"]));
-    final connected = await widget.service.plugin.sdk.webView.evalJavascript(
-        'xcm.connectFromChain(${json.encode(fromChains.toSet().toList())})');
 
-    _fromChains = fromChains;
+    await widget.service.bridge.initBridgeRunner();
+    widget.service.plugin.sdk.api.bridge
+        .subscribeReloadAction(reloadKey, _connectFromChains);
+
+    final fromChains = List<String>.from(
+        widget.service.store.settings.tokenStakingConfig[token]);
+    fromChains.addAll(List<String>.from(
+        widget.service.store.settings.tokenStakingConfig["L$token"]));
+    final chains = fromChains.toSet().toList();
+    final connected =
+        await widget.service.plugin.sdk.api.bridge.connectFromChains(chains);
+
+    _fromChains = chains;
     _connected = true;
+
+    for (int i = 0; i < chains.length; i++) {
+      _subscribeBalance(chains[i], token);
+    }
 
     return connected != null;
   }
 
-  _getBalance() async {
-    final data = ModalRoute.of(context).settings.arguments as Map;
-    final String token = data["token"];
+  Future<void> _subscribeBalance(String chain, String token) async {
+    if (_connected) {
+      widget.service.plugin.sdk.api.bridge.subscribeBalances(
+          chain, widget.service.keyring.current.address, (res) async {
+        final tokenData = res[token];
+        final lTokenData = res['L$token'];
+        if (tokenData != null) {
+          _tokenBalances[chain] = TokenBalanceData(
+              amount: tokenData.available,
+              tokenNameId: tokenData.token,
+              symbol: tokenData.token,
+              decimals: tokenData.decimals);
+        }
+        if (lTokenData != null) {
+          _stakingTokenBalances[chain] = TokenBalanceData(
+              amount: lTokenData.available,
+              tokenNameId: lTokenData.token,
+              symbol: lTokenData.token,
+              decimals: lTokenData.decimals);
+        }
 
-    final connected = await _connectFromChains();
+        TokenStakingApi.formatBalanceData(
+            widget.service, _fromChains.toSet().toList(), token,
+            balances: _tokenBalances);
+        TokenStakingApi.formatBalanceData(
+            widget.service, _fromChains.toSet().toList(), 'L$token',
+            balances: _stakingTokenBalances);
 
-    if (connected) {
-      await Future.wait([
-        TokenStakingApi.getBalance(widget.service,
-            widget.service.store.settings.tokenStakingConfig[token], token),
-        TokenStakingApi.getBalance(
-            widget.service,
-            widget.service.store.settings.tokenStakingConfig["L$token"],
-            "L$token"),
-      ]);
+        TokenStakingApi.refresh();
+      });
     }
-
-    setState(() {
-      _dataLoaded = true;
-    });
   }
 
   @override
   void dispose() {
-    widget.service.plugin.sdk.webView
-        .evalJavascript('xcm.disconnectFromChain(${json.encode(_fromChains)})');
+    widget.service.plugin.sdk.api.bridge.unsubscribeReloadAction(reloadKey);
+    widget.service.plugin.sdk.api.bridge.dispose();
     super.dispose();
   }
 
@@ -107,7 +131,7 @@ class _TokenStakingState extends State<TokenStaking> {
     final _balances = TokenStakingApi.balances[token];
     final _lBalances = TokenStakingApi.balances["L$token"];
 
-    final isReady = _connected && _dataLoaded;
+    final isReady = _connected;
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text("$token ${dic['hub.staking']}"),
@@ -119,7 +143,7 @@ class _TokenStakingState extends State<TokenStaking> {
             children: [
               ConnectionChecker(
                 widget.service.plugin,
-                onConnected: _getBalance,
+                onConnected: _connectFromChains,
                 checker: () {
                   final tokenWithBalances = (widget.service.plugin as dynamic)
                           .store
@@ -251,6 +275,7 @@ class _TokenItemViewState extends State<TokenItemView> {
         (tokensConfig['xcm'] ?? {})[widget.balance.tokenNameId] ?? []);
     final tokenXcmFromConfig = List<String>.from(
         (tokensConfig['xcmFrom'] ?? {})[widget.balance.tokenNameId] ?? []);
+
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
