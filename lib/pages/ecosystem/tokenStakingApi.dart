@@ -1,6 +1,4 @@
 import 'package:app/service/index.dart';
-import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class TokenStakingApi {
@@ -14,22 +12,6 @@ class TokenStakingApi {
       AppService service, List<dynamic> networkNames, String token,
       {Map<String, TokenBalanceData> balances = const {},
       bool isCacheChange = true}) {
-    dynamic plugin;
-    if (service.plugin is PluginKarura) {
-      plugin = service.plugin as PluginKarura;
-    } else if (service.plugin is PluginAcala) {
-      plugin = service.plugin as PluginAcala;
-    }
-
-    final TokenBalanceData currentPluginBalance =
-        plugin.store.assets.tokenBalanceMap[token];
-    if (networkNames.isEmpty) {
-      TokenStakingApi.balances[token] = {
-        service.plugin.basic.name: currentPluginBalance
-      };
-      return {service.plugin.basic.name: currentPluginBalance};
-    }
-
     _cacheTokenStakingAssets ??=
         service.bridge.getTokenStakingAssets(service.keyring.current.pubKey) ??
             {};
@@ -44,6 +26,9 @@ class TokenStakingApi {
       }
     }
 
+    final currentPluginBalance = balances[service.plugin.basic.name] ??
+        TokenBalanceData(
+            tokenNameId: token, amount: '0', symbol: token, decimals: 12);
     if (_cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
             null &&
         _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
