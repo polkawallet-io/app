@@ -58,23 +58,41 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initBridgeConfig();
       _updateBridgeConfig();
     });
   }
 
-  Future<void> _updateBridgeConfig() async {
+  Future<void> _initBridgeConfig() async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
     final TokenBalanceData balance = data["balance"];
 
     final chainInfo =
         await widget.service.plugin.sdk.api.bridge.getChainsInfo();
+    _crossChainIcons = Map<String, Widget>.from(chainInfo?.map((k, v) =>
+        MapEntry(
+            k.toUpperCase(),
+            v.icon.contains('.svg')
+                ? SvgPicture.network(v.icon)
+                : Image.network(v.icon))));
+
+    final props = await widget.service.plugin.sdk.api.bridge
+        .getNetworkProperties(fromNetwork);
+    _props = props;
+
     final routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
     routes.retainWhere(
         (e) => e.from == fromNetwork && e.token == balance.tokenNameId);
     _chainToList = routes.map((e) => e.to).toList();
     _chainTo = _chainToList.isNotEmpty ? _chainToList[0] : null;
+  }
+
+  Future<void> _updateBridgeConfig() async {
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
 
     final config = await widget.service.plugin.sdk.api.bridge
         .getAmountInputConfig(
@@ -83,18 +101,9 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
             balance.tokenNameId,
             widget.service.keyring.current.address,
             widget.service.keyring.current.address);
-    final props = await widget.service.plugin.sdk.api.bridge
-        .getNetworkProperties(fromNetwork);
 
     setState(() {
-      _crossChainIcons = Map<String, Widget>.from(chainInfo?.map((k, v) =>
-          MapEntry(
-              k.toUpperCase(),
-              v.icon.contains('.svg')
-                  ? SvgPicture.network(v.icon)
-                  : Image.network(v.icon))));
       _config = config;
-      _props = props;
     });
   }
 
