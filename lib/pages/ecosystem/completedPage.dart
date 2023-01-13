@@ -115,7 +115,7 @@ class _CompletedPageState extends State<CompletedPage> {
                                 ),
                                 InfoItemRow(
                                   fromNetwork,
-                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(_balances[fromNetwork].amount), balance.decimals)} ${balance.symbol}",
+                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(_balances[fromNetwork]?.amount), balance.decimals)} ${balance.symbol}",
                                   labelStyle: style,
                                   contentStyle: style,
                                 ),
