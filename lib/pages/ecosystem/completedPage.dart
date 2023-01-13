@@ -32,9 +32,10 @@ class _CompletedPageState extends State<CompletedPage> {
   _getBalance(List<String> networkNames) async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
-    Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
-        widget.service, networkNames, balance.symbol,
-        isCachaChange: false);
+    Map<String, TokenBalanceData> balances =
+        await TokenStakingApi.formatBalanceData(
+            widget.service, networkNames, balance.symbol,
+            isCacheChange: false);
 
     setState(() {
       _connecting = true;

@@ -1,82 +1,39 @@
 import 'package:app/service/index.dart';
-import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class TokenStakingApi {
-  static Map<String, Map<String, TokenBalanceData>> balances =
-      Map<String, Map<String, TokenBalanceData>>();
+  static Map<String, Map<String, TokenBalanceData>> balances = {};
 
   static Function refresh;
 
   static Map<String, dynamic> _cacheTokenStakingAssets;
 
-  static Future<Map<String, TokenBalanceData>> getBalance(
+  static Map<String, TokenBalanceData> formatBalanceData(
       AppService service, List<dynamic> networkNames, String token,
-      {bool isCachaChange = true}) async {
-    var plugin;
-    if (service.plugin is PluginKarura) {
-      plugin = service.plugin as PluginKarura;
-    } else if (service.plugin is PluginAcala) {
-      plugin = service.plugin as PluginAcala;
-    }
+      {Map<String, TokenBalanceData> balances = const {},
+      bool isCacheChange = true}) {
+    _cacheTokenStakingAssets ??=
+        service.bridge.getTokenStakingAssets(service.keyring.current.pubKey) ??
+            {};
 
-    final TokenBalanceData currentPluginBalance =
-        plugin.store.assets.tokenBalanceMap[token];
-    if (networkNames.length == 0) {
-      TokenStakingApi.balances[token] = {
-        service.plugin.basic.name: currentPluginBalance
-      };
-      return {service.plugin.basic.name: currentPluginBalance};
-    }
-
-    Map<String, TokenBalanceData> balances = Map<String, TokenBalanceData>();
-    if (_cacheTokenStakingAssets == null) {
-      _cacheTokenStakingAssets = service.assets
-              .getTokenStakingAssets(service.keyring.current.pubKey) ??
-          Map<String, dynamic>();
-    }
-    final balanceQuery = networkNames
-        .map((e) =>
-            'xcm.getBalances("$e", "${service.keyring.current.address}", ["$token"])')
-        .join(',');
-    final fromChainBalances = await service.plugin.sdk.webView
-        .evalJavascript('Promise.all([$balanceQuery])');
     for (int i = 0; i < networkNames.length; i++) {
       final element = networkNames[i];
-      final data = fromChainBalances[i];
-      if (data != null) {
-        final balance = List.of(data)[0];
-        if (balance != null) {
-          final balanceData = TokenBalanceData(
-              tokenNameId: balance['tokenNameId'],
-              amount: balance['amount'],
-              decimals: balance['decimals'],
-              symbol: token,
-              minBalance: currentPluginBalance.minBalance,
-              name: token,
-              currencyId: {'Token': token},
-              detailPageRoute: "/assets/token/detail",
-              isCacheChange: _cacheTokenStakingAssets == null ||
-                      _cacheTokenStakingAssets["$element-$token"] == null ||
-                      isCachaChange == false
-                  ? false
-                  : _cacheTokenStakingAssets["$element-$token"]['amount'] !=
-                      balance['amount']);
 
-          balances[element] = balanceData;
-          _cacheTokenStakingAssets["$element-$token"] = {
-            "amount": balance['amount']
-          };
-        }
+      if (balances[element] != null) {
+        _cacheTokenStakingAssets["$element-$token"] = {
+          "amount": balances[element].amount
+        };
       }
     }
 
+    final currentPluginBalance = balances[service.plugin.basic.name] ??
+        TokenBalanceData(
+            tokenNameId: token, amount: '0', symbol: token, decimals: 12);
     if (_cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
             null &&
         _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
             currentPluginBalance.amount &&
-        isCachaChange) {
+        isCacheChange) {
       currentPluginBalance.isCacheChange = true;
     } else {
       currentPluginBalance.isCacheChange = false;
@@ -85,10 +42,10 @@ class TokenStakingApi {
     _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
         currentPluginBalance.amount;
 
-    service.assets.setTokenStakingAssets(
+    service.bridge.setTokenStakingAssets(
         service.keyring.current.pubKey, _cacheTokenStakingAssets);
 
-    final datas = Map<String, TokenBalanceData>()
+    final datas = <String, TokenBalanceData>{}
       ..addAll({service.plugin.basic.name: currentPluginBalance})
       ..addAll(balances);
 
@@ -97,7 +54,7 @@ class TokenStakingApi {
     } else {
       TokenStakingApi.balances[token].addAll(datas);
     }
-    if (!isCachaChange && TokenStakingApi.refresh != null) {
+    if (!isCacheChange && TokenStakingApi.refresh != null) {
       TokenStakingApi.refresh();
     }
     return datas;
