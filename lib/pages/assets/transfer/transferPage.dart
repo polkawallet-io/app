@@ -171,7 +171,7 @@ class TransferPageState extends State<TransferPage> {
     return null;
   }
 
-  Future<String> _getTxFee({bool isXCM = false, bool reload = false}) async {
+  Future<String> _getTxFee({bool reload = false}) async {
     if (_fee?.partialFee != null && !reload) {
       return _fee.partialFee.toString();
     }
