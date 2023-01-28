@@ -1,3 +1,7 @@
+# [3.3.9-beta] - 20230120
+1. Fix known bugs.
+2. acala/karura plugin update.
+
 # [3.3.8-beta] - 20221220
 1. Fix known bugs.
 2. UX enhancement.
