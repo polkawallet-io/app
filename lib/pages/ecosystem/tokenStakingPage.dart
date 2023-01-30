@@ -14,7 +14,6 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -36,7 +35,8 @@ class _TokenStakingState extends State<TokenStaking> {
 
   int _tab = 0;
 
-  List _fromChains = [];
+  List<String> _tokenChains = [];
+  List<String> _lTokenChains = [];
   List<BridgeRouteData> _routes = [];
 
   final Map<String, TokenBalanceData> _tokenBalances = {}; // DOT/KSM
@@ -52,15 +52,20 @@ class _TokenStakingState extends State<TokenStaking> {
 
     _routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
 
+    final tokenChains = List<String>.from(
+        widget.service.store.settings.tokenStakingConfig[token]);
+    final lTokenChains = List<String>.from(
+        widget.service.store.settings.tokenStakingConfig["L$token"]);
+
+    setState(() {
+      _tokenChains = tokenChains;
+      _lTokenChains = lTokenChains;
+    });
+
     final List<String> fromChains = [widget.service.plugin.basic.name];
-
-    fromChains.addAll(List<String>.from(
-        widget.service.store.settings.tokenStakingConfig[token]));
-    fromChains.addAll(List<String>.from(
-        widget.service.store.settings.tokenStakingConfig["L$token"]));
+    fromChains.addAll(tokenChains);
+    fromChains.addAll(lTokenChains);
     final chains = fromChains.toSet().toList();
-
-    _fromChains = chains;
 
     for (int i = 0; i < chains.length; i++) {
       widget.service.plugin.sdk.api.bridge.connectFromChains([chains[i]]).then(
@@ -90,10 +95,10 @@ class _TokenStakingState extends State<TokenStaking> {
               decimals: lTokenData.decimals);
         }
 
-        TokenStakingApi.formatBalanceData(widget.service, _fromChains, token,
+        TokenStakingApi.formatBalanceData(widget.service, _tokenChains, token,
             balances: _tokenBalances);
         TokenStakingApi.formatBalanceData(
-            widget.service, _fromChains, 'L$token',
+            widget.service, _lTokenChains, 'L$token',
             balances: _stakingTokenBalances);
       });
     });
@@ -103,6 +108,7 @@ class _TokenStakingState extends State<TokenStaking> {
   void dispose() {
     widget.service.plugin.sdk.api.bridge.unsubscribeReloadAction(reloadKey);
     widget.service.plugin.sdk.api.bridge.dispose();
+    TokenStakingApi.clear();
     super.dispose();
   }
 
@@ -126,6 +132,8 @@ class _TokenStakingState extends State<TokenStaking> {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
 
+    final tokenChains = [widget.service.plugin.basic.name, ..._tokenChains];
+    final lTokenChains = [widget.service.plugin.basic.name, ..._lTokenChains];
     final balances = TokenStakingApi.balances[token];
     final lBalances = TokenStakingApi.balances["L$token"];
 
@@ -142,16 +150,6 @@ class _TokenStakingState extends State<TokenStaking> {
                 margin: const EdgeInsets.fromLTRB(16, 16, 0, 16),
                 child: PluginPageTitleTaps(
                   names: [token, "L$token"],
-                  isReadDot: [
-                    (balances?.values ?? [])
-                            .toList()
-                            .indexWhere((element) => element.isCacheChange) >=
-                        0,
-                    (lBalances?.values ?? [])
-                            .toList()
-                            .indexWhere((element) => element.isCacheChange) >=
-                        0
-                  ],
                   itemPadding:
                       const EdgeInsets.symmetric(vertical: 3, horizontal: 40),
                   activeTab: _tab,
@@ -162,59 +160,53 @@ class _TokenStakingState extends State<TokenStaking> {
                   },
                 ),
               ),
-              (_tab == 0 && balances == null) ||
-                      (_tab == 1 && lBalances == null)
-                  ? const Expanded(
-                      child: PluginPopLoadingContainer(
-                      loading: true,
-                    ))
-                  : Expanded(
-                      child: Container(
-                        color: const Color(0x1affffff),
-                        child: ListView.separated(
-                          itemCount:
-                              _tab == 0 ? balances.length : lBalances.length,
-                          itemBuilder: (context, index) {
-                            var plugin;
-                            if (widget.service.plugin is PluginKarura) {
-                              plugin = widget.service.plugin as PluginKarura;
-                            } else if (widget.service.plugin is PluginAcala) {
-                              plugin = widget.service.plugin as PluginAcala;
-                            }
-                            final name = _tab == 0
-                                ? balances.keys.toList()[index]
-                                : lBalances.keys.toList()[index];
-                            final icon = plugin
-                                .store.assets.crossChainIcons[name] as String;
-                            final balance = _tab == 0
-                                ? balances[balances.keys.toList()[index]]
-                                : lBalances[lBalances.keys.toList()[index]];
+              Expanded(
+                child: Container(
+                  color: const Color(0x1affffff),
+                  child: ListView.separated(
+                    itemCount:
+                        _tab == 0 ? tokenChains.length : lTokenChains.length,
+                    itemBuilder: (context, index) {
+                      var plugin;
+                      if (widget.service.plugin is PluginKarura) {
+                        plugin = widget.service.plugin as PluginKarura;
+                      } else if (widget.service.plugin is PluginAcala) {
+                        plugin = widget.service.plugin as PluginAcala;
+                      }
+                      final name =
+                          _tab == 0 ? tokenChains[index] : lTokenChains[index];
+                      final icon =
+                          plugin.store.assets.crossChainIcons[name] as String;
+                      final balance = _tab == 0
+                          ? (balances ?? {})[name]
+                          : (lBalances ?? {})[name];
 
-                            return TokenItemView(
-                                name,
-                                icon != null
-                                    ? icon.contains('.svg')
-                                        ? SvgPicture.network(icon)
-                                        : Image.network(icon)
-                                    : Container(),
-                                balance,
-                                _tab == 1 ? token : "L$token",
-                                widget.service,
-                                _routes,
-                                key: Key(
-                                    "${plugin.basic.name}-${balance.symbol}"));
-                          },
-                          separatorBuilder: (BuildContext context, int index) =>
-                              Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Divider(
-                              height: 1,
-                              color: const Color(0xFFFFFFFF).withAlpha(36),
-                            ),
-                          ),
-                        ),
+                      return TokenItemView(
+                          name,
+                          icon != null
+                              ? icon.contains('.svg')
+                                  ? SvgPicture.network(icon)
+                                  : Image.network(icon)
+                              : Container(),
+                          balance,
+                          _tab == 0 ? token : "L$token",
+                          _tab == 1 ? token : "L$token",
+                          widget.service,
+                          _routes,
+                          key: Key(
+                              "${plugin.basic.name}-${_tab == 0 ? token : "L$token"}"));
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Divider(
+                        height: 1,
+                        color: const Color(0xFFFFFFFF).withAlpha(36),
                       ),
-                    )
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ));
@@ -222,11 +214,12 @@ class _TokenStakingState extends State<TokenStaking> {
 }
 
 class TokenItemView extends StatefulWidget {
-  const TokenItemView(this.name, this.icon, this.balance, this.convertToKen,
-      this.service, this.routes,
+  const TokenItemView(this.name, this.icon, this.balance, this.toKen,
+      this.convertToKen, this.service, this.routes,
       {Key key})
       : super(key: key);
   final String name;
+  final String toKen;
   final String convertToKen;
   final Widget icon;
   final TokenBalanceData balance;
@@ -250,10 +243,10 @@ class _TokenItemViewState extends State<TokenItemView> {
 
     final routesOut = widget.routes.where((e) =>
         e.from == widget.service.plugin.basic.name &&
-        e.token == widget.balance.tokenNameId);
+        e.token == widget.balance?.tokenNameId);
     final routesIn = widget.routes.where((e) =>
         e.to == widget.service.plugin.basic.name &&
-        e.token == widget.balance.tokenNameId);
+        e.token == widget.balance?.tokenNameId);
 
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -288,31 +281,16 @@ class _TokenItemViewState extends State<TokenItemView> {
                           )
                         ],
                       ),
-                      Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(right: 3),
-                              child: Text(
-                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance.amount), widget.balance.decimals, lengthMax: 6)} ${widget.balance.symbol}",
-                                  style: style)),
-                          Visibility(
-                            visible: widget.balance.isCacheChange,
-                            child: Container(
-                              width: 9,
-                              height: 9,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.5),
-                                  color: Theme.of(context).errorColor),
-                            ),
-                          )
-                        ],
-                      )
+                      Padding(
+                          padding: const EdgeInsets.only(right: 3),
+                          child: Text(
+                              "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance?.amount), widget.balance?.decimals ?? 12, lengthMax: 6)} ${widget.toKen}",
+                              style: style))
                     ],
                   )),
               Visibility(
                   visible: _isOpen &&
-                      Fmt.balanceInt(widget.balance.amount) != BigInt.zero,
+                      Fmt.balanceInt(widget.balance?.amount) != BigInt.zero,
                   child: Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: Row(

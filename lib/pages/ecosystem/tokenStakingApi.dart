@@ -10,8 +10,7 @@ class TokenStakingApi {
 
   static Map<String, TokenBalanceData> formatBalanceData(
       AppService service, List<dynamic> networkNames, String token,
-      {Map<String, TokenBalanceData> balances = const {},
-      bool isCacheChange = true}) {
+      {Map<String, TokenBalanceData> balances = const {}}) {
     _cacheTokenStakingAssets ??=
         service.bridge.getTokenStakingAssets(service.keyring.current.pubKey) ??
             {};
@@ -26,21 +25,10 @@ class TokenStakingApi {
       }
     }
 
-    final currentPluginBalance = balances[service.plugin.basic.name] ??
-        TokenBalanceData(
-            tokenNameId: token, amount: '0', symbol: token, decimals: 12);
-    if (_cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
-            null &&
-        _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] !=
-            currentPluginBalance.amount &&
-        isCacheChange) {
-      currentPluginBalance.isCacheChange = true;
-    } else {
-      currentPluginBalance.isCacheChange = false;
-    }
+    final currentPluginBalance = balances[service.plugin.basic.name];
 
     _cacheTokenStakingAssets["${service.plugin.basic.name}-$token"] =
-        currentPluginBalance.amount;
+        currentPluginBalance?.amount;
 
     service.bridge.setTokenStakingAssets(
         service.keyring.current.pubKey, _cacheTokenStakingAssets);
@@ -54,9 +42,13 @@ class TokenStakingApi {
     } else {
       TokenStakingApi.balances[token].addAll(datas);
     }
-    if (!isCacheChange && TokenStakingApi.refresh != null) {
+    if (TokenStakingApi.refresh != null) {
       TokenStakingApi.refresh();
     }
     return datas;
+  }
+
+  static clear() {
+    TokenStakingApi.balances = {};
   }
 }

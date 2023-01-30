@@ -33,8 +33,7 @@ class _CompletedPageState extends State<CompletedPage> {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
     final balances = TokenStakingApi.formatBalanceData(
-        widget.service, networkNames, balance.symbol,
-        isCacheChange: false);
+        widget.service, networkNames, balance.symbol);
 
     setState(() {
       _connecting = true;
