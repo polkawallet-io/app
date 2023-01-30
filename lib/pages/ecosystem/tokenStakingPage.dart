@@ -11,6 +11,7 @@ import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/v3/numberLoader.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
@@ -264,28 +265,28 @@ class _TokenItemViewState extends State<TokenItemView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: SizedBox(
-                                height: 32,
-                                width: 32,
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(32),
-                                    child: widget.icon)),
-                          ),
-                          Text(
-                            widget.name,
-                            style: style,
-                          )
-                        ],
-                      ),
                       Padding(
-                          padding: const EdgeInsets.only(right: 3),
-                          child: Text(
-                              "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance?.amount), widget.balance?.decimals ?? 12, lengthMax: 6)} ${widget.toKen}",
-                              style: style))
+                        padding: const EdgeInsets.only(right: 10),
+                        child: SizedBox(
+                            height: 32,
+                            width: 32,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(32),
+                                child: widget.icon)),
+                      ),
+                      Expanded(child: Text(widget.name, style: style)),
+                      Expanded(
+                          flex: 0,
+                          child: Padding(
+                              padding: const EdgeInsets.only(right: 3),
+                              child: NumberLoader(
+                                width: 120,
+                                height: 24,
+                                isLoading: widget.balance == null,
+                                child: Text(
+                                    "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance?.amount), widget.balance?.decimals ?? 12, lengthMax: 6)} ${widget.toKen}",
+                                    style: style),
+                              )))
                     ],
                   )),
               Visibility(
