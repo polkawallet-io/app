@@ -1,3 +1,7 @@
+# [3.4.0-beta] - 20230128
+1. Fix karura remote node issue.
+2. acala/karura plugin update.
+
 # [3.3.9-beta] - 20230120
 1. Fix known bugs.
 2. acala/karura plugin update.
