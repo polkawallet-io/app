@@ -38,13 +38,11 @@ class _TokenStakingState extends State<TokenStaking> {
 
   List _fromChains = [];
   List<BridgeRouteData> _routes = [];
-  bool _connected = false;
-  bool _dataLoaded = false;
 
   final Map<String, TokenBalanceData> _tokenBalances = {}; // DOT/KSM
   final Map<String, TokenBalanceData> _stakingTokenBalances = {}; // LDOT/LKSM
 
-  Future<bool> _connectFromChains() async {
+  Future<void> _connectFromChains() async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final String token = data["token"];
 
@@ -61,25 +59,22 @@ class _TokenStakingState extends State<TokenStaking> {
     fromChains.addAll(List<String>.from(
         widget.service.store.settings.tokenStakingConfig["L$token"]));
     final chains = fromChains.toSet().toList();
-    final connected =
-        await widget.service.plugin.sdk.api.bridge.connectFromChains(chains);
 
     _fromChains = chains;
-    _connected = true;
 
     for (int i = 0; i < chains.length; i++) {
-      _subscribeBalance(chains[i], token);
+      widget.service.plugin.sdk.api.bridge.connectFromChains([chains[i]]).then(
+          (chain) => _subscribeBalance(chain[0], token));
     }
-
-    return connected != null;
   }
 
   Future<void> _subscribeBalance(String chain, String token) async {
-    if (_connected) {
-      widget.service.plugin.sdk.api.bridge.subscribeBalances(
-          chain, widget.service.keyring.current.address, (res) async {
-        final tokenData = res[token];
-        final lTokenData = res['L$token'];
+    widget.service.plugin.sdk.api.bridge.subscribeBalances(
+        chain, widget.service.keyring.current.address, (res) async {
+      final tokenData = res[token];
+      final lTokenData = res['L$token'];
+
+      setState(() {
         if (tokenData != null) {
           _tokenBalances[chain] = TokenBalanceData(
               amount: tokenData.available,
@@ -95,18 +90,13 @@ class _TokenStakingState extends State<TokenStaking> {
               decimals: lTokenData.decimals);
         }
 
-        TokenStakingApi.formatBalanceData(
-            widget.service, _fromChains.toSet().toList(), token,
+        TokenStakingApi.formatBalanceData(widget.service, _fromChains, token,
             balances: _tokenBalances);
         TokenStakingApi.formatBalanceData(
-            widget.service, _fromChains.toSet().toList(), 'L$token',
+            widget.service, _fromChains, 'L$token',
             balances: _stakingTokenBalances);
-
-        setState(() {
-          _dataLoaded = true;
-        });
       });
-    }
+    });
   }
 
   @override
@@ -139,7 +129,6 @@ class _TokenStakingState extends State<TokenStaking> {
     final balances = TokenStakingApi.balances[token];
     final lBalances = TokenStakingApi.balances["L$token"];
 
-    final isReady = _connected && _dataLoaded;
     return PluginScaffold(
         appBar: PluginAppBar(
           title: Text("$token ${dic['hub.staking']}"),
@@ -173,7 +162,8 @@ class _TokenStakingState extends State<TokenStaking> {
                   },
                 ),
               ),
-              isReady == false
+              (_tab == 0 && balances == null) ||
+                      (_tab == 1 && lBalances == null)
                   ? const Expanded(
                       child: PluginPopLoadingContainer(
                       loading: true,
