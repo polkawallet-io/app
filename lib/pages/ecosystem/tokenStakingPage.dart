@@ -282,6 +282,7 @@ class _TokenItemViewState extends State<TokenItemView> {
                               child: NumberLoader(
                                 width: 120,
                                 height: 24,
+                                baseColor: const Color(0xFF3D3E40),
                                 isLoading: widget.balance == null,
                                 child: Text(
                                     "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(widget.balance?.amount), widget.balance?.decimals ?? 12, lengthMax: 6)} ${widget.toKen}",
