@@ -1,19 +1,16 @@
-import 'dart:convert';
-
-import 'package:app/common/consts.dart';
 import 'package:app/pages/ecosystem/converToPage.dart';
 import 'package:app/pages/ecosystem/ecosystemPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
-import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
-import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
+import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
@@ -30,7 +27,6 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 
 class CrossChainTransferPage extends StatefulWidget {
   const CrossChainTransferPage(this.service, {Key key}) : super(key: key);
@@ -43,218 +39,173 @@ class CrossChainTransferPage extends StatefulWidget {
 }
 
 class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
-  TextEditingController _amountCtrl = TextEditingController();
+  final TextEditingController _amountCtrl = TextEditingController();
 
-  String _error1;
+  String _amountError;
   String _chainTo;
   List<String> _chainToList;
 
-  String _fee;
+  /// from chain props
+  BridgeNetworkProperties _props;
 
-  bool _isLoading = false;
+  /// dest chain fee
+  BridgeAmountInputConfig _config;
+
+  /// all icon widget
+  Map<String, Widget> _crossChainIcons;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final data = ModalRoute.of(context).settings.arguments as Map;
-      final fromNetwork = data["fromNetwork"];
-      final TokenBalanceData balance = data["balance"];
-      var plugin;
-      if (widget.service.plugin is PluginKarura) {
-        plugin = widget.service.plugin as PluginKarura;
-      } else if (widget.service.plugin is PluginAcala) {
-        plugin = widget.service.plugin as PluginAcala;
-      }
-
-      final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-      final tokenXcmConfig = List<String>.from(
-          (tokensConfig['xcm'] ?? {})[balance.tokenNameId] ?? []);
-      final to = [widget.service.plugin.basic.name, ...tokenXcmConfig];
-      to.removeWhere((element) => element == fromNetwork);
-      setState(() {
-        _chainToList = to;
-        _chainTo = to.length > 0 ? to[0] : null;
-      });
-
-      _getTxFee();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initBridgeConfig();
+      _updateBridgeConfig();
     });
   }
 
-  String _validateAmount(String value, BigInt available, int decimals) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+  Future<void> _initBridgeConfig() async {
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
 
-    String v = value.trim();
-    final error = Fmt.validatePrice(value, context);
-    if (error != null) {
-      return error;
-    }
-    BigInt input = Fmt.tokenInt(v, decimals);
-    if (input > available) {
-      return dic['amount.low'];
-    }
-    return null;
+    final chainInfo =
+        await widget.service.plugin.sdk.api.bridge.getChainsInfo();
+    _crossChainIcons = Map<String, Widget>.from(chainInfo?.map((k, v) =>
+        MapEntry(
+            k.toUpperCase(),
+            v.icon.contains('.svg')
+                ? SvgPicture.network(v.icon)
+                : Image.network(v.icon))));
+
+    final props = await widget.service.plugin.sdk.api.bridge
+        .getNetworkProperties(fromNetwork);
+    _props = props;
+
+    final routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
+    routes.retainWhere(
+        (e) => e.from == fromNetwork && e.token == balance.tokenNameId);
+    _chainToList = routes.map((e) => e.to).toList();
+    _chainTo = _chainToList.isNotEmpty ? _chainToList[0] : null;
   }
 
-  Future<XcmTxConfirmParams> _getTxParams() async {
-    if (_error1 == null && _amountCtrl.text.trim().length > 0) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-      final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+  Future<void> _updateBridgeConfig() async {
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final fromNetwork = data["fromNetwork"];
+    final TokenBalanceData balance = data["balance"];
+
+    final config = await widget.service.plugin.sdk.api.bridge
+        .getAmountInputConfig(
+            fromNetwork,
+            _chainTo,
+            balance.tokenNameId,
+            widget.service.keyring.current.address,
+            widget.service.keyring.current.address);
+
+    setState(() {
+      _config = config;
+    });
+  }
+
+  void _validateAmount(String value) {
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final TokenBalanceData balance = data["balance"];
+
+    String v = value.trim();
+    int decimals = balance?.decimals ?? 12;
+    String error = Fmt.validatePrice(v, context);
+
+    if (error != null) {
+      setState(() {
+        _amountError = error;
+      });
+      return;
+    }
+
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final input = double.parse(v);
+    final max = Fmt.balanceDouble(_config?.maxInput ?? '0', decimals);
+    final min = Fmt.balanceDouble(_config?.minInput ?? '0', decimals);
+    if (input > max) {
+      error =
+          '${dic['bridge.max']} ${max > 0 ? Fmt.priceFloor(max, lengthMax: 6) : BigInt.zero}';
+    } else if (input < min) {
+      error = '${dic['bridge.min']} ${Fmt.priceCeil(min, lengthMax: 6)}';
+    }
+    setState(() {
+      _amountError = error;
+    });
+  }
+
+  Future<XcmTxConfirmParams> _getTxParams(TokenBalanceData feeToken) async {
+    if (_amountError == null &&
+        _amountCtrl.text.trim().isNotEmpty &&
+        _config != null) {
+      final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+      final dicAss = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
       final data = ModalRoute.of(context).settings.arguments as Map;
       final TokenBalanceData balance = data["balance"];
       final fromNetwork = data["fromNetwork"];
 
-      final xcmParams = await _getXcmParams(
-          Fmt.tokenInt(_amountCtrl.text.trim(), balance.decimals).toString());
-      var plugin;
-      if (widget.service.plugin is PluginKarura) {
-        plugin = widget.service.plugin as PluginKarura;
-      } else if (widget.service.plugin is PluginAcala) {
-        plugin = widget.service.plugin as PluginAcala;
-      }
-      final fromIcon =
-          plugin.store.assets.crossChainIcons[fromNetwork] as String;
+      final xcmParams = await widget.service.plugin.sdk.api.bridge.getTxParams(
+          fromNetwork,
+          _chainTo,
+          balance?.tokenNameId,
+          widget.service.keyring.current.address,
+          Fmt.tokenInt(_amountCtrl.text.trim(), balance?.decimals).toString(),
+          balance?.decimals,
+          widget.service.keyring.current.address);
+
       if (xcmParams != null) {
-        var plugin;
-        if (widget.service.plugin is PluginKarura) {
-          plugin = widget.service.plugin as PluginKarura;
-        } else if (widget.service.plugin is PluginAcala) {
-          plugin = widget.service.plugin as PluginAcala;
-        }
-        final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-        final feeTokenSymbol =
-            ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-                {})['nativeToken'];
-        final feeToken = (fromNetwork == para_chain_name_acala ||
-                fromNetwork == para_chain_name_karura)
-            ? TokenBalanceData(
-                symbol: plugin.networkState.tokenSymbol[0],
-                decimals: plugin.networkState.tokenDecimals[0],
-              )
-            : plugin.store.assets.allTokens.firstWhere((e) =>
-                e.symbol.toUpperCase() ==
-                feeTokenSymbol.toString().toUpperCase());
+        final tokenView = AppFmt.tokenView(balance?.symbol);
         return XcmTxConfirmParams(
-            txTitle:
-                '${dicAcala['transfer']} ${balance.symbol} (${dicAcala['cross.xcm']})',
-            module: xcmParams['module'],
-            call: xcmParams['call'],
+            txTitle: dic['hub.bridge'],
+            module: xcmParams.module,
+            call: xcmParams.call,
             txDisplay: {
-              dicAcala['cross.chain']: _chainTo?.toUpperCase(),
+              dic['bridge.to']: _chainTo?.toUpperCase(),
             },
             txDisplayBold: {
-              dic['amount']: Text(
-                Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
-                        lengthMax: 8) +
-                    ' ${balance.symbol}',
-                style: Theme.of(context)
-                    .textTheme
-                    .headline1
-                    ?.copyWith(color: PluginColorsDark.headline1),
-              ),
-              dic['address']: Row(
+              dicAss['amount']: Text(
+                  '${Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()), lengthMax: 8)} $tokenView',
+                  style: const TextStyle(
+                      fontSize: 30,
+                      height: 1.5,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Titillium Web SemiBold',
+                      color: Colors.white)),
+              dicAss['address']: Row(
                 children: [
                   AddressIcon(widget.service.keyring.current.address,
                       svg: widget.service.keyring.current.icon),
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                      margin: const EdgeInsets.fromLTRB(8, 16, 0, 16),
                       child: Text(
-                        Fmt.address(widget.service.keyring.current.address,
-                            pad: 8),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline4
-                            ?.copyWith(color: PluginColorsDark.headline1),
-                      ),
+                          Fmt.address(widget.service.keyring.current.address,
+                              pad: 8),
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Titillium Web Regular',
+                              color: Colors.white)),
                     ),
                   ),
                 ],
               ),
             },
-            params: xcmParams['params'],
-            txHex: xcmParams['txHex'],
+            params: xcmParams.params,
             chainFrom: fromNetwork,
-            chainFromIcon: fromIcon.contains('.svg')
-                ? SvgPicture.network(fromIcon)
-                : Image.network(fromIcon),
+            chainFromIcon: TokenIcon(
+              fromNetwork,
+              _crossChainIcons,
+            ),
             feeToken: feeToken,
-            isPlugin: true);
+            isPlugin: true,
+            isBridge: true,
+            txHex: xcmParams.txHex);
       }
     }
     return null;
-  }
-
-  Future<Map> _getXcmParams(String amount, {bool feeEstimate = false}) async {
-    var plugin;
-    if (widget.service.plugin is PluginKarura) {
-      plugin = widget.service.plugin as PluginKarura;
-    } else if (widget.service.plugin is PluginAcala) {
-      plugin = widget.service.plugin as PluginAcala;
-    }
-    final tokensConfig = plugin.store.setting.remoteConfig['tokens'] ?? {};
-    final data = ModalRoute.of(context).settings.arguments as Map;
-    final fromNetwork = data["fromNetwork"];
-    final TokenBalanceData balance = data["balance"];
-    final chainFromInfo = (tokensConfig['xcmChains'] ?? {})[fromNetwork] ?? {};
-    final chainToInfo = (tokensConfig['xcmChains'] ?? {})[_chainTo] ?? {};
-    final sendFee = List.of((tokensConfig['xcmSendFee'] ?? {})[_chainTo] ?? []);
-
-    final address = widget.service.keyring.current.address;
-
-    final Map xcmParams = await widget.service.plugin.sdk.webView?.evalJavascript(
-        'xcm.getTransferParams('
-        '{name: "$fromNetwork", paraChainId: ${chainFromInfo['id']}},'
-        '{name: "$_chainTo", paraChainId: ${chainToInfo['id']}},'
-        '"${balance?.symbol}", "$amount", "$address", ${jsonEncode(sendFee)})');
-    return xcmParams;
-  }
-
-  Future<String> _getTxFee({reload = false}) async {
-    if (_fee != null && !reload) {
-      return _fee;
-    }
-    setState(() {
-      _isLoading = true;
-    });
-    final data = ModalRoute.of(context).settings.arguments as Map;
-    final fromNetwork = data["fromNetwork"];
-    final TokenBalanceData balance = data["balance"];
-
-    final sender = TxSenderData(widget.service.keyring.current.address,
-        widget.service.keyring.current.pubKey);
-    final xcmParams = await _getXcmParams(
-        Fmt.tokenInt(
-                _amountCtrl.text.trim().isEmpty ? '0' : _amountCtrl.text.trim(),
-                balance.decimals)
-            .toString(),
-        feeEstimate: true);
-    if (xcmParams == null) return '0';
-
-    final txInfo = TxInfoData(xcmParams['module'], xcmParams['call'], sender,
-        txHex: xcmParams['txHex']);
-
-    String fee = '0';
-    if (fromNetwork == plugin_name_karura || fromNetwork == plugin_name_acala) {
-      final feeData = await widget.service.plugin.sdk.api.tx
-          .estimateFees(txInfo, xcmParams['params']);
-      fee = feeData.partialFee.toString();
-    } else {
-      final feeData = await widget.service.plugin.sdk.webView?.evalJavascript(
-          'keyring.txFeeEstimate(xcm.getApi("$fromNetwork"), ${jsonEncode(txInfo)}, [])');
-      if (feeData != null) {
-        fee = feeData['partialFee'].toString();
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _fee = fee;
-        _isLoading = false;
-      });
-    }
-    return fee;
   }
 
   Future<void> _selectChain(BuildContext context, int index,
@@ -274,7 +225,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
               setState(() {
                 _chainTo = chain;
               });
-              _getTxFee(reload: true);
+              _updateBridgeConfig();
               Navigator.of(context).pop();
             },
           ),
@@ -287,18 +238,19 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    final dicCommon = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-    final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
     final data = ModalRoute.of(context).settings.arguments as Map;
     final fromNetwork = data["fromNetwork"];
     final TokenBalanceData balance = data["balance"];
+
+    final feeToken = TokenBalanceData(
+        decimals: _props?.tokenDecimals?.first,
+        symbol: _props?.tokenSymbol?.first,
+        amount: '0');
 
     final labelStyle = Theme.of(context)
         .textTheme
         .headline4
         ?.copyWith(color: PluginColorsDark.headline1);
-    final subTitleStyle =
-        TextStyle(fontSize: UI.getTextSize(12, context), height: 1);
     final infoValueStyle = Theme.of(context).textTheme.headline5.copyWith(
         fontWeight: FontWeight.w600, color: PluginColorsDark.headline1);
     return PluginScaffold(
@@ -307,81 +259,16 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
           centerTitle: true,
         ),
         body: Observer(builder: (_) {
-          if (_chainToList == null || _chainToList.length == 0) {
+          if (_chainToList == null || _chainToList.isEmpty) {
             return Container();
           }
-          var plugin;
-          if (widget.service.plugin is PluginKarura) {
-            plugin = widget.service.plugin as PluginKarura;
-          } else if (widget.service.plugin is PluginAcala) {
-            plugin = widget.service.plugin as PluginAcala;
-          }
-
-          final tokensConfig =
-              plugin.store.setting.remoteConfig['tokens'] ?? {};
-          final crossChainIcons = Map<String, Widget>.from(
-              plugin.store.assets.crossChainIcons.map((k, v) => MapEntry(
-                  k.toUpperCase(),
-                  (v as String).contains('.svg')
-                      ? SvgPicture.network(v)
-                      : Image.network(v))));
-
-          final destChainName = _chainTo;
 
           final isFromKar = fromNetwork == plugin_name_karura ||
               fromNetwork == plugin_name_acala;
 
-          final tokenXcmInfo = (tokensConfig['xcmInfo'] ??
-                  {})[isFromKar ? destChainName : fromNetwork] ??
-              {};
-
-          final isTokenFromStateMine =
-              balance.src != null && balance.src['Parachain'] == '1,000';
-
-          final existDeposit = Fmt.balanceInt(plugin
-              .store.assets.tokenBalanceMap[balance.tokenNameId].minBalance);
-          final destExistDeposit = isFromKar
-              ? Fmt.balanceInt(
-                  (tokenXcmInfo[balance.symbol] ?? {})['existentialDeposit'])
-              : existDeposit;
-          final destFee = isFromKar
-              ? isTokenFromStateMine
-                  ? BigInt.zero
-                  : Fmt.balanceInt((tokenXcmInfo[balance.symbol] ?? {})['fee'])
-              : Fmt.balanceInt(
-                  (tokenXcmInfo[balance.symbol] ?? {})['receiveFee']);
-
-          final feeTokenSymbol =
-              ((tokensConfig['xcmChains'] ?? {})[fromNetwork] ??
-                  {})['nativeToken'];
-
-          final feeTokenIndex = widget.service.plugin.balances.tokens
-              .indexWhere((e) => e.symbol == feeTokenSymbol);
-          final nativeTokenDecimals = feeTokenIndex >= 0
-              ? widget.service.plugin.balances.tokens[feeTokenIndex].decimals
-              : 12;
-
-          final fromEd = isFromKar
-              ? BigInt.zero
-              : Fmt.balanceInt(tokensConfig['xcmInfo'][fromNetwork]
-                  [balance.symbol]['existentialDeposit']);
-
-          final max = (BigInt.parse(balance.amount) -
-                  fromEd -
-                  Fmt.tokenInt(
-                      (Fmt.balanceDouble(
-                                  feeTokenSymbol == balance.symbol
-                                      ? _fee ?? '0'
-                                      : '0',
-                                  balance.decimals) *
-                              1.2)
-                          .toString(),
-                      balance.decimals))
-              .toString();
-          final min = (destExistDeposit + destFee).toString();
           return SafeArea(
               child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Expanded(
@@ -399,7 +286,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                       child: GestureDetector(
                                         onTap: () {
                                           _selectChain(context, 0,
-                                              crossChainIcons, _chainToList);
+                                              _crossChainIcons, _chainToList);
                                         },
                                         behavior: HitTestBehavior.opaque,
                                         child: Row(
@@ -407,7 +294,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              destChainName,
+                                              _chainTo,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline5
@@ -415,7 +302,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                                       color: PluginColorsDark
                                                           .headline1),
                                             ),
-                                            Icon(
+                                            const Icon(
                                                 Icons
                                                     .keyboard_arrow_down_rounded,
                                                 color:
@@ -425,47 +312,36 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                       ),
                                     )
                                   : Container(
-                                      margin: EdgeInsets.only(top: 24),
+                                      margin: const EdgeInsets.only(top: 24),
                                       child: ChainSelected(
-                                          dic['ecosystem.to'], destChainName),
+                                          dic['ecosystem.to'], _chainTo),
                                     ),
                               PluginInputBalance(
                                 margin: EdgeInsets.only(
-                                    top: 24, bottom: _error1 == null ? 24 : 2),
+                                    top: 24,
+                                    bottom: _amountError == null ? 24 : 2),
                                 titleTag:
                                     "${balance.symbol} ${I18n.of(context)?.getDic(i18n_full_dic_app, 'assets')['amount']}",
                                 inputCtrl: _amountCtrl,
-                                onSetMax: BigInt.parse(max) > BigInt.zero
-                                    ? (maxValue) {
-                                        _amountCtrl.text = Fmt.priceFloorBigInt(
-                                            BigInt.parse(max), balance.decimals,
-                                            lengthMax: 10);
-                                        setState(() {
-                                          _error1 = null;
-                                        });
-                                      }
-                                    : null,
-                                onInputChange: (v) {
-                                  var error = _validateAmount(
-                                      v,
-                                      Fmt.balanceInt(balance.amount),
-                                      balance.decimals);
-                                  if (Fmt.tokenInt(v, balance.decimals) >
-                                      BigInt.parse(max)) {
-                                    error =
-                                        '${dic['bridge.max']} ${Fmt.priceFloorBigInt(BigInt.parse(max) < BigInt.zero ? BigInt.zero : BigInt.parse(max), balance.decimals, lengthMax: 6)}';
-                                  } else if (Fmt.tokenInt(v, balance.decimals) <
-                                      BigInt.parse(min)) {
-                                    error =
-                                        '${dic['bridge.min']} ${Fmt.priceFloorBigInt(BigInt.parse(min), balance.decimals, lengthMax: 6)}';
+                                onSetMax: (_) {
+                                  if (_config == null) return;
+
+                                  final max = Fmt.balanceInt(_config?.maxInput);
+                                  if (max > BigInt.zero) {
+                                    setState(() {
+                                      _amountCtrl.text = Fmt.balanceDouble(
+                                              _config?.maxInput,
+                                              balance.decimals)
+                                          .toString();
+                                    });
+
+                                    _validateAmount(_amountCtrl.text);
                                   }
-                                  setState(() {
-                                    _error1 = error;
-                                  });
                                 },
+                                onInputChange: _validateAmount,
                                 onClear: () {
                                   setState(() {
-                                    _error1 = null;
+                                    _amountError = null;
                                     _amountCtrl.text = "";
                                   });
                                 },
@@ -473,57 +349,59 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                                 tokenIconsMap: widget.service.plugin.tokenIcons,
                               ),
                               ErrorMessage(
-                                _error1,
-                                margin: EdgeInsets.only(bottom: 24),
+                                _amountError,
+                                margin: const EdgeInsets.only(bottom: 24),
                               ),
                               Padding(
-                                  padding: EdgeInsets.only(bottom: 24),
+                                  padding: const EdgeInsets.only(bottom: 24),
                                   child: PluginAddressFormItem(
                                     label: dic['ecosystem.destinationAccount'],
                                     account: widget.service.keyring.current,
                                   )),
                               Visibility(
-                                  visible: _isLoading,
-                                  child: Container(
+                                  visible: _config == null,
+                                  child: const SizedBox(
                                     width: double.infinity,
                                     child: PluginLoadingWidget(),
                                   )),
                               Visibility(
-                                  visible: _fee != null,
+                                  visible: _config != null,
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 8),
+                                    padding: const EdgeInsets.only(top: 8),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Expanded(
                                           child: Padding(
-                                            padding: EdgeInsets.only(right: 4),
+                                            padding:
+                                                const EdgeInsets.only(right: 4),
                                             child: Text(
                                                 dic['hub.origin.transfer.fee'],
                                                 style: labelStyle),
                                           ),
                                         ),
                                         Text(
-                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee), nativeTokenDecimals, lengthMax: 6)} $feeTokenSymbol',
+                                            '${Fmt.priceCeilBigInt(Fmt.balanceInt(_config?.estimateFee), _props?.tokenDecimals?.first ?? 12, lengthMax: 6)} ${feeToken.symbol}',
                                             style: infoValueStyle),
                                       ],
                                     ),
                                   )),
                               Padding(
-                                padding: EdgeInsets.only(top: 8),
+                                padding: const EdgeInsets.only(top: 8),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Expanded(
                                       child: Padding(
-                                        padding: EdgeInsets.only(right: 4),
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
                                         child: Text(
                                             dic['hub.destination.transfer.fee'],
                                             style: labelStyle),
                                       ),
                                     ),
                                     Text(
-                                      '${Fmt.priceCeilBigInt(destFee, balance.decimals, lengthMax: 6)} ${balance.symbol}',
+                                      '${Fmt.priceCeilBigInt(Fmt.balanceInt(_config?.destFee?.amount), balance.decimals, lengthMax: 6)} ${balance.symbol}',
                                       style: infoValueStyle,
                                     )
                                   ],
@@ -532,11 +410,11 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
                             ]),
                       )),
                       Padding(
-                          padding: EdgeInsets.only(top: 37, bottom: 38),
+                          padding: const EdgeInsets.only(top: 37, bottom: 38),
                           child: PluginButton(
                             title: dic['auction.submit'],
                             onPressed: () async {
-                              final params = await _getTxParams();
+                              final params = await _getTxParams(feeToken);
                               if (params != null) {
                                 final res = await Navigator.of(context)
                                     .pushNamed(XcmTxConfirmPage.route,
@@ -563,10 +441,12 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
 }
 
 class ChainSelector extends StatelessWidget {
-  ChainSelector(
-      {@required this.options,
+  const ChainSelector(
+      {Key key,
+      @required this.options,
       @required this.crossChainIcons,
-      @required this.onSelect});
+      @required this.onSelect})
+      : super(key: key);
   final List<String> options;
   final Map<String, Widget> crossChainIcons;
   final Function(String) onSelect;
@@ -596,7 +476,8 @@ class ChainSelector extends StatelessWidget {
 }
 
 class ChainSelected extends StatelessWidget {
-  ChainSelected(this.title, this.fromNetwork);
+  const ChainSelected(this.title, this.fromNetwork, {Key key})
+      : super(key: key);
   final String title;
   final String fromNetwork;
   @override
@@ -609,8 +490,8 @@ class ChainSelected extends StatelessWidget {
         ),
         Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            decoration: const BoxDecoration(
                 color: Color(0x0FFFFFFF),
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(4),
@@ -621,7 +502,7 @@ class ChainSelected extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .headline5
-                  ?.copyWith(color: Color(0xFFFFFFFF).withAlpha(102)),
+                  ?.copyWith(color: const Color(0xFFFFFFFF).withAlpha(102)),
             )),
       ],
     );

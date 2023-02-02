@@ -84,7 +84,7 @@ abstract class _SettingsStore with Store {
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": true},
     "KSM": ["kusama", "calamari"],
-    "LKSM": ["parallel heiko", "calamari"],
+    "LKSM": ["heiko", "calamari"],
     "DOT": ["polkadot"],
     "LDOT": ["parallel"]
   };

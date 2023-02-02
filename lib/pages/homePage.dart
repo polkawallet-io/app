@@ -370,8 +370,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   MetaHubItem buildMetaHubEcosystem() {
-    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    var token = "DOT";
+    final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    String token = "DOT";
     if (widget.service.plugin.basic.name == relay_chain_name_ksm ||
         widget.service.plugin.basic.name == para_chain_name_karura ||
         widget.service.plugin.basic.name == para_chain_name_bifrost ||
@@ -406,8 +406,8 @@ class _HomePageState extends State<HomePage> {
             )),
             Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
                     color: Color.fromARGB(36, 255, 255, 255),
                     borderRadius: BorderRadius.all(Radius.circular(4))),
                 alignment: AlignmentDirectional.center,

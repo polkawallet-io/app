@@ -32,9 +32,8 @@ class _CompletedPageState extends State<CompletedPage> {
   _getBalance(List<String> networkNames) async {
     final data = ModalRoute.of(context).settings.arguments as Map;
     final TokenBalanceData balance = data["balance"];
-    Map<String, TokenBalanceData> balances = await TokenStakingApi.getBalance(
-        widget.service, networkNames, balance.symbol,
-        isCachaChange: false);
+    final balances = TokenStakingApi.formatBalanceData(
+        widget.service, networkNames, balance.symbol);
 
     setState(() {
       _connecting = true;
@@ -114,7 +113,7 @@ class _CompletedPageState extends State<CompletedPage> {
                                 ),
                                 InfoItemRow(
                                   fromNetwork,
-                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(_balances[fromNetwork].amount), balance.decimals)} ${balance.symbol}",
+                                  "${Fmt.priceFloorBigIntFormatter(Fmt.balanceInt(_balances[fromNetwork]?.amount), balance.decimals)} ${balance.symbol}",
                                   labelStyle: style,
                                   contentStyle: style,
                                 ),

@@ -746,8 +746,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       }
 
       _startPlugin(service);
-
-      service.assets.updateStakingConfig();
     }
 
     return _keyring.allAccounts.isNotEmpty
@@ -918,7 +916,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       DappLatestPage.route: (_) => DappLatestPage(_service),
       //ecosystem
       TokenStaking.route: (_) => TokenStaking(_service),
-      ConverToPage.route: (_) => ConverToPage(_service),
+      ConvertPage.route: (_) => ConvertPage(_service),
       CrossChainTransferPage.route: (_) => CrossChainTransferPage(_service),
       CompletedPage.route: (_) => CompletedPage(_service),
       EcosystemPage.route: (_) => EcosystemPage(_service),
