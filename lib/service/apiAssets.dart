@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';

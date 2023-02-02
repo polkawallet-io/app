@@ -35,7 +35,6 @@ import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
-import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -146,47 +145,6 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
         }
         return;
       }
-    }
-  }
-
-  Future<void> _signAsync(String password) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    try {
-      showCupertinoDialog(
-        context: context,
-        builder: (_) {
-          return PolkawalletAlertDialog(
-            title: Text(dic['uos.title']),
-            content: Text(dic['uos.signing']),
-          );
-        },
-      );
-
-      final signed = await widget.service.plugin.sdk.api.uos
-          .signAsync(widget.service.plugin.basic.name, password);
-      print('signed: $signed');
-
-      Navigator.of(context).popAndPushNamed(
-        QrSignerPage.route,
-        arguments: signed.substring(2),
-      );
-    } catch (err) {
-      showCupertinoDialog(
-        context: context,
-        builder: (_) {
-          return PolkawalletAlertDialog(
-            title: Text(dic['uos.title']),
-            content: Text(err.toString()),
-            actions: <Widget>[
-              PolkawalletActionSheetAction(
-                child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ok']),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
     }
   }
 

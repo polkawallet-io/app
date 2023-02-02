@@ -1,7 +1,7 @@
 import 'package:app/service/apiAccount.dart';
 import 'package:app/service/apiAssets.dart';
-import 'package:app/service/apiWC.dart';
 import 'package:app/service/apiBridge.dart';
+import 'package:app/service/apiWC.dart';
 import 'package:app/store/index.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
