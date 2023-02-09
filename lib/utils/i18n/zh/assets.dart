@@ -43,6 +43,7 @@ const Map<String, String> zhAssets = {
   'hash': '交易Hash',
   'polkascan': '在浏览器中查看',
   'notify.receive': '到账通知',
+  'lock.pyconvot': '公投投票',
   'lock.democrac': '提案治理投票',
   'lock.democrac.total': '总共锁定',
   'lock.phrelect': '议会选举投票',
