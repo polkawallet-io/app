@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.4.0+3401
+version: 3.4.1+3411
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -33,8 +33,8 @@ dependencies:
   # device_info: ^2.0.1
   package_info: ^2.0.2
   uni_links: ^0.5.1
-  firebase_core: ^1.21.1
-  firebase_analytics: ^9.3.3
+  firebase_core: ^2.4.1
+  firebase_analytics: ^10.1.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
   polkawallet_ui: ^0.5.1
@@ -51,15 +51,15 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: c7b7d057f898d4b0b72143effe0b88e1969a599c
+      ref: 3ccc8da6248624c2cae4c1c82046b3099464c476
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 5f7304ee6e1fd1c970f64c19ab5e323c87397186
+      ref: 0fc0acfcf672ba6969f81d6f8016267fff0d0637
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: cbadec314cf58de0b73a9985b0d77da938689ac8
+      ref: bf4afaccdf45910531f694b05d5a127353d7c04b
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -96,6 +96,7 @@ dependencies:
   sticky_headers: ^0.2.0
 
 dependency_overrides:
+  web_socket_channel: 2.2.0
 #  polkawallet_plugin_kusama:
 #    path: ../../coding/polkawallet/polkawallet_plugin_kusama
 #  polkawallet_plugin_acala:
@@ -104,8 +105,8 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-  polkawallet_ui: ^0.5.1
-  polkawallet_sdk: ^0.5.1
+  polkawallet_ui: ^0.5.2
+  polkawallet_sdk: ^0.5.2
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
