@@ -1,3 +1,6 @@
+# [3.4.2-beta] - 20230220
+1. kusama/polkadot staking page issue fix.
+
 # [3.4.1-beta] - 20230214
 1. kusama plugin update.
 2. acala/karura plugin update.
