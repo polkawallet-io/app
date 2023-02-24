@@ -46,6 +46,7 @@ const Map<String, String> enAssets = {
   'hash': 'TxHash',
   'polkascan': 'Open in Browser',
   'notify.receive': 'Token Received',
+  'lock.pyconvot': 'via Referenda/Vote',
   'lock.democrac': 'via Democracy/Vote',
   'lock.democrac.total': 'Total Locked',
   'lock.phrelect': 'via Council/Vote',

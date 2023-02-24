@@ -92,8 +92,6 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
-import 'package:polkawallet_ui/pages/qrSenderPage.dart';
-import 'package:polkawallet_ui/pages/qrSignerPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
@@ -814,8 +812,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           ),
       WalletExtensionSignPage.route: (_) => WalletExtensionSignPage(
           _service.plugin, _keyring, _service.account.getPassword),
-      QrSenderPage.route: (_) => QrSenderPage(_service.plugin, _keyring),
-      QrSignerPage.route: (_) => QrSignerPage(_service.plugin, _keyring),
       ScanPage.route: (_) => ScanPage(_service.plugin, _keyring),
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       PluginAccountListPage.route: (_) =>
