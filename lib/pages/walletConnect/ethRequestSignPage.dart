@@ -47,11 +47,18 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   bool _submitting = false;
 
   void _rejectRequest() {
+    final wcVersion =
+        widget.service.store.account.wcSessionURI.contains('@2') ? 2 : 1;
     final EthRequestSignPageParams args =
         ModalRoute.of(context).settings.arguments;
     if (args.requestRaw == null) {
-      widget.service.plugin.sdk.api.walletConnect
-          .confirmPayload(args.request.id, false, '', {});
+      if (wcVersion == 2) {
+        widget.service.plugin.sdk.api.walletConnect
+            .confirmPayloadV2(args.request.id, false, '', {});
+      } else {
+        widget.service.plugin.sdk.api.walletConnect
+            .confirmPayload(args.request.id, false, '', {});
+      }
 
       widget.service.store.account.closeCallRequest(args.request.id);
       Navigator.of(context).pop();
@@ -84,8 +91,15 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   }
 
   Future<void> _signWC(int id, String password, Map gasOptions) async {
-    final res = await widget.service.plugin.sdk.api.walletConnect
-        .confirmPayload(id, true, password, gasOptions);
+    final wcVersion =
+        widget.service.store.account.wcSessionURI.contains('@2') ? 2 : 1;
+    if (wcVersion == 2) {
+      await widget.service.plugin.sdk.api.walletConnect
+          .confirmPayloadV2(id, true, password, gasOptions);
+    } else {
+      await widget.service.plugin.sdk.api.walletConnect
+          .confirmPayload(id, true, password, gasOptions);
+    }
 
     widget.service.store.account.closeCallRequest(id);
 

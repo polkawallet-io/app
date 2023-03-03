@@ -71,7 +71,6 @@ import 'package:app/store/index.dart';
 import 'package:app/utils/UI.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -285,17 +284,21 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
     final chainId = int.tryParse(_service.plugin.nodeList[0].chainId) ?? 1;
 
+    String pairingUri = uri;
     WCPeerMetaData peer;
     _service.plugin.sdk.api.walletConnect
         .initClient(uri, _service.keyringEVM.current.address, chainId,
-            onPairing: (WCPeerMetaData peerMetaData) {
+            onPairing: (WCPeerMetaData peerMetaData, String uri) {
+      if (uri != null) {
+        pairingUri = uri;
+      }
       print('get wc pairing');
-      _handleWCPairing(peerMetaData);
+      _handleWCPairing(uri, peerMetaData);
       peer = peerMetaData;
     }, onPaired: (Map session) {
       print('wc connected');
       _service.store.account.setWCPairing(false);
-      _service.store.account.setWCSession(uri, peer, session);
+      _service.store.account.setWCSession(pairingUri, peer, session);
     }, onCallRequest: (WCCallRequestData result) {
       print('get wc callRequest');
       _handleWCCallRequest(result);
@@ -308,16 +311,26 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }, cachedSession: cachedSession);
   }
 
-  Future<void> _handleWCPairing(WCPeerMetaData peerMetaData) async {
+  Future<void> _handleWCPairing(String uri, WCPeerMetaData peerMetaData) async {
+    final wcVersion = uri.contains('@2') ? 2 : 1;
     final navigator = Navigator.of(_homePageContext);
     final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
         arguments: peerMetaData);
     if (approved ?? false) {
-      _service.plugin.sdk.api.walletConnect.confirmPairing(true);
+      if (wcVersion == 2) {
+        _service.plugin.sdk.api.walletConnect
+            .confirmPairingV2(true, _keyringEVM.current.address);
+      } else {
+        _service.plugin.sdk.api.walletConnect.confirmPairing(true);
+      }
       print('wallet connect approved');
       navigator.pushNamed(WCSessionsPage.route);
     } else {
-      _service.plugin.sdk.api.walletConnect.confirmPairing(false);
+      if (wcVersion == 2) {
+        _service.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');
+      } else {
+        _service.plugin.sdk.api.walletConnect.confirmPairing(false);
+      }
 
       _service.wc.resetState();
     }

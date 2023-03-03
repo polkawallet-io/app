@@ -149,14 +149,14 @@ abstract class _AccountStore with Store {
           AccountType.values.firstWhere((e) => e.toString().contains(accType));
     }
 
-    final cachedURI = storage.read(localStorageWCSessionURIKey);
-    if (cachedURI != null) {
+    final String cachedURI = storage.read(localStorageWCSessionURIKey);
+    if (cachedURI != null && !cachedURI.contains('@2')) {
       wcSessionURI = cachedURI;
-    }
 
-    final session = storage.read(localStorageWCSessionKey);
-    if (session != null) {
-      wcSession = WCPeerMetaData.fromJson(session['peerMeta']);
+      final session = storage.read(localStorageWCSessionKey);
+      if (session != null) {
+        wcSession = WCPeerMetaData.fromJson(session['peerMeta']);
+      }
     }
   }
 }

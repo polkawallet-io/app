@@ -16,10 +16,19 @@ class ApiWC {
   }
 
   void updateSession(String address, {int chainId}) {
+    final wcVersion = apiRoot.store.account.wcSessionURI.contains('@2') ? 2 : 1;
     if (chainId != null) {
-      apiRoot.plugin.sdk.api.walletConnect.changeNetwork(chainId, address);
+      if (wcVersion == 2) {
+        apiRoot.plugin.sdk.api.walletConnect.changeNetworkV2(chainId, address);
+      } else {
+        apiRoot.plugin.sdk.api.walletConnect.changeNetwork(chainId, address);
+      }
     } else {
-      apiRoot.plugin.sdk.api.walletConnect.changeAccount(address);
+      if (wcVersion == 2) {
+        apiRoot.plugin.sdk.api.walletConnect.changeAccountV2(address);
+      } else {
+        apiRoot.plugin.sdk.api.walletConnect.changeAccount(address);
+      }
     }
 
     final cachedWCSession = apiRoot.store.storage
