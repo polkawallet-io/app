@@ -24,7 +24,7 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
-    final WCPeerMetaData args = ModalRoute.of(context).settings.arguments;
+    final WCProposerMeta args = ModalRoute.of(context).settings.arguments;
     // TODO: fix this page to implement wallet-connect
     // final permissions = List.of(args.permissions.jsonrpc['methods']);
 
@@ -125,7 +125,7 @@ class _WCPairingConfirmPageState extends State<WCPairingConfirmPage> {
 
 class WCPairingSourceInfoDetail extends StatelessWidget {
   WCPairingSourceInfoDetail(this.metadata);
-  final WCPeerMetaData metadata;
+  final WCProposerMeta metadata;
   @override
   Widget build(BuildContext context) {
     return metadata != null

@@ -45,7 +45,7 @@ abstract class _AccountStore with Store {
   String wcSessionURI;
 
   @observable
-  WCPeerMetaData wcSession;
+  WCProposerMeta wcSession;
 
   @observable
   ObservableList<WCCallRequestData> wcCallRequests =
@@ -108,7 +108,7 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setWCSession(String uri, WCPeerMetaData peerMeta, Map session) {
+  void setWCSession(String uri, WCProposerMeta peerMeta, Map session) {
     wcSessionURI = uri;
     wcSession = peerMeta;
 
@@ -155,7 +155,7 @@ abstract class _AccountStore with Store {
 
       final session = storage.read(localStorageWCSessionKey);
       if (session != null) {
-        wcSession = WCPeerMetaData.fromJson(session['peerMeta']);
+        wcSession = WCProposerMeta.fromJson(session['peerMeta']);
       }
     }
   }

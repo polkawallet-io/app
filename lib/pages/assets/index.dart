@@ -27,11 +27,13 @@ import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
@@ -108,6 +110,7 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   Future<void> _handleScan() async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = (await Navigator.pushNamed(
       context,
       ScanPage.route,
@@ -116,8 +119,26 @@ class _AssetsState extends State<AssetsPage> {
     if (data != null) {
       if (data.type == QRCodeResultType.rawData &&
           data.rawData.substring(0, 3) == 'wc:') {
-        // TODO: wallet-connect not enabled for substrate wallet
-        // widget.handleWalletConnect(data.rawData);
+        if (widget.service.keyring.current.observation == true) {
+          showCupertinoDialog(
+              context: context,
+              builder: (_) {
+                return PolkawalletAlertDialog(
+                  type: DialogType.warn,
+                  content: Text(dic['wc.ob.invalid']),
+                  actions: [
+                    PolkawalletActionSheetAction(
+                      isDefaultAction: true,
+                      child: Text(I18n.of(context)
+                          .getDic(i18n_full_dic_ui, 'common')['ok']),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+          return;
+        }
+        widget.handleWalletConnect(data.rawData);
         return;
       }
 

@@ -1,10 +1,13 @@
 import 'package:app/common/components/jumpToLink.dart';
+import 'package:app/pages/walletConnect/dotRequestSignPage.dart';
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
@@ -23,7 +26,17 @@ class WCSessionsPage extends StatefulWidget {
 }
 
 class _WCSessionsPageState extends State<WCSessionsPage> {
-  bool _submitting = false;
+  Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
+    if (widget.service.plugin is PluginEvm) {
+      Navigator.of(context).pushNamed(EthRequestSignPage.route,
+          arguments: EthRequestSignPageParams(
+              payload, Uri.parse(widget.service.store.account.wcSession.url)));
+    } else {
+      Navigator.of(context).pushNamed(DotRequestSignPage.route,
+          arguments: DotRequestSignPageParams(
+              payload, Uri.parse(widget.service.store.account.wcSession.url)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +95,7 @@ class _WCSessionsPageState extends State<WCSessionsPage> {
                                       trailing: const Icon(
                                           Icons.arrow_forward_ios,
                                           size: 14),
-                                      onTap: () => Navigator.of(context)
-                                          .pushNamed(EthRequestSignPage.route,
-                                              arguments:
-                                                  EthRequestSignPageParams(
-                                                      e, originUri)),
+                                      onTap: () => _handleWCCallRequest(e),
                                     );
                                   }).toList(),
                                 ),

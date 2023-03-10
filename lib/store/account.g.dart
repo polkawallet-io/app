@@ -119,13 +119,13 @@ mixin _$AccountStore on _AccountStore, Store {
   final _$wcSessionAtom = Atom(name: '_AccountStore.wcSession');
 
   @override
-  WCPeerMetaData get wcSession {
+  WCProposerMeta get wcSession {
     _$wcSessionAtom.reportRead();
     return super.wcSession;
   }
 
   @override
-  set wcSession(WCPeerMetaData value) {
+  set wcSession(WCProposerMeta value) {
     _$wcSessionAtom.reportWrite(value, super.wcSession, () {
       super.wcSession = value;
     });
@@ -259,7 +259,7 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setWCSession(String uri, WCPeerMetaData peerMeta, Map session) {
+  void setWCSession(String uri, WCProposerMeta peerMeta, Map session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setWCSession');
     try {

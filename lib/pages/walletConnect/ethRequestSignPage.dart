@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
@@ -25,15 +24,10 @@ class EthRequestSignPageParams {
 }
 
 class EthRequestSignPage extends StatefulWidget {
-  const EthRequestSignPage(this.service, this.getPassword, {Key key})
-      : super(key: key);
+  const EthRequestSignPage(this.service, {Key key}) : super(key: key);
   final AppService service;
-  final Future<String> Function(BuildContext, KeyPairData) getPassword;
 
   static const String route = '/wc/sign';
-
-  static const String signTypeBytes = 'pub(bytes.sign)';
-  static const String signTypeExtrinsic = 'pub(extrinsic.sign)';
 
   @override
   _EthRequestSignPageState createState() => _EthRequestSignPageState();

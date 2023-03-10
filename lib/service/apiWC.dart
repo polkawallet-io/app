@@ -15,7 +15,7 @@ class ApiWC {
     apiRoot.plugin.sdk.api.walletConnect.disconnect();
   }
 
-  void updateSession(String address, {int chainId}) {
+  void updateSession(String address, {String chainId}) {
     final wcVersion = apiRoot.store.account.wcSessionURI.contains('@2') ? 2 : 1;
     if (chainId != null) {
       if (wcVersion == 2) {

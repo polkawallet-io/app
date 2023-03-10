@@ -132,6 +132,25 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
     if (data != null) {
       if (data.type == QRCodeResultType.rawData &&
           data.rawData.substring(0, 3) == 'wc:') {
+        if (widget.service.keyringEVM.current.observation == true) {
+          showCupertinoDialog(
+              context: context,
+              builder: (_) {
+                return PolkawalletAlertDialog(
+                  type: DialogType.warn,
+                  content: Text(dic['wc.ob.invalid']),
+                  actions: [
+                    PolkawalletActionSheetAction(
+                      isDefaultAction: true,
+                      child: Text(I18n.of(context)
+                          .getDic(i18n_full_dic_ui, 'common')['ok']),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+          return;
+        }
         widget.handleWalletConnect(data.rawData);
         return;
       }
