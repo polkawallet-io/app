@@ -13,8 +13,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class DotRequestSignPageParams {
-  DotRequestSignPageParams(this.request, this.originUri, {this.requestRaw});
-  final Uri originUri;
+  DotRequestSignPageParams(this.request, {this.requestRaw});
   final WCCallRequestData request;
   final Map requestRaw;
 }
@@ -84,7 +83,8 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
       final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
       final DotRequestSignPageParams args =
           ModalRoute.of(context).settings.arguments;
-      final session = widget.service.store.account.wcSession;
+      final session = widget.service.store.account.wcV2Sessions
+          .firstWhere((e) => e.topic == args.request.topic);
       final acc = widget.service.keyringEVM.current.toKeyPairData();
 
       return PluginScaffold(
@@ -108,11 +108,8 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
                           padding: const EdgeInsets.only(top: 8, bottom: 16),
                           child: AddressFormItem(acc, svg: acc.icon),
                         ),
-                        EthSignRequestInfo(
-                          args.request,
-                          peer: session,
-                          originUri: args.originUri,
-                        ),
+                        EthSignRequestInfo(args.request,
+                            peer: session.peerMeta),
                       ]),
                 ),
               ),

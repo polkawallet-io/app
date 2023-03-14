@@ -59,13 +59,12 @@ class AssetsEVMPage extends StatefulWidget {
       this.checkJSCodeUpdate,
       this.disabledPlugins,
       this.changeNetwork,
-      this.handleWalletConnect,
       this.homePageContext);
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Function(String) handleWalletConnect;
+  // final Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
@@ -151,7 +150,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
               });
           return;
         }
-        widget.handleWalletConnect(data.rawData);
+        widget.service.wc
+            .initWalletConnect(widget.homePageContext, data.rawData);
         return;
       }
 

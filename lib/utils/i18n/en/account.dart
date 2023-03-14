@@ -84,6 +84,8 @@ const Map<String, String> enAccount = {
   'wc.calls': 'Signature Requests',
   'wc.pair.notMatch': 'DApp and wallet networks do not match.',
   'wc.ob.invalid': 'WalletConnect service is invalid for observation account.',
+  'wc.v1': 'v1/legacy',
+  'wc.session': 'Sessions',
   'guide.next': 'Next',
   'guide.enter': 'Enter Polkawallet',
   'plugin.note': 'Maintained by ',

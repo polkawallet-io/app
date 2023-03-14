@@ -64,6 +64,7 @@ import 'package:app/pages/public/stakingKSMGuide.dart';
 import 'package:app/pages/walletConnect/dotRequestSignPage.dart';
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcSessionDetailPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
@@ -81,8 +82,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/localServer.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -278,141 +277,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
   }
 
-  void _initWalletConnect(String uri, {Map cachedSession}) {
-    if (cachedSession == null) {
-      _service.store.account.setWCPairing(true);
-    }
-
-    final chainId = int.tryParse(_service.plugin.nodeList[0].chainId ?? '1');
-
-    String pairingUri = uri;
-    WCProposerMeta peer;
-    _service.plugin.sdk.api.walletConnect
-        .initClient(uri, _service.keyringEVM.current.address, chainId,
-            onPairing: (WCPairingData pairingData, WCProposerMeta peerMetaData,
-                String uriV2) {
-      if (uriV2 != null) {
-        pairingUri = uriV2;
-        print('get v2 wc pairing');
-        _handleWCPairingV2(uriV2, pairingData);
-        peer = peerMetaData;
-      } else {
-        print('get v1 wc pairing');
-        _handleWCPairing(peerMetaData);
-        peer = peerMetaData;
-      }
-    }, onPaired: (Map session) {
-      print('wc connected');
-      _service.store.account.setWCPairing(false);
-      _service.store.account.setWCSession(pairingUri, peer, session);
-    }, onCallRequest: (WCCallRequestData result) {
-      print('get wc callRequest');
-      _handleWCCallRequest(result);
-    }, onDisconnect: (disconnectedUri) {
-      print('wc disconnected');
-      if (_service.store.account.wcSessionURI == null ||
-          _service.store.account.wcSessionURI.split('?')[0] ==
-              disconnectedUri.split('?')[0]) {
-        _service.wc.resetState();
-      }
-    }, cachedSession: cachedSession);
-  }
-
-  Future<void> _handleWCPairing(WCProposerMeta peerMetaData) async {
-    final navigator = Navigator.of(_homePageContext);
-    final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
-        arguments: peerMetaData);
-    if (approved ?? false) {
-      _service.plugin.sdk.api.walletConnect.confirmPairing(true);
-      print('wallet connect approved');
-      navigator.pushNamed(WCSessionsPage.route);
-    } else {
-      _service.plugin.sdk.api.walletConnect.confirmPairing(false);
-      _service.wc.resetState();
-    }
-  }
-
-  Future<void> _handleWCPairingV2(String uri, WCPairingData pairingData) async {
-    bool isNetworkMatch = false;
-    if (_service.plugin is PluginEvm) {
-      final chainId = _service.plugin.nodeList[0].chainId;
-      pairingData.params.requiredNamespaces.forEach((k, v) {
-        if (k == 'eip155') {
-          for (var e in List<String>.from(v['chains'])) {
-            if ('eip155:$chainId' == e) {
-              isNetworkMatch = true;
-            }
-          }
-        }
-      });
-    } else {
-      final chainId = _service.plugin.basic.genesisHash.substring(2, 34);
-      pairingData.params.requiredNamespaces.forEach((k, v) {
-        if (k == 'polkadot') {
-          for (var e in List<String>.from(v['chains'])) {
-            if ('polkadot:$chainId' == e) {
-              isNetworkMatch = true;
-            }
-          }
-        }
-      });
-    }
-    if (!isNetworkMatch) {
-      final dic =
-          I18n.of(_homePageContext).getDic(i18n_full_dic_app, 'account');
-      showCupertinoDialog(
-          context: _homePageContext,
-          builder: (ctx) {
-            return PolkawalletAlertDialog(
-              type: DialogType.warn,
-              content: Text(dic['wc.pair.notMatch']),
-              actions: [
-                PolkawalletActionSheetAction(
-                  isDefaultAction: true,
-                  child: Text(
-                    I18n.of(ctx).getDic(i18n_full_dic_ui, 'common')['ok'],
-                  ),
-                  onPressed: () => Navigator.of(ctx).pop(),
-                ),
-              ],
-            );
-          });
-      _service.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');
-      _service.wc.resetState();
-      return;
-    }
-
-    final navigator = Navigator.of(_homePageContext);
-    final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
-        arguments: pairingData.params?.proposer?.metadata);
-    if (approved ?? false) {
-      _service.plugin.sdk.api.walletConnect.confirmPairingV2(
-          true,
-          _service.plugin is PluginEvm
-              ? _keyringEVM.current.address
-              : _keyring.current.address);
-      print('wallet connect approved');
-      navigator.pushNamed(WCSessionsPage.route);
-    } else {
-      _service.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');
-      _service.wc.resetState();
-    }
-  }
-
-  Future<void> _handleWCCallRequest(WCCallRequestData payload) async {
-    _service.store.account.addCallRequest(payload);
-
-    if (_service.plugin is PluginEvm) {
-      Navigator.of(_homePageContext).pushNamed(EthRequestSignPage.route,
-          arguments: EthRequestSignPageParams(
-              payload, Uri.parse(_service.store.account.wcSession.url)));
-    } else {
-      Navigator.of(_homePageContext).pushNamed(DotRequestSignPage.route,
-          arguments: DotRequestSignPageParams(
-              payload, Uri.parse(_service.store.account.wcSession.url)));
-    }
-  }
-
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     final chainIdBefore = _connectedNode?.chainId;
 
@@ -430,16 +294,23 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
+    _service.wc.injectV2StorageData();
+    _service.wc.subscribeEventsV2(_homePageContext);
+
     /// send wallet-connect session update if wc alive
     if (_store.account.wcSessionURI != null) {
-      final cachedWCSession = _service.store.storage
-          .read(_service.store.account.localStorageWCSessionKey);
-      if (cachedWCSession != null) {
-        print('getCachedSession');
-        _initWalletConnect(_service.store.account.wcSessionURI,
-            cachedSession: cachedWCSession);
+      if (!_store.account.wcSessionURI.contains('@2')) {
+        final cachedWCSession = _service.store.storage
+            .read(_service.store.account.localStorageWCSessionKey);
+        if (cachedWCSession != null) {
+          print('getCachedSession');
+          _service.wc
+              .initWalletConnect(_homePageContext, _store.account.wcSessionURI);
+        }
       }
-      if (connected.chainId.isNotEmpty && connected.chainId != chainIdBefore) {
+
+      if (connected.chainId?.isNotEmpty == true &&
+          connected.chainId != chainIdBefore) {
         _service.wc.updateSession(_keyringEVM.current.address,
             chainId: connected.chainId);
       }
@@ -853,8 +724,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                 final accountCreated =
                     _service?.store?.account?.accountCreated ?? false;
 
-                _homePageContext = context;
-
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _homePageContext = context;
+                });
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
@@ -874,8 +746,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                               _switchNetwork,
                               _changeNode,
                               widget.disabledPlugins,
-                              _changeNetwork,
-                              _initWalletConnect)
+                              _changeNetwork)
                           : CreateAccountEntryPage(_service);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);
@@ -909,6 +780,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
+      WCSessionDetailPage.route: (_) => WCSessionDetailPage(_service),
       EthRequestSignPage.route: (_) => EthRequestSignPage(_service),
       DotRequestSignPage.route: (_) => DotRequestSignPage(_service),
       GuidePage.route: (_) => GuidePage(),
@@ -1062,13 +934,13 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     if (_service.plugin.sdk.api != null) {
       /// if wallet-connect android
       if (uri.scheme == 'wc' && uri.query != null) {
-        _initWalletConnect(uri.toString());
+        _service.wc.initWalletConnect(_homePageContext, uri.toString());
         return;
       }
 
       /// if wallet-connect iOS
       if (uri.path == '/wc' && uri.query != null) {
-        _initWalletConnect(uri.query.substring(4));
+        _service.wc.initWalletConnect(_homePageContext, uri.query.substring(4));
         return;
       }
     }

@@ -75,6 +75,8 @@ const Map<String, String> zhAccount = {
   'wc.calls': '签名请求',
   'wc.pair.notMatch': 'DApp 与钱包网络不匹配',
   'wc.ob.invalid': '观察账户无法使用 WalletConnect 服务。',
+  'wc.v1': 'v1/旧版',
+  'wc.session': '已连接会话',
   'guide.next': '下一步',
   'guide.enter': '进入 Polkawallet',
   'plugin.note': '功能插件由 ',

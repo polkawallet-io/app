@@ -146,6 +146,21 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
+  final _$wcV2SessionsAtom = Atom(name: '_AccountStore.wcV2Sessions');
+
+  @override
+  ObservableList<WCSessionDataV2> get wcV2Sessions {
+    _$wcV2SessionsAtom.reportRead();
+    return super.wcV2Sessions;
+  }
+
+  @override
+  set wcV2Sessions(ObservableList<WCSessionDataV2> value) {
+    _$wcV2SessionsAtom.reportWrite(value, super.wcV2Sessions, () {
+      super.wcV2Sessions = value;
+    });
+  }
+
   final _$accountTypeAtom = Atom(name: '_AccountStore.accountType');
 
   @override
@@ -264,6 +279,28 @@ mixin _$AccountStore on _AccountStore, Store {
         name: '_AccountStore.setWCSession');
     try {
       return super.setWCSession(uri, peerMeta, session);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void addWCSessionV2(Map session) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.addWCSessionV2');
+    try {
+      return super.addWCSessionV2(session);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void deleteWCSessionV2(String topic) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.deleteWCSessionV2');
+    try {
+      return super.deleteWCSessionV2(topic);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }

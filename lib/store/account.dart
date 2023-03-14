@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
@@ -20,6 +24,7 @@ abstract class _AccountStore with Store {
   final String localStorageAccountTypeKey = 'accountType';
   final String localStorageWCSessionURIKey = 'wcSessionURI';
   final String localStorageWCSessionKey = 'wcSession';
+  final String localStorageWCSessionV2Key = 'wcV2Session';
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -50,6 +55,10 @@ abstract class _AccountStore with Store {
   @observable
   ObservableList<WCCallRequestData> wcCallRequests =
       ObservableList<WCCallRequestData>();
+
+  @observable
+  ObservableList<WCSessionDataV2> wcV2Sessions =
+      ObservableList<WCSessionDataV2>();
 
   @observable
   AccountType accountType = AccountType.Substrate;
@@ -121,6 +130,22 @@ abstract class _AccountStore with Store {
   }
 
   @action
+  void addWCSessionV2(Map session) {
+    wcV2Sessions.add(WCSessionDataV2.fromJson(session));
+
+    storage.write(localStorageWCSessionV2Key, session['storage']);
+  }
+
+  @action
+  void deleteWCSessionV2(String topic) {
+    wcV2Sessions.removeWhere((e) => e.topic == topic);
+
+    Utils.deleteWC2SessionInStorage(storage, localStorageWCSessionV2Key, topic);
+
+    wcCallRequests.removeWhere((e) => e.topic == topic);
+  }
+
+  @action
   void addCallRequest(WCCallRequestData data) {
     wcCallRequests.add(data);
   }
@@ -150,13 +175,24 @@ abstract class _AccountStore with Store {
     }
 
     final String cachedURI = storage.read(localStorageWCSessionURIKey);
-    if (cachedURI != null && !cachedURI.contains('@2')) {
+    if (cachedURI != null) {
       wcSessionURI = cachedURI;
 
       final session = storage.read(localStorageWCSessionKey);
       if (session != null) {
         wcSession = WCProposerMeta.fromJson(session['peerMeta']);
       }
+    }
+
+    final sessionV2 = storage.read(localStorageWCSessionV2Key);
+    if (sessionV2 != null && sessionV2['session'] != null) {
+      Timer(const Duration(milliseconds: 500), () {
+        wcV2Sessions.addAll(List.of(jsonDecode(sessionV2['session']))
+            .map((e) => WCSessionDataV2.fromJson(Map<String, dynamic>.of({
+                  'topic': e['topic'],
+                  'peerMeta': e['peer']['metadata'],
+                }))));
+      });
     }
   }
 }

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:app/app.dart';
 import 'package:app/common/consts.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -67,5 +70,29 @@ class Utils {
               9)
           .toString(),
     };
+  }
+
+  static Map deleteWC2SessionInStorage(
+      GetStorage storage, String localStorageKey, String topic) {
+    Map cached = storage.read(localStorageKey);
+
+    final aliveSessions = jsonDecode(cached['session']) as List;
+    final pairings = jsonDecode(cached['pairing']) as List;
+    final subscription = jsonDecode(cached['subscription']) as List;
+    final keychain = jsonDecode(cached['keychain']) as Map;
+
+    aliveSessions.removeWhere((e) => e['topic'] == topic);
+    pairings.removeWhere((e) => e['topic'] == topic);
+    subscription.removeWhere((e) => e['topic'] == topic);
+    keychain.removeWhere((k, _) => k == topic);
+
+    cached = {
+      'session': jsonEncode(aliveSessions),
+      'pairing': jsonEncode(pairings),
+      'subscription': jsonEncode(subscription),
+      'keychain': jsonEncode(keychain),
+    };
+    storage.write(localStorageKey, cached);
+    return cached;
   }
 }

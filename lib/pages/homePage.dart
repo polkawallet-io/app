@@ -47,8 +47,7 @@ class HomePage extends StatefulWidget {
       this.switchNetwork,
       this.changeNode,
       this.disabledPlugins,
-      this.changeNetwork,
-      this.initWalletConnect);
+      this.changeNetwork);
 
   final AppService service;
   final NetworkParams connectedNode;
@@ -64,7 +63,7 @@ class HomePage extends StatefulWidget {
   final Future<void> Function(NetworkParams) changeNode;
   final List<PluginDisabled> disabledPlugins;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
-  final Function(String) initWalletConnect;
+  // final Function(String) initWalletConnect;
 
   static final String route = '/';
 
@@ -465,14 +464,12 @@ class _HomePageState extends State<HomePage> {
                 (PolkawalletPlugin plugin) async {
                 _setupWssNotifyTimer();
                 widget.checkJSCodeUpdate(context, plugin);
-              }, widget.disabledPlugins, widget.changeNetwork,
-                widget.initWalletConnect, context)
+              }, widget.disabledPlugins, widget.changeNetwork, context)
             : AssetsPage(widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
                 _setupWssNotifyTimer();
                 widget.checkJSCodeUpdate(context, plugin);
-              }, widget.disabledPlugins, widget.changeNetwork,
-                widget.initWalletConnect),
+              }, widget.disabledPlugins, widget.changeNetwork),
         // content: Container(),
       )
     ];
@@ -642,10 +639,11 @@ class _HomePageState extends State<HomePage> {
           ),
           Observer(builder: (_) {
             final walletConnectAlive =
-                widget.service.store.account.wcSessionURI != null;
+                widget.service.store.account.wcSessionURI != null ||
+                    widget.service.store.account.wcV2Sessions.isNotEmpty;
             final walletConnecting =
-                widget.service.store.account.walletConnectPairing;
-
+                widget.service.store.account.wcSessionURI != null &&
+                    widget.service.store.account.walletConnectPairing;
             return Visibility(
                 visible: walletConnectAlive || walletConnecting,
                 child: Container(

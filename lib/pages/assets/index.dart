@@ -55,13 +55,12 @@ class AssetsPage extends StatefulWidget {
     this.checkJSCodeUpdate,
     this.disabledPlugins,
     this.changeNetwork,
-    this.handleWalletConnect,
   );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Function(String) handleWalletConnect;
+  // final Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
   final List<PluginDisabled> disabledPlugins;
@@ -138,7 +137,7 @@ class _AssetsState extends State<AssetsPage> {
               });
           return;
         }
-        widget.handleWalletConnect(data.rawData);
+        widget.service.wc.initWalletConnect(context, data.rawData);
         return;
       }
 
