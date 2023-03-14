@@ -64,6 +64,7 @@ import 'package:app/pages/public/stakingKSMGuide.dart';
 import 'package:app/pages/walletConnect/dotRequestSignPage.dart';
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcPairingManagePage.dart';
 import 'package:app/pages/walletConnect/wcSessionDetailPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
@@ -781,6 +782,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
       WCSessionDetailPage.route: (_) => WCSessionDetailPage(_service),
+      WCPairingManagePage.route: (_) => WCPairingManagePage(_service),
       EthRequestSignPage.route: (_) => EthRequestSignPage(_service),
       DotRequestSignPage.route: (_) => DotRequestSignPage(_service),
       GuidePage.route: (_) => GuidePage(),

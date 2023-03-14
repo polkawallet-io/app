@@ -86,6 +86,10 @@ const Map<String, String> enAccount = {
   'wc.ob.invalid': 'WalletConnect service is invalid for observation account.',
   'wc.v1': 'v1/legacy',
   'wc.session': 'Sessions',
+  'wc.pairing': 'WalletConnect Pairings',
+  'wc.pairing.info':
+      'Paired DApps can request connecting to wallet without scanning QR code.',
+  'wc.pairing.delete': 'Are you sure to delete pairing info for DApp',
   'guide.next': 'Next',
   'guide.enter': 'Enter Polkawallet',
   'plugin.note': 'Maintained by ',

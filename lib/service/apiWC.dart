@@ -3,6 +3,7 @@ import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/Utils.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
@@ -233,5 +234,11 @@ class ApiWC {
       apiRoot.plugin.sdk.api.walletConnect
           .injectCacheDataV2(storageData, address);
     }
+  }
+
+  void deletePairingV2(String topic) {
+    Utils.deleteWC2SessionInStorage(apiRoot.store.storage,
+        apiRoot.store.account.localStorageWCSessionV2Key, topic);
+    apiRoot.plugin.sdk.api.walletConnect.deletePairingV2(topic);
   }
 }

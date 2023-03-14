@@ -217,14 +217,24 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     });
   }
 
+  void _disconnectWC() {
+    if (widget.service.store.account.wcSessionURI != null) {
+      widget.service.wc.disconnect();
+    }
+    final v2sessions = widget.service.store.account.wcV2Sessions.toList();
+    if (v2sessions.isNotEmpty) {
+      for (var e in v2sessions) {
+        widget.service.wc.disconnectV2(e.topic);
+      }
+    }
+  }
+
   Future<void> _doSelect(KeyPairData i) async {
     final isCurrentNetwork =
         _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     final currentAddress = widget.service.keyring.current.address;
     if (i.address != currentAddress || !isCurrentNetwork) {
-      if (widget.service.store.account.wcSessionURI != null) {
-        widget.service.wc.disconnect();
-      }
+      _disconnectWC();
 
       widget.service.store.account.setAccountType(AccountType.Substrate);
       widget.service.keyring.setCurrent(i);
@@ -249,6 +259,8 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     final isWalletConnectAlive =
         widget.service.store.account.wcSessionURI != null;
     if (i.address != currentAddress || !isCurrentNetwork) {
+      _disconnectWC();
+
       widget.service.store.account.setAccountType(AccountType.Evm);
       widget.service.keyringEVM.setCurrent(i);
       if (!isCurrentNetwork) {

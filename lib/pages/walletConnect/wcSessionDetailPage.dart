@@ -19,17 +19,12 @@ class WCSessionDetailPageParams {
   final WCProposerMeta peerMeta;
 }
 
-class WCSessionDetailPage extends StatefulWidget {
+class WCSessionDetailPage extends StatelessWidget {
   const WCSessionDetailPage(this.service, {Key key}) : super(key: key);
   final AppService service;
 
   static const String route = '/wc/session/detail';
 
-  @override
-  WCSessionDetailPageState createState() => WCSessionDetailPageState();
-}
-
-class WCSessionDetailPageState extends State<WCSessionDetailPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
@@ -38,9 +33,9 @@ class WCSessionDetailPageState extends State<WCSessionDetailPage> {
 
     return Observer(builder: (_) {
       final pairing = args.version == 1
-          ? widget.service.store.account.walletConnectPairing
+          ? service.store.account.walletConnectPairing
           : false;
-      final callRequests = widget.service.store.account.wcCallRequests.toList();
+      final callRequests = service.store.account.wcCallRequests.toList();
       if (args.version == 1) {
         callRequests.retainWhere((e) => e.topic == null);
       } else {
@@ -92,7 +87,7 @@ class WCSessionDetailPageState extends State<WCSessionDetailPage> {
                                       trailing: const Icon(
                                           Icons.arrow_forward_ios,
                                           size: 14),
-                                      onTap: () => widget.service.wc
+                                      onTap: () => service.wc
                                           .handleWCCallRequest(context, e),
                                     );
                                   }).toList(),
@@ -139,9 +134,9 @@ class WCSessionDetailPageState extends State<WCSessionDetailPage> {
                           : dic['wc.disconnect'],
                       onPressed: () {
                         if (args.version == 1) {
-                          widget.service.wc.disconnect();
+                          service.wc.disconnect();
                         } else {
-                          widget.service.wc.disconnectV2(args.topic);
+                          service.wc.disconnectV2(args.topic);
                         }
 
                         Navigator.popUntil(context, ModalRoute.withName('/'));

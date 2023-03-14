@@ -4,6 +4,7 @@ import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/index.dart';
+import 'package:app/pages/walletConnect/wcPairingManagePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -261,6 +262,22 @@ class _AccountManagePageState extends State<AccountManagePage> {
                           }
                         },
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              RoundedCard(
+                margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                child: Column(
+                  children: [
+                    SettingsPageListItem(
+                      label: I18n.of(context)
+                          .getDic(i18n_full_dic_app, 'account')['wc.pairing'],
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(WCPairingManagePage.route);
+                      },
                     ),
                   ],
                 ),
