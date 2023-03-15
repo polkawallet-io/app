@@ -131,9 +131,11 @@ abstract class _AccountStore with Store {
 
   @action
   void addWCSessionV2(Map session) {
-    wcV2Sessions.add(WCSessionDataV2.fromJson(session));
+    if (wcV2Sessions.indexWhere((e) => e.topic == session['topic']) == -1) {
+      wcV2Sessions.add(WCSessionDataV2.fromJson(session));
 
-    storage.write(localStorageWCSessionV2Key, session['storage']);
+      storage.write(localStorageWCSessionV2Key, session['storage']);
+    }
   }
 
   @action

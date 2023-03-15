@@ -41,8 +41,7 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   bool _submitting = false;
 
   void _rejectRequest() {
-    final wcVersion =
-        widget.service.store.account.wcSessionURI.contains('@2') ? 2 : 1;
+    final wcVersion = widget.service.store.account.wcSessionURI != null ? 1 : 2;
     final EthRequestSignPageParams args =
         ModalRoute.of(context).settings.arguments;
     if (args.requestRaw == null) {
@@ -85,8 +84,7 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   }
 
   Future<void> _signWC(int id, String password, Map gasOptions) async {
-    final wcVersion =
-        widget.service.store.account.wcSessionURI.contains('@2') ? 2 : 1;
+    final wcVersion = widget.service.store.account.wcSessionURI != null ? 1 : 2;
     if (wcVersion == 2) {
       await widget.service.plugin.sdk.api.walletConnect
           .confirmPayloadV2(id, true, password, gasOptions);
@@ -181,7 +179,13 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
       final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
       final EthRequestSignPageParams args =
           ModalRoute.of(context).settings.arguments;
-      final session = widget.service.store.account.wcSession;
+      final wcVersion =
+          widget.service.store.account.wcSessionURI != null ? 1 : 2;
+      final session = wcVersion == 2
+          ? widget.service.store.account.wcV2Sessions
+              .firstWhere((e) => e.topic == args.request.topic)
+              .peerMeta
+          : widget.service.store.account.wcSession;
       final acc = widget.service.keyringEVM.current.toKeyPairData();
 
       final gasParams = widget.service.store.assets.gasParams;

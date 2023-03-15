@@ -234,17 +234,25 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         _selectedNetwork.basic.name == widget.service.plugin.basic.name;
     final currentAddress = widget.service.keyring.current.address;
     if (i.address != currentAddress || !isCurrentNetwork) {
-      _disconnectWC();
-
+      final isWalletConnectAlive =
+          widget.service.store.account.wcV2Sessions.isNotEmpty;
       widget.service.store.account.setAccountType(AccountType.Substrate);
       widget.service.keyring.setCurrent(i);
       if (!isCurrentNetwork) {
+        if (isWalletConnectAlive) {
+          _disconnectWC();
+        }
+
         /// set new network and reload web view
         await _reloadNetwork();
 
         _selectedNetwork.changeAccount(i);
       } else {
         widget.service.plugin.changeAccount(i);
+
+        if (isWalletConnectAlive) {
+          widget.service.wc.updateSession(i.address);
+        }
       }
 
       widget.service.store.assets.loadCache(i, _selectedNetwork.basic.name);
@@ -256,24 +264,28 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         (_selectedNetwork as PluginEvm).network ==
             (widget.service.plugin as PluginEvm).network;
     final currentAddress = widget.service.keyringEVM.current.address;
-    final isWalletConnectAlive =
-        widget.service.store.account.wcSessionURI != null;
     if (i.address != currentAddress || !isCurrentNetwork) {
-      _disconnectWC();
+      final isWalletConnectAlive =
+          widget.service.store.account.wcSessionURI != null ||
+              widget.service.store.account.wcV2Sessions.isNotEmpty;
 
       widget.service.store.account.setAccountType(AccountType.Evm);
       widget.service.keyringEVM.setCurrent(i);
       if (!isCurrentNetwork) {
+        if (isWalletConnectAlive) {
+          _disconnectWC();
+        }
+
         /// set new network and reload web view
         await _reloadNetwork();
 
         _selectedNetwork.changeAccount(i.toKeyPairData());
       } else {
         widget.service.plugin.changeAccount(i.toKeyPairData());
-      }
 
-      if (isWalletConnectAlive) {
-        widget.service.wc.updateSession(i.address);
+        if (isWalletConnectAlive) {
+          widget.service.wc.updateSession(i.address);
+        }
       }
     }
   }

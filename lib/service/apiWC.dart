@@ -196,31 +196,39 @@ class ApiWC {
     apiRoot.plugin.sdk.api.walletConnect.disconnectV2(topic);
   }
 
-  void updateSession(String address, {String chainId}) {
-    final wcVersion = apiRoot.store.account.wcSessionURI.contains('@2') ? 2 : 1;
+  Future<void> updateSession(String address, {String chainId}) async {
+    final wcVersion = apiRoot.store.account.wcSessionURI != null ? 1 : 2;
+    Map v2Storage = {};
     if (chainId != null) {
       if (wcVersion == 2) {
-        apiRoot.plugin.sdk.api.walletConnect.changeNetworkV2(chainId, address);
+        v2Storage = await apiRoot.plugin.sdk.api.walletConnect
+            .changeNetworkV2(chainId, address);
       } else {
         apiRoot.plugin.sdk.api.walletConnect.changeNetwork(chainId, address);
       }
     } else {
       if (wcVersion == 2) {
-        apiRoot.plugin.sdk.api.walletConnect.changeAccountV2(address);
+        v2Storage =
+            await apiRoot.plugin.sdk.api.walletConnect.changeAccountV2(address);
       } else {
         apiRoot.plugin.sdk.api.walletConnect.changeAccount(address);
       }
     }
 
-    final cachedWCSession = apiRoot.store.storage
-        .read(apiRoot.store.account.localStorageWCSessionKey) as Map;
-    final chainIdNew = chainId ?? cachedWCSession['chainId'];
-    apiRoot.store.storage
-        .write(apiRoot.store.account.localStorageWCSessionKey, {
-      ...cachedWCSession,
-      'chainId': chainIdNew,
-      'accounts': [apiRoot.keyringEVM.current.address]
-    });
+    if (wcVersion == 2) {
+      apiRoot.store.storage
+          .write(apiRoot.store.account.localStorageWCSessionV2Key, v2Storage);
+    } else {
+      final cachedWCSession = apiRoot.store.storage
+          .read(apiRoot.store.account.localStorageWCSessionKey) as Map;
+      final chainIdNew = chainId ?? cachedWCSession['chainId'];
+      apiRoot.store.storage
+          .write(apiRoot.store.account.localStorageWCSessionKey, {
+        ...cachedWCSession,
+        'chainId': chainIdNew,
+        'accounts': [apiRoot.keyringEVM.current.address]
+      });
+    }
   }
 
   void injectV2StorageData() {
