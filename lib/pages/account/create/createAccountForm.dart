@@ -55,7 +55,9 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           await ImportAccountAction.authBiometric(context, widget.service);
         }
 
-        widget.service.plugin.changeAccount(widget.service.keyring.current);
+        widget.service.account.handleAccountChanged(
+            widget.service.keyring.current,
+            isNewAccount: true);
         widget.service.store.account.resetNewAccount();
         widget.service.store.account.setAccountCreated();
         Navigator.popUntil(context, ModalRoute.withName('/'));

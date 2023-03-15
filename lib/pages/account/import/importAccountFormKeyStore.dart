@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -136,11 +135,9 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                       context, widget.service);
                                 }
 
-                                widget.service.plugin.changeAccount(
-                                    widget.service.keyring.current);
-                                widget.service.store.assets.loadCache(
+                                widget.service.account.handleAccountChanged(
                                     widget.service.keyring.current,
-                                    widget.service.plugin.basic.name);
+                                    isNewAccount: true);
                                 widget.service.store.account.resetNewAccount();
                                 widget.service.store.account
                                     .setAccountCreated();

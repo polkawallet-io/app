@@ -9,11 +9,11 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ContactPage extends StatefulWidget {
   ContactPage(this.service);
@@ -96,9 +96,8 @@ class _Contact extends State<ContactPage> {
               .addContact(widget.service.keyring, con);
 
           if (_isObservation) {
-            widget.service.plugin.changeAccount(res);
-            widget.service.store.assets
-                .loadCache(res, widget.service.plugin.basic.name);
+            widget.service.account
+                .handleAccountChanged(res, isNewAccount: true);
           }
         }
       } else {
@@ -113,8 +112,9 @@ class _Contact extends State<ContactPage> {
           if (widget.service.keyring.allAccounts.length > 0) {
             widget.service.keyring
                 .setCurrent(widget.service.keyring.allAccounts[0]);
-            widget.service.plugin
-                .changeAccount(widget.service.keyring.allAccounts[0]);
+
+            widget.service.account
+                .handleAccountChanged(widget.service.keyring.allAccounts[0]);
           } else {
             widget.service.keyring.setCurrent(KeyPairData());
           }

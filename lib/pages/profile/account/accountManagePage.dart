@@ -14,11 +14,11 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/index.dart' as v3;
-import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 
 class AccountManagePage extends StatefulWidget {
   AccountManagePage(this.service);
@@ -43,10 +43,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
           .deleteAccount(widget.service.keyring, widget.service.keyring.current)
           .then((_) {
         // refresh balance
-        widget.service.plugin.changeAccount(widget.service.keyring.current);
-
-        widget.service.store.assets.loadCache(
-            widget.service.keyring.current, widget.service.plugin.basic.name);
+        widget.service.account
+            .handleAccountChanged(widget.service.keyring.current);
       });
       Navigator.of(context).pop();
     }

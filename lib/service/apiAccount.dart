@@ -10,8 +10,8 @@ import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/passwordInputDialog.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 
 class ApiAccount {
   ApiAccount(this.apiRoot);
@@ -69,6 +69,15 @@ class ApiAccount {
       password: acc.password,
     );
     return res;
+  }
+
+  void handleAccountChanged(KeyPairData account, {bool isNewAccount = false}) {
+    apiRoot.plugin.changeAccount(apiRoot.keyring.current);
+
+    if (!isNewAccount) {
+      apiRoot.store.assets
+          .loadCache(apiRoot.keyring.current, apiRoot.plugin.basic.name);
+    }
   }
 
   void setBiometricEnabled(String pubKey) {
