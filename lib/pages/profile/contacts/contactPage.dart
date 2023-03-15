@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -133,11 +134,12 @@ class _Contact extends State<ContactPage> {
                     .setCurrent(widget.service.keyringEVM.allAccounts[0])
                 : widget.service.keyring
                     .setCurrent(widget.service.keyring.allAccounts[0]);
-            widget.service.store.account.accountType == AccountType.Evm
-                ? widget.service.plugin.changeAccount(
-                    widget.service.keyringEVM.allAccounts[0].toKeyPairData())
-                : widget.service.plugin
-                    .changeAccount(widget.service.keyring.allAccounts[0]);
+
+            widget.service.account.handleAccountChanged(
+                widget.service.store.account.accountType == AccountType.Evm
+                    ? widget.service.keyringEVM.allAccounts[0].toKeyPairData()
+                    : widget.service.keyring.allAccounts[0],
+                isNewAccount: true);
           } else {
             widget.service.store.account.accountType == AccountType.Evm
                 ? widget.service.keyringEVM.setCurrent(EthWalletData())

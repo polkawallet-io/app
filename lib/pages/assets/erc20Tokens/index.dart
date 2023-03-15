@@ -346,10 +346,8 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
 
       /// set current account
       widget.service.keyring.setCurrent(account);
-      final plugin = widget.service.allPlugins
-          .where((element) =>
-              widget.service.plugin.basic.name.contains(element.basic.name))
-          .first;
+      final plugin = widget.service.allPlugins.firstWhere((element) =>
+          widget.service.plugin.basic.name.contains(element.basic.name));
 
       /// set new network and reload web view
       await _reloadNetwork(plugin);

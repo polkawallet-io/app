@@ -47,22 +47,16 @@ class _AccountManagePageState extends State<AccountManagePage> {
                 widget.service.keyring, widget.service.keyring.current)
             .then((_) {
           // refresh balance
-          widget.service.plugin.changeAccount(widget.service.keyring.current);
-
-          widget.service.store.assets.loadCache(
-              widget.service.keyring.current, widget.service.plugin.basic.name);
+          widget.service.account
+              .handleAccountChanged(widget.service.keyring.current);
         });
       } else {
         widget.service.plugin.sdk.api.eth.keyring
             .deleteAccount(
                 widget.service.keyringEVM, widget.service.keyringEVM.current)
             .then((_) {
-          // refresh balance
-          widget.service.plugin
-              .changeAccount(widget.service.keyringEVM.current.toKeyPairData());
-
-          // widget.service.store.assets.loadCache(
-          //     widget.service.keyring.current, widget.service.plugin.basic.name);
+          widget.service.account.handleAccountChanged(
+              widget.service.keyringEVM.current.toKeyPairData());
         });
       }
       Navigator.of(context).pop();

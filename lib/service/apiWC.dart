@@ -78,11 +78,11 @@ class ApiWC {
       print('wc v2 connected');
       apiRoot.store.account.addWCSessionV2(session);
     }, onCallRequest: (WCCallRequestData result) {
-      print('get wc callRequest');
+      print('get wc v2 callRequest');
       apiRoot.store.account.addCallRequest(result);
       handleWCCallRequest(homePageContext, result);
     }, onDisconnect: (topic) {
-      print('wc disconnected');
+      print('wc v2 disconnected');
       apiRoot.store.account.deleteWCSessionV2(topic);
       Navigator.popUntil(homePageContext, ModalRoute.withName('/'));
     });

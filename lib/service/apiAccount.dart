@@ -7,6 +7,7 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
@@ -95,6 +96,14 @@ class ApiAccount {
     if (!isNewAccount) {
       apiRoot.store.assets
           .loadCache(apiRoot.keyring.current, apiRoot.plugin.basic.name);
+    }
+
+    // try update wallet-connect session while account changed
+    if (apiRoot.store.account.wcSessionURI != null ||
+        apiRoot.store.account.wcV2Sessions.isNotEmpty) {
+      apiRoot.wc.updateSession(apiRoot.plugin is PluginEvm
+          ? apiRoot.keyringEVM.current.address
+          : apiRoot.keyring.current.address);
     }
   }
 

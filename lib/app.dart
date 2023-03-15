@@ -282,7 +282,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     _service.wc.injectV2StorageData();
     _service.wc.subscribeEventsV2(_homePageContext);
 
-    final chainIdBefore = _connectedNode?.chainId;
     setState(() {
       _connectedNode = null;
     });
@@ -296,23 +295,6 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     setState(() {
       _connectedNode = connected;
     });
-
-    /// send wallet-connect session update if wc alive
-    // if (_store.account.wcSessionURI != null) {
-    //   final cachedWCSession = _service.store.storage
-    //       .read(_service.store.account.localStorageWCSessionKey);
-    //   if (cachedWCSession != null) {
-    //     print('getCachedSession');
-    //     _service.wc
-    //         .initWalletConnect(_homePageContext, _store.account.wcSessionURI);
-    //   }
-    //
-    //   if (connected.chainId?.isNotEmpty == true &&
-    //       connected.chainId != chainIdBefore) {
-    //     _service.wc.updateSession(_keyringEVM.current.address,
-    //         chainId: connected.chainId);
-    //   }
-    // }
 
     _dropsService();
   }

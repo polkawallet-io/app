@@ -68,9 +68,11 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           await ImportAccountAction.authBiometric(context, widget.service);
         }
 
-        widget.service.plugin.changeAccount(accType == AccountType.Substrate
-            ? widget.service.keyring.current
-            : widget.service.keyringEVM.current.toKeyPairData());
+        widget.service.account.handleAccountChanged(
+            accType == AccountType.Substrate
+                ? widget.service.keyring.current
+                : widget.service.keyringEVM.current.toKeyPairData(),
+            isNewAccount: true);
         widget.service.store.account.resetNewAccount();
         widget.service.store.account.setAccountCreated(true);
 
