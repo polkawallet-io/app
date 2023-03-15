@@ -89,6 +89,15 @@ class ApiAccount {
     return res;
   }
 
+  void handleAccountChanged(KeyPairData account, {bool isNewAccount = false}) {
+    apiRoot.plugin.changeAccount(apiRoot.keyring.current);
+
+    if (!isNewAccount) {
+      apiRoot.store.assets
+          .loadCache(apiRoot.keyring.current, apiRoot.plugin.basic.name);
+    }
+  }
+
   void setBiometricEnabled(String pubKey) {
     apiRoot.store.storage.write(
         '$_biometricEnabledKey$pubKey', DateTime.now().millisecondsSinceEpoch);

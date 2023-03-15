@@ -9,12 +9,12 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ContactsPage extends StatefulWidget {
   ContactsPage(this.service);
@@ -117,8 +117,8 @@ class _ContactsPageState extends State<ContactsPage> {
                     widget.service.keyring
                         .setCurrent(widget.service.keyring.allAccounts[0]);
 
-                    widget.service.plugin
-                        .changeAccount(widget.service.keyring.allAccounts[0]);
+                    widget.service.account.handleAccountChanged(
+                        widget.service.keyring.allAccounts[0]);
                   } else {
                     widget.service.keyring.setCurrent(KeyPairData());
                   }

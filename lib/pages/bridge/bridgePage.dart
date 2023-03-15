@@ -521,9 +521,7 @@ class _BridgePageState extends State<BridgePage> {
       });
 
       widget.service.keyring.setCurrent(sender);
-      widget.service.plugin.changeAccount(sender);
-      widget.service.store.assets
-          .loadCache(sender, widget.service.plugin.basic.name);
+      widget.service.account.handleAccountChanged(sender);
 
       _subscribeBalance();
     }

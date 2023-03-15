@@ -1,4 +1,3 @@
-import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
@@ -107,9 +106,8 @@ class _Contact extends State<ContactPage> {
                       .addContact(widget.service.keyring, con);
 
           if (_isObservation) {
-            widget.service.plugin.changeAccount(res);
-            widget.service.store.assets
-                .loadCache(res, widget.service.plugin.basic.name);
+            widget.service.account
+                .handleAccountChanged(res, isNewAccount: true);
           }
         }
       } else {
