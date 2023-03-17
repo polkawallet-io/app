@@ -28,10 +28,10 @@ class DotRequestSignPage extends StatefulWidget {
   static const String signTypeExtrinsic = 'pub(extrinsic.sign)';
 
   @override
-  _DotRequestSignPageState createState() => _DotRequestSignPageState();
+  DotRequestSignPageState createState() => DotRequestSignPageState();
 }
 
-class _DotRequestSignPageState extends State<DotRequestSignPage> {
+class DotRequestSignPageState extends State<DotRequestSignPage> {
   bool _submitting = false;
 
   bool _isRequestSignTx(WCCallRequestData args) {
@@ -54,14 +54,14 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
   }
 
   Future<void> _showPasswordDialog() async {
+    final DotRequestSignPageParams args =
+        ModalRoute.of(context).settings.arguments;
     final password = await widget.service.account
         .getPassword(context, widget.service.keyring.current);
     if (password != null) {
       setState(() {
         _submitting = true;
       });
-      final DotRequestSignPageParams args =
-          ModalRoute.of(context).settings.arguments;
 
       await widget.service.plugin.sdk.api.walletConnect
           .confirmPayloadV2(args.request.id, true, password, null);
@@ -85,7 +85,6 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
           ModalRoute.of(context).settings.arguments;
       final session = widget.service.store.account.wcV2Sessions
           .firstWhere((e) => e.topic == args.request.topic);
-      final acc = widget.service.keyringEVM.current.toKeyPairData();
 
       return PluginScaffold(
         appBar: PluginAppBar(
@@ -106,10 +105,14 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
                         Text(dic['submit.signer']),
                         Padding(
                           padding: const EdgeInsets.only(top: 8, bottom: 16),
-                          child: AddressFormItem(acc, svg: acc.icon),
+                          child: AddressFormItem(widget.service.keyring.current,
+                              svg: widget.service.keyring.current.icon),
                         ),
-                        EthSignRequestInfo(args.request,
-                            peer: session.peerMeta),
+                        EthSignRequestInfo(
+                          args.request,
+                          peer: session.peerMeta,
+                          originUri: Uri(),
+                        ),
                       ]),
                 ),
               ),
@@ -123,10 +126,8 @@ class _DotRequestSignPageState extends State<DotRequestSignPage> {
                             child: Button(
                               isBlueBg: false,
                               onPressed: _rejectRequest,
-                              child: Text(
-                                  I18n.of(context).getDic(i18n_full_dic_app,
-                                      'account')['wc.reject'],
-                                  style: Theme.of(context).textTheme.headline3),
+                              child: Text(I18n.of(context).getDic(
+                                  i18n_full_dic_app, 'account')['wc.reject']),
                             ),
                           ),
                         ),

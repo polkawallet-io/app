@@ -26,7 +26,7 @@ class WCSessionsPage extends StatelessWidget {
             title: Image.asset('assets/images/wallet_connect_banner.png',
                 height: 20),
             centerTitle: true,
-            leading: BackBtn()),
+            leading: const BackBtn()),
         body: SafeArea(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),

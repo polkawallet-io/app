@@ -86,7 +86,7 @@ abstract class _AccountStore with Store {
 
   @action
   void setPubKeyAddressMap(Map<String, Map> data) {
-    data.keys.forEach((ss58) {
+    for (var ss58 in data.keys) {
       // get old data map
       Map<String, String> addresses =
           Map.of(pubKeyAddressMap[int.parse(ss58)] ?? {});
@@ -96,14 +96,14 @@ abstract class _AccountStore with Store {
       });
       // update state
       pubKeyAddressMap[int.parse(ss58)] = addresses;
-    });
+    }
   }
 
   @action
   void setAddressIconsMap(List list) {
-    list.forEach((i) {
+    for (var i in list) {
       addressIconsMap[i[0]] = i[1];
-    });
+    }
   }
 
   @action
@@ -192,6 +192,8 @@ abstract class _AccountStore with Store {
         wcV2Sessions.addAll(List.of(jsonDecode(sessionV2['session']))
             .map((e) => WCSessionDataV2.fromJson(Map<String, dynamic>.of({
                   'topic': e['topic'],
+                  'namespaces': e['namespaces'],
+                  'expiry': e['expiry'],
                   'peerMeta': e['peer']['metadata'],
                 }))));
       });

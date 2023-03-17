@@ -18,7 +18,7 @@ class ApiWC {
 
   final AppService apiRoot;
 
-  void initWalletConnect(BuildContext homePageContext, String uri) {
+  void initWalletConnect(String uri, Function getHomePageContext) {
     final cachedSession = apiRoot.store.storage
         .read(apiRoot.store.account.localStorageWCSessionKey);
 
@@ -27,7 +27,7 @@ class ApiWC {
     /// subscribe events for v1
     /// v2 was subscribed while plugin start
     if (!uri.contains('@2')) {
-      subscribeEvents(homePageContext, uri: uri);
+      subscribeEvents(getHomePageContext(), uri: uri);
 
       if (cachedSession == null) {
         apiRoot.store.account.setWCPairing(true);
@@ -69,22 +69,22 @@ class ApiWC {
         });
   }
 
-  void subscribeEventsV2(BuildContext homePageContext) {
+  void subscribeEventsV2(Function getHomePageContext) {
     apiRoot.plugin.sdk.api.walletConnect.subscribeEvents(onPairing:
         (WCPairingData pairingData, WCProposerMeta peerMetaData, String uriV2) {
       print('get v2 wc pairing');
-      _handleWCPairingV2(homePageContext, pairingData);
+      _handleWCPairingV2(getHomePageContext(), pairingData);
     }, onPaired: (Map session) {
       print('wc v2 connected');
       apiRoot.store.account.addWCSessionV2(session);
     }, onCallRequest: (WCCallRequestData result) {
       print('get wc v2 callRequest');
       apiRoot.store.account.addCallRequest(result);
-      handleWCCallRequest(homePageContext, result);
+      handleWCCallRequest(getHomePageContext(), result);
     }, onDisconnect: (topic) {
       print('wc v2 disconnected');
       apiRoot.store.account.deleteWCSessionV2(topic);
-      Navigator.popUntil(homePageContext, ModalRoute.withName('/'));
+      Navigator.popUntil(getHomePageContext(), ModalRoute.withName('/'));
     });
   }
 
@@ -92,10 +92,10 @@ class ApiWC {
       BuildContext context, WCProposerMeta peerMetaData) async {
     final navigator = Navigator.of(context);
     final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
-        arguments: peerMetaData);
+        arguments: WCPairingConfirmPageParams(peerMeta: peerMetaData));
     if (approved ?? false) {
       apiRoot.plugin.sdk.api.walletConnect.confirmPairing(true);
-      print('wallet connect approved');
+      print('wallet connect v1 approved');
       navigator.pushNamed(WCSessionsPage.route);
     } else {
       apiRoot.plugin.sdk.api.walletConnect.confirmPairing(false);
@@ -110,7 +110,7 @@ class ApiWC {
       final chainId = apiRoot.plugin.nodeList[0].chainId;
       pairingData.params.requiredNamespaces.forEach((k, v) {
         if (k == 'eip155') {
-          for (var e in List<String>.from(v['chains'])) {
+          for (var e in v.chains) {
             if ('eip155:$chainId' == e) {
               isNetworkMatch = true;
             }
@@ -121,7 +121,7 @@ class ApiWC {
       final chainId = apiRoot.plugin.basic.genesisHash.substring(2, 34);
       pairingData.params.requiredNamespaces.forEach((k, v) {
         if (k == 'polkadot') {
-          for (var e in List<String>.from(v['chains'])) {
+          for (var e in v.chains) {
             if ('polkadot:$chainId' == e) {
               isNetworkMatch = true;
             }
@@ -155,14 +155,14 @@ class ApiWC {
 
     final navigator = Navigator.of(context);
     final approved = await navigator.pushNamed(WCPairingConfirmPage.route,
-        arguments: pairingData.params?.proposer?.metadata);
+        arguments: WCPairingConfirmPageParams(pairingData: pairingData));
     if (approved ?? false) {
       apiRoot.plugin.sdk.api.walletConnect.confirmPairingV2(
           true,
           apiRoot.plugin is PluginEvm
               ? apiRoot.keyringEVM.current.address
               : apiRoot.keyring.current.address);
-      print('wallet connect approved');
+      print('wallet connect v2 approved');
       navigator.pushNamed(WCSessionsPage.route);
     } else {
       apiRoot.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');

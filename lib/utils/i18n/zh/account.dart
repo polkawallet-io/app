@@ -80,6 +80,8 @@ const Map<String, String> zhAccount = {
   'wc.pairing': 'WalletConnect 配对',
   'wc.pairing.info': '已配对的 DApp 可以免扫码请求连接钱包。',
   'wc.pairing.delete': '确认删除 DApp 配对信息 ',
+  'wc.permissions': '权限',
+  'wc.expiry': '过期时间',
   'guide.next': '下一步',
   'guide.enter': '进入 Polkawallet',
   'plugin.note': '功能插件由 ',

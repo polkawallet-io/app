@@ -137,7 +137,7 @@ class _AssetsState extends State<AssetsPage> {
               });
           return;
         }
-        widget.service.wc.initWalletConnect(context, data.rawData);
+        widget.service.wc.initWalletConnect(data.rawData, () => context);
         return;
       }
 

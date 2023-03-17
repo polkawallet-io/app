@@ -90,6 +90,8 @@ const Map<String, String> enAccount = {
   'wc.pairing.info':
       'Paired DApps can request connecting to wallet without scanning QR code.',
   'wc.pairing.delete': 'Are you sure to delete pairing info for DApp',
+  'wc.permissions': 'Permissions',
+  'wc.expiry': 'Expiry',
   'guide.next': 'Next',
   'guide.enter': 'Enter Polkawallet',
   'plugin.note': 'Maintained by ',

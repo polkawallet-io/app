@@ -727,7 +727,7 @@ class _BridgePageState extends State<BridgePage> {
                                   inputCtrl: _amountCtrl,
                                   onInputChange: (v) => _validateAmount(v),
                                   onTokenChange: (token) {
-                                    _tokenChange(token.symbol.toUpperCase());
+                                    _tokenChange(token.symbol);
                                   },
                                   onClear: () {
                                     setState(() {

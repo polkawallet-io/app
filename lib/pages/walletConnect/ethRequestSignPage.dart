@@ -30,10 +30,10 @@ class EthRequestSignPage extends StatefulWidget {
   static const String route = '/wc/sign';
 
   @override
-  _EthRequestSignPageState createState() => _EthRequestSignPageState();
+  EthRequestSignPageState createState() => EthRequestSignPageState();
 }
 
-class _EthRequestSignPageState extends State<EthRequestSignPage> {
+class EthRequestSignPageState extends State<EthRequestSignPage> {
   Timer _gasQueryTimer;
 
   int _gasLevel = 1;
@@ -62,14 +62,14 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
   }
 
   Future<void> _showPasswordDialog() async {
+    final EthRequestSignPageParams args =
+        ModalRoute.of(context).settings.arguments;
     final password = await widget.service.account
         .getEvmPassword(context, widget.service.keyringEVM.current);
     if (password != null) {
       setState(() {
         _submitting = true;
       });
-      final EthRequestSignPageParams args =
-          ModalRoute.of(context).settings.arguments;
 
       final gasOptions = _isRequestSendTx(args.request)
           ? Utils.getGasOptionsForTx(args.request.params[3].value,
@@ -249,10 +249,8 @@ class _EthRequestSignPageState extends State<EthRequestSignPage> {
                             child: Button(
                               isBlueBg: false,
                               onPressed: _rejectRequest,
-                              child: Text(
-                                  I18n.of(context).getDic(i18n_full_dic_app,
-                                      'account')['wc.reject'],
-                                  style: Theme.of(context).textTheme.headline3),
+                              child: Text(I18n.of(context).getDic(
+                                  i18n_full_dic_app, 'account')['wc.reject']),
                             ),
                           ),
                         ),

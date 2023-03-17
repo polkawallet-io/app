@@ -35,6 +35,11 @@ class WCSessionDetailPage extends StatelessWidget {
       final pairing = args.version == 1
           ? service.store.account.walletConnectPairing
           : false;
+      final session =
+          (args.version == 2 && service.store.account.wcV2Sessions.isNotEmpty)
+              ? service.store.account.wcV2Sessions
+                  .firstWhere((e) => e.topic == args.topic)
+              : null;
       final callRequests = service.store.account.wcCallRequests.toList();
       if (args.version == 1) {
         callRequests.retainWhere((e) => e.topic == null);
@@ -47,7 +52,7 @@ class WCSessionDetailPage extends StatelessWidget {
             title: Image.asset('assets/images/wallet_connect_banner.png',
                 height: 20),
             centerTitle: true,
-            leading: BackBtn()),
+            leading: const BackBtn()),
         body: SafeArea(
           child: Column(
             children: <Widget>[
@@ -60,13 +65,26 @@ class WCSessionDetailPage extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           child: Text(
                             dic['wc.connect'],
-                            style: Theme.of(context).textTheme.headline4,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: WCPairingSourceInfoDetail(args.peerMeta),
                         ),
+                        args.version == 2
+                            ? Container(
+                                margin:
+                                    const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                                child: Row(
+                                  children: [Text(dic['wc.permissions'])],
+                                ),
+                              )
+                            : Container(),
+                        args.version == 2 && session != null
+                            ? WCPairingPermissions(
+                                session.namespaces, session.expiry)
+                            : Container(),
                         Visibility(
                           visible: callRequests.isNotEmpty,
                           child: Column(
@@ -126,7 +144,7 @@ class WCSessionDetailPage extends StatelessWidget {
                         ]),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Button(
                       title: pairing
                           ? I18n.of(context)

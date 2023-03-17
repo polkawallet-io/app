@@ -280,7 +280,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
     _service.wc.injectV2StorageData();
-    _service.wc.subscribeEventsV2(_homePageContext);
+    _service.wc.subscribeEventsV2(_getHomePageContext);
 
     setState(() {
       _connectedNode = null;
@@ -915,13 +915,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     if (_service.plugin.sdk.api != null) {
       /// if wallet-connect android
       if (uri.scheme == 'wc' && uri.query != null) {
-        _service.wc.initWalletConnect(_homePageContext, uri.toString());
+        _service.wc.initWalletConnect(uri.toString(), _getHomePageContext);
         return;
       }
 
       /// if wallet-connect iOS
       if (uri.path == '/wc' && uri.query != null) {
-        _service.wc.initWalletConnect(_homePageContext, uri.query.substring(4));
+        _service.wc
+            .initWalletConnect(uri.query.substring(4), _getHomePageContext);
         return;
       }
     }
@@ -988,6 +989,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     WalletApi.getPluginsConfig(WalletApp.buildTarget).then((value) {
       _store.settings.setPluginsConfig(value);
     });
+  }
+
+  BuildContext _getHomePageContext() {
+    return _homePageContext;
   }
 
   @override

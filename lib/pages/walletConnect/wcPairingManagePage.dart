@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
@@ -89,7 +90,10 @@ class WCPairingManagePageState extends State<WCPairingManagePage> {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
     return Scaffold(
-      appBar: AppBar(title: Text(dic['wc.pairing']), centerTitle: true),
+      appBar: AppBar(
+          title: Text(dic['wc.pairing']),
+          centerTitle: true,
+          leading: const BackBtn()),
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -100,8 +104,11 @@ class WCPairingManagePageState extends State<WCPairingManagePage> {
                   itemBuilder: (_, i) {
                     if (i == 0) {
                       return Container(
-                        margin: EdgeInsets.only(bottom: 16),
-                        child: Text(dic['wc.pairing.info']),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          dic['wc.pairing.info'],
+                          style: const TextStyle(fontSize: 14),
+                        ),
                       );
                     }
                     return RoundedCard(

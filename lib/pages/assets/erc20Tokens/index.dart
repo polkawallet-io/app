@@ -150,8 +150,7 @@ class _AssetsEVMState extends State<AssetsEVMPage> {
               });
           return;
         }
-        widget.service.wc
-            .initWalletConnect(widget.homePageContext, data.rawData);
+        widget.service.wc.initWalletConnect(data.rawData, () => context);
         return;
       }
 
