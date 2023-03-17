@@ -1,3 +1,8 @@
+# [3.4.3-beta] - 20230317
+1. kusama/polkadot remote node list update.
+2. bridge page update.
+3. karura/acala plugin update.
+
 # [3.4.2-beta] - 20230220
 1. kusama/polkadot staking page issue fix.
 
