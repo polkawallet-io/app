@@ -85,15 +85,15 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                   });
                 },
                 child: Padding(
-                    padding: EdgeInsets.only(right: 16.w),
-                    child: v3.IconButton(
-                        icon: SvgPicture.asset(
-                      "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
-                      color: UI.isDarkTheme(context)
-                          ? Colors.white
-                          : Theme.of(context).disabledColor,
-                      height: 20,
-                    ))))
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: v3.IconButton(
+                      isBlueBg: true,
+                      icon: SvgPicture.asset(
+                        "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
+                        color: Colors.white,
+                        height: 22,
+                      )),
+                ))
           ],
           elevation: 2),
       body: NetworkSelectWidget(
