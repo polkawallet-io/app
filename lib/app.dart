@@ -325,7 +325,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     _startConnectionCheck();
   }
 
-  Future<void> _reconnectNode() async {
+  Future<void> _restartPlugin() async {
     setState(() {
       _connectedNode = null;
     });
@@ -362,30 +362,36 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     // clear all timers before connection check process.
     _cancelConnectionCheck();
 
-    _connectionCheckTimer = Timer(const Duration(seconds: 24), () async {
-      // check ws connection through api.rpc.system.chain() every 24s.
-      _service.plugin.sdk.webView
-          .evalJavascript('api.rpc.system.chain()')
-          .then((value) => _startConnectionCheck());
-
-      _connectionCheckWaitTimer = Timer(const Duration(seconds: 16), () async {
-        // set a timer with 18s timeout to reconnect if connection check failed.
-        print('connection check failed, reconnecting...');
-        _reconnectNode();
-
-        _reconnectWaitTimer = Timer(const Duration(seconds: 60), () {
-          // set a timer with 60s timeout to restart check process(it will do reconnect after 60+24+16=90s).
-          print('not connected after 60s, reset process.');
-          _startConnectionCheck();
-        });
-      });
-    });
+    // check ws connection through api.rpc.system.chain() every 24s.
+    _connectionCheckTimer =
+        Timer(const Duration(seconds: 24), _connectionCheck);
   }
 
   _cancelConnectionCheck() {
     _connectionCheckTimer?.cancel();
     _connectionCheckWaitTimer?.cancel();
     _reconnectWaitTimer?.cancel();
+  }
+
+  _connectionCheck() async {
+    _service.plugin.sdk.webView
+        .evalJavascript('api.rpc.system.chain()')
+        .then((value) => _startConnectionCheck())
+        .catchError((err) => _reconnectNode());
+
+    _connectionCheckWaitTimer =
+        Timer(const Duration(seconds: 18), _reconnectNode);
+  }
+
+  _reconnectNode() async {
+    print('connection check failed, reconnecting...');
+    _restartPlugin();
+
+    _reconnectWaitTimer = Timer(const Duration(seconds: 60), () {
+      // set a timer with 60s timeout to restart check process(it will do reconnect after 60+24s).
+      print('not connected after 60s, reset process.');
+      _startConnectionCheck();
+    });
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network,
@@ -425,7 +431,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             : null, socketDisconnectedAction: () {
       UI.throttle(() {
         _cancelConnectionCheck();
-        _reconnectNode();
+        _restartPlugin();
       });
     });
 
@@ -653,7 +659,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
               : null, socketDisconnectedAction: () {
         UI.throttle(() {
           _cancelConnectionCheck();
-          _reconnectNode();
+          _restartPlugin();
         });
       });
 
