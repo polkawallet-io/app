@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.4.3+3431
+version: 3.4.4+3441
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -54,11 +54,11 @@ dependencies:
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
-      ref: 0fc0acfcf672ba6969f81d6f8016267fff0d0637
+      ref: 050a3794986558751625bb15974ca22b299ee5d8
   polkawallet_plugin_karura:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
-      ref: bf4afaccdf45910531f694b05d5a127353d7c04b
+      ref: 3ced4c2d4c75ae1e3dabba270be44b43eaf77bff
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -104,8 +104,8 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
-  polkawallet_ui: ^0.5.2
-  polkawallet_sdk: ^0.5.2
+  polkawallet_ui: ^0.5.3
+  polkawallet_sdk: ^0.5.3
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
@@ -119,9 +119,8 @@ dependency_overrides:
        url: https://github.com/google/charts
        path: charts_flutter
   flutter_svg: ^1.1.3
-  webview_flutter: ^3.0.4
   cached_network_image: ^3.2.0
-  flutter_html: ^2.2.1
+  flutter_html: ^3.0.0-alpha.6
   flutter_slidable: ^1.2.0
   platform: ^3.1.0
   flutter_qr_scan:
