@@ -296,10 +296,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
-    _dropsService();
+    _startConnectionCheck();
   }
 
-  Future<void> _restartWebConnect() async {
+  Future<void> _restartPlugin() async {
     setState(() {
       _connectedNode = null;
     });
@@ -330,39 +330,51 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _connectedNode = connected;
     });
 
-    _dropsService();
+    _startConnectionCheck();
   }
 
-  Timer _webViewDropsTimer;
-  Timer _dropsServiceTimer;
-  Timer _chainTimer;
-  _dropsService() {
-    if (_service.store.account.accountType == AccountType.Evm) {
-      return;
-    }
-    _dropsServiceCancel();
-    _dropsServiceTimer = Timer(Duration(seconds: 24), () async {
-      _chainTimer = Timer(Duration(seconds: 18), () async {
-        _restartWebConnect();
-        _webViewDropsTimer = Timer(Duration(seconds: 60), () {
-          _dropsService();
-        });
-      });
-      _service.plugin.sdk.webView
-          .evalJavascript('api.rpc.system.chain()')
-          .then((value) => _dropsService());
+  Timer _reconnectWaitTimer;
+  Timer _connectionCheckTimer;
+  Timer _connectionCheckWaitTimer;
+  _startConnectionCheck() {
+    // clear all timers before connection check process.
+    _cancelConnectionCheck();
+
+    // check ws connection through api.rpc.system.chain() every 24s.
+    _connectionCheckTimer =
+        Timer(const Duration(seconds: 24), _connectionCheck);
+  }
+
+  _cancelConnectionCheck() {
+    _connectionCheckTimer?.cancel();
+    _connectionCheckWaitTimer?.cancel();
+    _reconnectWaitTimer?.cancel();
+  }
+
+  _connectionCheck() async {
+    _service.plugin.sdk.webView
+        .evalJavascript('api.rpc.system.chain()')
+        .then((value) => _startConnectionCheck())
+        .catchError((err) => _reconnectNode());
+
+    _connectionCheckWaitTimer =
+        Timer(const Duration(seconds: 18), _reconnectNode);
+  }
+
+  _reconnectNode() async {
+    print('connection check failed, reconnecting...');
+    _restartPlugin();
+
+    _reconnectWaitTimer = Timer(const Duration(seconds: 60), () {
+      // set a timer with 60s timeout to restart check process(it will do reconnect after 60+24s).
+      print('not connected after 60s, reset process.');
+      _startConnectionCheck();
     });
-  }
-
-  _dropsServiceCancel() {
-    _dropsServiceTimer?.cancel();
-    _chainTimer?.cancel();
-    _webViewDropsTimer?.cancel();
   }
 
   Future<void> _changeNetwork(PolkawalletPlugin network,
       {NetworkParams node}) async {
-    _dropsServiceCancel();
+    _cancelConnectionCheck();
     setState(() {
       _connectedNode = null;
     });
@@ -411,8 +423,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
             : null, socketDisconnectedAction: () {
       UI.throttle(() {
-        _dropsServiceCancel();
-        _restartWebConnect();
+        _cancelConnectionCheck();
+        _restartPlugin();
       });
     }, isEVM: _store.account.accountType == AccountType.Evm);
 
@@ -667,8 +679,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                   _store.storage, service.plugin.basic.name)
               : null, socketDisconnectedAction: () {
         UI.throttle(() {
-          _dropsServiceCancel();
-          _restartWebConnect();
+          _cancelConnectionCheck();
+          _restartPlugin();
         });
       }, isEVM: _store.account.accountType == AccountType.Evm);
 
@@ -1007,7 +1019,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _dropsServiceCancel();
+    _cancelConnectionCheck();
     super.dispose();
   }
 
@@ -1017,11 +1029,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.resumed:
-        _dropsService();
+        _startConnectionCheck();
         LocalServer.getInstance().startLocalServer();
         break;
       case AppLifecycleState.paused:
-        _dropsServiceCancel();
+        _cancelConnectionCheck();
         break;
       case AppLifecycleState.detached:
         break;

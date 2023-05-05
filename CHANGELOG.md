@@ -1,3 +1,7 @@
+# [3.4.5-beta] - 20230428
+1. karura/acala plugin update.
+2. bridge module update.
+
 # [3.4.3-beta] - 20230317
 1. kusama/polkadot remote node list update.
 2. bridge page update.
