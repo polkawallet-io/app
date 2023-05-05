@@ -337,6 +337,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Timer _connectionCheckTimer;
   Timer _connectionCheckWaitTimer;
   _startConnectionCheck() {
+    if (_service.store.account.accountType == AccountType.Evm) {
+      return;
+    }
+
     // clear all timers before connection check process.
     _cancelConnectionCheck();
 
