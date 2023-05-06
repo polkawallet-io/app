@@ -217,6 +217,30 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     });
   }
 
+  @override
+  void didUpdateWidget(covariant NetworkSelectWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.isEvm != oldWidget.isEvm) {
+      setState(() {
+        if (widget.isEvm) {
+          if (widget.service.plugin is PluginEvm) {
+            _selectedNetwork = widget.service.plugin;
+          } else {
+            _selectedNetwork =
+                PluginEvm(networkName: PluginEvm().networkList()[0]);
+          }
+        } else {
+          if (widget.service.plugin is! PluginEvm) {
+            _selectedNetwork = widget.service.plugin;
+          } else {
+            _selectedNetwork = widget.plugins[0];
+          }
+        }
+      });
+    }
+  }
+
   void _disconnectWC() {
     if (widget.service.store.account.wcSessionURI != null) {
       widget.service.wc.disconnect();
@@ -384,13 +408,10 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         ? widget.service.keyring.optionals
         : widget.service.keyringEVM.optionals);
     final List<Widget> accountWidgets = [];
-    final isSelect = _selectedNetwork != null &&
-        ((widget.isEvm && _selectedNetwork is PluginEvm) ||
-            (!widget.isEvm && _selectedNetwork is! PluginEvm));
-    if (isSelect) {
+    if (_selectedNetwork != null) {
+      final bool isCurrentNetwork =
+          _selectedNetwork.basic.name == widget.service.plugin.basic.name;
       accountWidgets.addAll(accounts.map((i) {
-        final bool isCurrentNetwork =
-            _selectedNetwork.basic.name == widget.service.plugin.basic.name;
         final addressMap = widget.service.keyring.store
             .pubKeyAddressMap[_selectedNetwork.basic.ss58.toString()];
         final address = !widget.isEvm
@@ -617,93 +638,87 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                   children: accountWidgets,
                 ),
               ))),
-      isSelect
-          ? Column(
-              children: [
-                GestureDetector(
-                  child: Container(
-                      width: double.infinity,
-                      child: RoundedCard(
-                          color: UI.isDarkTheme(context)
-                              ? null
-                              : Color(0xFFEBEAE8),
-                          margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
-                          brightBoxShadow: const [
-                            BoxShadow(
-                              color: Color(0x30000000),
-                              blurRadius: 2.0,
-                              spreadRadius: 1.0,
-                              offset: Offset(
-                                1.0,
-                                1.0,
-                              ),
-                            )
-                          ],
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4.w),
-                                child: SvgPicture.asset(
-                                  "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
-                                  width: 16.h,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              Text(
-                                dic['create'],
-                                style: Theme.of(context).textTheme.headline4,
-                              )
-                            ],
-                          ))),
-                  onTap: () => _onCreateAccount(0),
-                ),
-                Container(
-                  width: 16.h,
-                ),
-                GestureDetector(
-                  child: Container(
-                      width: double.infinity,
-                      child: RoundedCard(
-                          color: UI.isDarkTheme(context)
-                              ? null
-                              : Color(0xFFEBEAE8),
-                          margin: EdgeInsets.only(bottom: 16.h),
-                          padding: EdgeInsets.all(10),
-                          brightBoxShadow: const [
-                            BoxShadow(
-                              color: Color(0x30000000),
-                              blurRadius: 2.0,
-                              spreadRadius: 1.0,
-                              offset: Offset(
-                                1.0,
-                                1.0,
-                              ),
-                            )
-                          ],
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4.w),
-                                child: SvgPicture.asset(
-                                  "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
-                                  width: 16.h,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              Text(
-                                dic['import'],
-                                style: Theme.of(context).textTheme.headline4,
-                              )
-                            ],
-                          ))),
-                  onTap: () => _onCreateAccount(1),
-                )
-              ],
-            )
-          : Container(),
+      Column(
+        children: [
+          GestureDetector(
+            child: Container(
+                width: double.infinity,
+                child: RoundedCard(
+                    color: UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
+                    margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
+                    brightBoxShadow: const [
+                      BoxShadow(
+                        color: Color(0x30000000),
+                        blurRadius: 2.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          1.0,
+                          1.0,
+                        ),
+                      )
+                    ],
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: 4.w),
+                          child: SvgPicture.asset(
+                            "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
+                            width: 16.h,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        Text(
+                          dic['create'],
+                          style: Theme.of(context).textTheme.headline4,
+                        )
+                      ],
+                    ))),
+            onTap: () => _onCreateAccount(0),
+          ),
+          Container(
+            width: 16.h,
+          ),
+          GestureDetector(
+            child: Container(
+                width: double.infinity,
+                child: RoundedCard(
+                    color: UI.isDarkTheme(context) ? null : Color(0xFFEBEAE8),
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    padding: EdgeInsets.all(10),
+                    brightBoxShadow: const [
+                      BoxShadow(
+                        color: Color(0x30000000),
+                        blurRadius: 2.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          1.0,
+                          1.0,
+                        ),
+                      )
+                    ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: 4.w),
+                          child: SvgPicture.asset(
+                            "assets/images/icon_add${UI.isDarkTheme(context) ? "_dark" : ""}.svg",
+                            width: 16.h,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        Text(
+                          dic['import'],
+                          style: Theme.of(context).textTheme.headline4,
+                        )
+                      ],
+                    ))),
+            onTap: () => _onCreateAccount(1),
+          )
+        ],
+      )
     ];
 
     return res;
