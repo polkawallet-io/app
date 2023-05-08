@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:app/app.dart';
@@ -330,6 +331,28 @@ class WalletApi {
       }
     } catch (err) {
       print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getEthConfig() async {
+    //TODO:
+    // const url = '$_configEndpoint/config/ethConfig.json';
+    const url = '$_endpoint/devConfiguration/config/ethConfig.json'; //dev
+    try {
+      final res = await get(Uri.parse(url)).timeout(const Duration(seconds: 3));
+      return jsonDecode(utf8.decode(res.bodyBytes));
+    } on TimeoutException catch (_) {
+      // Handle timeout exception
+      if (kDebugMode) {
+        print('Request timed out.');
+      }
+      return null;
+    } catch (err) {
+      // Handle other exceptions
+      if (kDebugMode) {
+        print(err);
+      }
       return null;
     }
   }

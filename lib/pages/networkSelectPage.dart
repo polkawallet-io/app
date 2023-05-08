@@ -227,8 +227,12 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
           if (widget.service.plugin is PluginEvm) {
             _selectedNetwork = widget.service.plugin;
           } else {
-            _selectedNetwork =
-                PluginEvm(networkName: PluginEvm().networkList()[0]);
+            final ethNetworks =
+                PluginEvm(config: widget.service.store.settings.ethConfig)
+                    .networkList();
+            _selectedNetwork = PluginEvm(
+                networkName: ethNetworks[0],
+                config: widget.service.store.settings.ethConfig);
           }
         } else {
           if (widget.service.plugin is! PluginEvm) {
@@ -793,7 +797,10 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                               ),
                             ),
                             ...(widget.isEvm
-                                    ? PluginEvm().networkList()
+                                    ? PluginEvm(
+                                            config: widget.service.store
+                                                .settings.ethConfig)
+                                        .networkList()
                                     : widget.plugins)
                                 .map((e) {
                               if (e is PolkawalletPlugin) {
@@ -825,8 +832,10 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
                                     : netWorkItem(() {
                                         if (!isCurrent) {
                                           setState(() {
-                                            _selectedNetwork =
-                                                PluginEvm(networkName: e);
+                                            _selectedNetwork = PluginEvm(
+                                                networkName: e,
+                                                config: widget.service.store
+                                                    .settings.ethConfig);
                                             _pluginDisabledSelected = null;
                                           });
                                         }

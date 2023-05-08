@@ -49,6 +49,8 @@ abstract class _SettingsStore with Store {
 
   double _rate = -1;
 
+  Map ethConfig;
+
   @observable
   bool isDarkTheme = false;
 

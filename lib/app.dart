@@ -512,7 +512,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     await _changeNetwork(
         accountType == 0
             ? widget.plugins.firstWhere((e) => e.basic.name == networkName)
-            : PluginEvm(networkName: networkName.split("-").last),
+            : PluginEvm(
+                networkName: networkName.split("-").last,
+                config: _store?.settings?.ethConfig),
         node: node);
     await _service.store.assets.loadCache(_keyring.current, networkName);
 
@@ -647,7 +649,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       final service = AppService(
           widget.plugins,
           store.account.accountType == AccountType.Evm
-              ? (PluginEvm(networkName: store.settings.evmNetwork)
+              ? (PluginEvm(
+                  networkName: store.settings.evmNetwork,
+                  config: _store?.settings?.ethConfig)
                 ..appUtils.switchNetwork ??= (String network,
                     {PageRouteParams pageRoute, int accountType = 0}) async {
                   _switchNetwork(network,
@@ -694,6 +698,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       _startPlugin(service);
     }
+
+    _updateEthConfig();
 
     return _keyring.allAccounts.isNotEmpty
         ? _keyring.allAccounts.length
@@ -1005,6 +1011,15 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     WalletApi.getPluginsConfig(WalletApp.buildTarget).then((value) {
       _store.settings.setPluginsConfig(value);
     });
+  }
+
+  Future<void> _updateEthConfig() async {
+    if (_store == null || _store?.settings?.ethConfig != null) return;
+
+    final config = await WalletApi.getEthConfig();
+    if (config != null) {
+      _store.settings.ethConfig = config;
+    }
   }
 
   BuildContext _getHomePageContext() {
