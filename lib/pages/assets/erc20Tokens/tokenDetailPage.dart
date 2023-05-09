@@ -66,9 +66,11 @@ class _TokenDetailPageSate extends State<EthTokenDetailPage> {
     }
 
     await widget.service.assets.updateEvmTxs(token.id);
-    setState(() {
-      _isTxsLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isTxsLoading = false;
+      });
+    }
   }
 
   @override

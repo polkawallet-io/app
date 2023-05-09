@@ -5,6 +5,7 @@ import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
@@ -110,19 +111,41 @@ class _ContactsPageState extends State<ContactsPage> {
               child: Text(dic['ok']),
               onPressed: () async {
                 Navigator.of(context).pop();
-                await widget.service.keyring.store.deleteContact(i.pubKey);
-                if (i.observation &&
-                    widget.service.keyring.store.currentPubKey == i.pubKey) {
-                  if (widget.service.keyring.allAccounts.length > 0) {
-                    widget.service.keyring
-                        .setCurrent(widget.service.keyring.allAccounts[0]);
 
-                    widget.service.account.handleAccountChanged(
-                        widget.service.keyring.allAccounts[0]);
-                  } else {
-                    widget.service.keyring.setCurrent(KeyPairData());
+                if (widget.service.store.account.accountType ==
+                    AccountType.Evm) {
+                  await widget.service.keyringEVM.store
+                      .deleteContact(i.address);
+                  if (i.observation &&
+                      widget.service.keyringEVM.store.currentAddress ==
+                          i.address) {
+                    if (widget.service.keyringEVM.allAccounts.isNotEmpty) {
+                      widget.service.keyringEVM
+                          .setCurrent(widget.service.keyringEVM.allAccounts[0]);
+
+                      widget.service.account.handleAccountChanged(widget
+                          .service.keyringEVM.allAccounts[0]
+                          .toKeyPairData());
+                    } else {
+                      widget.service.keyringEVM.setCurrent(EthWalletData());
+                    }
+                  }
+                } else {
+                  await widget.service.keyring.store.deleteContact(i.pubKey);
+                  if (i.observation &&
+                      widget.service.keyring.store.currentPubKey == i.pubKey) {
+                    if (widget.service.keyring.allAccounts.isNotEmpty) {
+                      widget.service.keyring
+                          .setCurrent(widget.service.keyring.allAccounts[0]);
+
+                      widget.service.account.handleAccountChanged(
+                          widget.service.keyring.allAccounts[0]);
+                    } else {
+                      widget.service.keyring.setCurrent(KeyPairData());
+                    }
                   }
                 }
+
                 _refreshData();
               },
             ),
