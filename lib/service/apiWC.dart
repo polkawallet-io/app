@@ -19,8 +19,13 @@ class ApiWC {
   final AppService apiRoot;
 
   void initWalletConnect(String uri, Function getHomePageContext) {
-    final cachedSession = apiRoot.store.storage
-        .read(apiRoot.store.account.localStorageWCSessionKey);
+    /// use cachedSession only wc not connected
+    final connected = apiRoot.store.account.wcSession != null ||
+        apiRoot.store.account.wcV2Sessions.isNotEmpty;
+    final cachedSession = connected
+        ? null
+        : apiRoot.store.storage
+            .read(apiRoot.store.account.localStorageWCSessionKey);
 
     final chainId = int.tryParse(apiRoot.plugin.nodeList[0].chainId ?? '1');
 
@@ -31,6 +36,12 @@ class ApiWC {
 
       if (cachedSession == null) {
         apiRoot.store.account.setWCPairing(true);
+      }
+    } else {
+      /// v1 disconnect old session itself before new connection,
+      /// so we only manual disconnect for new v2 session
+      if (connected) {
+        disconnect();
       }
     }
 
@@ -70,7 +81,7 @@ class ApiWC {
   }
 
   void subscribeEventsV2(Function getHomePageContext) {
-    apiRoot.plugin.sdk.api.walletConnect.subscribeEvents(onPairing:
+    apiRoot.plugin.sdk.api.walletConnect.subscribeEventsV2(onPairing:
         (WCPairingData pairingData, WCProposerMeta peerMetaData, String uriV2) {
       print('get v2 wc pairing');
       _handleWCPairingV2(getHomePageContext(), pairingData);
