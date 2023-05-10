@@ -44,7 +44,6 @@ class ApiAssets {
         (apiRoot.plugin as PluginEvm).network, address,
         contractAddress: tokenId.startsWith('0x') ? tokenId : null);
     if (data != null && data['result'] != null) {
-      print(data['result']);
       final list =
           (data['result'] as List).map((e) => EvmTxData.fromJson(e)).toList();
       apiRoot.store.assets.setEvmTxs(list, tokenId, address);

@@ -182,9 +182,11 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
       final wcVersion =
           widget.service.store.account.wcSessionURI != null ? 1 : 2;
       final session = wcVersion == 2
-          ? widget.service.store.account.wcV2Sessions
-              .firstWhere((e) => e.topic == args.request.topic)
-              .peerMeta
+          ? widget.service.store.account.wcV2Sessions.isNotEmpty
+              ? widget.service.store.account.wcV2Sessions
+                  .firstWhere((e) => e.topic == args.request.topic)
+                  .peerMeta
+              : null
           : widget.service.store.account.wcSession;
       final acc = widget.service.keyringEVM.current.toKeyPairData();
 
