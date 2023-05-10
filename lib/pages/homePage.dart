@@ -24,7 +24,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -116,11 +115,16 @@ class _HomePageState extends State<HomePage> {
     //accountType(0:Substrate,1:evm)
     final accountType = params['accountType'] ?? 0;
     final tab = params['tab'];
-    if (network != null && network != widget.service.plugin.basic.name) {
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+    if (network != null) {
+      if ((widget.service.plugin is! PluginEvm &&
+              network != widget.service.plugin.basic.name) ||
+          (widget.service.plugin is PluginEvm &&
+              network != (widget.service.plugin as PluginEvm).network)) {
+        Navigator.popUntil(context, ModalRoute.withName('/'));
 
-      _setupWssNotifyTimer();
-      await widget.switchNetwork(network, accountType: accountType);
+        _setupWssNotifyTimer();
+        await widget.switchNetwork(network, accountType: accountType);
+      }
     }
     if (tab != null) {
       final initialTab = int.parse(tab);
@@ -177,8 +181,11 @@ class _HomePageState extends State<HomePage> {
       widget.service.store.settings.initDapps();
 
       if (widget.service.store.account.accountType == AccountType.Evm &&
-          !widget.service.plugin.basic.name.contains('evm-')) {
-        widget.switchNetwork(network_ethereum,
+          widget.service.plugin is! PluginEvm) {
+        final ethNetworks =
+            PluginEvm(config: widget.service.store.settings.ethConfig)
+                .networkList();
+        widget.switchNetwork(ethNetworks[0],
             accountType: 1, askBeforeChange: false);
       }
     });

@@ -917,10 +917,15 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         }
       }
 
-      if (network != null && network != _service.plugin.basic.name) {
-        _switchNetwork(network,
-            pageRoute: PageRouteParams(pathDatas[0], args: args),
-            accountType: accountType);
+      if (network != null) {
+        if ((_service.plugin is! PluginEvm &&
+                network != _service.plugin.basic.name) ||
+            (_service.plugin is PluginEvm &&
+                network != (_service.plugin as PluginEvm).network)) {
+          _switchNetwork(network,
+              pageRoute: PageRouteParams(pathDatas[0], args: args),
+              accountType: accountType);
+        }
       } else {
         _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
         WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
