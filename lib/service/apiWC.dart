@@ -19,6 +19,11 @@ class ApiWC {
   final AppService apiRoot;
 
   void initWalletConnect(String uri, Function getHomePageContext) {
+    if (apiRoot.plugin is! PluginEvm) {
+      showNetworkMismatch(getHomePageContext());
+      return;
+    }
+
     /// use cachedSession only wc not connected
     final connected = apiRoot.store.account.wcSession != null ||
         apiRoot.store.account.wcV2Sessions.isNotEmpty;
@@ -141,24 +146,7 @@ class ApiWC {
       });
     }
     if (!isNetworkMatch) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-      showCupertinoDialog(
-          context: context,
-          builder: (ctx) {
-            return PolkawalletAlertDialog(
-              type: DialogType.warn,
-              content: Text(dic['wc.pair.notMatch']),
-              actions: [
-                PolkawalletActionSheetAction(
-                  isDefaultAction: true,
-                  child: Text(
-                    I18n.of(ctx).getDic(i18n_full_dic_ui, 'common')['ok'],
-                  ),
-                  onPressed: () => Navigator.of(ctx).pop(),
-                ),
-              ],
-            );
-          });
+      await showNetworkMismatch(context);
       apiRoot.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');
       apiRoot.wc.resetState();
       return;
@@ -179,6 +167,27 @@ class ApiWC {
       apiRoot.plugin.sdk.api.walletConnect.confirmPairingV2(false, '');
       apiRoot.wc.resetState();
     }
+  }
+
+  Future<dynamic> showNetworkMismatch(BuildContext context) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+    return showCupertinoDialog(
+        context: context,
+        builder: (ctx) {
+          return PolkawalletAlertDialog(
+            type: DialogType.warn,
+            content: Text(dic['wc.pair.notMatch']),
+            actions: [
+              PolkawalletActionSheetAction(
+                isDefaultAction: true,
+                child: Text(
+                  I18n.of(ctx).getDic(i18n_full_dic_ui, 'common')['ok'],
+                ),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+            ],
+          );
+        });
   }
 
   Future<void> handleWCCallRequest(

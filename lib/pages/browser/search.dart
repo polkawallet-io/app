@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 
 /// Shows a full screen search page and returns the search result selected by
@@ -227,12 +226,12 @@ abstract class SearchDelegate<T> {
     assert(theme != null);
     return theme.copyWith(
       appBarTheme: AppBarTheme(
-        brightness: colorScheme.brightness,
         backgroundColor: colorScheme.brightness == Brightness.dark
             ? Colors.grey[900]
             : Colors.white,
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-        textTheme: theme.textTheme,
+        toolbarTextStyle: theme.textTheme.bodyText2,
+        titleTextStyle: theme.textTheme.headline6,
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
           InputDecorationTheme(

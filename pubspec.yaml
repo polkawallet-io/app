@@ -36,6 +36,7 @@ dependencies:
   firebase_analytics: ^10.1.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
+  another_transformer_page_view: ^2.0.1
   polkawallet_ui: ^0.5.1
   polkawallet_sdk: ^0.5.1
   ethereum_addresses: ^1.0.2
@@ -110,10 +111,6 @@ dependency_overrides:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
 #     path: ../../coding/polkawallet/sdk
-  transformer_page_view:
-    git:
-      url: https://github.com/polkawallet-io/transformer_page_view.git
-      ref: 19f3b7c46d5e81653cf027baa2cbe8d629dc052d
   charts_flutter:
      git:
        url: https://github.com/google/charts
@@ -123,10 +120,6 @@ dependency_overrides:
   flutter_html: ^3.0.0-alpha.6
   flutter_slidable: ^1.2.0
   platform: ^3.1.0
-  flutter_qr_scan:
-    git:
-      url: https://github.com/polkawallet-io/flutter_qr_reader.git
-      ref: 90fdd52b98e954c301b68f605c0c6c0fd21cef61
   polkawallet_plugin_evm:
     path: ../../coding/polkawallet/polkawallet_plugin_evm
 
