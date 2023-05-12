@@ -180,59 +180,64 @@ class WCPairingPermissions extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
           margin: const EdgeInsets.symmetric(horizontal: 16),
           color: Colors.orangeAccent.shade100,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Text(
-                chain.toUpperCase(),
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall
-                    .copyWith(fontSize: 16),
-              ),
-              Text(
-                'Methods',
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall
-                    .copyWith(fontSize: 14),
-              ),
-              Text(
-                jsonEncode(permission.methods),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    .copyWith(fontWeight: FontWeight.normal),
-              ),
-              Text(
-                'Events',
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall
-                    .copyWith(fontSize: 14),
-              ),
-              Text(
-                jsonEncode(permission.events),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    .copyWith(fontWeight: FontWeight.normal),
-              ),
-              Text(
-                dic['wc.expiry'],
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall
-                    .copyWith(fontSize: 14),
-              ),
-              Text(
-                Fmt.dateTime(
-                    DateTime.fromMillisecondsSinceEpoch(expiry * 1000)),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    .copyWith(fontWeight: FontWeight.normal),
-              )
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    chain.toUpperCase(),
+                    style: Theme.of(context)
+                        .textTheme
+                        .displaySmall
+                        .copyWith(fontSize: 16),
+                  ),
+                  Text(
+                    'Methods',
+                    style: Theme.of(context)
+                        .textTheme
+                        .displaySmall
+                        .copyWith(fontSize: 14),
+                  ),
+                  Text(
+                    jsonEncode(permission.methods),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    'Events',
+                    style: Theme.of(context)
+                        .textTheme
+                        .displaySmall
+                        .copyWith(fontSize: 14),
+                  ),
+                  Text(
+                    jsonEncode(permission.events),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    dic['wc.expiry'],
+                    style: Theme.of(context)
+                        .textTheme
+                        .displaySmall
+                        .copyWith(fontSize: 14),
+                  ),
+                  Text(
+                    Fmt.dateTime(
+                        DateTime.fromMillisecondsSinceEpoch(expiry * 1000)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        .copyWith(fontWeight: FontWeight.normal),
+                  )
+                ],
+              ))
             ],
           ),
         );

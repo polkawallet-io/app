@@ -19,11 +19,6 @@ class ApiWC {
   final AppService apiRoot;
 
   void initWalletConnect(String uri, Function getHomePageContext) {
-    if (apiRoot.plugin is! PluginEvm) {
-      showNetworkMismatch(getHomePageContext());
-      return;
-    }
-
     /// use cachedSession only wc not connected
     final connected = apiRoot.store.account.wcSession != null ||
         apiRoot.store.account.wcV2Sessions.isNotEmpty;
@@ -37,6 +32,11 @@ class ApiWC {
     /// subscribe events for v1
     /// v2 was subscribed while plugin start
     if (!uri.contains('@2')) {
+      if (apiRoot.plugin is! PluginEvm) {
+        showNetworkMismatch(getHomePageContext());
+        return;
+      }
+
       subscribeEvents(getHomePageContext(), uri: uri);
 
       if (cachedSession == null) {
