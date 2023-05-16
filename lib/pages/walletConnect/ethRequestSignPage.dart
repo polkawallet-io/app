@@ -14,7 +14,9 @@ import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class EthRequestSignPageParams {
   EthRequestSignPageParams(this.request, this.originUri, {this.requestRaw});
@@ -251,8 +253,11 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
                             child: Button(
                               isBlueBg: false,
                               onPressed: _rejectRequest,
-                              child: Text(I18n.of(context).getDic(
-                                  i18n_full_dic_app, 'account')['wc.reject']),
+                              child: Text(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'account')['wc.reject'],
+                                  style: const TextStyle(
+                                      color: PluginColorsDark.primary)),
                             ),
                           ),
                         ),
@@ -265,10 +270,14 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
                                   ? null
                                   : () => _showPasswordDialog(),
                               child: Text(
-                                  _isRequestSendTx(args.request)
-                                      ? dic['submit.sign.send']
-                                      : dic['submit.sign'],
-                                  style: const TextStyle(color: Colors.white)),
+                                _isRequestSendTx(args.request)
+                                    ? dic['submit.sign.send']
+                                    : dic['submit.sign'],
+                                style: TextStyle(
+                                    color: UI.isDarkTheme(context)
+                                        ? Colors.black
+                                        : Colors.white),
+                              ),
                             ),
                           ),
                         ),

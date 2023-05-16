@@ -9,7 +9,9 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class WCPairingConfirmPageParams {
   WCPairingConfirmPageParams({this.pairingData, this.peerMeta});
@@ -109,7 +111,10 @@ class WCPairingConfirmPage extends StatelessWidget {
                     child: Button(
                       isBlueBg: false,
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(dic['wc.reject']),
+                      child: Text(
+                        dic['wc.reject'],
+                        style: const TextStyle(color: PluginColorsDark.primary),
+                      ),
                     ),
                   ),
                 ),
@@ -119,7 +124,10 @@ class WCPairingConfirmPage extends StatelessWidget {
                     child: Button(
                       child: Text(
                         dic['wc.approve'],
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color: UI.isDarkTheme(context)
+                                ? Colors.black
+                                : Colors.white),
                       ),
                       onPressed: () => Navigator.of(context).pop(true),
                     ),
@@ -179,7 +187,9 @@ class WCPairingPermissions extends StatelessWidget {
         return RoundedCard(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          color: Colors.orangeAccent.shade100,
+          color: UI.isDarkTheme(context)
+              ? Colors.orangeAccent.shade400
+              : Colors.orangeAccent.shade100,
           child: Row(
             children: [
               Expanded(

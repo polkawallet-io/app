@@ -10,7 +10,9 @@ import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
 import 'package:polkawallet_ui/components/v3/index.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class DotRequestSignPageParams {
   DotRequestSignPageParams(this.request, {this.requestRaw});
@@ -126,8 +128,11 @@ class DotRequestSignPageState extends State<DotRequestSignPage> {
                             child: Button(
                               isBlueBg: false,
                               onPressed: _rejectRequest,
-                              child: Text(I18n.of(context).getDic(
-                                  i18n_full_dic_app, 'account')['wc.reject']),
+                              child: Text(
+                                  I18n.of(context).getDic(i18n_full_dic_app,
+                                      'account')['wc.reject'],
+                                  style: const TextStyle(
+                                      color: PluginColorsDark.primary)),
                             ),
                           ),
                         ),
@@ -139,8 +144,13 @@ class DotRequestSignPageState extends State<DotRequestSignPage> {
                               onPressed: _submitting
                                   ? null
                                   : () => _showPasswordDialog(),
-                              child: Text(dic['submit.sign'],
-                                  style: const TextStyle(color: Colors.white)),
+                              child: Text(
+                                dic['submit.sign'],
+                                style: TextStyle(
+                                    color: UI.isDarkTheme(context)
+                                        ? Colors.black
+                                        : Colors.white),
+                              ),
                             ),
                           ),
                         ),
