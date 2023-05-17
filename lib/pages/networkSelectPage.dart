@@ -90,7 +90,9 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
                       isBlueBg: true,
                       icon: SvgPicture.asset(
                         "assets/images/${_isEvm ? "evm" : "substrate"}.svg",
-                        color: Colors.white,
+                        color: UI.isDarkTheme(context)
+                            ? Colors.black
+                            : Colors.white,
                         height: 22,
                       )),
                 ))
