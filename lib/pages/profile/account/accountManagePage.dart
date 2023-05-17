@@ -1,8 +1,10 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/account/changeNamePage.dart';
 import 'package:app/pages/profile/account/changePasswordPage.dart';
 import 'package:app/pages/profile/account/exportAccountPage.dart';
 import 'package:app/pages/profile/account/signPage.dart';
 import 'package:app/pages/profile/index.dart';
+import 'package:app/pages/walletConnect/wcPairingManagePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -39,20 +41,33 @@ class _AccountManagePageState extends State<AccountManagePage> {
     final password = await widget.service.account
         .getPassword(context, widget.service.keyring.current);
     if (password != null) {
-      widget.service.plugin.sdk.api.keyring
-          .deleteAccount(widget.service.keyring, widget.service.keyring.current)
-          .then((_) {
-        // refresh balance
-        widget.service.account
-            .handleAccountChanged(widget.service.keyring.current);
-      });
+      if (widget.service.store.account.accountType == AccountType.Substrate) {
+        widget.service.plugin.sdk.api.keyring
+            .deleteAccount(
+                widget.service.keyring, widget.service.keyring.current)
+            .then((_) {
+          // refresh balance
+          widget.service.account
+              .handleAccountChanged(widget.service.keyring.current);
+        });
+      } else {
+        widget.service.plugin.sdk.api.eth.keyring
+            .deleteAccount(
+                widget.service.keyringEVM, widget.service.keyringEVM.current)
+            .then((_) {
+          widget.service.account.handleAccountChanged(
+              widget.service.keyringEVM.current.toKeyPairData());
+        });
+      }
       Navigator.of(context).pop();
     }
   }
 
   Future<void> _updateBiometricAuth(bool enable) async {
     print('enable: $enable');
-    final pubKey = widget.service.keyring.current.pubKey;
+    final pubKey = widget.service.store.account.accountType == AccountType.Evm
+        ? widget.service.keyringEVM.current.address
+        : widget.service.keyring.current.pubKey;
     final password = await showCupertinoDialog(
       context: context,
       builder: (_) {
@@ -60,7 +75,13 @@ class _AccountManagePageState extends State<AccountManagePage> {
           widget.service.plugin.sdk.api,
           title: Text(
               I18n.of(context).getDic(i18n_full_dic_app, 'account')['unlock']),
-          account: widget.service.keyring.current,
+          account: widget.service.store.account.accountType == AccountType.Evm
+              ? null
+              : widget.service.keyring.current,
+          ethAccount:
+              widget.service.store.account.accountType == AccountType.Evm
+                  ? widget.service.keyringEVM.current
+                  : null,
         );
       },
     );
@@ -77,10 +98,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
       } catch (err) {
         print(err);
         // user may cancel the biometric auth. then we set biometric disabled
-        widget.service.account.closeBiometricDisabled(pubKey);
+        widget.service.account.setBiometricDisabled(pubKey);
       }
     } else {
-      widget.service.account.closeBiometricDisabled(pubKey);
+      widget.service.account.setBiometricDisabled(pubKey);
       result = enable;
     }
 
@@ -105,7 +126,7 @@ class _AccountManagePageState extends State<AccountManagePage> {
     final storeFile =
         await widget.service.account.getBiometricPassStoreFile(context, pubKey);
     final isAuthorized =
-        !widget.service.account.isCloseBiometricDisabled(pubKey);
+        !widget.service.account.isBiometricDisabledByUser(pubKey);
     setState(() {
       _isBiometricAuthorized = isAuthorized;
       _authStorage = storeFile;
@@ -132,7 +153,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
 
-    final acc = widget.service.keyring.current;
+    final dynamic acc =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current;
 
     final primaryColor = Theme.of(context).primaryColor;
     return Scaffold(
@@ -232,6 +256,22 @@ class _AccountManagePageState extends State<AccountManagePage> {
                           }
                         },
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              RoundedCard(
+                margin: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 16.h),
+                padding: EdgeInsets.fromLTRB(8.w, 16.h, 8.w, 16.h),
+                child: Column(
+                  children: [
+                    SettingsPageListItem(
+                      label: I18n.of(context)
+                          .getDic(i18n_full_dic_app, 'account')['wc.pairing'],
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(WCPairingManagePage.route);
+                      },
                     ),
                   ],
                 ),

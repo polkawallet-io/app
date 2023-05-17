@@ -143,4 +143,14 @@ const Map<String, String> enPublic = {
       'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
   'bridge.connecting.warn': 'Connection timeout. \ntry again later.',
   'bridge.search.chain': 'Search Chain',
+  'hub.cover.evm':
+      'A simple tool to bing your Substrate and EVM addresses enjoy the two different constructional ecosystems in Polkawallet.',
+  'evm.bind': 'Bind',
+  'evm.bound': 'Bound Account',
+  'evm.claim.signature': 'Create Claim signature',
+  'evm.more.features': 'Stay tuned for more features \ncoming !',
+  'evm.bind.success': 'You have bound your EVM account successfully!',
+  'evm.change.title': 'Change Account Genre',
+  'evm.change.tips':
+      'You will change into the bound substrate account directly',
 };

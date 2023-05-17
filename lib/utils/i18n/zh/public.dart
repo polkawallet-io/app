@@ -130,4 +130,12 @@ const Map<String, String> zhPublic = {
   'bridge.address.warn': '不建议修改跨链转账的收款地址。\n该功能仅限高级用户使用。',
   'bridge.connecting.warn': '网络连接超时，\n请稍后重试',
   'bridge.search.chain': '搜索链',
+  'hub.cover.evm': '一个简单的工具，使您的Substrate和EVM地址享受Polkawallet中的两种不同的构造生态系统。',
+  'evm.bind': '绑定',
+  'evm.bound': '绑定账户',
+  'evm.claim.signature': '创建声明签名',
+  'evm.bind.success': '您已成功绑定您的 EVM 账户！',
+  'evm.more.features': '请继续关注更多功能\n即将推出！',
+  'evm.change.title': '切换账户体系',
+  'evm.change.tips': '您将切换至被绑定的Substrate账户',
 };

@@ -1,112 +1,91 @@
-import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcSessionDetailPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/roundedButton.dart';
-import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/ethSignRequestInfo.dart';
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 
-class WCSessionsPage extends StatefulWidget {
-  const WCSessionsPage(this.service);
+class WCSessionsPage extends StatelessWidget {
+  const WCSessionsPage(this.service, {Key key}) : super(key: key);
   final AppService service;
 
-  static final String route = '/wc/session';
-
-  @override
-  _WCSessionsPageState createState() => _WCSessionsPageState();
-}
-
-class _WCSessionsPageState extends State<WCSessionsPage> {
-  bool _submitting = false;
+  static const String route = '/wc/session';
 
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
 
     return Observer(builder: (_) {
-      final sessions = widget.service.store.account.wcSessions;
+      final sessionCount = service.store.account.wcV2Sessions.length;
+
       return Scaffold(
         appBar: AppBar(
             title: Image.asset('assets/images/wallet_connect_banner.png',
-                height: 24),
+                height: 20),
             centerTitle: true,
-            leading: BackBtn()),
+            leading: const BackBtn()),
         body: SafeArea(
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: sessions.map((session) {
-              final permissions =
-                  List.of(session.permissions.jsonrpc['methods']);
-              return RoundedCard(
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListView(
-                          physics: BouncingScrollPhysics(),
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Text(
-                                dic['wc.connect'],
-                                style: Theme.of(context).textTheme.headline4,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 16, right: 16),
-                              child: WCPairingSourceInfo(session.peer),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Text(
-                                dic['wc.permission'],
-                                style: Theme.of(context).textTheme.headline4,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: permissions.map((e) {
-                                  return Text('- $e');
-                                }).toList(),
-                              ),
-                            )
-                          ]),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ListView.builder(
+                itemCount: service.store.account.wcSessionURI != null
+                    ? sessionCount + 2
+                    : sessionCount + 1,
+                itemBuilder: (_, index) {
+                  if (index == 0) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        dic['wc.session'],
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    );
+                  }
+                  if (index == 1 &&
+                      service.store.account.wcSessionURI != null) {
+                    return GestureDetector(
+                      child: RoundedCard(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: WCPairingSourceInfo(
+                            service.store.account.wcSession,
+                            trailing:
+                                const Icon(Icons.arrow_forward_ios, size: 16)),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            WCSessionDetailPage.route,
+                            arguments: WCSessionDetailPageParams(
+                                version: 1,
+                                topic: '',
+                                peerMeta: service.store.account.wcSession));
+                      },
+                    );
+                  }
+                  final i = service.store.account.wcSessionURI != null
+                      ? index - 2
+                      : index - 1;
+                  return GestureDetector(
+                    child: RoundedCard(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: WCPairingSourceInfo(
+                          service.store.account.wcV2Sessions[i].peerMeta,
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 16)),
                     ),
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.lightGreen,
-                            ),
-                            Text(dic['wc.connected'])
-                          ],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: RoundedButton(
-                            text: dic['wc.disconnect'],
-                            color: Colors.red,
-                            onPressed: () {
-                              // widget.service.plugin.sdk.api.walletConnect.disconnect({
-                              //   'topic': _walletConnectSession.topic,
-                              //   'reason': "user closed connection"
-                              // });
-                            },
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              );
-            }).toList(),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(WCSessionDetailPage.route,
+                          arguments: WCSessionDetailPageParams(
+                              version: 2,
+                              topic:
+                                  service.store.account.wcV2Sessions[i].topic,
+                              peerMeta: service
+                                  .store.account.wcV2Sessions[i].peerMeta));
+                    },
+                  );
+                }),
           ),
         ),
       );

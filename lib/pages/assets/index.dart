@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:app/common/components/CustomRefreshIndicator.dart';
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
-import 'package:app/pages/assets/nodeSelectPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
@@ -27,11 +27,13 @@ import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:rive/rive.dart';
 import 'package:sticky_headers/sticky_headers.dart';
@@ -51,17 +53,18 @@ class AssetsPage extends StatefulWidget {
     this.plugins,
     this.connectedNode,
     this.checkJSCodeUpdate,
-    this.switchNetwork,
-    this.handleWalletConnect,
+    this.disabledPlugins,
+    this.changeNetwork,
   );
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(PolkawalletPlugin) checkJSCodeUpdate;
-  final Future<void> Function(String, {NetworkParams node}) switchNetwork;
-  final Future<void> Function(String) handleWalletConnect;
+  // final Function(String) handleWalletConnect;
 
   final List<PolkawalletPlugin> plugins;
+  final List<PluginDisabled> disabledPlugins;
+  final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   @override
   _AssetsState createState() => _AssetsState();
@@ -89,9 +92,11 @@ class _AssetsState extends State<AssetsPage> {
       _refreshing = true;
     });
     await widget.service.plugin.updateBalances(widget.service.keyring.current);
-    setState(() {
-      _refreshing = false;
-    });
+    if (mounted) {
+      setState(() {
+        _refreshing = false;
+      });
+    }
   }
 
   Future<void> _updateMarketPrices() async {
@@ -104,6 +109,7 @@ class _AssetsState extends State<AssetsPage> {
   }
 
   Future<void> _handleScan() async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     final data = (await Navigator.pushNamed(
       context,
       ScanPage.route,
@@ -112,25 +118,47 @@ class _AssetsState extends State<AssetsPage> {
     if (data != null) {
       if (data.type == QRCodeResultType.rawData &&
           data.rawData.substring(0, 3) == 'wc:') {
-        widget.handleWalletConnect(data.rawData);
+        if (widget.service.keyring.current.observation == true) {
+          showCupertinoDialog(
+              context: context,
+              builder: (_) {
+                return PolkawalletAlertDialog(
+                  type: DialogType.warn,
+                  content: Text(dic['wc.ob.invalid']),
+                  actions: [
+                    PolkawalletActionSheetAction(
+                      isDefaultAction: true,
+                      child: Text(I18n.of(context)
+                          .getDic(i18n_full_dic_ui, 'common')['ok']),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+          return;
+        }
+        widget.service.wc.initWalletConnect(data.rawData, () => context);
         return;
       }
 
       if (data.type == QRCodeResultType.address) {
-        if (widget.service.plugin.basic.name == para_chain_name_karura ||
-            widget.service.plugin.basic.name == para_chain_name_acala) {
-          final symbol =
-              (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
-          Navigator.of(context).pushNamed('/assets/token/transfer', arguments: {
-            'tokenNameId': symbol,
-            'address': data.address.address
-          });
-          return;
+        if (data.address.chainType == "substrate") {
+          if (widget.service.plugin.basic.name == para_chain_name_karura ||
+              widget.service.plugin.basic.name == para_chain_name_acala) {
+            final symbol =
+                (widget.service.plugin.networkState.tokenSymbol ?? [''])[0];
+            Navigator.of(context).pushNamed('/assets/token/transfer',
+                arguments: {
+                  'tokenNameId': symbol,
+                  'address': data.address.address
+                });
+            return;
+          }
+          Navigator.of(context).pushNamed(
+            TransferPage.route,
+            arguments: TransferPageParams(address: data.address.address),
+          );
         }
-        Navigator.of(context).pushNamed(
-          TransferPage.route,
-          arguments: TransferPageParams(address: data.address.address),
-        );
         return;
       }
     }
@@ -142,9 +170,11 @@ class _AssetsState extends State<AssetsPage> {
     if (oldWidget.connectedNode?.endpoint != widget.connectedNode?.endpoint) {
       if (_refreshing) {
         _refreshKey.currentState.dismiss(CustomRefreshIndicatorMode.canceled);
-        setState(() {
-          _refreshing = false;
-        });
+        if (mounted) {
+          setState(() {
+            _refreshing = false;
+          });
+        }
       }
     }
   }
@@ -259,94 +289,57 @@ class _AssetsState extends State<AssetsPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
+            margin: EdgeInsets.only(right: 8.w),
             child: AddressIcon(widget.service.keyring.current.address,
                 svg: widget.service.keyring.current.icon),
-            margin: EdgeInsets.only(right: 8.w),
           ),
-          Padding(
-              padding: EdgeInsets.only(bottom: 5),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "${Fmt.address(widget.service.keyring.current.address)}",
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (BuildContext context) {
-                          return Container(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                Fmt.address(widget.service.keyring.current.address),
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              Container(
+                color: Colors.transparent,
+                margin: EdgeInsets.only(top: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    widget.connectedNode == null
+                        ? Container(
+                            width: 9,
+                            height: 9,
+                            margin: EdgeInsets.only(right: 4),
+                            child: Center(
+                                child: RiveAnimation.asset(
+                              'assets/images/connecting.riv',
+                            )))
+                        : Container(
+                            width: 9,
+                            height: 9,
+                            margin: EdgeInsets.only(right: 4),
                             decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10)),
-                            ),
-                            height: MediaQuery.of(context).size.height -
-                                MediaQuery.of(context).padding.top -
-                                MediaQuery.of(context).padding.bottom -
-                                kToolbarHeight -
-                                20.h,
-                            width: double.infinity,
-                            child: NodeSelectPage(widget.service,
-                                widget.plugins, widget.switchNetwork),
-                          );
-                        },
-                        context: context,
-                      );
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      margin: EdgeInsets.only(top: 2),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          widget.connectedNode == null
-                              ? Container(
-                                  width: 9,
-                                  height: 9,
-                                  margin: EdgeInsets.only(right: 4),
-                                  child: Center(
-                                      child: RiveAnimation.asset(
-                                    'assets/images/connecting.riv',
-                                  )))
-                              : Container(
-                                  width: 9,
-                                  height: 9,
-                                  margin: EdgeInsets.only(right: 4),
-                                  decoration: BoxDecoration(
-                                      color: UI.isDarkTheme(context)
-                                          ? Color(0xFF82FF99)
-                                          : Color(0xFF7D97EE),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.5))),
-                                ),
-                          Text(
-                            "${widget.service.plugin.basic.name.toUpperCase()}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4
-                                .copyWith(
-                                    fontWeight: FontWeight.w600, height: 1.1),
+                                color: UI.isDarkTheme(context)
+                                    ? Color(0xFF82FF99)
+                                    : Color(0xFF7D97EE),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.5))),
                           ),
-                          Container(
-                            width: 14,
-                            margin: EdgeInsets.only(left: 9),
-                            child: SvgPicture.asset(
-                              'assets/images/icon_changenetwork.svg',
-                              width: 14,
-                            ),
-                          )
-                        ],
-                      ),
+                    Text(
+                      widget.service.plugin.basic.name.toUpperCase(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontWeight: FontWeight.w600, height: 1.1),
                     ),
-                  )
-                ],
-              )),
+                    const SizedBox(width: 8)
+                  ],
+                ),
+              )
+            ],
+          ),
         ],
       ),
       centerTitle: true,
@@ -362,19 +355,17 @@ class _AssetsState extends State<AssetsPage> {
                 color: UI.isDarkTheme(context) ? Colors.black : Colors.white,
                 height: 22,
               ),
-              onPressed: widget.service.keyring.allAccounts.length > 0
-                  ? () async {
-                      final selected = (await Navigator.of(context)
-                              .pushNamed(NetworkSelectPage.route))
-                          as PolkawalletPlugin;
-                      setState(() {});
-                      if (selected != null &&
-                          selected.basic.name !=
-                              widget.service.plugin.basic.name) {
-                        widget.checkJSCodeUpdate(selected);
-                      }
-                    }
-                  : null,
+              onPressed: () async {
+                final selected = (await Navigator.of(context)
+                    .pushNamed(NetworkSelectPage.route)) as PolkawalletPlugin;
+                if (!mounted) return;
+
+                setState(() {});
+                if (selected != null &&
+                    selected.basic.name != widget.service.plugin.basic.name) {
+                  widget.checkJSCodeUpdate(selected);
+                }
+              },
             )
           ])),
       actions: <Widget>[

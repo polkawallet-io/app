@@ -101,19 +101,85 @@ mixin _$AccountStore on _AccountStore, Store {
     });
   }
 
-  final _$wcSessionsAtom = Atom(name: '_AccountStore.wcSessions');
+  final _$wcSessionURIAtom = Atom(name: '_AccountStore.wcSessionURI');
 
   @override
-  ObservableList<WCPairedData> get wcSessions {
-    _$wcSessionsAtom.reportRead();
-    return super.wcSessions;
+  String get wcSessionURI {
+    _$wcSessionURIAtom.reportRead();
+    return super.wcSessionURI;
   }
 
   @override
-  set wcSessions(ObservableList<WCPairedData> value) {
-    _$wcSessionsAtom.reportWrite(value, super.wcSessions, () {
-      super.wcSessions = value;
+  set wcSessionURI(String value) {
+    _$wcSessionURIAtom.reportWrite(value, super.wcSessionURI, () {
+      super.wcSessionURI = value;
     });
+  }
+
+  final _$wcSessionAtom = Atom(name: '_AccountStore.wcSession');
+
+  @override
+  WCProposerMeta get wcSession {
+    _$wcSessionAtom.reportRead();
+    return super.wcSession;
+  }
+
+  @override
+  set wcSession(WCProposerMeta value) {
+    _$wcSessionAtom.reportWrite(value, super.wcSession, () {
+      super.wcSession = value;
+    });
+  }
+
+  final _$wcCallRequestsAtom = Atom(name: '_AccountStore.wcCallRequests');
+
+  @override
+  ObservableList<WCCallRequestData> get wcCallRequests {
+    _$wcCallRequestsAtom.reportRead();
+    return super.wcCallRequests;
+  }
+
+  @override
+  set wcCallRequests(ObservableList<WCCallRequestData> value) {
+    _$wcCallRequestsAtom.reportWrite(value, super.wcCallRequests, () {
+      super.wcCallRequests = value;
+    });
+  }
+
+  final _$wcV2SessionsAtom = Atom(name: '_AccountStore.wcV2Sessions');
+
+  @override
+  ObservableList<WCSessionDataV2> get wcV2Sessions {
+    _$wcV2SessionsAtom.reportRead();
+    return super.wcV2Sessions;
+  }
+
+  @override
+  set wcV2Sessions(ObservableList<WCSessionDataV2> value) {
+    _$wcV2SessionsAtom.reportWrite(value, super.wcV2Sessions, () {
+      super.wcV2Sessions = value;
+    });
+  }
+
+  final _$accountTypeAtom = Atom(name: '_AccountStore.accountType');
+
+  @override
+  AccountType get accountType {
+    _$accountTypeAtom.reportRead();
+    return super.accountType;
+  }
+
+  @override
+  set accountType(AccountType value) {
+    _$accountTypeAtom.reportWrite(value, super.accountType, () {
+      super.accountType = value;
+    });
+  }
+
+  final _$initAsyncAction = AsyncAction('_AccountStore.init');
+  @override
+  Future<void> init() {
+    return _$initAsyncAction.run(() => super.init());
   }
 
   final _$_AccountStoreActionController =
@@ -153,11 +219,11 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setAccountCreated() {
+  void setAccountCreated(bool created) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
         name: '_AccountStore.setAccountCreated');
     try {
-      return super.setAccountCreated();
+      return super.setAccountCreated(created);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
@@ -208,33 +274,77 @@ mixin _$AccountStore on _AccountStore, Store {
   }
 
   @override
-  void setWCSessions(List<WCPairedData> sessions) {
+  void setWCSession(String uri, WCProposerMeta peerMeta, Map session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.setWCSessions');
+        name: '_AccountStore.setWCSession');
     try {
-      return super.setWCSessions(sessions);
+      return super.setWCSession(uri, peerMeta, session);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void createWCSession(WCPairedData session) {
+  void addWCSessionV2(Map session) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.createWCSession');
+        name: '_AccountStore.addWCSessionV2');
     try {
-      return super.createWCSession(session);
+      return super.addWCSessionV2(session);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void deleteWCSession(WCPairedData session) {
+  void deleteWCSessionV2(String topic) {
     final _$actionInfo = _$_AccountStoreActionController.startAction(
-        name: '_AccountStore.deleteWCSession');
+        name: '_AccountStore.deleteWCSessionV2');
     try {
-      return super.deleteWCSession(session);
+      return super.deleteWCSessionV2(topic);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void addCallRequest(WCCallRequestData data) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.addCallRequest');
+    try {
+      return super.addCallRequest(data);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void closeCallRequest(int id) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.closeCallRequest');
+    try {
+      return super.closeCallRequest(id);
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearCallRequests() {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.clearCallRequests');
+    try {
+      return super.clearCallRequests();
+    } finally {
+      _$_AccountStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAccountType(AccountType type) {
+    final _$actionInfo = _$_AccountStoreActionController.startAction(
+        name: '_AccountStore.setAccountType');
+    try {
+      return super.setAccountType(type);
     } finally {
       _$_AccountStoreActionController.endAction(_$actionInfo);
     }
@@ -249,7 +359,9 @@ pubKeyAddressMap: ${pubKeyAddressMap},
 addressIconsMap: ${addressIconsMap},
 recoveryInfo: ${recoveryInfo},
 walletConnectPairing: ${walletConnectPairing},
-wcSessions: ${wcSessions}
+wcSessionURI: ${wcSessionURI},
+wcSession: ${wcSession.toJson()},
+accountType: ${accountType}
     ''';
   }
 }

@@ -1,6 +1,8 @@
 import 'package:app/store/types/transferData.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
+import 'package:polkawallet_sdk/api/eth/apiAccountEth.dart';
+import 'package:polkawallet_sdk/api/types/evmTxData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 part 'assets.g.dart';
@@ -22,10 +24,19 @@ abstract class _AssetsStore with Store {
   ObservableList<TransferData> txs = ObservableList<TransferData>();
 
   @observable
+  Map<String, Map<String, List<EvmTxData>>> evmTxs = {};
+
+  @observable
   ObservableMap<String, double> marketPrices = ObservableMap<String, double>();
 
   @observable
   Map<String, bool> customAssets = {};
+
+  @observable
+  EvmGasParams gasParams;
+
+  @observable
+  ObservableMap<String, EvmTxData> pendingTx = ObservableMap();
 
   @action
   Future<void> clearTxs() async {
@@ -53,6 +64,43 @@ abstract class _AssetsStore with Store {
   }
 
   @action
+  void setEvmTxs(List<EvmTxData> data, String token, String address) {
+    /// if we got the pending tx from txs api, we remove the local cache.
+    if (pendingTx[address] != null && data[0].hash == pendingTx[address].hash) {
+      pendingTx.remove(address);
+    }
+
+    final allData =
+        pendingTx[address] == null ? data : [pendingTx[address], ...data];
+    final historyData = evmTxs;
+    if (historyData[address] != null) {
+      historyData[address][token] = allData;
+    } else {
+      historyData[address] = {token: allData};
+    }
+    evmTxs = historyData;
+  }
+
+  @action
+  void setPendingTx(KeyPairData acc, EvmTxData data) {
+    if (data.confirmations != '-1') {
+      /// only update pending tx status if we the local cache exists
+      if (pendingTx[acc.address] != null &&
+          pendingTx[acc.address].hash == data.hash) {
+        pendingTx.addAll({acc.address: data});
+      }
+    } else {
+      pendingTx.addAll({acc.address: data});
+
+      /// update evm txs with pending tx data
+      final tokenId = data.contractAddress ?? data.tokenSymbol;
+      if (evmTxs[acc.address] != null && evmTxs[acc.address][tokenId] != null) {
+        setEvmTxs(evmTxs[acc.address][tokenId], tokenId, acc.address);
+      }
+    }
+  }
+
+  @action
   void setMarketPrices(Map<String, double> data) {
     marketPrices.addAll(data);
   }
@@ -63,6 +111,11 @@ abstract class _AssetsStore with Store {
     customAssets = data;
 
     _storeCustomAssets(acc, pluginName, data);
+  }
+
+  @action
+  void setEvmGasParams(EvmGasParams data) {
+    gasParams = data;
   }
 
   @action

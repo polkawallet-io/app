@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.4.5+3452
+version: 3.4.6+3461
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -36,6 +36,7 @@ dependencies:
   firebase_analytics: ^10.1.0
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
+  another_transformer_page_view: ^2.0.1
   polkawallet_ui: ^0.5.1
   polkawallet_sdk: ^0.5.1
   ethereum_addresses: ^1.0.2
@@ -59,6 +60,10 @@ dependencies:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_karura.git
       ref: 86d406f0dfa51dfb75ad37a7d14d36b60594c5b9
+  polkawallet_plugin_evm:
+    git:
+      url: https://github.com/polkawallet-io/polkawallet_plugin_evm.git
+      ref: 4e8e0c18d582317756f6ca4a1b27535b2432c128
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -104,16 +109,14 @@ dependency_overrides:
 #    path: ../../coding/polkawallet/polkawallet_plugin_karura
 #  polkawallet_plugin_statemine:
 #    path: ../../coding/polkawallet/polkawallet_plugin_statemine
+#  polkawallet_plugin_evm:
+#    path: ../../coding/polkawallet/polkawallet_plugin_evm
   polkawallet_ui: ^0.5.3
   polkawallet_sdk: ^0.5.3
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
 #     path: ../../coding/polkawallet/sdk
-  transformer_page_view:
-    git:
-      url: https://github.com/polkawallet-io/transformer_page_view.git
-      ref: 19f3b7c46d5e81653cf027baa2cbe8d629dc052d
   charts_flutter:
      git:
        url: https://github.com/google/charts
@@ -123,10 +126,6 @@ dependency_overrides:
   flutter_html: ^3.0.0-alpha.6
   flutter_slidable: ^1.2.0
   platform: ^3.1.0
-  flutter_qr_scan:
-    git:
-      url: https://github.com/polkawallet-io/flutter_qr_reader.git
-      ref: 90fdd52b98e954c301b68f605c0c6c0fd21cef61
 
 
 dev_dependencies:

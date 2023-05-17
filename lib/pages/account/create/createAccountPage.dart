@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountForm.dart';
@@ -10,9 +11,9 @@ import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class CreateAccountPage extends StatefulWidget {
   CreateAccountPage(this.service);
@@ -48,18 +49,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       },
     );
 
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final type = data['accountType'] as AccountType;
     try {
       final json = await widget.service.account.importAccount(
-        cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
-        isFromCreatePage: true,
-      );
+          cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
+          derivePath: _advanceOptions.path ?? '',
+          isFromCreatePage: true,
+          type: type);
       await widget.service.account.addAccount(
-        json: json,
-        cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
-        derivePath: _advanceOptions.path ?? '',
-        isFromCreatePage: true,
-      );
+          json: json,
+          cryptoType: _advanceOptions.type ?? CryptoType.sr25519,
+          derivePath: _advanceOptions.path ?? '',
+          isFromCreatePage: true,
+          type: type);
 
       setState(() {
         _submitting = false;
@@ -123,8 +126,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       },
     );
     if (next) {
-      final advancedOptions =
-          await Navigator.pushNamed(context, BackupAccountPage.route);
+      final data = ModalRoute.of(context).settings.arguments as Map;
+      // data['accountType'];
+      final advancedOptions = await Navigator.pushNamed(
+          context, BackupAccountPage.route,
+          arguments: data);
       if (advancedOptions != null) {
         setState(() {
           _step = 1;
@@ -199,10 +205,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      widget.service.store.account.setAccountCreated(false);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_step == 0) {
       return _generateSeed(context);
     }
+    final data = ModalRoute.of(context).settings.arguments as Map;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -221,6 +237,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           widget.service,
           submitting: _submitting,
           onSubmit: _importAccount,
+          args: data,
         ),
       ),
     );

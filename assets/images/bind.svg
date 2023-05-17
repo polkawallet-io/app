@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>bind</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.721569 0 0 0 0 0.721569 0 0 0 0 0.717647 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="bind" transform="translate(-249.000000, -169.000000)" filter="url(#filter-1)">
+            <g transform="translate(249.000000, 169.000000)">
+                <rect id="矩形" fill="#D8D8D8" opacity="0" x="0" y="0" width="20" height="20"></rect>
+                <path d="M9.43401273,7.51459535 C9.43401273,6.9590398 9.43401273,6.12570646 9.43401273,5.01459535 C9.43401273,3.63388348 10.5533009,2.51459535 11.9340127,2.51459535 L12.7673461,2.51459535 C14.1480579,2.51459535 15.2673461,3.63388348 15.2673461,5.01459535 L15.2673461,10.0145954 C15.2673461,11.3953072 14.1480579,12.5145954 12.7673461,12.5145954 L11.9340127,12.5145954" id="路径" stroke="#979797" stroke-width="1.5" stroke-linecap="round" transform="translate(12.350679, 7.514595) rotate(45.000000) translate(-12.350679, -7.514595) "></path>
+                <path d="M10.8479287,11.9340127 L10.8479287,14.4340127 C10.8479287,15.8147246 9.72864056,16.9340127 8.34792868,16.9340127 L7.51459535,16.9340127 C6.13388348,16.9340127 5.01459535,15.8147246 5.01459535,14.4340127 L5.01459535,9.43401273 C5.01459535,8.05330086 6.13388348,6.93401273 7.51459535,6.93401273" id="路径" stroke="#979797" stroke-width="1.5" stroke-linecap="round" transform="translate(7.931262, 11.934013) rotate(45.000000) translate(-7.931262, -11.934013) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

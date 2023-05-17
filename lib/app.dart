@@ -3,18 +3,29 @@ import 'dart:async';
 import 'package:app/common/components/willPopScopWrapper.dart';
 import 'package:app/common/consts.dart';
 import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/bind/accountBindEntryPage.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/account/bind/accountBindSuccess.dart';
 import 'package:app/pages/account/create/backupAccountPage.dart';
 import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/createAccountEntryPage.dart';
 import 'package:app/pages/assets/announcementPage.dart';
 import 'package:app/pages/assets/asset/assetPage.dart';
 import 'package:app/pages/assets/asset/locksDetailPage.dart';
+import 'package:app/pages/assets/erc20Tokens/tokenDetailPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTransferStep1.dart';
+import 'package:app/pages/assets/ethTransfer/ethTransferStep2.dart';
+import 'package:app/pages/assets/ethTransfer/ethTxConfirmPage.dart';
+import 'package:app/pages/assets/ethTransfer/ethTxDetailPage.dart';
+import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/pages/assets/manage/manageAssetsPage.dart';
 import 'package:app/pages/assets/transfer/detailPage.dart';
 import 'package:app/pages/assets/transfer/transferPage.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/bridgeTestPage.dart';
 import 'package:app/pages/browser/browserPage.dart';
+import 'package:app/pages/browser/dAppEthWrapperPage.dart';
 import 'package:app/pages/browser/dappLatestPage.dart';
 import 'package:app/pages/browser/manageAccessPage.dart';
 import 'package:app/pages/ecosystem/completedPage.dart';
@@ -50,8 +61,11 @@ import 'package:app/pages/public/DAppsTestPage.dart';
 import 'package:app/pages/public/guidePage.dart';
 import 'package:app/pages/public/stakingDotGuide.dart';
 import 'package:app/pages/public/stakingKSMGuide.dart';
-import 'package:app/pages/walletConnect/walletConnectSignPage.dart';
+import 'package:app/pages/walletConnect/dotRequestSignPage.dart';
+import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/pages/walletConnect/wcPairingConfirmPage.dart';
+import 'package:app/pages/walletConnect/wcPairingManagePage.dart';
+import 'package:app/pages/walletConnect/wcSessionDetailPage.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/service/walletApi.dart';
@@ -67,12 +81,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
-import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/localServer.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
@@ -123,6 +137,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   final _analytics = FirebaseAnalytics.instance;
 
   Keyring _keyring;
+  KeyringEVM _keyringEVM;
 
   AppStore _store;
   AppService _service;
@@ -263,61 +278,20 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
   }
 
-  void _initWalletConnect() {
-    _service.plugin.sdk.api.walletConnect.initClient((WCPairingData proposal) {
-      print('get wc pairing');
-      _handleWCPairing(proposal);
-    }, (WCPairedData session) {
-      print('get wc session');
-      _service.store.account.createWCSession(session);
-      _service.store.account.setWCPairing(false);
-    }, (WCPayloadData payload) {
-      print('get wc payload');
-      _handleWCPayload(payload);
-    });
-  }
-
-  Future<void> _handleWCPairing(WCPairingData pairingReq) async {
-    final approved = await Navigator.of(context)
-        .pushNamed(WCPairingConfirmPage.route, arguments: pairingReq);
-    final address = _service.keyring.current.address;
-    if (approved ?? false) {
-      _service.store.account.setWCPairing(true);
-      await _service.plugin.sdk.api.walletConnect
-          .approvePairing(pairingReq, '$address@polkadot:acalatc5');
-      print('wallet connect alive');
-    } else {
-      _service.plugin.sdk.api.walletConnect.rejectPairing(pairingReq);
-    }
-  }
-
-  Future<void> _handleWCPayload(WCPayloadData payload) async {
-    final res = await Navigator.of(context)
-        .pushNamed(WalletConnectSignPage.route, arguments: payload);
-    if (res == null) {
-      print('user rejected signing');
-      await _service.plugin.sdk.api.walletConnect
-          .payloadRespond(payload, error: {
-        'code': -32000,
-        'message': "User rejected JSON-RPC request",
-      });
-    } else {
-      print('user signed payload:');
-      print(res);
-      // await _service.plugin.sdk.api.walletConnect
-      //     .payloadRespond(payload, response: );
-    }
-  }
-
   Future<void> _startPlugin(AppService service, {NetworkParams node}) async {
-    // _initWalletConnect();
+    _service.wc.injectV2StorageData();
+    _service.wc.subscribeEventsV2(_getHomePageContext);
 
     setState(() {
       _connectedNode = null;
     });
 
     final connected = await service.plugin.start(_keyring,
-        nodes: node != null ? [node] : service.plugin.nodeList);
+        keyringEVM: _keyringEVM,
+        nodes: node != null ? [node] : service.plugin.nodeList,
+        nodeEVM: _store.account.accountType == AccountType.Evm
+            ? node ?? service.plugin.nodeList[0]
+            : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -347,7 +321,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     //       : null,
     // );
 
-    final connected = await _service.plugin.start(_keyring);
+    final connected = await _service.plugin.start(_keyring,
+        keyringEVM: _keyringEVM,
+        nodeEVM: _store.account.accountType == AccountType.Evm
+            ? _service.plugin.nodeList[0]
+            : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -359,6 +337,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   Timer _connectionCheckTimer;
   Timer _connectionCheckWaitTimer;
   _startConnectionCheck() {
+    if (_service.store.account.accountType == AccountType.Evm) {
+      return;
+    }
+
     // clear all timers before connection check process.
     _cancelConnectionCheck();
 
@@ -409,7 +391,11 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         secondaryColor: network.basic.gradientColor,
       );
     });
-    _store.settings.setNetwork(network.basic.name);
+    if (network is PluginEvm) {
+      _store.settings.setEvmNetwork((network as PluginEvm).network);
+    } else {
+      _store.settings.setNetwork(network.basic.name);
+    }
 
     final useLocalJS = WalletApi.getPolkadotJSVersion(
           _store.storage,
@@ -420,11 +406,22 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
     _service.plugin.dispose();
 
-    final service = AppService(widget.plugins, network, _keyring, _store);
+    final service = AppService(
+        widget.plugins,
+        network
+          ..appUtils.switchNetwork ??= (String network,
+              {PageRouteParams pageRoute, int accountType = 0}) async {
+            _switchNetwork(network,
+                pageRoute: pageRoute, accountType: accountType);
+          },
+        _keyring,
+        _store,
+        _keyringEVM);
     service.init();
 
     // we reuse the existing webView instance when we start a new plugin.
     await network.beforeStart(_keyring,
+        keyringEVM: _keyringEVM,
         webView: _service?.plugin?.sdk?.webView,
         jsCode: useLocalJS
             ? WalletApi.getPolkadotJSCode(_store.storage, network.basic.name)
@@ -433,7 +430,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
         _cancelConnectionCheck();
         _restartPlugin();
       });
-    });
+    }, isEVM: _store.account.accountType == AccountType.Evm);
 
     setState(() {
       _service = service;
@@ -443,40 +440,45 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   Future<void> _switchNetwork(String networkName,
-      {NetworkParams node, PageRouteParams pageRoute}) async {
+      {NetworkParams node,
+      PageRouteParams pageRoute,
+      int accountType = 0,
+      bool askBeforeChange = true}) async {
     final isNetworkChanged = networkName != _service.plugin.basic.name;
 
     if (isNetworkChanged) {
-      final confirmed = await showCupertinoDialog(
-          context: _homePageContext,
-          builder: (BuildContext context) {
-            final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-            return PolkawalletAlertDialog(
-              title: Text(dic['v3.changeNetwork']),
-              content: Container(
-                margin: EdgeInsets.only(top: 8),
-                child: Text(
-                    '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
-              ),
-              actions: [
-                PolkawalletActionSheetAction(
+      if (askBeforeChange) {
+        final confirmed = await showCupertinoDialog(
+            context: _homePageContext,
+            builder: (BuildContext context) {
+              final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+              return PolkawalletAlertDialog(
+                title: Text(dic['v3.changeNetwork']),
+                content: Container(
+                  margin: EdgeInsets.only(top: 8),
                   child: Text(
-                    I18n.of(context)
-                        .getDic(i18n_full_dic_ui, 'common')['cancel'],
-                  ),
-                  onPressed: () => Navigator.of(context).pop(false),
+                      '${dic['v3.changeNetwork.confirm']} ${networkName.toUpperCase()} ${dic['v3.changeNetwork.confirm.2']}'),
                 ),
-                PolkawalletActionSheetAction(
-                  isDefaultAction: true,
-                  child: Text(
-                    I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                actions: [
+                  PolkawalletActionSheetAction(
+                    child: Text(
+                      I18n.of(context)
+                          .getDic(i18n_full_dic_ui, 'common')['cancel'],
+                    ),
+                    onPressed: () => Navigator.of(context).pop(false),
                   ),
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ],
-            );
-          });
-      if (!confirmed) return;
+                  PolkawalletActionSheetAction(
+                    isDefaultAction: true,
+                    child: Text(
+                      I18n.of(context).getDic(i18n_full_dic_ui, 'common')['ok'],
+                    ),
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              );
+            });
+        if (!confirmed) return;
+      }
 
       // display a dialog while changing network
       showCupertinoDialog(
@@ -504,9 +506,15 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             );
           });
     }
-
+    if (_store.account.accountType.index != accountType) {
+      _store.account.setAccountType(AccountType.values.elementAt(accountType));
+    }
     await _changeNetwork(
-        widget.plugins.firstWhere((e) => e.basic.name == networkName),
+        accountType == 0
+            ? widget.plugins.firstWhere((e) => e.basic.name == networkName)
+            : PluginEvm(
+                networkName: networkName.split("-").last,
+                config: _store?.settings?.ethConfig),
         node: node);
     await _service.store.assets.loadCache(_keyring.current, networkName);
 
@@ -525,7 +533,10 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       });
     }
     _service.plugin.sdk.api.account.unsubscribeBalance();
-    final connected = await _service.plugin.start(_keyring, nodes: [node]);
+    final connected = await _service.plugin.start(_keyring,
+        keyringEVM: _keyringEVM,
+        nodes: [node],
+        nodeEVM: _store.account.accountType == AccountType.Evm ? node : null);
     setState(() {
       _connectedNode = connected;
     });
@@ -564,7 +575,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     final jsVersions = await WalletApi.fetchPolkadotJSVersion();
     if (jsVersions == null) return;
 
-    final network = plugin.basic.name;
+    final network = plugin.basic.name.contains('-')
+        ? plugin.basic.name.split('-').first //eth
+        : plugin.basic.name;
     final version = jsVersions[network];
     final versionMin = jsVersions['$network-min'];
     final currentVersion = WalletApi.getPolkadotJSVersion(
@@ -622,6 +635,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       _keyring = Keyring();
       await _keyring
           .init(widget.plugins.map((e) => e.basic.ss58).toSet().toList());
+      _keyringEVM = KeyringEVM();
+      await _keyringEVM.init();
 
       final storage = GetStorage(get_storage_container);
       final store = AppStore(storage);
@@ -631,8 +646,21 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
 
       final pluginIndex = widget.plugins
           .indexWhere((e) => e.basic.name == store.settings.network);
-      final service = AppService(widget.plugins,
-          widget.plugins[pluginIndex > -1 ? pluginIndex : 0], _keyring, store);
+      final service = AppService(
+          widget.plugins,
+          store.account.accountType == AccountType.Evm
+              ? (PluginEvm(
+                  networkName: store.settings.evmNetwork,
+                  config: _store?.settings?.ethConfig)
+                ..appUtils.switchNetwork ??= (String network,
+                    {PageRouteParams pageRoute, int accountType = 0}) async {
+                  _switchNetwork(network,
+                      pageRoute: pageRoute, accountType: accountType);
+                })
+              : widget.plugins[pluginIndex > -1 ? pluginIndex : 0],
+          _keyring,
+          store,
+          _keyringEVM);
       service.init();
       setState(() {
         _store = store;
@@ -653,6 +681,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           service.plugin.basic.jsCodeVersion;
 
       await service.plugin.beforeStart(_keyring,
+          keyringEVM: _keyringEVM,
           jsCode: useLocalJS
               ? WalletApi.getPolkadotJSCode(
                   _store.storage, service.plugin.basic.name)
@@ -661,16 +690,20 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           _cancelConnectionCheck();
           _restartPlugin();
         });
-      });
+      }, isEVM: _store.account.accountType == AccountType.Evm);
 
-      if (_keyring.keyPairs.length > 0) {
+      if (_keyring.keyPairs.isNotEmpty) {
         _store.assets.loadCache(_keyring.current, _service.plugin.basic.name);
       }
 
       _startPlugin(service);
     }
 
-    return _keyring.allAccounts.length;
+    _updateEthConfig();
+
+    return _keyring.allAccounts.isNotEmpty
+        ? _keyring.allAccounts.length
+        : _keyringEVM?.allAccounts?.length;
   }
 
   Map<String, Widget Function(BuildContext)> _getRoutes() {
@@ -693,8 +726,9 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                 final accountCreated =
                     _service?.store?.account?.accountCreated ?? false;
 
-                _homePageContext = context;
-
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _homePageContext = context;
+                });
                 return FutureBuilder<int>(
                   future: _startApp(context),
                   builder: (_, AsyncSnapshot<int> snapshot) {
@@ -706,9 +740,16 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                         _queryPluginsConfig();
                       }
                       return snapshot.data > 0
-                          ? HomePage(_service, widget.plugins, _connectedNode,
-                              _checkJSCodeUpdate, _switchNetwork, _changeNode)
-                          : CreateAccountEntryPage(_service.plugin);
+                          ? HomePage(
+                              _service,
+                              widget.plugins,
+                              _connectedNode,
+                              _checkJSCodeUpdate,
+                              _switchNetwork,
+                              _changeNode,
+                              widget.disabledPlugins,
+                              _changeNetwork)
+                          : CreateAccountEntryPage(_service);
                     } else {
                       return Container(color: Theme.of(context).hoverColor);
                     }
@@ -730,21 +771,27 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       AccountListPage.route: (_) => AccountListPage(_service.plugin, _keyring),
       PluginAccountListPage.route: (_) =>
           PluginAccountListPage(_service.plugin, _keyring),
-      AccountQrCodePage.route: (_) =>
-          AccountQrCodePage(_service.plugin, _keyring),
+      AccountQrCodePage.route: (_) => AccountQrCodePage(
+            _service.plugin,
+            _keyring,
+            keyringEVM: _service.store.account.accountType == AccountType.Evm
+                ? _keyringEVM
+                : null,
+          ),
       NetworkSelectPage.route: (_) => NetworkSelectPage(
           _service, widget.plugins, widget.disabledPlugins, _changeNetwork),
       WCPairingConfirmPage.route: (_) => WCPairingConfirmPage(_service),
       WCSessionsPage.route: (_) => WCSessionsPage(_service),
-      WalletConnectSignPage.route: (_) =>
-          WalletConnectSignPage(_service, _service.account.getPassword),
+      WCSessionDetailPage.route: (_) => WCSessionDetailPage(_service),
+      WCPairingManagePage.route: (_) => WCPairingManagePage(_service),
+      EthRequestSignPage.route: (_) => EthRequestSignPage(_service),
+      DotRequestSignPage.route: (_) => DotRequestSignPage(_service),
       GuidePage.route: (_) => GuidePage(),
       StakingKSMGuide.route: (_) => StakingKSMGuide(_service),
       StakingDOTGuide.route: (_) => StakingDOTGuide(_service),
 
       /// account
-      CreateAccountEntryPage.route: (_) =>
-          CreateAccountEntryPage(_service.plugin),
+      CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(_service),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
       DAppWrapperPage.route: (_) => DAppWrapperPage(
@@ -754,6 +801,14 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             checkAuth: _store.settings.checkDAppAuth,
             updateAuth: _store.settings.updateDAppAuth,
           ),
+      DAppEthWrapperPage.route: (_) => DAppEthWrapperPage(
+            _service.plugin,
+            _keyringEVM,
+            getPassword: _service.account.getEvmPassword,
+            checkAuth: _store.settings.checkDAppAuth,
+            updateAuth: (url) =>
+                _store.settings.updateDAppAuth(url, isEvm: true),
+          ),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>
           ImportAccountFormMnemonic(_service),
@@ -762,11 +817,20 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       ImportAccountFormKeyStore.route: (_) =>
           ImportAccountFormKeyStore(_service),
       ImportAccountCreatePage.route: (_) => ImportAccountCreatePage(_service),
+      AccountTypeSelectPage.route: (_) => AccountTypeSelectPage(),
+      AccountBindPage.route: (_) => AccountBindPage(_service),
+      AccountBindEntryPage.route: (_) => AccountBindEntryPage(),
 
       /// assets
       AssetPage.route: (_) => AssetPage(_service),
       TransferDetailPage.route: (_) => TransferDetailPage(_service),
       TransferPage.route: (_) => TransferPage(_service),
+      EthTokenDetailPage.route: (_) => EthTokenDetailPage(_service),
+      EthTransferStep1.route: (_) => EthTransferStep1(_service),
+      EthTransferStep2.route: (_) => EthTransferStep2(_service),
+      EthTransferConfirmPage.route: (_) => EthTransferConfirmPage(_service),
+      EthTxDetailPage.route: (_) => EthTxDetailPage(_service),
+      GasSettingsPage.route: (_) => GasSettingsPage(_service),
       LocksDetailPage.route: (_) => LocksDetailPage(_service),
       ManageAssetsPage.route: (_) => ManageAssetsPage(_service),
       AnnouncementPage.route: (_) => AnnouncementPage(),
@@ -821,6 +885,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
                 .getDisabledCalls(_service.plugin.basic.name),
           ),
 
+      AccountBindSuccess.route: (_) => AccountBindSuccess(),
+
       /// test
       DAppsTestPage.route: (_) => DAppsTestPage(),
       BridgeTestPage.route: (_) => BridgeTestPage(_service.plugin.sdk)
@@ -835,22 +901,31 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     Map<dynamic, dynamic> args = Map<dynamic, dynamic>();
     if (paths.length > 1) {
       String network;
+      int accountType = 0;
       final pathDatas = paths[1].split("?");
       if (pathDatas.length > 1) {
         final datas = pathDatas[1].split("&");
-        datas.forEach((element) {
+        for (var element in datas) {
           if (element.split("=")[0] == "network") {
             network = Uri.decodeComponent(element.split("=")[1]);
+          } else if (element.split("=")[0] == "accountType") {
+            accountType = int.parse(Uri.decodeComponent(element.split("=")[1]));
           } else {
             args[element.split("=")[0]] =
                 Uri.decodeComponent(element.split("=")[1]);
           }
-        });
+        }
       }
 
-      if (network != null && network != _service.plugin.basic.name) {
-        _switchNetwork(network,
-            pageRoute: PageRouteParams(pathDatas[0], args: args));
+      if (network != null) {
+        if ((_service.plugin is! PluginEvm &&
+                network != _service.plugin.basic.name) ||
+            (_service.plugin is PluginEvm &&
+                network != (_service.plugin as PluginEvm).network)) {
+          _switchNetwork(network,
+              pageRoute: PageRouteParams(pathDatas[0], args: args),
+              accountType: accountType);
+        }
       } else {
         _autoRoutingParams = PageRouteParams(pathDatas[0], args: args);
         WidgetsBinding.instance.addPostFrameCallback((_) => _doAutoRouting());
@@ -858,13 +933,33 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     }
   }
 
-  void _handleIncomingAppLinks() {
-    uriLinkStream.listen((Uri uri) {
-      if (!mounted) return;
-      closeInAppWebView();
-      _toPageByUri(uri);
-      print('got uri: $uri');
-    }, onError: (Object err) {
+  void _handleIncomingAppLinks(Uri uri) {
+    if (!mounted) return;
+    print('IncomingAppLinks:');
+    print(uri.toString());
+    print(uri.query.substring(4));
+
+    if (_service.plugin.sdk.api != null) {
+      /// if wallet-connect android
+      if (uri.scheme == 'wc' && uri.query != null) {
+        _service.wc.initWalletConnect(uri.toString(), _getHomePageContext);
+        return;
+      }
+
+      /// if wallet-connect iOS
+      if (uri.path == '/wc' && uri.query != null) {
+        _service.wc
+            .initWalletConnect(uri.query.substring(4), _getHomePageContext);
+        return;
+      }
+    }
+
+    closeInAppWebView();
+    _toPageByUri(uri);
+  }
+
+  void _setupIncomingAppLinksHandler() {
+    uriLinkStream.listen(_handleIncomingAppLinks, onError: (Object err) {
       if (!mounted) return;
       print('got err: $err');
     });
@@ -882,7 +977,8 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
           Timer.periodic(Duration(milliseconds: 1000), (timer) {
             if (WalletApp.isInitial > 0) {
               timer.cancel();
-              _toPageByUri(uri);
+
+              _handleIncomingAppLinks(uri);
             }
           });
           print('got initial uri: $uri');
@@ -899,12 +995,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   void _setupPluginsNetworkSwitch() {
-    widget.plugins.forEach((e) {
-      e.appUtils.switchNetwork ??=
-          (String network, {PageRouteParams pageRoute, int accountType}) async {
-        _switchNetwork(network, pageRoute: pageRoute);
+    for (var e in widget.plugins) {
+      e.appUtils.switchNetwork ??= (String network,
+          {PageRouteParams pageRoute, int accountType = 0}) async {
+        _switchNetwork(network, pageRoute: pageRoute, accountType: accountType);
       };
-    });
+    }
   }
 
   void _doAutoRouting() {
@@ -922,10 +1018,23 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> _updateEthConfig() async {
+    if (_store == null || _store?.settings?.ethConfig != null) return;
+
+    final config = await WalletApi.getEthConfig();
+    if (config != null) {
+      _store.settings.ethConfig = config;
+    }
+  }
+
+  BuildContext _getHomePageContext() {
+    return _homePageContext;
+  }
+
   @override
   void initState() {
     super.initState();
-    _handleIncomingAppLinks();
+    _setupIncomingAppLinksHandler();
     _handleInitialAppLinks();
     WidgetsBinding.instance.addObserver(this);
 

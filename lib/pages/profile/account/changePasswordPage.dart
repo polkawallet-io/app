@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -8,9 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   ChangePasswordPage(this.service);
@@ -40,10 +41,15 @@ class _ChangePassword extends State<ChangePasswordPage> {
     var dic = I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final String passNew = _passCtrl.text.trim();
 
-    await widget.service.plugin.sdk.api.keyring
-        .changePassword(widget.service.keyring, passOld, passNew);
+    widget.service.store.account.accountType == AccountType.Evm
+        ? await widget.service.plugin.sdk.api.eth.keyring
+            .changePassword(widget.service.keyringEVM, passOld, passNew)
+        : await widget.service.plugin.sdk.api.keyring
+            .changePassword(widget.service.keyring, passOld, passNew);
 
-    final pubKey = widget.service.keyring.current.pubKey;
+    final pubKey = widget.service.store.account.accountType == AccountType.Evm
+        ? widget.service.keyringEVM.current.address
+        : widget.service.keyring.current.pubKey;
     if (_enableBiometric) {
       final storeFile = await widget.service.account
           .getBiometricPassStoreFile(context, pubKey);
@@ -52,10 +58,10 @@ class _ChangePassword extends State<ChangePasswordPage> {
         await storeFile.write(passNew);
         widget.service.account.setBiometricEnabled(pubKey);
       } catch (err) {
-        widget.service.account.closeBiometricDisabled(pubKey);
+        widget.service.account.setBiometricDisabled(pubKey);
       }
     } else {
-      widget.service.account.closeBiometricDisabled(pubKey);
+      widget.service.account.setBiometricDisabled(pubKey);
     }
 
     setState(() {
@@ -84,10 +90,14 @@ class _ChangePassword extends State<ChangePasswordPage> {
 
   Future<void> _onSave() async {
     if (_formKey.currentState.validate()) {
-      final password = await widget.service.account.getPassword(
-        context,
-        widget.service.keyring.current,
-      );
+      final password =
+          widget.service.store.account.accountType == AccountType.Evm
+              ? await widget.service.account
+                  .getEvmPassword(context, widget.service.keyringEVM.current)
+              : await widget.service.account.getPassword(
+                  context,
+                  widget.service.keyring.current,
+                );
       if (password != null) {
         _doChangePass(password);
       }

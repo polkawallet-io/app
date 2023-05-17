@@ -1,5 +1,4 @@
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,8 +7,8 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:skeleton_loader/skeleton_loader.dart';
 import 'package:rive/rive.dart';
+import 'package:skeleton_loader/skeleton_loader.dart';
 
 class BridgeChainSelector extends StatelessWidget {
   const BridgeChainSelector(
@@ -231,9 +230,7 @@ class BridgeChainSelector extends StatelessWidget {
                                               ),
                                             )
                                           : Text(
-                                              fromData != null
-                                                  ? fromData.display
-                                                  : '',
+                                              fromData?.display ?? '',
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14.sp,
@@ -687,7 +684,7 @@ class _ChainSelectorListState extends State<ChainSelectorList> {
                 child: ListTile(
                   selected: i == widget.selected,
                   title: CurrencyWithIcon(
-                    widget.chainsInfo[i].display,
+                    widget.chainsInfo[i].display ?? '',
                     TokenIcon(i, widget.crossChainIcons),
                     textStyle: const TextStyle(
                         color: Colors.white,

@@ -1,4 +1,5 @@
 import 'package:app/common/consts.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/aboutPage.dart';
 import 'package:app/pages/profile/account/accountManagePage.dart';
 import 'package:app/pages/profile/communityPage.dart';
@@ -18,7 +19,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
@@ -39,17 +39,21 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  KeyPairData _currentAccount;
+  dynamic _currentAccount;
 
   Future<void> _manageAccount() async {
-    if (widget.service.keyring.current.observation ?? false) {
+    final currentAccount =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current.toKeyPairData();
+    if (currentAccount.observation ?? false) {
       await Navigator.pushNamed(context, ContactPage.route,
-          arguments: widget.service.keyring.current);
+          arguments: currentAccount);
     } else {
       await Navigator.pushNamed(context, AccountManagePage.route);
     }
     setState(() {
-      _currentAccount = widget.service.keyring.current;
+      _currentAccount = currentAccount;
     });
   }
 
@@ -95,7 +99,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final Map<String, String> dic =
         I18n.of(context).getDic(i18n_full_dic_app, 'profile');
     final Color grey = Theme.of(context).unselectedWidgetColor;
-    final acc = widget.service.keyring.current;
+    final dynamic acc =
+        widget.service.store.account.accountType == AccountType.Substrate
+            ? widget.service.keyring.current
+            : widget.service.keyringEVM.current;
 
     final blue = Theme.of(context).toggleableActiveColor;
     final pagePadding = 16.w;

@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/create/accountAdvanceOption.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -11,10 +12,10 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/innerShadow.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
-import 'package:polkawallet_ui/components/v3/dialog.dart';
 
 class BackupAccountPage extends StatefulWidget {
   const BackupAccountPage(this.service);
@@ -36,14 +37,21 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
   AddressIconDataWithMnemonic _addressIcon = AddressIconDataWithMnemonic();
 
   Future<void> _generateAccount({String key = ''}) async {
-    final addressInfo = await widget.service.plugin.sdk.api.keyring
-        .generateMnemonic(widget.service.plugin.basic.ss58,
+    final data = ModalRoute.of(context).settings.arguments as Map;
+    final type = data['accountType'] as AccountType;
+    final addressInfo = type == AccountType.Substrate
+        ? await widget.service.plugin.sdk.api.keyring.generateMnemonic(
+            widget.service.plugin.basic.ss58,
             cryptoType: _advanceOptions.type,
             derivePath: _advanceOptions.path,
-            key: key);
-    setState(() {
-      _addressIcon = addressInfo;
-    });
+            key: key)
+        : await widget.service.plugin.sdk.api.eth.keyring
+            .generateMnemonic(mnemonic: key.isEmpty ? null : key, index: 0);
+    if (mounted) {
+      setState(() {
+        _addressIcon = addressInfo;
+      });
+    }
 
     if (key.isEmpty) {
       widget.service.store.account.setNewAccountKey(addressInfo.mnemonic);
@@ -64,6 +72,8 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
     return Observer(
       builder: (_) {
         final mnemonics = widget.service.store.account.newAccount.key ?? '';
+        final data = ModalRoute.of(context).settings.arguments as Map;
+        final type = data['accountType'] as AccountType;
         return Scaffold(
           appBar: AppBar(
             title: Text(dic['create']),
@@ -118,20 +128,22 @@ class _BackupAccountPageState extends State<BackupAccountPage> {
                           style: Theme.of(context).textTheme.headline4,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 16.h),
-                        child: AccountAdvanceOption(
-                          api: widget.service.plugin.sdk.api.keyring,
-                          seed: mnemonics,
-                          onChange: (data) {
-                            setState(() {
-                              _advanceOptions = data;
-                            });
+                      Visibility(
+                          visible: type == AccountType.Substrate,
+                          child: Container(
+                            margin: EdgeInsets.only(top: 16.h),
+                            child: AccountAdvanceOption(
+                              api: widget.service.plugin.sdk.api.keyring,
+                              seed: mnemonics,
+                              onChange: (data) {
+                                setState(() {
+                                  _advanceOptions = data;
+                                });
 
-                            _generateAccount(key: mnemonics);
-                          },
-                        ),
-                      ),
+                                _generateAccount(key: mnemonics);
+                              },
+                            ),
+                          )),
                     ],
                   ),
                 ),

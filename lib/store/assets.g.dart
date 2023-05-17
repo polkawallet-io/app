@@ -24,6 +24,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$evmTxsAtom = Atom(name: '_AssetsStore.evmTxs');
+
+  @override
+  Map<String, Map<String, List<EvmTxData>>> get evmTxs {
+    _$evmTxsAtom.reportRead();
+    return super.evmTxs;
+  }
+
+  @override
+  set evmTxs(Map<String, Map<String, List<EvmTxData>>> value) {
+    _$evmTxsAtom.reportWrite(value, super.evmTxs, () {
+      super.evmTxs = value;
+    });
+  }
+
   final _$marketPricesAtom = Atom(name: '_AssetsStore.marketPrices');
 
   @override
@@ -51,6 +66,36 @@ mixin _$AssetsStore on _AssetsStore, Store {
   set customAssets(Map<String, bool> value) {
     _$customAssetsAtom.reportWrite(value, super.customAssets, () {
       super.customAssets = value;
+    });
+  }
+
+  final _$gasParamsAtom = Atom(name: '_AssetsStore.gasParams');
+
+  @override
+  EvmGasParams get gasParams {
+    _$gasParamsAtom.reportRead();
+    return super.gasParams;
+  }
+
+  @override
+  set gasParams(EvmGasParams value) {
+    _$gasParamsAtom.reportWrite(value, super.gasParams, () {
+      super.gasParams = value;
+    });
+  }
+
+  final _$pendingTxAtom = Atom(name: '_AssetsStore.pendingTx');
+
+  @override
+  ObservableMap<String, EvmTxData> get pendingTx {
+    _$pendingTxAtom.reportRead();
+    return super.pendingTx;
+  }
+
+  @override
+  set pendingTx(ObservableMap<String, EvmTxData> value) {
+    _$pendingTxAtom.reportWrite(value, super.pendingTx, () {
+      super.pendingTx = value;
     });
   }
 
@@ -90,6 +135,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
   final _$_AssetsStoreActionController = ActionController(name: '_AssetsStore');
 
   @override
+  void setEvmTxs(List<EvmTxData> data, String token, String address) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setEvmTxs');
+    try {
+      return super.setEvmTxs(data, token, address);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setMarketPrices(Map<String, double> data) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setMarketPrices');
@@ -107,6 +163,28 @@ mixin _$AssetsStore on _AssetsStore, Store {
         name: '_AssetsStore.setCustomAssets');
     try {
       return super.setCustomAssets(acc, pluginName, data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setEvmGasParams(EvmGasParams data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setEvmGasParams');
+    try {
+      return super.setEvmGasParams(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPendingTx(KeyPairData acc, EvmTxData data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setPendingTx');
+    try {
+      return super.setPendingTx(acc, data);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }

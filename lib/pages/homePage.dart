@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/common/consts.dart';
+import 'package:app/common/types/pluginDisabled.dart';
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/account/bind/accountBindPage.dart';
+import 'package:app/pages/account/bind/accountBindSuccess.dart';
+import 'package:app/pages/assets/erc20Tokens/index.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/pages/bridge/bridgePage.dart';
 import 'package:app/pages/browser/browserPage.dart';
@@ -13,10 +18,14 @@ import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/BottomNavigationBar.dart';
 import 'package:app/utils/i18n/index.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
+import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -29,18 +38,31 @@ import 'package:polkawallet_ui/ui.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.service, this.plugins, this.connectedNode,
-      this.checkJSCodeUpdate, this.switchNetwork, this.changeNode);
+  HomePage(
+      this.service,
+      this.plugins,
+      this.connectedNode,
+      this.checkJSCodeUpdate,
+      this.switchNetwork,
+      this.changeNode,
+      this.disabledPlugins,
+      this.changeNetwork);
 
   final AppService service;
   final NetworkParams connectedNode;
   final Future<void> Function(BuildContext, PolkawalletPlugin)
       checkJSCodeUpdate;
   final Future<void> Function(String,
-      {NetworkParams node, PageRouteParams pageRoute}) switchNetwork;
+      {NetworkParams node,
+      PageRouteParams pageRoute,
+      int accountType,
+      bool askBeforeChange}) switchNetwork;
 
   final List<PolkawalletPlugin> plugins;
   final Future<void> Function(NetworkParams) changeNode;
+  final List<PluginDisabled> disabledPlugins;
+  final Future<void> Function(PolkawalletPlugin) changeNetwork;
+  // final Function(String) initWalletConnect;
 
   static final String route = '/';
 
@@ -54,12 +76,6 @@ class _HomePageState extends State<HomePage> {
 
   int _tabIndex = 0;
   Timer _wssNotifyTimer;
-
-  Future<void> _handleWalletConnect(String uri) async {
-    print('wallet connect uri:');
-    print(uri);
-    // await widget.service.plugin.sdk.api.walletConnect.connect(uri);
-  }
 
   Future<void> _setupJPush() async {
     _jPush.addEventHandler(
@@ -96,12 +112,19 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _onOpenNotification(Map params) async {
     final network = params['network'];
+    //accountType(0:Substrate,1:evm)
+    final accountType = params['accountType'] ?? 0;
     final tab = params['tab'];
-    if (network != null && network != widget.service.plugin.basic.name) {
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+    if (network != null) {
+      if ((widget.service.plugin is! PluginEvm &&
+              network != widget.service.plugin.basic.name) ||
+          (widget.service.plugin is PluginEvm &&
+              network != (widget.service.plugin as PluginEvm).network)) {
+        Navigator.popUntil(context, ModalRoute.withName('/'));
 
-      _setupWssNotifyTimer();
-      await widget.switchNetwork(network);
+        _setupWssNotifyTimer();
+        await widget.switchNetwork(network, accountType: accountType);
+      }
     }
     if (tab != null) {
       final initialTab = int.parse(tab);
@@ -156,6 +179,15 @@ class _HomePageState extends State<HomePage> {
       _setupJPush();
       _setupWssNotifyTimer();
       widget.service.store.settings.initDapps();
+
+      if (widget.service.store.account.accountType == AccountType.Evm &&
+          widget.service.plugin is! PluginEvm) {
+        final ethNetworks =
+            PluginEvm(config: widget.service.store.settings.ethConfig)
+                .networkList();
+        widget.switchNetwork(ethNetworks[0],
+            accountType: 1, askBeforeChange: false);
+      }
     });
   }
 
@@ -266,6 +298,83 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
+  MetaHubItem buildMetaHubEVM() {
+    var dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
+    return MetaHubItem(
+        "EVM+",
+        GestureDetector(
+            child: Column(children: [
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    widget.service.plugin is PluginEvm
+                        ? Image.asset('assets/images/public/hub_plugin_evm.png')
+                        : Image.asset('assets/images/public/hub_evm.png'),
+                    Container(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text(
+                        dic['hub.cover.evm'],
+                        textAlign: TextAlign.justify,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline4
+                            .copyWith(fontSize: 14, color: Colors.white),
+                      ),
+                    )
+                  ],
+                ),
+              )),
+              Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(36, 255, 255, 255),
+                      borderRadius: BorderRadius.all(Radius.circular(4))),
+                  alignment: AlignmentDirectional.center,
+                  child: Text(
+                    dic['hub.enter'],
+                    style: Theme.of(context).textTheme.headline1.copyWith(
+                        fontSize: 20, color: Theme.of(context).errorColor),
+                  ))
+            ]),
+            onTap: () {
+              if (widget.service.plugin is PluginEvm) {
+                Navigator.of(context).pushNamed(AccountBindSuccess.route);
+                return;
+              } else if (widget.service.plugin is! PluginAcala &&
+                  widget.service.plugin is! PluginKarura) {
+                widget.service.plugin.appUtils.switchNetwork(
+                  para_chain_name_acala,
+                  pageRoute: PageRouteParams(AccountBindPage.route,
+                      args: {"isPlugin": true}),
+                );
+                return;
+              } else {
+                final ethWalletData = widget.service.plugin is PluginAcala
+                    ? (widget.service.plugin as PluginAcala)
+                        .store
+                        .accounts
+                        .ethWalletData
+                    : (widget.service.plugin as PluginKarura)
+                        .store
+                        .accounts
+                        .ethWalletData;
+                if (ethWalletData == null) {
+                  Navigator.of(context).pushNamed(AccountBindPage.route,
+                      arguments: {"isPlugin": true});
+                  return;
+                }
+                final current = widget.service.keyringEVM.allAccounts
+                    .firstWhereOrNull((element) =>
+                        element.address.toLowerCase() ==
+                        ethWalletData.address.toLowerCase());
+                Navigator.of(context).pushNamed(AccountBindSuccess.route,
+                    arguments: {"ethAccount": current ?? ethWalletData});
+              }
+            }));
+  }
+
   MetaHubItem buildMetaHubEcosystem() {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
     String token = "DOT";
@@ -356,30 +465,35 @@ class _HomePageState extends State<HomePage> {
           "assets/images/icon_assets_sel${UI.isDarkTheme(context) ? "_dark" : ""}.png",
           fit: BoxFit.contain,
         ),
-        content:
-            AssetsPage(widget.service, widget.plugins, widget.connectedNode,
+        content: widget.service.store.account.accountType == AccountType.Evm
+            ? AssetsEVMPage(
+                widget.service, widget.plugins, widget.connectedNode,
                 (PolkawalletPlugin plugin) async {
-          _setupWssNotifyTimer();
-          widget.checkJSCodeUpdate(context, plugin);
-        }, (String name, {NetworkParams node}) async {
-          _setupWssNotifyTimer();
-          widget.switchNetwork(name, node: node);
-        }, _handleWalletConnect),
+                _setupWssNotifyTimer();
+                widget.checkJSCodeUpdate(context, plugin);
+              }, widget.disabledPlugins, widget.changeNetwork, context)
+            : AssetsPage(widget.service, widget.plugins, widget.connectedNode,
+                (PolkawalletPlugin plugin) async {
+                _setupWssNotifyTimer();
+                widget.checkJSCodeUpdate(context, plugin);
+              }, widget.disabledPlugins, widget.changeNetwork),
         // content: Container(),
       )
     ];
     final pluginPages =
         widget.service.plugin.getNavItems(context, widget.service.keyring);
     if (pluginPages.length > 1 ||
-        (pluginPages.length == 1 && pluginPages[0].isAdapter)) {
+        (pluginPages.length == 1 && pluginPages[0].isAdapter) ||
+        pluginPages.length == 0) {
       final List<MetaHubItem> items = [];
-      if (widget.service.store.settings.dapps.length > 0) {
-        items.add(buildMetaHubBrowser());
-      }
-      items.add(buildMetaBridge());
-      final ecosystemItem = buildMetaHubEcosystem();
-      if (ecosystemItem != null) {
-        items.add(buildMetaHubEcosystem());
+      items.add(buildMetaHubEVM());
+      items.add(buildMetaHubBrowser());
+      if (widget.service.store.account.accountType == AccountType.Substrate) {
+        items.add(buildMetaBridge());
+        final ecosystemItem = buildMetaHubEcosystem();
+        if (ecosystemItem != null) {
+          items.add(ecosystemItem);
+        }
       }
       pluginPages.forEach((element) {
         if (element.isAdapter) {
@@ -532,26 +646,37 @@ class _HomePageState extends State<HomePage> {
           ),
           Observer(builder: (_) {
             final walletConnectAlive =
-                widget.service.store.account.wcSessions.length > 0;
+                widget.service.store.account.wcSessionURI != null ||
+                    widget.service.store.account.wcV2Sessions.isNotEmpty;
             final walletConnecting =
-                widget.service.store.account.walletConnectPairing;
+                widget.service.store.account.wcSessionURI != null &&
+                    widget.service.store.account.walletConnectPairing;
             return Visibility(
                 visible: walletConnectAlive || walletConnecting,
                 child: Container(
                   margin: EdgeInsets.only(
                       bottom: MediaQuery.of(context).size.height / 4),
                   child: FloatingActionButton(
+                    heroTag: 'walletConnectFloatingButton',
                     backgroundColor: Theme.of(context).cardColor,
-                    child: walletConnecting
-                        ? CupertinoActivityIndicator(
-                            color: const Color(0xFF3C3C44))
-                        : Image.asset('assets/images/wallet_connect_logo.png'),
-                    onPressed: walletConnectAlive
-                        ? () {
-                            Navigator.of(context)
-                                .pushNamed(WCSessionsPage.route);
-                          }
+                    onPressed: walletConnectAlive || walletConnecting
+                        ? () => Navigator.of(context)
+                            .pushNamed(WCSessionsPage.route)
                         : () => null,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/wallet_connect_logo.png',
+                          width: 32,
+                          height: 32,
+                        ),
+                        walletConnecting
+                            ? const CupertinoActivityIndicator(
+                                color: Color(0xFF3C3C44))
+                            : const SizedBox(width: 8, height: 8),
+                      ],
+                    ),
                   ),
                 ));
           })

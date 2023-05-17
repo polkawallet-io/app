@@ -1,15 +1,30 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/utils/Utils.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mobx/mobx.dart';
 import 'package:polkawallet_sdk/api/types/recoveryInfo.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 
 part 'account.g.dart';
 
 class AccountStore extends _AccountStore with _$AccountStore {
-  AccountStore() : super();
+  AccountStore(this.storage) : super(storage);
+
+  final GetStorage storage;
 }
 
 abstract class _AccountStore with Store {
-  _AccountStore();
+  _AccountStore(this.storage);
+  final GetStorage storage;
+
+  final String localStorageAccountTypeKey = 'accountType';
+  final String localStorageWCSessionURIKey = 'wcSessionURI';
+  final String localStorageWCSessionKey = 'wcSession';
+  final String localStorageWCSessionV2Key = 'wcV2Session';
 
   @observable
   AccountCreate newAccount = AccountCreate();
@@ -32,7 +47,21 @@ abstract class _AccountStore with Store {
   bool walletConnectPairing = false;
 
   @observable
-  ObservableList<WCPairedData> wcSessions = ObservableList<WCPairedData>();
+  String wcSessionURI;
+
+  @observable
+  WCProposerMeta wcSession;
+
+  @observable
+  ObservableList<WCCallRequestData> wcCallRequests =
+      ObservableList<WCCallRequestData>();
+
+  @observable
+  ObservableList<WCSessionDataV2> wcV2Sessions =
+      ObservableList<WCSessionDataV2>();
+
+  @observable
+  AccountType accountType = AccountType.Substrate;
 
   @action
   void setNewAccount(String name, String password) {
@@ -51,13 +80,13 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setAccountCreated() {
-    accountCreated = true;
+  void setAccountCreated(bool created) {
+    accountCreated = created;
   }
 
   @action
   void setPubKeyAddressMap(Map<String, Map> data) {
-    data.keys.forEach((ss58) {
+    for (var ss58 in data.keys) {
       // get old data map
       Map<String, String> addresses =
           Map.of(pubKeyAddressMap[int.parse(ss58)] ?? {});
@@ -67,14 +96,14 @@ abstract class _AccountStore with Store {
       });
       // update state
       pubKeyAddressMap[int.parse(ss58)] = addresses;
-    });
+    }
   }
 
   @action
   void setAddressIconsMap(List list) {
-    list.forEach((i) {
+    for (var i in list) {
       addressIconsMap[i[0]] = i[1];
-    });
+    }
   }
 
   @action
@@ -88,18 +117,87 @@ abstract class _AccountStore with Store {
   }
 
   @action
-  void setWCSessions(List<WCPairedData> sessions) {
-    wcSessions = sessions;
+  void setWCSession(String uri, WCProposerMeta peerMeta, Map session) {
+    wcSessionURI = uri;
+    wcSession = peerMeta;
+
+    storage.write(localStorageWCSessionURIKey, wcSessionURI);
+    storage.write(localStorageWCSessionKey, session);
+
+    if (uri == null) {
+      clearCallRequests();
+    }
   }
 
   @action
-  void createWCSession(WCPairedData session) {
-    wcSessions.add(session);
+  void addWCSessionV2(Map session) {
+    if (wcV2Sessions.indexWhere((e) => e.topic == session['topic']) == -1) {
+      wcV2Sessions.add(WCSessionDataV2.fromJson(session));
+
+      storage.write(localStorageWCSessionV2Key, session['storage']);
+    }
   }
 
   @action
-  void deleteWCSession(WCPairedData session) {
-    wcSessions.removeWhere((e) => e.topic == session.topic);
+  void deleteWCSessionV2(String topic) {
+    wcV2Sessions.removeWhere((e) => e.topic == topic);
+
+    Utils.deleteWC2SessionInStorage(storage, localStorageWCSessionV2Key, topic);
+
+    wcCallRequests.removeWhere((e) => e.topic == topic);
+  }
+
+  @action
+  void addCallRequest(WCCallRequestData data) {
+    wcCallRequests.add(data);
+  }
+
+  @action
+  void closeCallRequest(int id) {
+    wcCallRequests.removeWhere((e) => e.id == id);
+  }
+
+  @action
+  void clearCallRequests() {
+    wcCallRequests.clear();
+  }
+
+  @action
+  void setAccountType(AccountType type) {
+    accountType = type;
+    storage.write(localStorageAccountTypeKey, accountType.name.toString());
+  }
+
+  @action
+  Future<void> init() async {
+    final accType = storage.read(localStorageAccountTypeKey);
+    if (accType != null) {
+      accountType =
+          AccountType.values.firstWhere((e) => e.toString().contains(accType));
+    }
+
+    final String cachedURI = storage.read(localStorageWCSessionURIKey);
+    if (cachedURI != null) {
+      wcSessionURI = cachedURI;
+
+      final session = storage.read(localStorageWCSessionKey);
+      if (session != null) {
+        wcSession = WCProposerMeta.fromJson(session['peerMeta']);
+      }
+    }
+
+    final sessionV2 = storage.read(localStorageWCSessionV2Key);
+    if (sessionV2 != null && sessionV2['session'] != null) {
+      Timer(const Duration(milliseconds: 500), () {
+        wcV2Sessions.addAll(List.of(jsonDecode(sessionV2['session']))
+            .map((e) => WCSessionDataV2.fromJson(Map<String, dynamic>.of({
+                  'topic': e['topic'],
+                  'namespaces': e['namespaces'],
+                  'expiry': e['expiry'],
+                  'peerMeta': e['peer']['metadata'],
+                }))));
+      });
+    }
   }
 }
 

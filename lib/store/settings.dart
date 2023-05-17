@@ -19,10 +19,12 @@ abstract class _SettingsStore with Store {
 
   final String localStorageLocaleKey = 'locale';
   final String localStorageNetworkKey = 'network';
+  final String localStorageNetworkEvmKey = 'networkEvm';
   final String localStorageHideBalanceKey = 'hideBalance';
   final String localStoragePriceCurrencyKey = 'priceCurrency';
   final String localStorageMessageKey = 'message';
   final String localStorageDAppAuthUrlsKey = 'dAppAuthUrls';
+  final String localStorageDAppEvmAuthUrlsKey = 'dAppEvmAuthUrls';
   final String localStorageIsDarkThemeKey = 'darkTheme';
 
   @observable
@@ -35,6 +37,8 @@ abstract class _SettingsStore with Store {
 
   String network = 'polkadot';
 
+  String evmNetwork = 'acala';
+
   Map pluginsConfig = Map();
 
   Map adBanners = Map();
@@ -44,6 +48,8 @@ abstract class _SettingsStore with Store {
   Map _xcmEnabledChains;
 
   double _rate = -1;
+
+  Map ethConfig;
 
   @observable
   bool isDarkTheme = false;
@@ -270,11 +276,6 @@ abstract class _SettingsStore with Store {
       loadIsHideBalance(),
       loadIsDarkTheme(),
     ]);
-
-    if (storage.read(localStorageDAppAuthUrlsKey) != null) {
-      websiteAccess =
-          Map<String, bool>.from(storage.read(localStorageDAppAuthUrlsKey));
-    }
   }
 
   @action
@@ -323,10 +324,19 @@ abstract class _SettingsStore with Store {
     storage.write(localStorageNetworkKey, value);
   }
 
+  void setEvmNetwork(String value) {
+    evmNetwork = value;
+    storage.write(localStorageNetworkEvmKey, value);
+  }
+
   Future<void> loadNetwork() async {
     final value = await storage.read(localStorageNetworkKey);
     if (value != null) {
       network = value;
+    }
+    final evmValue = await storage.read(localStorageNetworkEvmKey);
+    if (evmValue != null) {
+      evmNetwork = evmValue;
     }
   }
 
@@ -339,7 +349,7 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  void updateDAppAuth(String url, {bool auth = true}) {
+  void updateDAppAuth(String url, {bool auth = true, bool isEvm = false}) {
     final mapNew = {...websiteAccess};
     if (auth != null) {
       mapNew[url] = auth;
@@ -348,7 +358,20 @@ abstract class _SettingsStore with Store {
     }
     websiteAccess = mapNew;
 
-    storage.write(localStorageDAppAuthUrlsKey, mapNew);
+    storage.write(
+        isEvm ? localStorageDAppEvmAuthUrlsKey : localStorageDAppAuthUrlsKey,
+        mapNew);
+  }
+
+  @action
+  void loadDAppAuth(bool isEvm) {
+    final key =
+        isEvm ? localStorageDAppEvmAuthUrlsKey : localStorageDAppAuthUrlsKey;
+    if (storage.read(key) != null) {
+      websiteAccess = Map<String, bool>.from(storage.read(key));
+    } else {
+      websiteAccess = {};
+    }
   }
 
   bool checkDAppAuth(String url) {

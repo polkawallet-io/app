@@ -1,9 +1,9 @@
+import 'package:app/pages/browser/dAppEthWrapperPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class DAppsTestPage extends StatefulWidget {
   static const route = '/test/browser';
@@ -42,7 +42,7 @@ class _DAppsTestPageState extends State<DAppsTestPage> {
                     active: true,
                     onPressed: () {
                       final url = _urlCtrl.text.trim();
-                      Navigator.of(context).pushNamed(DAppWrapperPage.route,
+                      Navigator.of(context).pushNamed(DAppEthWrapperPage.route,
                           arguments:
                               url.contains('://') ? url : 'https://$url');
                     },
@@ -53,42 +53,52 @@ class _DAppsTestPageState extends State<DAppsTestPage> {
               RoundedCard(
                 margin: EdgeInsets.only(bottom: 16),
                 child: ListTile(
-                  title: Text('apps.acala.network'),
+                  title: Text('app.uniswap.org'),
                   onTap: () {
-                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
-                        arguments: 'https://apps.acala.network/');
+                    Navigator.of(context).pushNamed(DAppEthWrapperPage.route,
+                        arguments: 'https://app.uniswap.org/');
                   },
                 ),
               ),
-              RoundedCard(
-                margin: EdgeInsets.only(bottom: 16),
-                child: ListTile(
-                  title: Text('apps.karura.network'),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
-                        arguments: 'https://apps.karura.network/');
-                  },
-                ),
-              ),
-              RoundedCard(
-                margin: EdgeInsets.only(bottom: 16),
-                child: ListTile(
-                  title: Text('polkadot.polkassembly.io'),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
-                        arguments: 'https://polkadot.polkassembly.io/');
-                  },
-                ),
-              ),
-              RoundedCard(
-                child: ListTile(
-                  title: Text('bifrost.app'),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(DAppWrapperPage.route,
-                        arguments: 'https://bifrost.app/');
-                  },
-                ),
-              )
+              // RoundedCard(
+              //   margin: EdgeInsets.only(bottom: 16),
+              //   child: ListTile(
+              //     title: Text('apps.acala.network'),
+              //     onTap: () {
+              //       Navigator.of(context).pushNamed(DAppWrapperPage.route,
+              //           arguments: 'https://apps.acala.network/');
+              //     },
+              //   ),
+              // ),
+              // RoundedCard(
+              //   margin: EdgeInsets.only(bottom: 16),
+              //   child: ListTile(
+              //     title: Text('apps.karura.network'),
+              //     onTap: () {
+              //       Navigator.of(context).pushNamed(DAppWrapperPage.route,
+              //           arguments: 'https://apps.karura.network/');
+              //     },
+              //   ),
+              // ),
+              // RoundedCard(
+              //   margin: EdgeInsets.only(bottom: 16),
+              //   child: ListTile(
+              //     title: Text('polkadot.polkassembly.io'),
+              //     onTap: () {
+              //       Navigator.of(context).pushNamed(DAppWrapperPage.route,
+              //           arguments: 'https://polkadot.polkassembly.io/');
+              //     },
+              //   ),
+              // ),
+              // RoundedCard(
+              //   child: ListTile(
+              //     title: Text('bifrost.app'),
+              //     onTap: () {
+              //       Navigator.of(context).pushNamed(DAppWrapperPage.route,
+              //           arguments: 'https://bifrost.app/');
+              //     },
+              //   ),
+              // )
             ],
           ),
         ),

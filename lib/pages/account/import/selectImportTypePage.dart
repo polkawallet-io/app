@@ -1,3 +1,4 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/account/import/importAccountFormKeyStore.dart';
 import 'package:app/pages/account/import/importAccountFromRawSeed.dart';
 import 'package:app/pages/profile/index.dart';
@@ -22,15 +23,33 @@ class SelectImportTypePage extends StatefulWidget {
 }
 
 class _SelectImportTypePageState extends State<SelectImportTypePage> {
-  final _keyOptions = [
+  var _keyOptions = [
     'mnemonic',
     'rawSeed',
     'keystore',
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      widget.service.store.account.setAccountCreated(false);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context).settings.arguments as Map;
+    final type = args['accountType'] as AccountType;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
+    if (type == AccountType.Evm) {
+      _keyOptions = [
+        'mnemonic',
+        'privateKey',
+        'keystore',
+      ];
+    }
     return Scaffold(
       appBar: AppBar(
           title: Text(dic['import']), centerTitle: true, leading: BackBtn()),
@@ -57,17 +76,27 @@ class _SelectImportTypePageState extends State<SelectImportTypePage> {
                                 case 'mnemonic':
                                   Navigator.pushNamed(
                                       context, ImportAccountFormMnemonic.route,
-                                      arguments: {"type": _keyOptions[index]});
+                                      arguments: {
+                                        "type": _keyOptions[index],
+                                        ...args
+                                      });
                                   break;
                                 case 'rawSeed':
+                                case 'privateKey':
                                   Navigator.pushNamed(
                                       context, ImportAccountFromRawSeed.route,
-                                      arguments: {"type": _keyOptions[index]});
+                                      arguments: {
+                                        "type": _keyOptions[index],
+                                        ...args
+                                      });
                                   break;
                                 case 'keystore':
                                   Navigator.pushNamed(
                                       context, ImportAccountFormKeyStore.route,
-                                      arguments: {"type": _keyOptions[index]});
+                                      arguments: {
+                                        "type": _keyOptions[index],
+                                        ...args
+                                      });
                                   break;
                               }
                             },

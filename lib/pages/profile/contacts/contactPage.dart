@@ -1,9 +1,11 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
@@ -68,7 +70,11 @@ class _Contact extends State<ContactPage> {
       };
       if (_args == null) {
         // create new contact
-        int exist = widget.service.keyring.contacts
+        int exist = (widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.contacts
+                    .map((e) => e.toKeyPairData())
+                    .toList()
+                : widget.service.keyring.contacts)
             .indexWhere((i) => i.address == address);
         if (exist > -1) {
           showCupertinoDialog(
@@ -92,8 +98,13 @@ class _Contact extends State<ContactPage> {
           });
           return;
         } else {
-          final res = await widget.service.plugin.sdk.api.keyring
-              .addContact(widget.service.keyring, con);
+          final res =
+              widget.service.store.account.accountType == AccountType.Evm
+                  ? (await widget.service.plugin.sdk.api.eth.keyring
+                          .addContact(widget.service.keyringEVM, con))
+                      .toKeyPairData()
+                  : await widget.service.plugin.sdk.api.keyring
+                      .addContact(widget.service.keyring, con);
 
           if (_isObservation) {
             widget.service.account
@@ -102,21 +113,37 @@ class _Contact extends State<ContactPage> {
         }
       } else {
         // edit contact
-        con['pubKey'] = _args.pubKey;
-        await widget.service.keyring.store.updateContact(con);
+        widget.service.store.account.accountType == AccountType.Evm
+            ? con['pubKey'] = _args.pubKey
+            : con['address'] = _args.address;
+        widget.service.store.account.accountType == AccountType.Evm
+            ? await widget.service.keyringEVM.store.updateContact(con)
+            : await widget.service.keyring.store.updateContact(con);
         // if the contact being edited was current account
         // and was set not observable, we should reset current account.
-        if (_args.pubKey == widget.service.keyring.store.currentPubKey &&
-            _args.observation &&
-            !_isObservation) {
-          if (widget.service.keyring.allAccounts.length > 0) {
-            widget.service.keyring
-                .setCurrent(widget.service.keyring.allAccounts[0]);
+        final current =
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.store.currentAddress
+                : widget.service.keyring.store.currentPubKey;
+        if (_args.pubKey == current && _args.observation && !_isObservation) {
+          if (widget.service.store.account.accountType == AccountType.Evm
+              ? widget.service.keyringEVM.allAccounts.length > 0
+              : widget.service.keyring.allAccounts.length > 0) {
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM
+                    .setCurrent(widget.service.keyringEVM.allAccounts[0])
+                : widget.service.keyring
+                    .setCurrent(widget.service.keyring.allAccounts[0]);
 
-            widget.service.account
-                .handleAccountChanged(widget.service.keyring.allAccounts[0]);
+            widget.service.account.handleAccountChanged(
+                widget.service.store.account.accountType == AccountType.Evm
+                    ? widget.service.keyringEVM.allAccounts[0].toKeyPairData()
+                    : widget.service.keyring.allAccounts[0],
+                isNewAccount: true);
           } else {
-            widget.service.keyring.setCurrent(KeyPairData());
+            widget.service.store.account.accountType == AccountType.Evm
+                ? widget.service.keyringEVM.setCurrent(EthWalletData())
+                : widget.service.keyring.setCurrent(KeyPairData());
           }
         }
       }
@@ -188,7 +215,10 @@ class _Contact extends State<ContactPage> {
                         ),
                         controller: _addressCtrl,
                         validator: (v) {
-                          if (!Fmt.isAddress(v.trim())) {
+                          if (widget.service.store.account.accountType ==
+                                  AccountType.Evm
+                              ? !Fmt.isAddressETH(v.trim())
+                              : !Fmt.isAddress(v.trim())) {
                             return dic['contact.address.error'];
                           }
                           return null;

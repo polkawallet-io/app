@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:biometric_storage/biometric_storage.dart';
@@ -20,7 +21,7 @@ import 'importAccountAction.dart';
 class ImportAccountFormKeyStore extends StatefulWidget {
   final AppService service;
 
-  static final String route = '/account/ImportAccountFormKeyStore';
+  static const String route = '/account/ImportAccountFormKeyStore';
 
   ImportAccountFormKeyStore(this.service, {Key key}) : super(key: key);
 
@@ -30,7 +31,8 @@ class ImportAccountFormKeyStore extends StatefulWidget {
 }
 
 class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
-  String selected;
+  String keyType;
+  AccountType accountType;
   final TextEditingController _keyCtrl = new TextEditingController();
   final TextEditingController _nameCtrl = new TextEditingController();
   final TextEditingController _passCtrl = new TextEditingController();
@@ -66,7 +68,9 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
 
   @override
   Widget build(BuildContext context) {
-    selected = (ModalRoute.of(context).settings.arguments as Map)["type"];
+    final args = ModalRoute.of(context).settings.arguments as Map;
+    keyType = args["type"];
+    accountType = args["accountType"] ?? AccountType.Substrate;
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
     return Scaffold(
         appBar: AppBar(
@@ -98,7 +102,7 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                             left: 16.w, right: 16.w, top: 8.h),
                                         child: v3.TextInputWidget(
                                           decoration: v3.InputDecorationV3(
-                                            labelText: dic[selected],
+                                            labelText: dic[keyType],
                                           ),
                                           controller: _keyCtrl,
                                           maxLines: 3,
@@ -126,21 +130,39 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
                                   context,
                                   widget.service,
                                   {
-                                    'keyType': selected,
+                                    'keyType': keyType,
+                                    "accountType": accountType,
                                   },
                                   (p0) {});
                               if (saved) {
+                                if (args['needChange'] == false) {
+                                  Navigator.popUntil(
+                                      context,
+                                      ModalRoute.withName(
+                                          args['redirect'] ?? '/'));
+                                  return;
+                                }
+
+                                widget.service.store.account
+                                    .setAccountType(accountType);
+
                                 if (_supportBiometric && _enableBiometric) {
                                   await ImportAccountAction.authBiometric(
                                       context, widget.service);
                                 }
 
                                 widget.service.account.handleAccountChanged(
-                                    widget.service.keyring.current,
+                                    accountType == AccountType.Substrate
+                                        ? widget.service.keyring.current
+                                        : widget.service.keyringEVM.current
+                                            .toKeyPairData(),
                                     isNewAccount: true);
+                                widget.service.store.assets.loadCache(
+                                    widget.service.keyring.current,
+                                    widget.service.plugin.basic.name);
                                 widget.service.store.account.resetNewAccount();
                                 widget.service.store.account
-                                    .setAccountCreated();
+                                    .setAccountCreated(true);
                                 Navigator.popUntil(
                                     context, ModalRoute.withName('/'));
                               }
@@ -222,21 +244,28 @@ class _ImportAccountFormKeyStoreState extends State<ImportAccountFormKeyStore> {
   }
 
   String _validateInput(String v) {
+    final type = (ModalRoute.of(context).settings.arguments
+        as Map)['accountType'] as AccountType;
     bool passed = false;
     try {
-      jsonDecode(v);
-      passed = true;
+      final json = jsonDecode(v);
+      if (type == AccountType.Evm) {
+        passed = json['id'] != null &&
+            (json['crypto'] != null || json['Crypto'] != null);
+      } else {
+        passed = json['encoded'] != null && json['encoding'] != null;
+      }
     } catch (_) {
       // ignore
     }
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'account');
-    return passed ? null : '${dic['import.invalid']} ${dic[selected]}';
+    return passed ? null : '${dic['import.invalid']} ${dic[keyType]}';
   }
 
   void _onKeyChange(String v) {
     try {
       final keyStoreString = v.trim();
-      var json = jsonDecode(keyStoreString);
+      final json = jsonDecode(keyStoreString);
       _refreshAccountAddress(json);
       if (json['meta']['name'] != null) {
         setState(() {

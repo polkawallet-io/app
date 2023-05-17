@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:app/app.dart';
@@ -5,6 +6,7 @@ import 'package:app/common/consts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
+import 'package:polkawallet_plugin_evm/common/constants.dart';
 
 const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
@@ -311,6 +313,46 @@ class WalletApi {
       }
     } catch (err) {
       print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getEvmTokenTxs(String network, String address,
+      {String contractAddress}) async {
+    final url = contractAddress != null
+        ? '${block_explorer_url[network]['api']}/api?module=account&action=tokentx&address=$address&contractaddress=$contractAddress&sort=desc'
+        : '${block_explorer_url[network]['api']}/api?module=account&action=txlist&address=$address&sort=desc';
+    try {
+      Response res = await get(Uri.parse(url));
+      if (res == null) {
+        return null;
+      } else {
+        return jsonDecode(utf8.decode(res.bodyBytes));
+      }
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
+
+  static Future<Map> getEthConfig() async {
+    //TODO:
+    // const url = '$_configEndpoint/config/ethConfig.json';
+    const url = '$_endpoint/devConfiguration/config/ethConfig.json'; //dev
+    try {
+      final res = await get(Uri.parse(url)).timeout(const Duration(seconds: 3));
+      return jsonDecode(utf8.decode(res.bodyBytes));
+    } on TimeoutException catch (_) {
+      // Handle timeout exception
+      if (kDebugMode) {
+        print('Request timed out.');
+      }
+      return null;
+    } catch (err) {
+      // Handle other exceptions
+      if (kDebugMode) {
+        print(err);
+      }
       return null;
     }
   }
