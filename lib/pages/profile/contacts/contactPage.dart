@@ -113,12 +113,13 @@ class _Contact extends State<ContactPage> {
         }
       } else {
         // edit contact
-        widget.service.store.account.accountType == AccountType.Evm
-            ? con['pubKey'] = _args.pubKey
-            : con['address'] = _args.address;
-        widget.service.store.account.accountType == AccountType.Evm
-            ? await widget.service.keyringEVM.store.updateContact(con)
-            : await widget.service.keyring.store.updateContact(con);
+        if (widget.service.store.account.accountType == AccountType.Evm) {
+          con['address'] = _args.address;
+          await widget.service.keyringEVM.store.updateContact(con);
+        } else {
+          con['pubKey'] = _args.pubKey;
+          await widget.service.keyring.store.updateContact(con);
+        }
         // if the contact being edited was current account
         // and was set not observable, we should reset current account.
         final current =
