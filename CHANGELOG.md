@@ -1,3 +1,10 @@
+# [3.4.7-beta] - 20230523
+1. kusama/polkadot plugin update: no-controller for staking.
+
+# [3.4.6-beta] - 20230518
+1. add polkawallet_plugin_evm support.
+2. EVM account support + Goerli testnet support.
+
 # [3.4.5-beta] - 20230428
 1. karura/acala plugin update.
 2. bridge module update.
