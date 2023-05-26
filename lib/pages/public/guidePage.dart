@@ -1,7 +1,7 @@
 import 'package:app/pages/homePage.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 
@@ -42,6 +42,10 @@ class _GuidePageState extends State<GuidePage> {
                 children: _pages
                     .map((e) => Container(
                           alignment: Alignment.topRight,
+                          margin: EdgeInsets.only(
+                              bottom: 140 /
+                                  844.0 *
+                                  MediaQuery.of(context).size.height),
                           child: Image.asset(
                             'assets/images/public/guide_${e}_${I18n.of(context).locale.toString()}.png',
                             width: double.infinity,
