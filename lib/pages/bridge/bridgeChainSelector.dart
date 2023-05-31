@@ -54,7 +54,7 @@ class BridgeChainSelector extends StatelessWidget {
     final current = index == 0 ? from : to;
     final crossChainIcons = Map<String, Widget>.from(chainsInfo?.map((k, v) =>
         MapEntry(
-            k.toUpperCase(),
+            k,
             v.icon.contains('.svg')
                 ? SvgPicture.network(v.icon)
                 : Image.network(v.icon))));
