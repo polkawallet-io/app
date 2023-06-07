@@ -1146,9 +1146,11 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_acala"
-      relative: true
-    source: path
+      path: "."
+      ref: "7c2cee61d6750d9b73b51fc1abab22a7c308a7c1"
+      resolved-ref: "7c2cee61d6750d9b73b51fc1abab22a7c308a7c1"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
+    source: git
     version: "0.5.2"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
@@ -1178,25 +1180,31 @@ packages:
     source: git
     version: "0.3.0"
   polkawallet_plugin_evm:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_evm"
-      relative: true
-    source: path
+      path: "."
+      ref: "4e8e0c18d582317756f6ca4a1b27535b2432c128"
+      resolved-ref: "4e8e0c18d582317756f6ca4a1b27535b2432c128"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_evm.git"
+    source: git
     version: "0.0.1"
   polkawallet_plugin_karura:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_karura"
-      relative: true
-    source: path
+      path: "."
+      ref: "86d406f0dfa51dfb75ad37a7d14d36b60594c5b9"
+      resolved-ref: "86d406f0dfa51dfb75ad37a7d14d36b60594c5b9"
+      url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
+    source: git
     version: "0.5.2"
   polkawallet_plugin_kusama:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_kusama"
-      relative: true
-    source: path
+      path: "."
+      ref: "20d06b208c5426941dd9ad5b37f99033ddcc267b"
+      resolved-ref: "20d06b208c5426941dd9ad5b37f99033ddcc267b"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
+    source: git
     version: "0.5.2"
   polkawallet_plugin_robonomics:
     dependency: "direct main"
@@ -1210,24 +1218,28 @@ packages:
   polkawallet_plugin_statemine:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/polkawallet_plugin_statemine"
-      relative: true
-    source: path
+      path: "."
+      ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      resolved-ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
+    source: git
     version: "0.4.9"
   polkawallet_sdk:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/sdk"
-      relative: true
-    source: path
-    version: "0.5.3"
+      name: polkawallet_sdk
+      sha256: "7509a7e82b621345fc805b9d89cae1586b418559ce7913715b3bc735ef72fb30"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.4"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "../../coding/polkawallet/ui"
-      relative: true
-    source: path
-    version: "0.5.3"
+      name: polkawallet_ui
+      sha256: "94da8aaeae3d57ea91f6247a2aacea1e83919dff77297417f0a0e8e8854d8446"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.4"
   pool:
     dependency: transitive
     description:

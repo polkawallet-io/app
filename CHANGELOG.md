@@ -1,3 +1,7 @@
+# [3.4.8-beta] - 20230607
+1. bridge module update.
+2. bump sdk/ui 0.5.4.
+
 # [3.4.7-beta] - 20230523
 1. kusama/polkadot plugin update: no-controller for staking.
 
