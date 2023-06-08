@@ -148,7 +148,7 @@ class _CrossChainTransferPageState extends State<CrossChainTransferPage> {
       final fromNetwork = data["fromNetwork"];
 
       final xcmParams = await widget.service.plugin.sdk.api.bridge.getTxParams(
-          fromNetwork,
+          fromNetwork.toString().toUpperCase(),
           _chainTo,
           balance?.tokenNameId,
           widget.service.keyring.current.address,

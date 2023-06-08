@@ -818,7 +818,7 @@ class _BridgePageState extends State<BridgePage> {
                                       onPressed: () async {
                                         final params = await _getTxParams(
                                             TokenIcon(
-                                              _chainFrom,
+                                              _chainFrom.toUpperCase(),
                                               _crossChainIcons,
                                             ),
                                             feeToken);
