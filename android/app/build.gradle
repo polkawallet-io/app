@@ -71,10 +71,17 @@ android {
 
     signingConfigs {
         release {
-            storeFile rootProject.file("app/io.polkawallet.polkawallet.jks")
-            storePassword System.getenv("APPCENTER_KEYSTORE_PASSWORD")
-            keyAlias System.getenv("APPCENTER_KEY_ALIAS")
-            keyPassword System.getenv("APPCENTER_KEY_PASSWORD")
+            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["CM_KEY_ALIAS"]
+                keyPassword System.getenv()["CM_KEY_PASSWORD"]
+            } else {
+                storeFile rootProject.file("app/io.polkawallet.polkawallet.jks")
+                storePassword System.getenv("APPCENTER_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("APPCENTER_KEY_ALIAS")
+                keyPassword System.getenv("APPCENTER_KEY_PASSWORD")
+            }
         }
     }
 

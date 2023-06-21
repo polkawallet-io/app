@@ -7,13 +7,12 @@ set -e
 set -x
 
 cd ..
-git clone -b beta https://github.com/flutter/flutter.git
-export PATH=`pwd`/flutter/bin:$PATH
+git clone -b 3.7.7 --depth 1 https://github.com/flutter/flutter.git
+export PATH=$(pwd)/flutter/bin:$PATH
 
-flutter channel stable
 flutter doctor
 
-echo "Installed flutter to `pwd`/flutter"
+echo "Installed flutter to $(pwd)/flutter"
 
 # build APK
 # if you get "Execution failed for task ':app:lintVitalRelease'." error, uncomment next two lines
@@ -22,7 +21,7 @@ echo "Installed flutter to `pwd`/flutter"
 flutter build apk --release
 
 # if you need build bundle (AAB) in addition to your APK, uncomment line below and last line of this script.
-flutter build appbundle --release
+flutter build appbundle --release -t lib/main-google.dart
 
 # copy the APK where AppCenter will find it
 mkdir -p android/app/build/outputs/apk/; mv build/app/outputs/apk/release/app-release.apk $_
