@@ -1201,8 +1201,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "20d06b208c5426941dd9ad5b37f99033ddcc267b"
-      resolved-ref: "20d06b208c5426941dd9ad5b37f99033ddcc267b"
+      ref: f67193f9da6aa2a99d9c45cc1f4aa18f9e9cc33b
+      resolved-ref: f67193f9da6aa2a99d9c45cc1f4aa18f9e9cc33b
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.5.2"
