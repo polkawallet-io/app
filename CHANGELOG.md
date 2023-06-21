@@ -1,3 +1,6 @@
+# [3.4.9-beta] - 20230620
+1. bump sdk 0.5.4+3.
+
 # [3.4.8-beta] - 20230607
 1. bridge module update.
 2. bump sdk/ui 0.5.4.
