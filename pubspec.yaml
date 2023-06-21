@@ -51,7 +51,7 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 20d06b208c5426941dd9ad5b37f99033ddcc267b
+      ref: f67193f9da6aa2a99d9c45cc1f4aa18f9e9cc33b
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
