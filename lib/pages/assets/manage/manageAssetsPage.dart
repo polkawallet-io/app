@@ -1,6 +1,7 @@
 import 'package:app/common/consts.dart';
 import 'package:app/pages/assets/index.dart';
 import 'package:app/service/index.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,7 @@ class _ManageAssetsPageState extends State<ManageAssetsPage> {
           symbol: widget.service.plugin.networkState.tokenSymbol[0],
           name: widget.service.plugin.networkState.tokenSymbol[0],
           fullName:
-              '${widget.service.plugin.basic.name} ${dic['manage.native']}')
+              '${AppFmt.pluginNameDisplay(widget.service.plugin.basic.name)} ${dic['manage.native']}')
     ];
     list.addAll(widget.service.plugin.noneNativeTokensAll);
 

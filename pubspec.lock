@@ -1219,11 +1219,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
-      resolved-ref: "8ae288145247607b3fc67deca7d7f64016d8bf56"
+      ref: "49c7d5cd2af7ba7c32f396d40f088d82573dc3a3"
+      resolved-ref: "49c7d5cd2af7ba7c32f396d40f088d82573dc3a3"
       url: "https://github.com/polkawallet-io/polkawallet_plugin_statemine.git"
     source: git
-    version: "0.4.9"
+    version: "0.5.4"
   polkawallet_sdk:
     dependency: "direct main"
     description:
