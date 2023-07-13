@@ -10,6 +10,7 @@ import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/public/AdBanner.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/InstrumentWidget.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -328,7 +329,8 @@ class _AssetsState extends State<AssetsPage> {
                                     BorderRadius.all(Radius.circular(5.5))),
                           ),
                     Text(
-                      widget.service.plugin.basic.name.toUpperCase(),
+                      AppFmt.pluginNameDisplay(
+                          widget.service.plugin.basic.name),
                       style: Theme.of(context)
                           .textTheme
                           .headline4

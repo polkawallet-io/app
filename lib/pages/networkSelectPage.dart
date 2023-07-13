@@ -6,6 +6,7 @@ import 'package:app/pages/account/create/createAccountPage.dart';
 import 'package:app/pages/account/import/selectImportTypePage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/Utils.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +164,7 @@ class _CommunityPluginNote extends StatelessWidget {
               Expanded(
                   child: Text(
                 dic['plugin.note'] +
-                    pluginName.toUpperCase() +
+                    AppFmt.pluginNameDisplay(pluginName) +
                     dic['plugin.team'],
                 style: TextStyle(fontSize: UI.getTextSize(12, context)),
               )),
@@ -627,7 +628,7 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            name.toUpperCase(),
+            AppFmt.pluginNameDisplay(name),
             style: Theme.of(context).textTheme.headline3?.copyWith(
                 fontSize: 32, fontWeight: FontWeight.bold, height: 1.0),
           ),
