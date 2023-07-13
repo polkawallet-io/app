@@ -17,6 +17,7 @@ import 'package:app/pages/profile/index.dart';
 import 'package:app/pages/walletConnect/wcSessionsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/BottomNavigationBar.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
@@ -577,7 +578,8 @@ class _HomePageState extends State<HomePage> {
       });
       pages.add(HomeNavItem(
           content: MetaHubPage(
-            pluginName: widget.service.plugin.basic.name,
+            pluginName:
+                AppFmt.pluginNameDisplay(widget.service.plugin.basic.name),
             metaItems: items,
             colors: getMetaHubColors(),
           ),
