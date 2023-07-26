@@ -1147,8 +1147,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "64d8ab7805c9b32fe3d9549d13f9f823d86885d7"
-      resolved-ref: "64d8ab7805c9b32fe3d9549d13f9f823d86885d7"
+      ref: dcb50c9109ad07da48355281a5bef91e103b5cc4
+      resolved-ref: dcb50c9109ad07da48355281a5bef91e103b5cc4
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.5.4"
@@ -1192,8 +1192,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "9e28e7ea849ae5f94153cff21ae274a657afb4c5"
-      resolved-ref: "9e28e7ea849ae5f94153cff21ae274a657afb4c5"
+      ref: "8c28e00da504c293b58215b1199fa3a09f90eabb"
+      resolved-ref: "8c28e00da504c293b58215b1199fa3a09f90eabb"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
     source: git
     version: "0.5.4"
