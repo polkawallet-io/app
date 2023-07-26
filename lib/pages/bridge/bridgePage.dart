@@ -599,7 +599,7 @@ class _BridgePageState extends State<BridgePage> {
                 MapEntry(
                     v,
                     Image.network(
-                        'https://resources.acala.network/tokens/${v == acala_stable_coin || v == karura_stable_coin ? acala_seed_coin : v}.png')))
+                        'https://resources.acala.network/tokens/${v == acala_stable_coin || v == karura_stable_coin ? 'ASEED' : v}.png')))
             : <String, Widget>{};
 
         final TokenBalanceData tokenBalance = _config != null
