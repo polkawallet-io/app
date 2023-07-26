@@ -1,8 +1,11 @@
 class AppFmt {
   static String tokenView(String symbol) {
     String view = symbol;
-    if (symbol == 'KUSD' || symbol == 'AUSD') {
-      view = 'aUSD';
+    if (symbol == 'KUSD' ||
+        symbol == 'AUSD' ||
+        symbol == 'aUSD' ||
+        symbol == 'ASEED') {
+      view = 'aSEED';
     }
     return view;
   }

@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_karura/common/constants/index.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -597,7 +599,7 @@ class _BridgePageState extends State<BridgePage> {
                 MapEntry(
                     v,
                     Image.network(
-                        'https://resources.acala.network/tokens/$v.png')))
+                        'https://resources.acala.network/tokens/${v == acala_stable_coin || v == karura_stable_coin ? 'ASEED' : v}.png')))
             : <String, Widget>{};
 
         final TokenBalanceData tokenBalance = _config != null

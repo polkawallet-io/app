@@ -231,21 +231,25 @@ class WCPairingPermissions extends StatelessWidget {
                         .bodySmall
                         .copyWith(fontWeight: FontWeight.normal),
                   ),
-                  Text(
-                    dic['wc.expiry'],
-                    style: Theme.of(context)
-                        .textTheme
-                        .displaySmall
-                        .copyWith(fontSize: 14),
-                  ),
-                  Text(
-                    Fmt.dateTime(
-                        DateTime.fromMillisecondsSinceEpoch(expiry * 1000)),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        .copyWith(fontWeight: FontWeight.normal),
-                  )
+                  expiry != null
+                      ? Text(
+                          dic['wc.expiry'],
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              .copyWith(fontSize: 14),
+                        )
+                      : Container(),
+                  expiry != null
+                      ? Text(
+                          Fmt.dateTime(DateTime.fromMillisecondsSinceEpoch(
+                              expiry * 1000)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              .copyWith(fontWeight: FontWeight.normal),
+                        )
+                      : Container()
                 ],
               ))
             ],

@@ -82,8 +82,7 @@ class WCSessionDetailPage extends StatelessWidget {
                               )
                             : Container(),
                         args.version == 2 && session != null
-                            ? WCPairingPermissions(
-                                session.namespaces, session.expiry)
+                            ? WCPairingPermissions(session.namespaces, null)
                             : Container(),
                         Visibility(
                           visible: callRequests.isNotEmpty,
