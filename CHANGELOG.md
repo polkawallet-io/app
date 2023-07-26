@@ -1,3 +1,8 @@
+# [3.5.1-beta]
+20230726
+1. bump sdk 0.5.4+7.
+2. acala/karura plugin update.
+
 # [3.5.0-beta] - 20230711
 1. bump sdk 0.5.4+5.
 2. rename statemine/statemint -> asset hub.
