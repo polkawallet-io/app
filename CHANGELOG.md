@@ -1,3 +1,9 @@
+# [3.5.2-beta]
+20230822
+1. bump sdk 0.5.5.
+2. acala/karura plugin update.
+3. add webview.isMessageChannelAlive check for reconnect.
+
 # [3.5.1-beta]
 20230726
 1. bump sdk 0.5.4+7.

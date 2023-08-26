@@ -367,6 +367,12 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
   }
 
   _reconnectNode() async {
+    // isMessageChannelAlive = true means we have new message in last 10s.
+    if (_service.plugin.sdk.webView.isMessageChannelAlive) {
+      _startConnectionCheck();
+      return;
+    }
+
     print('connection check failed, reconnecting...');
     _restartPlugin();
 
