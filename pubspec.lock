@@ -1228,10 +1228,10 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_sdk
-      sha256: e1998d6d17b2b4b3a18b0205ac6b6c29fef7e4af6244fdec10a6e8f2bbef4b60
+      sha256: "5764990e4427cde05eea89a6745475720993ae4dce6598ff3fa0bbe8541b7f8b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5"
+    version: "0.5.5+1"
   polkawallet_ui:
     dependency: "direct main"
     description:
