@@ -1,3 +1,8 @@
+# [3.5.3-beta]
+20230919
+1. bump sdk 0.5.5+1.
+2. acala/karura plugin update.
+
 # [3.5.2-beta]
 20230822
 1. bump sdk 0.5.5.
