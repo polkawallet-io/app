@@ -1,3 +1,8 @@
+# [3.5.4-beta]
+20231019
+1. bump sdk 0.5.5+2.
+2. acala/karura plugin update - ACA/KAR staking.
+
 # [3.5.3-beta]
 20230919
 1. bump sdk 0.5.5+1.
