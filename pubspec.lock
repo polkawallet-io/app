@@ -531,10 +531,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview
-      sha256: f73505c792cf083d5566e1a94002311be497d984b5607f25be36d685cf6361cf
+      sha256: d198297060d116b94048301ee6749cd2e7d03c1f2689783f52d210a6b7aba350
       url: "https://pub.dev"
     source: hosted
-    version: "5.7.2+3"
+    version: "5.8.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -1228,10 +1228,10 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_sdk
-      sha256: ca34c6d121df310d987f8afb2cf7dbb821aad514139093b3b3a81f155a390a44
+      sha256: a28f7bb874fc491f3f74904a21ba43adfac60a80078e0393437336bb812f635a
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5+2"
+    version: "0.5.5+3"
   polkawallet_ui:
     dependency: "direct main"
     description:
