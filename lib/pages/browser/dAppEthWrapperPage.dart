@@ -1,33 +1,47 @@
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
+import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_evm/common/constants.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/service/eth/rpcApi.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/webviewEthInjected.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginBottomSheetContainer.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
+import 'package:polkawallet_ui/pages/DAppWrapperPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DAppEthWrapperPage extends StatefulWidget {
-  const DAppEthWrapperPage(this.plugin, this.keyringEVM,
-      {Key key, this.getPassword, this.checkAuth, this.updateAuth})
+  const DAppEthWrapperPage(this.plugin, this.keyring, this.keyringEVM,
+      {Key key,
+      this.getPassword,
+      this.getPasswordEVM,
+      this.checkAuth,
+      this.updateAuth})
       : super(key: key);
   final PolkawalletPlugin plugin;
+  final Keyring keyring;
   final KeyringEVM keyringEVM;
-  final Future<String> Function(BuildContext, EthWalletData) getPassword;
-  final bool Function(String) checkAuth;
-  final Function(String) updateAuth;
+  final Future<String> Function(BuildContext, EthWalletData) getPasswordEVM;
+  final Future<String> Function(BuildContext, KeyPairData) getPassword;
+  final bool Function(String, {bool isEvm}) checkAuth;
+  final Function(String, {bool auth, bool isEvm}) updateAuth;
 
   static const String route = '/extension/app/eth';
 
@@ -39,6 +53,9 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
   WebViewController _controller;
 
   bool _isWillClose = false;
+  bool _signing = false;
+
+  Map _currentEvmChain;
 
   Widget _buildScaffold(
       {Function onBack, Widget body, Function() actionOnPressed}) {
@@ -100,7 +117,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     );
   }
 
-  Future<bool> _onConnectRequest(DAppConnectParam params) async {
+  Future<bool> _onConnectRequestSubstrate(DAppConnectParam params) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final uri = Uri.parse(params.url ?? '');
 
@@ -216,7 +233,123 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     return res ?? false;
   }
 
-  Future<WCCallRequestResult> _onSignRequest(Map params) async {
+  Future<bool> _onConnectRequest(DAppConnectParam params) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final uri = Uri.parse(params.url ?? '');
+
+    if (widget.checkAuth != null && widget.checkAuth(uri.host, isEvm: true)) {
+      return true;
+    }
+
+    final res = await showModalBottomSheet(
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return PluginBottomSheetContainer(
+          height: MediaQuery.of(context).size.height / 2,
+          title: Text(
+            dic['dApp.auth'],
+            style: Theme.of(context).textTheme.headline3.copyWith(
+                color: Colors.white, fontSize: UI.getTextSize(16, context)),
+          ),
+          content: Column(
+            children: [
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 24, bottom: 16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          '${uri.scheme}://${uri.host}/favicon.ico',
+                          width: 50,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            if ((ModalRoute.of(context).settings.arguments
+                                    is Map) &&
+                                (ModalRoute.of(context).settings.arguments
+                                        as Map)["icon"] !=
+                                    null) {
+                              return ((ModalRoute.of(context).settings.arguments
+                                          as Map)["icon"] as String)
+                                      .contains('.svg')
+                                  ? SvgPicture.network((ModalRoute.of(context)
+                                      .settings
+                                      .arguments as Map)["icon"])
+                                  : Image.network((ModalRoute.of(context)
+                                      .settings
+                                      .arguments as Map)["icon"]);
+                            }
+                            return Container();
+                          },
+                        ),
+                      ),
+                    ),
+                    Text(
+                      uri.host,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: UI.getTextSize(18, context),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      child: Text(
+                        dic['dApp.connect.tip'],
+                        style: TextStyle(
+                            fontSize: UI.getTextSize(14, context),
+                            color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+              Container(
+                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dic['dApp.connect.reject'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: const Color(0xFFD8D8D8),
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                    ),
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(left: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dic['dApp.connect.allow'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: PluginColorsDark.primary,
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+      context: context,
+    );
+    if (res == true && widget.updateAuth != null) {
+      widget.updateAuth(uri.host, isEvm: true);
+    }
+    return res ?? false;
+  }
+
+  Future<WCCallRequestResult> _onSignRequestEVM(Map params) async {
     final payload = params['data'];
     final humanParams =
         await widget.plugin.sdk.api.eth.keyring.renderEthRequest(payload);
@@ -231,6 +364,361 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
             requestRaw: payload));
 
     return res;
+  }
+
+  Future<ExtensionSignResult> _onSignRequest(
+      SignAsExtensionParam params) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final address = params.msgType == 'pub(bytes.sign)'
+        ? SignBytesRequest.fromJson(
+                Map<String, dynamic>.from(params.request ?? {}))
+            .address
+        : SignExtrinsicRequest.fromJson(
+                Map<String, dynamic>.from(params.request ?? {}))
+            .address;
+    dynamic acc = widget.keyring.keyPairs.firstWhere((acc) {
+      bool matched = false;
+      widget.keyring.store.pubKeyAddressMap.values.forEach((e) {
+        e.forEach((k, v) {
+          if (acc.pubKey == k && address == v) {
+            matched = true;
+          }
+        });
+      });
+      return matched;
+    });
+
+    if (acc == null) {
+      final decoded =
+          await widget.plugin.sdk.api.account.decodeAddress([address]);
+      acc = widget.keyring.keyPairs.firstWhere((acc) {
+        return decoded?.keys?.first == acc.pubKey;
+      });
+    }
+
+    final res = await showModalBottomSheet(
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return PluginBottomSheetContainer(
+          height: MediaQuery.of(context).size.height / 2,
+          title: Text(
+            dic[params.msgType == 'pub(extrinsic.sign)'
+                ? 'submit.sign.tx'
+                : 'submit.sign.msg'],
+            style: Theme.of(context).textTheme.headline3.copyWith(
+                color: Colors.white, fontSize: UI.getTextSize(16, context)),
+          ),
+          content: Column(
+            children: [
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width / 4,
+                              child: Text(
+                                dic['submit.signer'],
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(right: 4),
+                              child: AddressIcon(address,
+                                  svg: acc?.icon, size: 18),
+                            ),
+                            Expanded(
+                                child: Text(
+                              Fmt.address(address, pad: 8),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5
+                                  .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w300),
+                            ))
+                          ],
+                        ),
+                      ),
+                      params.msgType == 'pub(extrinsic.sign)'
+                          ? SignExtrinsicInfo(params)
+                          : SignBytesInfo(params),
+                    ],
+                  ),
+                ),
+              )),
+              Container(
+                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dic['dApp.connect.reject'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: const Color(0xFFD8D8D8),
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(left: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dic['dApp.confirm'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: PluginColorsDark.primary,
+                        active: !_signing,
+                        onPressed: _signing
+                            ? null
+                            : () async {
+                                final res = await _doSign(acc, params);
+                                if (res != null) {
+                                  Navigator.of(context).pop(res);
+                                }
+                              },
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+      context: context,
+    );
+    return res;
+  }
+
+  Future<ExtensionSignResult> _doSign(
+      KeyPairData acc, SignAsExtensionParam params) async {
+    setState(() {
+      _signing = true;
+    });
+    final password = await widget.getPassword(context, acc);
+    if (password == null) return null;
+
+    final res =
+        await widget.plugin.sdk.api.keyring.signAsExtension(password, params);
+    if (mounted) {
+      setState(() {
+        _signing = false;
+      });
+    }
+    return ExtensionSignResult.fromJson({
+      'id': params.id,
+      'signature': res?.signature,
+    });
+  }
+
+  Future<bool> _onSwitchEvmNetwork(String chainId) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final chainIdHuman = int.tryParse(chainId).toString();
+    String supportedNetwork;
+    String currentChain = '';
+    network_node_list.forEach((key, value) {
+      if (value[0]['chainId'] == chainIdHuman) {
+        supportedNetwork = key;
+      }
+      if (value[0]['chainId'] == _currentEvmChain['chainId']) {
+        currentChain = key;
+      }
+    });
+    if (supportedNetwork == null) {
+      await showModalBottomSheet(
+        isDismissible: false,
+        enableDrag: false,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return PluginBottomSheetContainer(
+            height: MediaQuery.of(context).size.height / 2,
+            title: Text(
+              dic['evm.network.switch'],
+              style: Theme.of(context).textTheme.headline3.copyWith(
+                  color: Colors.white, fontSize: UI.getTextSize(16, context)),
+            ),
+            content: Column(
+              children: [
+                Expanded(
+                    child: Text(
+                        '${dic['evm.network.unsupported']}: $chainIdHuman')),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: PluginOutlinedButtonSmall(
+                          margin: const EdgeInsets.only(right: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          content: dicCommon['cancel'],
+                          fontSize: UI.getTextSize(16, context),
+                          color: const Color(0xFFD8D8D8),
+                          active: true,
+                          onPressed: () => Navigator.of(context).pop(false),
+                        ),
+                      ),
+                      Expanded(
+                        child: PluginOutlinedButtonSmall(
+                          margin: const EdgeInsets.only(left: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          content: dicCommon['ok'],
+                          fontSize: UI.getTextSize(16, context),
+                          color: PluginColorsDark.primary,
+                          active: true,
+                          onPressed: () => Navigator.of(context).pop(true),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+        context: context,
+      );
+      return false;
+    }
+
+    final res = await showModalBottomSheet(
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return PluginBottomSheetContainer(
+          height: MediaQuery.of(context).size.height / 2,
+          title: Text(
+            dic['evm.network.confirm'],
+            style: Theme.of(context).textTheme.headline3.copyWith(
+                color: Colors.white, fontSize: UI.getTextSize(16, context)),
+          ),
+          content: Column(
+            children: [
+              Expanded(
+                  child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      currentChain.toUpperCase(),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: UI.getTextSize(18, context),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '>',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: UI.getTextSize(18, context),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      supportedNetwork.toUpperCase(),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: UI.getTextSize(18, context),
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )),
+              Container(
+                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dicCommon['dApp.connect.reject'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: const Color(0xFFD8D8D8),
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                    ),
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(left: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dicCommon['dApp.connect.allow'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: PluginColorsDark.primary,
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+      context: context,
+    );
+
+    if (res == true) {
+      _switchEvmNetwork(network_node_list[supportedNetwork][0]);
+    }
+    return res;
+  }
+
+  Future<void> _switchEvmNetwork(Map chain) async {
+    final res = await widget.plugin.sdk.webView
+        ?.evalJavascript('eth.settings.connect("${chain['endpoint']}")');
+    if (res != null && res['chainId'] != null && mounted) {
+      setState(() {
+        _currentEvmChain = chain;
+      });
+    }
+  }
+
+  Future<Map> _onEvmRpcCall(Map payload) async {
+    final res =
+        await EvmRpcApi.getRpcCall(_currentEvmChain['endpoint'], payload);
+    return res;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.plugin is! PluginEvm) {
+        _switchEvmNetwork(network_node_list[network_ethereum][0]);
+      } else {
+        setState(() {
+          _currentEvmChain = widget.plugin.sdk.api.connectedNode.toJson();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    if (widget.plugin is PluginEvm) {
+      widget.plugin.sdk.api.connectEVM(widget.plugin.sdk.api.connectedNode);
+    }
+
+    super.dispose();
   }
 
   @override
@@ -274,14 +762,19 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
                 widget.plugin.sdk.api,
                 url,
                 widget.keyringEVM,
+                keyring: widget.keyring,
                 onWebViewCreated: (controller) {
                   setState(() {
                     _controller = controller;
                   });
                 },
-                onConnectRequest: _onConnectRequest,
+                onConnectRequest: _onConnectRequestSubstrate,
+                onConnectRequestEVM: _onConnectRequest,
+                onSignRequestEVM: _onSignRequestEVM,
                 onSignRequest: _onSignRequest,
                 checkAuth: widget.checkAuth,
+                onSwitchEvmChain: _onSwitchEvmNetwork,
+                onEvmRpcCall: _onEvmRpcCall,
               ),
               // Visibility(
               //     visible: _loading,

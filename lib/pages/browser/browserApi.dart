@@ -2,7 +2,6 @@ import 'package:app/pages/browser/dAppEthWrapperPage.dart';
 import 'package:app/service/index.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class BrowserApi {
   static const _dappLatestKey = 'dapp_latest';
@@ -43,9 +42,7 @@ class BrowserApi {
         service.plugin is PluginEvm ? _dappEvmLatestKey : _dappLatestKey,
         dappLatest);
     return await Navigator.of(context).pushNamed(
-      service.plugin is PluginEvm
-          ? DAppEthWrapperPage.route
-          : DAppWrapperPage.route,
+      DAppEthWrapperPage.route,
       arguments: {
         "url": dapp['detailUrl'],
         "isPlugin": true,

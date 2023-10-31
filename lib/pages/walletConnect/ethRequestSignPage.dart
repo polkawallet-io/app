@@ -4,6 +4,7 @@ import 'package:app/common/components/ethGasConfirmPanel.dart';
 import 'package:app/pages/assets/ethTransfer/gasSettingsPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/Utils.dart';
+import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -74,8 +75,11 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
       });
 
       final gasOptions = _isRequestSendTx(args.request)
-          ? Utils.getGasOptionsForTx(args.request.params[3].value,
-              widget.service.store.assets.gasParams, _gasLevel, _gasEditable())
+          ? Utils.getGasOptionsForTx(
+              AppFmt.convertToInt(args.request.params[3].value),
+              widget.service.store.assets.gasParams,
+              _gasLevel,
+              _gasEditable())
           : {};
       if (args.requestRaw == null) {
         _signWC(args.request.id, password, gasOptions);
@@ -126,7 +130,9 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
 
   bool _gasEditable() {
     final pluginName = (widget.service.plugin as PluginEvm).basic.name;
-    return !pluginName.contains('acala') && !pluginName.contains('karura');
+    return !pluginName.contains('acala') &&
+        !pluginName.contains('karura') &&
+        !pluginName.contains('mandala');
   }
 
   Future<void> _updateTxFee() async {
@@ -193,7 +199,9 @@ class EthRequestSignPageState extends State<EthRequestSignPage> {
       final acc = widget.service.keyringEVM.current.toKeyPairData();
 
       final gasParams = widget.service.store.assets.gasParams;
-      final gasTokenSymbol = (widget.service.plugin as PluginEvm).nativeToken;
+      final gasTokenSymbol = widget.service.plugin.runtimeType == PluginEvm
+          ? (widget.service.plugin as PluginEvm).nativeToken
+          : 'ETH';
       final gasTokenPrice =
           widget.service.store.assets.marketPrices[gasTokenSymbol] ?? 0;
 

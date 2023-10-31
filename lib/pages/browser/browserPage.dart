@@ -33,8 +33,7 @@ class _BrowserPageState extends State<BrowserPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.service.store.settings
-          .loadDAppAuth(widget.service.plugin is PluginEvm);
+      widget.service.store.settings.loadDAppAuth();
     });
   }
 

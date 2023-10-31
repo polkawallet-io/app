@@ -91,7 +91,6 @@ import 'package:polkawallet_sdk/utils/app.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
-import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 import 'package:polkawallet_ui/pages/qrSenderPage.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/v3/accountListPage.dart';
@@ -802,20 +801,21 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       CreateAccountEntryPage.route: (_) => CreateAccountEntryPage(_service),
       CreateAccountPage.route: (_) => CreateAccountPage(_service),
       BackupAccountPage.route: (_) => BackupAccountPage(_service),
-      DAppWrapperPage.route: (_) => DAppWrapperPage(
+      // DAppWrapperPage.route: (_) => DAppWrapperPage(
+      //       _service.plugin,
+      //       _keyring,
+      //       getPassword: _service.account.getPassword,
+      //       checkAuth: _store.settings.checkDAppAuth,
+      //       updateAuth: _store.settings.updateDAppAuth,
+      //     ),
+      DAppEthWrapperPage.route: (_) => DAppEthWrapperPage(
             _service.plugin,
             _keyring,
+            _keyringEVM,
+            getPasswordEVM: _service.account.getEvmPassword,
             getPassword: _service.account.getPassword,
             checkAuth: _store.settings.checkDAppAuth,
             updateAuth: _store.settings.updateDAppAuth,
-          ),
-      DAppEthWrapperPage.route: (_) => DAppEthWrapperPage(
-            _service.plugin,
-            _keyringEVM,
-            getPassword: _service.account.getEvmPassword,
-            checkAuth: _store.settings.checkDAppAuth,
-            updateAuth: (url) =>
-                _store.settings.updateDAppAuth(url, isEvm: true),
           ),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>
