@@ -194,7 +194,8 @@ class ApiWC {
       BuildContext context, WCCallRequestData payload) async {
     if (apiRoot.plugin is PluginEvm) {
       Navigator.of(context).pushNamed(EthRequestSignPage.route,
-          arguments: EthRequestSignPageParams(payload, Uri()));
+          arguments: EthRequestSignPageParams(
+              payload, Uri(), (apiRoot.plugin as PluginEvm).nativeToken));
     } else {
       Navigator.of(context).pushNamed(DotRequestSignPage.route,
           arguments: DotRequestSignPageParams(payload));

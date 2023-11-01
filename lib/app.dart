@@ -809,7 +809,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
       //       updateAuth: _store.settings.updateDAppAuth,
       //     ),
       DAppEthWrapperPage.route: (_) => DAppEthWrapperPage(
-            _service.plugin,
+            _service,
             _keyring,
             _keyringEVM,
             getPasswordEVM: _service.account.getEvmPassword,

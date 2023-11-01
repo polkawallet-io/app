@@ -1,4 +1,5 @@
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
+import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
-import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/eth/rpcApi.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
@@ -28,14 +28,14 @@ import 'package:polkawallet_ui/utils/index.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DAppEthWrapperPage extends StatefulWidget {
-  const DAppEthWrapperPage(this.plugin, this.keyring, this.keyringEVM,
+  const DAppEthWrapperPage(this.service, this.keyring, this.keyringEVM,
       {Key key,
       this.getPassword,
       this.getPasswordEVM,
       this.checkAuth,
       this.updateAuth})
       : super(key: key);
-  final PolkawalletPlugin plugin;
+  final AppService service;
   final Keyring keyring;
   final KeyringEVM keyringEVM;
   final Future<String> Function(BuildContext, EthWalletData) getPasswordEVM;
@@ -54,8 +54,6 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
 
   bool _isWillClose = false;
   bool _signing = false;
-
-  Map _currentEvmChain;
 
   Widget _buildScaffold(
       {Function onBack, Widget body, Function() actionOnPressed}) {
@@ -351,8 +349,8 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
 
   Future<WCCallRequestResult> _onSignRequestEVM(Map params) async {
     final payload = params['data'];
-    final humanParams =
-        await widget.plugin.sdk.api.eth.keyring.renderEthRequest(payload);
+    final humanParams = await widget.service.plugin.sdk.api.eth.keyring
+        .renderEthRequest(payload);
     final res = await Navigator.of(context).pushNamed(EthRequestSignPage.route,
         arguments: EthRequestSignPageParams(
             WCCallRequestData.fromJson(Map<String, dynamic>.from({
@@ -361,6 +359,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
               'params': humanParams,
             })),
             Uri.parse(params['origin']),
+            network_native_token[widget.service.store.settings.dAppEvmNetwork],
             requestRaw: payload));
 
     return res;
@@ -390,13 +389,13 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
 
     if (acc == null) {
       final decoded =
-          await widget.plugin.sdk.api.account.decodeAddress([address]);
+          await widget.service.plugin.sdk.api.account.decodeAddress([address]);
       acc = widget.keyring.keyPairs.firstWhere((acc) {
         return decoded?.keys?.first == acc.pubKey;
       });
     }
 
-    final res = await showModalBottomSheet(
+    final ExtensionSignResult res = await showModalBottomSheet(
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
@@ -512,8 +511,8 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     final password = await widget.getPassword(context, acc);
     if (password == null) return null;
 
-    final res =
-        await widget.plugin.sdk.api.keyring.signAsExtension(password, params);
+    final res = await widget.service.plugin.sdk.api.keyring
+        .signAsExtension(password, params);
     if (mounted) {
       setState(() {
         _signing = false;
@@ -530,13 +529,9 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final chainIdHuman = int.tryParse(chainId).toString();
     String supportedNetwork;
-    String currentChain = '';
     network_node_list.forEach((key, value) {
       if (value[0]['chainId'] == chainIdHuman) {
         supportedNetwork = key;
-      }
-      if (value[0]['chainId'] == _currentEvmChain['chainId']) {
-        currentChain = key;
       }
     });
     if (supportedNetwork == null) {
@@ -616,7 +611,8 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      currentChain.toUpperCase(),
+                      widget.service.store.settings.dAppEvmNetwork
+                          .toUpperCase(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UI.getTextSize(18, context),
@@ -676,24 +672,24 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     );
 
     if (res == true) {
-      _switchEvmNetwork(network_node_list[supportedNetwork][0]);
+      await _switchEvmNetwork(supportedNetwork);
     }
     return res;
   }
 
-  Future<void> _switchEvmNetwork(Map chain) async {
-    final res = await widget.plugin.sdk.webView
-        ?.evalJavascript('eth.settings.connect("${chain['endpoint']}")');
-    if (res != null && res['chainId'] != null && mounted) {
-      setState(() {
-        _currentEvmChain = chain;
-      });
+  Future<void> _switchEvmNetwork(String chainName) async {
+    final chainInfo = network_node_list[chainName][0];
+    final res = await widget.service.plugin.sdk.webView
+        ?.evalJavascript('eth.settings.connect("${chainInfo['endpoint']}")');
+    if (res != null && res['chainId'] != null) {
+      widget.service.store.settings.setDAppEvmNetwork(chainName);
     }
   }
 
   Future<Map> _onEvmRpcCall(Map payload) async {
-    final res =
-        await EvmRpcApi.getRpcCall(_currentEvmChain['endpoint'], payload);
+    final chainInfo =
+        network_node_list[widget.service.store.settings.dAppEvmNetwork][0];
+    final res = await EvmRpcApi.getRpcCall(chainInfo['endpoint'], payload);
     return res;
   }
 
@@ -702,20 +698,20 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.plugin is! PluginEvm) {
-        _switchEvmNetwork(network_node_list[network_ethereum][0]);
+      if (widget.service.plugin is! PluginEvm) {
+        _switchEvmNetwork(network_ethereum);
       } else {
-        setState(() {
-          _currentEvmChain = widget.plugin.sdk.api.connectedNode.toJson();
-        });
+        widget.service.store.settings
+            .setDAppEvmNetwork((widget.service.plugin as PluginEvm).network);
       }
     });
   }
 
   @override
   void dispose() {
-    if (widget.plugin is PluginEvm) {
-      widget.plugin.sdk.api.connectEVM(widget.plugin.sdk.api.connectedNode);
+    if (widget.service.plugin is PluginEvm) {
+      widget.service.plugin.sdk.api
+          .connectEVM(widget.service.plugin.sdk.api.connectedNode);
     }
 
     super.dispose();
@@ -759,7 +755,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
           child: Stack(
             children: [
               WebViewEthInjected(
-                widget.plugin.sdk.api,
+                widget.service.plugin.sdk.api,
                 url,
                 widget.keyringEVM,
                 keyring: widget.keyring,

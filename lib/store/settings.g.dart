@@ -178,6 +178,21 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$dAppEvmNetworkAtom = Atom(name: '_SettingsStore.dAppEvmNetwork');
+
+  @override
+  String get dAppEvmNetwork {
+    _$dAppEvmNetworkAtom.reportRead();
+    return super.dAppEvmNetwork;
+  }
+
+  @override
+  set dAppEvmNetwork(String value) {
+    _$dAppEvmNetworkAtom.reportWrite(value, super.dAppEvmNetwork, () {
+      super.dAppEvmNetwork = value;
+    });
+  }
+
   final _$_SettingsStoreActionController =
       ActionController(name: '_SettingsStore');
 
@@ -301,6 +316,15 @@ mixin _$SettingsStore on _SettingsStore, Store {
   @override
   Future<void> loadIsDarkTheme() {
     return _$loadIsDarkThemeAsyncAction.run(() => super.loadIsDarkTheme());
+  }
+
+  final _$setDAppEvmNetworkAsyncAction =
+      AsyncAction('_SettingsStore.setDAppEvmNetwork');
+
+  @override
+  Future<void> setDAppEvmNetwork(String chain) {
+    return _$setDAppEvmNetworkAsyncAction
+        .run(() => super.setDAppEvmNetwork(chain));
   }
 
   @override
