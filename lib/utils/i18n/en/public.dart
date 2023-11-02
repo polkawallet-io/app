@@ -157,4 +157,9 @@ const Map<String, String> enPublic = {
   'evm.network.confirm':
       'Is it allowed for this website to switch ethereum network?',
   'evm.network.unsupported': 'Network is not supported with chainId',
+  'evm.empty.evm': 'EVM account not found',
+  'evm.empty.require.evm': 'This page requires EVM account to continue',
+  'evm.empty.substrate': 'Polkadot account not found',
+  'evm.empty.require.substrate':
+      'This page requires Polkadot account to continue',
 };

@@ -25,6 +25,11 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
+class NetworkSelectPageParams {
+  NetworkSelectPageParams({this.isEvm = false});
+  final bool isEvm;
+}
+
 class NetworkSelectPage extends StatefulWidget {
   NetworkSelectPage(
       this.service, this.plugins, this.disabledPlugins, this.changeNetwork);
@@ -50,9 +55,16 @@ class _NetworkSelectPageState extends State<NetworkSelectPage> {
 
     _isEvm = widget.service.store.account.accountType == AccountType.Evm;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final NetworkSelectPageParams args =
+          ModalRoute.of(context).settings.arguments;
+
       var appVersionCode = await Utils.getBuildNumber();
       setState(() {
         _appVersionCode = appVersionCode;
+
+        if (args?.isEvm != null) {
+          _isEvm = args.isEvm;
+        }
       });
     });
   }
@@ -214,9 +226,12 @@ class _NetworkSelectWidgetState extends State<NetworkSelectWidget> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      setState(() {
-        _selectedNetwork = widget.service.plugin;
-      });
+      final args = ModalRoute.of(context).settings.arguments;
+      if (args == null) {
+        setState(() {
+          _selectedNetwork = widget.service.plugin;
+        });
+      }
     });
   }
 

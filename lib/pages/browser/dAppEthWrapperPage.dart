@@ -1,3 +1,5 @@
+import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/eth/rpcApi.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
@@ -33,7 +36,8 @@ class DAppEthWrapperPage extends StatefulWidget {
       this.getPassword,
       this.getPasswordEVM,
       this.checkAuth,
-      this.updateAuth})
+      this.updateAuth,
+      this.changeNetwork})
       : super(key: key);
   final AppService service;
   final Keyring keyring;
@@ -42,6 +46,7 @@ class DAppEthWrapperPage extends StatefulWidget {
   final Future<String> Function(BuildContext, KeyPairData) getPassword;
   final bool Function(String, {bool isEvm}) checkAuth;
   final Function(String, {bool auth, bool isEvm}) updateAuth;
+  final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   static const String route = '/extension/app/eth';
 
@@ -359,7 +364,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
               'params': humanParams,
             })),
             Uri.parse(params['origin']),
-            network_native_token[widget.service.store.settings.dAppEvmNetwork],
+            network_native_token[widget.service.store.settings.evmNetwork],
             requestRaw: payload));
 
     return res;
@@ -598,12 +603,21 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
         return PluginBottomSheetContainer(
           height: MediaQuery.of(context).size.height / 2,
           title: Text(
-            dic['evm.network.confirm'],
+            dic['evm.network.switch'],
             style: Theme.of(context).textTheme.headline3.copyWith(
                 color: Colors.white, fontSize: UI.getTextSize(16, context)),
           ),
           content: Column(
             children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                child: Text(
+                  dic['evm.network.confirm'],
+                  style: Theme.of(context).textTheme.headline3.copyWith(
+                      color: Colors.white,
+                      fontSize: UI.getTextSize(16, context)),
+                ),
+              ),
               Expanded(
                   child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -611,8 +625,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.service.store.settings.dAppEvmNetwork
-                          .toUpperCase(),
+                      widget.service.store.settings.evmNetwork.toUpperCase(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UI.getTextSize(18, context),
@@ -682,15 +695,118 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     final res = await widget.service.plugin.sdk.webView
         ?.evalJavascript('eth.settings.connect("${chainInfo['endpoint']}")');
     if (res != null && res['chainId'] != null) {
-      widget.service.store.settings.setDAppEvmNetwork(chainName);
+      final isWalletConnectAlive =
+          widget.service.store.account.wcV2Sessions.isNotEmpty;
+      if (isWalletConnectAlive) {
+        _disconnectWC();
+      }
+
+      widget.service.store.account.setAccountType(AccountType.Evm);
+      if (widget.service.plugin is! PluginEvm) {
+        widget.service.plugin
+            .changeAccount(widget.keyringEVM.keyPairs.first.toKeyPairData());
+      }
+
+      final plugin = PluginEvm(
+          networkName: chainName,
+          config: widget.service.store.settings.ethConfig);
+      // TODO: changeNetwork after evm connect will trigger re-connect, maybe effect dApp messaging
+      widget.changeNetwork(plugin);
     }
   }
 
   Future<Map> _onEvmRpcCall(Map payload) async {
     final chainInfo =
-        network_node_list[widget.service.store.settings.dAppEvmNetwork][0];
+        network_node_list[widget.service.store.settings.evmNetwork][0];
     final res = await EvmRpcApi.getRpcCall(chainInfo['endpoint'], payload);
     return res;
+  }
+
+  Future<void> _onAccountEmpty(String accType) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
+    final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
+    final confirm = await showModalBottomSheet(
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return PluginBottomSheetContainer(
+          height: MediaQuery.of(context).size.height / 2,
+          title: Text(
+            dic['evm.empty.$accType'],
+            style: Theme.of(context).textTheme.headline3.copyWith(
+                color: Colors.white, fontSize: UI.getTextSize(16, context)),
+          ),
+          content: Column(
+            children: [
+              Expanded(
+                  child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: Text(
+                      dic['evm.empty.require.$accType'],
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: UI.getTextSize(16, context),
+                          fontWeight: FontWeight.bold),
+                    )),
+                  ],
+                ),
+              )),
+              Container(
+                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dicCommon['cancel'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: const Color(0xFFD8D8D8),
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                    ),
+                    Expanded(
+                      child: PluginOutlinedButtonSmall(
+                        margin: const EdgeInsets.only(left: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        content: dicCommon['ok'],
+                        fontSize: UI.getTextSize(16, context),
+                        color: PluginColorsDark.primary,
+                        active: true,
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+      context: context,
+    );
+    if (confirm == true) {
+      await Navigator.of(context).pushNamed(NetworkSelectPage.route,
+          arguments: NetworkSelectPageParams(isEvm: accType == 'evm'));
+    }
+  }
+
+  void _disconnectWC() {
+    if (widget.service.store.account.wcSessionURI != null) {
+      widget.service.wc.disconnect();
+    }
+    final v2sessions = widget.service.store.account.wcV2Sessions.toList();
+    if (v2sessions.isNotEmpty) {
+      for (var e in v2sessions) {
+        widget.service.wc.disconnectV2(e.topic);
+      }
+    }
   }
 
   @override
@@ -698,23 +814,11 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.service.plugin is! PluginEvm) {
+      if (widget.service.plugin is! PluginEvm &&
+          widget.keyringEVM.keyPairs.isNotEmpty) {
         _switchEvmNetwork(network_ethereum);
-      } else {
-        widget.service.store.settings
-            .setDAppEvmNetwork((widget.service.plugin as PluginEvm).network);
       }
     });
-  }
-
-  @override
-  void dispose() {
-    if (widget.service.plugin is PluginEvm) {
-      widget.service.plugin.sdk.api
-          .connectEVM(widget.service.plugin.sdk.api.connectedNode);
-    }
-
-    super.dispose();
   }
 
   @override
@@ -771,6 +875,7 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
                 checkAuth: widget.checkAuth,
                 onSwitchEvmChain: _onSwitchEvmNetwork,
                 onEvmRpcCall: _onEvmRpcCall,
+                onAccountEmpty: _onAccountEmpty,
               ),
               // Visibility(
               //     visible: _loading,

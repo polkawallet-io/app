@@ -86,9 +86,6 @@ abstract class _SettingsStore with Store {
   @observable
   Map<String, bool> websiteAccessEVM = {};
 
-  @observable
-  String dAppEvmNetwork = 'ethereum';
-
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": true},
     "KSM": ["kusama", "calamari"],
@@ -407,10 +404,5 @@ abstract class _SettingsStore with Store {
     if (stored != null) {
       isDarkTheme = stored;
     }
-  }
-
-  @action
-  Future<void> setDAppEvmNetwork(String chain) async {
-    dAppEvmNetwork = chain;
   }
 }

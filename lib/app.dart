@@ -816,6 +816,7 @@ class _WalletAppState extends State<WalletApp> with WidgetsBindingObserver {
             getPassword: _service.account.getPassword,
             checkAuth: _store.settings.checkDAppAuth,
             updateAuth: _store.settings.updateDAppAuth,
+            changeNetwork: _changeNetwork,
           ),
       SelectImportTypePage.route: (_) => SelectImportTypePage(_service),
       ImportAccountFormMnemonic.route: (_) =>
