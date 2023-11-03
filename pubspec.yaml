@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.5.4+3541
+version: 3.5.6+3561
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -32,8 +32,8 @@ dependencies:
   # device_info: ^2.0.1
   package_info: ^2.0.2
   uni_links: ^0.5.1
-  firebase_core: ^2.4.1
-  firebase_analytics: ^10.1.0
+  firebase_core: ^2.20.0
+  firebase_analytics: ^10.6.2
   flutter_screenutil: ^5.0.0+2
 #  firebase_messaging: 10.0.5
   another_transformer_page_view: ^2.0.1
@@ -63,7 +63,7 @@ dependencies:
   polkawallet_plugin_evm:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_evm.git
-      ref: 4e8e0c18d582317756f6ca4a1b27535b2432c128
+      ref: 27b7f26aa0ecacdf18f90b2764fd914e308b4ca6
   polkawallet_plugin_statemine:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_statemine.git
@@ -112,7 +112,7 @@ dependency_overrides:
 #  polkawallet_plugin_evm:
 #    path: ../../coding/polkawallet/polkawallet_plugin_evm
   polkawallet_ui: ^0.5.4+2
-  polkawallet_sdk: ^0.5.5+3
+  polkawallet_sdk: ^0.5.6
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:
