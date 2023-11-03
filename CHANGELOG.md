@@ -1,3 +1,12 @@
+# [3.5.6-beta]
+20231102
+1. bump sdk 0.5.6.
+2. rebuild dapp browser to support both substrate&EVM.
+
+# [3.5.5-beta]
+20231023
+1. ios crash fix.
+
 # [3.5.4-beta]
 20231019
 1. bump sdk 0.5.5+2.

@@ -16,11 +16,33 @@ class AppFmt {
   }
 
   static String pluginNameDisplay(String pluginName) {
+    if (pluginName.isEmpty) return pluginName;
+
     return pluginName == 'statemine'
         ? 'Asset Hub KSM'
         : pluginName == 'statemint'
             ? 'Asset Hub'
             : pluginName.substring(0, 1).toUpperCase() +
                 pluginName.substring(1);
+  }
+
+  static int convertToInt(dynamic value) {
+    if (value is double) {
+      try {
+        return value.toInt();
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    if (value is int) {
+      return value;
+    }
+
+    try {
+      return int.parse(value.toString());
+    } catch (e) {
+      return 0;
+    }
   }
 }

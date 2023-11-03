@@ -138,4 +138,11 @@ const Map<String, String> zhPublic = {
   'evm.more.features': '请继续关注更多功能\n即将推出！',
   'evm.change.title': '切换账户体系',
   'evm.change.tips': '您将切换至被绑定的Substrate账户',
+  'evm.network.switch': '切换网络',
+  'evm.network.confirm': '允许该网站切换网络吗?',
+  'evm.network.unsupported': '该网络暂不支持，chainId',
+  'evm.empty.evm': '没有 EVM 账户',
+  'evm.empty.require.evm': '操作该页面需要用到 EVM 账户',
+  'evm.empty.substrate': '没有 Polkadot 账户',
+  'evm.empty.require.substrate': '操作该页面需要用到 Polkadot 账户',
 };

@@ -68,7 +68,11 @@ class EthGasConfirmPanel extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(dic['evm.send.gas.$gasLevel']),
+                            Text(
+                              dic['evm.send.gas.$gasLevel'],
+                              style: const TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
                             const Icon(Icons.arrow_forward_ios, size: 16)
                           ],
                         ),

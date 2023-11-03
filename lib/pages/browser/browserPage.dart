@@ -7,7 +7,6 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -33,15 +32,13 @@ class _BrowserPageState extends State<BrowserPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.service.store.settings
-          .loadDAppAuth(widget.service.plugin is PluginEvm);
+      widget.service.store.settings.loadDAppAuth();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)?.getDic(i18n_full_dic_app, 'public');
-    final isEvm = widget.service.plugin is PluginEvm;
     final dapps = _tag == 0
         ? widget.service.store.settings.dapps
         : widget.service.store.settings.dapps
@@ -290,142 +287,127 @@ class _BrowserPageState extends State<BrowserPage> {
                                           ));
                                     })))
                       ])),
-                  isEvm
-                      ? Container()
-                      : PluginTextTag(
-                          title: dic['hub.browser.fastPass'],
-                          backgroundColor: PluginColorsDark.headline1,
-                        ),
-                  isEvm
-                      ? Container()
-                      : Container(
-                          margin: const EdgeInsets.only(top: 14, bottom: 18),
-                          height: 22,
-                          width: double.infinity,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              separatorBuilder: (context, index) =>
-                                  Container(width: 6),
-                              itemCount: widget.service.store.settings
-                                      .dappAllTags.length +
+                  PluginTextTag(
+                    title: dic['hub.browser.fastPass'],
+                    backgroundColor: PluginColorsDark.headline1,
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(top: 14, bottom: 18),
+                      height: 22,
+                      width: double.infinity,
+                      child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              Container(width: 6),
+                          itemCount:
+                              widget.service.store.settings.dappAllTags.length +
                                   1,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      if (_tag != index) {
-                                        setState(() {
-                                          _tag = index;
-                                        });
-                                      }
-                                    },
-                                    child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 7, vertical: 3),
-                                        decoration: BoxDecoration(
-                                            color: _tag == index
-                                                ? PluginColorsDark.primary
-                                                : const Color(0xFFFFFFFF)
-                                                    .withAlpha(43),
-                                            borderRadius:
-                                                BorderRadius.circular(4)),
-                                        child: Center(
-                                            child: Text(
-                                          index == 0
-                                              ? "All"
-                                              : widget.service.store.settings
-                                                  .dappAllTags[index - 1],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline5
-                                              ?.copyWith(
-                                                  fontSize: UI.getTextSize(
-                                                      12, context),
-                                                  height: 1.0,
-                                                  fontWeight: _tag == index
-                                                      ? FontWeight.w600
-                                                      : FontWeight.w400,
-                                                  color: _tag == index
-                                                      ? Colors.black
-                                                      : PluginColorsDark
-                                                          .headline1),
-                                        ))));
-                              })),
-                  isEvm
-                      ? Container()
-                      : Expanded(
-                          child: GridView.builder(
-                              itemCount: dapps.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: 16.0,
-                                      crossAxisSpacing: 18.0,
-                                      childAspectRatio: 170.0 / 48),
-                              itemBuilder: (BuildContext context, int index) {
-                                final dapp = dapps[index];
-                                return GestureDetector(
-                                    onTap: () {
-                                      BrowserApi.openBrowser(
-                                              context, dapp, widget.service)
-                                          .then((value) => setState(() {}));
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: const Color(0x24FFFFFF),
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Row(
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                                onTap: () {
+                                  if (_tag != index) {
+                                    setState(() {
+                                      _tag = index;
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 7, vertical: 3),
+                                    decoration: BoxDecoration(
+                                        color: _tag == index
+                                            ? PluginColorsDark.primary
+                                            : const Color(0xFFFFFFFF)
+                                                .withAlpha(43),
+                                        borderRadius: BorderRadius.circular(4)),
+                                    child: Center(
+                                        child: Text(
+                                      index == 0
+                                          ? "All"
+                                          : widget.service.store.settings
+                                              .dappAllTags[index - 1],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5
+                                          ?.copyWith(
+                                              fontSize:
+                                                  UI.getTextSize(12, context),
+                                              height: 1.0,
+                                              fontWeight: _tag == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              color: _tag == index
+                                                  ? Colors.black
+                                                  : PluginColorsDark.headline1),
+                                    ))));
+                          })),
+                  Expanded(
+                      child: GridView.builder(
+                          itemCount: dapps.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16.0,
+                                  crossAxisSpacing: 18.0,
+                                  childAspectRatio: 170.0 / 48),
+                          itemBuilder: (BuildContext context, int index) {
+                            final dapp = dapps[index];
+                            return GestureDetector(
+                                onTap: () {
+                                  BrowserApi.openBrowser(
+                                          context, dapp, widget.service)
+                                      .then((value) => setState(() {}));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: const Color(0x24FFFFFF),
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                          width: 32,
+                                          height: 32,
+                                          margin:
+                                              const EdgeInsets.only(right: 8),
+                                          child: (dapp["icon"] as String)
+                                                  .contains('.svg')
+                                              ? SvgPicture.network(dapp["icon"])
+                                              : Image.network(dapp["icon"])),
+                                      Expanded(
+                                          child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Container(
-                                              width: 32,
-                                              height: 32,
-                                              margin: const EdgeInsets.only(
-                                                  right: 8),
-                                              child: (dapp["icon"] as String)
-                                                      .contains('.svg')
-                                                  ? SvgPicture.network(
-                                                      dapp["icon"])
-                                                  : Image.network(
-                                                      dapp["icon"])),
-                                          Expanded(
-                                              child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                dapp["name"],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline5
-                                                    ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: PluginColorsDark
-                                                            .headline1,
-                                                        height: 1),
-                                              ),
-                                              Text("#${dapp["tag"].join(" #")}",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline5
-                                                      ?.copyWith(
-                                                          fontSize:
-                                                              UI.getTextSize(
-                                                                  10, context),
-                                                          color:
-                                                              PluginColorsDark
-                                                                  .headline1)),
-                                            ],
-                                          ))
+                                          Text(
+                                            dapp["name"],
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline5
+                                                ?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: PluginColorsDark
+                                                        .headline1,
+                                                    height: 1),
+                                          ),
+                                          Text("#${dapp["tag"].join(" #")}",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline5
+                                                  ?.copyWith(
+                                                      fontSize: UI.getTextSize(
+                                                          10, context),
+                                                      color: PluginColorsDark
+                                                          .headline1)),
                                         ],
-                                      ),
-                                    ));
-                              }))
+                                      ))
+                                    ],
+                                  ),
+                                ));
+                          }))
                 ],
               ),
             ))

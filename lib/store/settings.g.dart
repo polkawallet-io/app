@@ -163,6 +163,21 @@ mixin _$SettingsStore on _SettingsStore, Store {
     });
   }
 
+  final _$websiteAccessEVMAtom = Atom(name: '_SettingsStore.websiteAccessEVM');
+
+  @override
+  Map<String, bool> get websiteAccessEVM {
+    _$websiteAccessEVMAtom.reportRead();
+    return super.websiteAccessEVM;
+  }
+
+  @override
+  set websiteAccessEVM(Map<String, bool> value) {
+    _$websiteAccessEVMAtom.reportWrite(value, super.websiteAccessEVM, () {
+      super.websiteAccessEVM = value;
+    });
+  }
+
   final _$_SettingsStoreActionController =
       ActionController(name: '_SettingsStore');
 
@@ -262,11 +277,11 @@ mixin _$SettingsStore on _SettingsStore, Store {
   }
 
   @override
-  void loadDAppAuth(bool isEvm) {
+  void loadDAppAuth() {
     final _$actionInfo = _$_SettingsStoreActionController.startAction(
         name: '_AccountStore.loadDAppAuth');
     try {
-      return super.loadDAppAuth(isEvm);
+      return super.loadDAppAuth();
     } finally {
       _$_SettingsStoreActionController.endAction(_$actionInfo);
     }
