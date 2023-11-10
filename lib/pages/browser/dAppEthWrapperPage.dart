@@ -1,11 +1,11 @@
 import 'package:app/pages/account/accountTypeSelectPage.dart';
+import 'package:app/pages/browser/authAccountBottomSheetContent.dart';
 import 'package:app/pages/networkSelectPage.dart';
 import 'package:app/pages/walletConnect/ethRequestSignPage.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_evm/common/constants.dart';
 import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
@@ -35,7 +35,6 @@ class DAppEthWrapperPage extends StatefulWidget {
       {Key key,
       this.getPassword,
       this.getPasswordEVM,
-      this.checkAuth,
       this.updateAuth,
       this.changeNetwork})
       : super(key: key);
@@ -44,8 +43,7 @@ class DAppEthWrapperPage extends StatefulWidget {
   final KeyringEVM keyringEVM;
   final Future<String> Function(BuildContext, EthWalletData) getPasswordEVM;
   final Future<String> Function(BuildContext, KeyPairData) getPassword;
-  final bool Function(String, {bool isEvm}) checkAuth;
-  final Function(String, {bool auth, bool isEvm}) updateAuth;
+  final Function(String, {List<String> accounts, bool isEvm}) updateAuth;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
   static const String route = '/extension/app/eth';
@@ -59,6 +57,8 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
 
   bool _isWillClose = false;
   bool _signing = false;
+
+  List<KeyPairData> _authedAccounts = [];
 
   Widget _buildScaffold(
       {Function onBack, Widget body, Function() actionOnPressed}) {
@@ -120,128 +120,34 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
     );
   }
 
-  Future<bool> _onConnectRequestSubstrate(DAppConnectParam params) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
-    final uri = Uri.parse(params.url ?? '');
-
-    if (widget.checkAuth != null && widget.checkAuth(uri.host)) {
-      return true;
+  List<KeyPairData> _checkDAppAuth(String url, {bool isEvm = false}) {
+    final accountsAll = isEvm
+        ? widget.keyringEVM.keyPairs.map((e) => e.toKeyPairData()).toList()
+        : widget.keyring.keyPairs.toList();
+    if (!isEvm) {
+      accountsAll.retainWhere((e) => e.encoding['content'][1] == 'sr25519');
     }
 
-    final res = await showModalBottomSheet(
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return PluginBottomSheetContainer(
-          height: MediaQuery.of(context).size.height / 2,
-          title: Text(
-            dic['dApp.auth'],
-            style: Theme.of(context).textTheme.headline3.copyWith(
-                color: Colors.white, fontSize: UI.getTextSize(16, context)),
-          ),
-          content: Column(
-            children: [
-              Expanded(
-                  child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 24, bottom: 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          '${uri.scheme}://${uri.host}/favicon.ico',
-                          width: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            if ((ModalRoute.of(context).settings.arguments
-                                    is Map) &&
-                                (ModalRoute.of(context).settings.arguments
-                                        as Map)["icon"] !=
-                                    null) {
-                              return ((ModalRoute.of(context).settings.arguments
-                                          as Map)["icon"] as String)
-                                      .contains('.svg')
-                                  ? SvgPicture.network((ModalRoute.of(context)
-                                      .settings
-                                      .arguments as Map)["icon"])
-                                  : Image.network((ModalRoute.of(context)
-                                      .settings
-                                      .arguments as Map)["icon"]);
-                            }
-                            return Container();
-                          },
-                        ),
-                      ),
-                    ),
-                    Text(
-                      uri.host,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: UI.getTextSize(18, context),
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(16),
-                      child: Text(
-                        dic['dApp.connect.tip'],
-                        style: TextStyle(
-                            fontSize: UI.getTextSize(14, context),
-                            color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              Container(
-                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: PluginOutlinedButtonSmall(
-                        margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        content: dic['dApp.connect.reject'],
-                        fontSize: UI.getTextSize(16, context),
-                        color: const Color(0xFFD8D8D8),
-                        active: true,
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                    ),
-                    Expanded(
-                      child: PluginOutlinedButtonSmall(
-                        margin: const EdgeInsets.only(left: 12),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        content: dic['dApp.connect.allow'],
-                        fontSize: UI.getTextSize(16, context),
-                        color: PluginColorsDark.primary,
-                        active: true,
-                        onPressed: () => Navigator.of(context).pop(true),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        );
-      },
-      context: context,
-    );
-    if (res == true && widget.updateAuth != null) {
-      widget.updateAuth(uri.host);
-    }
-    return res ?? false;
+    final authed = isEvm
+        ? (widget.service.store.settings.websiteAccessEVM[url] ?? [])
+        : (widget.service.store.settings.websiteAccess[url] ?? []);
+
+    accountsAll.retainWhere((e) => authed.contains(e.pubKey));
+    return accountsAll;
   }
 
-  Future<bool> _onConnectRequest(DAppConnectParam params) async {
+  Future<List<KeyPairData>> _onConnectRequest(DAppConnectParam params,
+      {bool isEvm = false}) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     final uri = Uri.parse(params.url ?? '');
 
-    if (widget.checkAuth != null && widget.checkAuth(uri.host, isEvm: true)) {
-      return true;
+    final accountsAll = isEvm
+        ? widget.keyringEVM.keyPairs.map((e) => e.toKeyPairData()).toList()
+        : widget.keyring.keyPairs.toList();
+
+    final authed = _checkDAppAuth(uri.host, isEvm: isEvm);
+    if (authed.isNotEmpty) {
+      return authed;
     }
 
     final res = await showModalBottomSheet(
@@ -250,106 +156,31 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return PluginBottomSheetContainer(
-          height: MediaQuery.of(context).size.height / 2,
+          height: MediaQuery.of(context).size.height / 5 * 4,
           title: Text(
             dic['dApp.auth'],
             style: Theme.of(context).textTheme.headline3.copyWith(
                 color: Colors.white, fontSize: UI.getTextSize(16, context)),
           ),
-          content: Column(
-            children: [
-              Expanded(
-                  child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 24, bottom: 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          '${uri.scheme}://${uri.host}/favicon.ico',
-                          width: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            if ((ModalRoute.of(context).settings.arguments
-                                    is Map) &&
-                                (ModalRoute.of(context).settings.arguments
-                                        as Map)["icon"] !=
-                                    null) {
-                              return ((ModalRoute.of(context).settings.arguments
-                                          as Map)["icon"] as String)
-                                      .contains('.svg')
-                                  ? SvgPicture.network((ModalRoute.of(context)
-                                      .settings
-                                      .arguments as Map)["icon"])
-                                  : Image.network((ModalRoute.of(context)
-                                      .settings
-                                      .arguments as Map)["icon"]);
-                            }
-                            return Container();
-                          },
-                        ),
-                      ),
-                    ),
-                    Text(
-                      uri.host,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: UI.getTextSize(18, context),
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(16),
-                      child: Text(
-                        dic['dApp.connect.tip'],
-                        style: TextStyle(
-                            fontSize: UI.getTextSize(14, context),
-                            color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              Container(
-                margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: PluginOutlinedButtonSmall(
-                        margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        content: dic['dApp.connect.reject'],
-                        fontSize: UI.getTextSize(16, context),
-                        color: const Color(0xFFD8D8D8),
-                        active: true,
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                    ),
-                    Expanded(
-                      child: PluginOutlinedButtonSmall(
-                        margin: const EdgeInsets.only(left: 12),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        content: dic['dApp.connect.allow'],
-                        fontSize: UI.getTextSize(16, context),
-                        color: PluginColorsDark.primary,
-                        active: true,
-                        onPressed: () => Navigator.of(context).pop(true),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
+          content: AuthAccountBottomSheetContent(uri, accountsAll,
+              isEvm: isEvm,
+              onChanged: (selected) {
+                setState(() {
+                  _authedAccounts = selected;
+                });
+              },
+              onCancel: () => Navigator.of(context).pop(false),
+              onConfirm: () => Navigator.of(context).pop(true)),
         );
       },
       context: context,
     );
     if (res == true && widget.updateAuth != null) {
-      widget.updateAuth(uri.host, isEvm: true);
+      widget.updateAuth(uri.host,
+          accounts: _authedAccounts.map((e) => e.pubKey).toList(),
+          isEvm: isEvm);
     }
-    return res ?? false;
+    return _authedAccounts.toList();
   }
 
   Future<WCCallRequestResult> _onSignRequestEVM(Map params) async {
@@ -868,11 +699,10 @@ class _DAppEthWrapperPageState extends State<DAppEthWrapperPage> {
                     _controller = controller;
                   });
                 },
-                onConnectRequest: _onConnectRequestSubstrate,
-                onConnectRequestEVM: _onConnectRequest,
+                onConnectRequest: _onConnectRequest,
                 onSignRequestEVM: _onSignRequestEVM,
                 onSignRequest: _onSignRequest,
-                checkAuth: widget.checkAuth,
+                checkAuth: _checkDAppAuth,
                 onSwitchEvmChain: _onSwitchEvmNetwork,
                 onEvmRpcCall: _onEvmRpcCall,
                 onAccountEmpty: _onAccountEmpty,
