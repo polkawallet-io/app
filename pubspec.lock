@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: "7bcb5c5d62b3907fb4a269c0f0843df46760d38e12829a715f2ff1fb492f19ef"
+      sha256: eb0ac20f704799b986049fbb3c1c16421eca319a1b872378d669513e12452ba5
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.10"
+    version: "1.3.14"
   analyzer:
     dependency: transitive
     description:
@@ -422,34 +422,34 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_analytics
-      sha256: fd94117b8160022a57af063dcd856fae2d9a29b6e3bbfcb078e77b87ccecbd3f
+      sha256: "6325991042226a515406b4fc9204d3102e54a514b72fffb945b625d9f69c5196"
       url: "https://pub.dev"
     source: hosted
-    version: "10.6.2"
+    version: "10.7.2"
   firebase_analytics_platform_interface:
     dependency: transitive
     description:
       name: firebase_analytics_platform_interface
-      sha256: "42bb0ffc4087dbbfdc7e89514c1b86e55fbbdebd42fdb59efda05f8dd2606a62"
+      sha256: "38ad4bec1fa0fe16577e6f178e4c4280f029181b18e16bf68782c527c7d82bfe"
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.4"
+    version: "3.8.2"
   firebase_analytics_web:
     dependency: transitive
     description:
       name: firebase_analytics_web
-      sha256: ad82db058df608974900ee90afac88fa1cc1d2079bfb62f780d1ad7df6505161
+      sha256: "6c0deb691a26db2006ded65fd8999a204dcfe8ef67d7d75b7f55ebc08e1d89a4"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5+4"
+    version: "0.5.5+9"
   firebase_core:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: "37299e4907391d7fac8c7ea059bb3292768cc07b72b6c6c777675cc58da2ef4d"
+      sha256: d301561d614487688d797717bef013a264c517d1d09e4c5c1325c3a64c835efb
       url: "https://pub.dev"
     source: hosted
-    version: "2.20.0"
+    version: "2.24.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
@@ -462,10 +462,10 @@ packages:
     dependency: transitive
     description:
       name: firebase_core_web
-      sha256: "0631a2ec971dbc540275e2fa00c3a8a2676f0a7adbc3c197d6fba569db689d97"
+      sha256: "10159d9ee42c79f4548971d92f3f0fcd5791f6738cda3583a4e3b2c8b244c018"
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.1"
+    version: "2.9.0"
   fixnum:
     dependency: transitive
     description:
@@ -1228,10 +1228,10 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_sdk
-      sha256: "4105cacee044e4efd8d272e43ba1c3ff034adf6a389d816300b5ac14c74edf5f"
+      sha256: "26804da247bb1d0a6307acd59742efcef95edc695afc59e6ac82d320e5fada10"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.6"
+    version: "0.5.7"
   polkawallet_ui:
     dependency: "direct main"
     description:
