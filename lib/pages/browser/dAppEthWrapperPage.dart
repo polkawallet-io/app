@@ -46,7 +46,7 @@ class DAppEthWrapperPage extends StatefulWidget {
   final Function(String, {List<String> accounts, bool isEvm}) updateAuth;
   final Future<void> Function(PolkawalletPlugin) changeNetwork;
 
-  static const String route = '/extension/app/eth';
+  static const String route = '/extension/app';
 
   @override
   _DAppEthWrapperPageState createState() => _DAppEthWrapperPageState();
