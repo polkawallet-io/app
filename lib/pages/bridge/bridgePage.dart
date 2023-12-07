@@ -45,6 +45,8 @@ class BridgePage extends StatefulWidget {
 }
 
 class _BridgePageState extends State<BridgePage> {
+  List<String> _acalaEVMTokens;
+
   ///All from chains
   List<String> _chainFromAll;
 
@@ -148,6 +150,9 @@ class _BridgePageState extends State<BridgePage> {
     final routes = await widget.service.plugin.sdk.api.bridge.getRoutes();
     chainFromAll.retainWhere((e) => routes.indexWhere((r) => r.from == e) > -1);
 
+    final acalaEVMTokens =
+        await widget.service.plugin.sdk.api.bridge.getAcalaEVMTokens();
+
     for (BridgeRouteData element in routes) {
       final Set<String> from = _chainToMap[element.from] ?? {};
       from.add(element.to);
@@ -168,6 +173,7 @@ class _BridgePageState extends State<BridgePage> {
     _chainFromAll = chainFromAll;
     _chainInfo = chainInfo;
     _accountTo = widget.service.keyring.current;
+    _acalaEVMTokens = acalaEVMTokens;
 
     //default current network
     final from = args?.chainFrom;
@@ -319,7 +325,7 @@ class _BridgePageState extends State<BridgePage> {
     }
 
     final toAddress =
-        _isToMoonBeam() ? _address20Ctrl.text.trim() : _accountTo.address;
+        _useEVMAccount() ? _address20Ctrl.text.trim() : _accountTo.address;
     final config = await widget.service.plugin.sdk.api.bridge
         .getAmountInputConfig(_chainFrom, _chainTo, _token, toAddress,
             widget.service.keyring.current.address);
@@ -458,7 +464,7 @@ class _BridgePageState extends State<BridgePage> {
           _chainFrom,
           _chainTo,
           _token,
-          _isToMoonBeam() ? _address20Ctrl.text.trim() : _accountTo.address,
+          _useEVMAccount() ? _address20Ctrl.text.trim() : _accountTo.address,
           Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals).toString(),
           token.decimals,
           widget.service.keyring.current.address);
@@ -544,8 +550,11 @@ class _BridgePageState extends State<BridgePage> {
     return null;
   }
 
-  bool _isToMoonBeam() {
-    return _chainTo == 'moonriver' || _chainTo == 'moonbeam';
+  bool _useEVMAccount() {
+    return _chainTo == 'moonriver' ||
+        _chainTo == 'moonbeam' ||
+        ((_chainTo == 'acala' || _chainTo == 'karura') &&
+            _acalaEVMTokens.contains(_token));
   }
 
   @override
@@ -643,7 +652,7 @@ class _BridgePageState extends State<BridgePage> {
                                       top: 20, bottom: 16),
                                   child: Column(
                                     children: [
-                                      _isToMoonBeam()
+                                      _useEVMAccount()
                                           ? PluginTextFormField(
                                               label: dic['hub.to.address'],
                                               controller: _address20Ctrl,
@@ -710,7 +719,7 @@ class _BridgePageState extends State<BridgePage> {
                                               },
                                             ),
                                       ErrorMessage(
-                                        !_isToMoonBeam()
+                                        !_useEVMAccount()
                                             ? _accountToWarn ??
                                                 (_accountToFocus
                                                     ? dic['bridge.address.warn']
