@@ -1236,10 +1236,10 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_ui
-      sha256: "4ca253bff4793442b8e9f5d799cb5dba8d1f40acfe4f51456bafdf0544f7ad49"
+      sha256: "4c8c471bd339346cdf521774b27d72ba6a2e6fc24ab7924755537f0d5923121a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5"
+    version: "0.5.5+1"
   pool:
     dependency: transitive
     description:
