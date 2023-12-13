@@ -7,7 +7,6 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/format.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:async/async.dart';
-import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +26,6 @@ import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginTextFormField.dart';
 import 'package:polkawallet_ui/pages/v3/plugin/pluginAccountListPage.dart';
 import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -81,9 +79,6 @@ class _BridgePageState extends State<BridgePage> {
   /// amount input control
   final TextEditingController _amountCtrl = TextEditingController();
 
-  /// eth address input control
-  final TextEditingController _address20Ctrl = TextEditingController();
-
   /// from key
   final _formKey = GlobalKey<FormState>();
 
@@ -129,7 +124,6 @@ class _BridgePageState extends State<BridgePage> {
   @override
   void dispose() {
     _disconnectFromChain();
-    _address20Ctrl.dispose();
     _amountCtrl.dispose();
     widget.service.plugin.sdk.api.bridge.unsubscribeReloadAction(reloadKey);
     widget.service.plugin.sdk.api.bridge.dispose();
@@ -195,11 +189,7 @@ class _BridgePageState extends State<BridgePage> {
             ? _token
             : _tokensMap[_chainFrom + _chainTo].first);
     if (address != null) {
-      if (address.startsWith('0x') && address.length == 42) {
-        _address20Ctrl.text = address;
-      } else {
-        _updateAccountTo(address);
-      }
+      _updateAccountTo(address);
     }
 
     setState(() {
@@ -324,10 +314,8 @@ class _BridgePageState extends State<BridgePage> {
       });
     }
 
-    final toAddress =
-        _useEVMAccount() ? _address20Ctrl.text.trim() : _accountTo.address;
     final config = await widget.service.plugin.sdk.api.bridge
-        .getAmountInputConfig(_chainFrom, _chainTo, _token, toAddress,
+        .getAmountInputConfig(_chainFrom, _chainTo, _token, _accountTo.address,
             widget.service.keyring.current.address);
     setState(() {
       _config = config;
@@ -339,6 +327,8 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   void _changeChain(String from, String to) {
+    _updateAccountTo(widget.service.keyring.current.address);
+
     if (_chainFrom != from) _fromChange(from);
     if (_chainTo != to) _toChange(to);
   }
@@ -398,17 +388,22 @@ class _BridgePageState extends State<BridgePage> {
     if (_props == null) return null;
 
     if (widget.service.keyring.allWithContacts
-            .indexWhere((e) => e.pubKey == acc.pubKey) >
-        -1) {
+                .indexWhere((e) => e.pubKey == acc.pubKey) >
+            -1 ||
+        widget.service.keyringEVM.allWithContacts
+                .indexWhere((e) => e.address == acc.address) >
+            -1) {
       return null;
     }
 
-    final error =
-        I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
-    final res = await widget.service.plugin.sdk.api.bridge
-        .checkAddressFormat(acc.address, _chainInfo[_chainTo].ss58Prefix);
-    if (res != null && !res) {
-      return error;
+    if (!acc.address.startsWith('0x')) {
+      final error =
+          I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
+      final res = await widget.service.plugin.sdk.api.bridge
+          .checkAddressFormat(acc.address, _chainInfo[_chainTo].ss58Prefix);
+      if (res != null && !res) {
+        return error;
+      }
     }
 
     return null;
@@ -464,7 +459,7 @@ class _BridgePageState extends State<BridgePage> {
           _chainFrom,
           _chainTo,
           _token,
-          _useEVMAccount() ? _address20Ctrl.text.trim() : _accountTo.address,
+          _accountTo.address,
           Fmt.tokenInt(_amountCtrl.text.trim(), token.decimals).toString(),
           token.decimals,
           widget.service.keyring.current.address);
@@ -533,21 +528,6 @@ class _BridgePageState extends State<BridgePage> {
 
       _subscribeBalance();
     }
-  }
-
-  String _validateAddress20(String v) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'public');
-    final input = v?.trim();
-    if (input == null || input.isEmpty) {
-      return dic['input.empty'];
-    }
-    try {
-      final output = checksumEthereumAddress(input);
-      debugPrint(output);
-    } catch (err) {
-      return dic['address.error.eth'];
-    }
-    return null;
   }
 
   bool _useEVMAccount() {
@@ -652,72 +632,48 @@ class _BridgePageState extends State<BridgePage> {
                                       top: 20, bottom: 16),
                                   child: Column(
                                     children: [
-                                      _useEVMAccount()
-                                          ? PluginTextFormField(
-                                              label: dic['hub.to.address'],
-                                              controller: _address20Ctrl,
-                                              validator: _validateAddress20,
-                                              padding:
-                                                  const EdgeInsets.only(top: 2),
-                                              suffix: GestureDetector(
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
-                                                  child: Icon(Icons.cancel,
-                                                      size: 16,
-                                                      color: Theme.of(context)
-                                                          .unselectedWidgetColor),
-                                                ),
-                                                onTap: () {
-                                                  setState(() {
-                                                    _address20Ctrl.text = '';
-                                                  });
-                                                },
-                                              ),
-                                              autovalidateMode: AutovalidateMode
-                                                  .onUserInteraction,
-                                            )
-                                          : AddressTextFormField(
-                                              widget.service.plugin.sdk.api,
-                                              widget.service.keyring
-                                                  .allWithContacts
-                                                  .toList(),
-                                              sdk: widget.service.plugin.sdk,
-                                              labelText: dic['hub.to.address'],
-                                              labelStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .headline4
-                                                  .copyWith(
-                                                      color: Colors.white),
-                                              hintText: dic['hub.to.address'],
-                                              hintStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5
-                                                  .copyWith(
-                                                      color: PluginColorsDark
-                                                          .headline2),
-                                              initialValue: _accountTo,
-                                              onChanged:
-                                                  (KeyPairData acc) async {
-                                                final error =
-                                                    await _checkAccountTo(acc);
-                                                setState(() {
-                                                  _accountTo = acc;
-                                                  _accountToWarn = error;
-                                                });
-                                              },
-                                              key: ValueKey<KeyPairData>(
-                                                  _accountTo),
-                                              isHubTheme: true,
-                                              onFocusChange: (hasFocus) {
-                                                setState(() {
-                                                  _accountToFocus = hasFocus;
-                                                  if (hasFocus) {
-                                                    _accountToWarn = null;
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                      AddressTextFormField(
+                                        widget.service.plugin.sdk.api,
+                                        widget.service.keyring.allWithContacts
+                                            .toList(),
+                                        localEthAccounts: _useEVMAccount()
+                                            ? widget.service.keyringEVM
+                                                .allWithContacts
+                                                .toList()
+                                            : null,
+                                        sdk: widget.service.plugin.sdk,
+                                        labelText: dic['hub.to.address'],
+                                        labelStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline4
+                                            .copyWith(color: Colors.white),
+                                        hintText: dic['hub.to.address'],
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline5
+                                            .copyWith(
+                                                color:
+                                                    PluginColorsDark.headline2),
+                                        initialValue: _accountTo,
+                                        onChanged: (KeyPairData acc) async {
+                                          final error =
+                                              await _checkAccountTo(acc);
+                                          setState(() {
+                                            _accountTo = acc;
+                                            _accountToWarn = error;
+                                          });
+                                        },
+                                        key: ValueKey<KeyPairData>(_accountTo),
+                                        isHubTheme: true,
+                                        onFocusChange: (hasFocus) {
+                                          setState(() {
+                                            _accountToFocus = hasFocus;
+                                            if (hasFocus) {
+                                              _accountToWarn = null;
+                                            }
+                                          });
+                                        },
+                                      ),
                                       ErrorMessage(
                                         !_useEVMAccount()
                                             ? _accountToWarn ??
