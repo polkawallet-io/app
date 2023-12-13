@@ -81,10 +81,10 @@ abstract class _SettingsStore with Store {
   List<dynamic> dapps = [];
 
   @observable
-  Map<String, bool> websiteAccess = {};
+  Map<String, List> websiteAccess = {};
 
   @observable
-  Map<String, bool> websiteAccessEVM = {};
+  Map<String, List> websiteAccessEVM = {};
 
   Map<dynamic, dynamic> tokenStakingConfig = {
     "onStart": {"KSM": true, "DOT": true},
@@ -352,10 +352,10 @@ abstract class _SettingsStore with Store {
   }
 
   @action
-  void updateDAppAuth(String url, {bool auth = true, bool isEvm = false}) {
+  void updateDAppAuth(String url, {List<String> accounts, bool isEvm = false}) {
     final mapNew = isEvm ? {...websiteAccessEVM} : {...websiteAccess};
-    if (auth != null) {
-      mapNew[url] = auth;
+    if (accounts != null && accounts.isNotEmpty) {
+      mapNew[url] = accounts;
     } else {
       mapNew.remove(url);
     }
@@ -374,22 +374,16 @@ abstract class _SettingsStore with Store {
   void loadDAppAuth() {
     if (storage.read(localStorageDAppAuthUrlsKey) != null) {
       websiteAccess =
-          Map<String, bool>.from(storage.read(localStorageDAppAuthUrlsKey));
+          Map<String, List>.from(storage.read(localStorageDAppAuthUrlsKey));
     } else {
       websiteAccess = {};
     }
     if (storage.read(localStorageDAppEvmAuthUrlsKey) != null) {
       websiteAccessEVM =
-          Map<String, bool>.from(storage.read(localStorageDAppEvmAuthUrlsKey));
+          Map<String, List>.from(storage.read(localStorageDAppEvmAuthUrlsKey));
     } else {
       websiteAccessEVM = {};
     }
-  }
-
-  bool checkDAppAuth(String url, {bool isEvm = false}) {
-    return isEvm
-        ? (websiteAccessEVM[url] ?? false)
-        : (websiteAccess[url] ?? false);
   }
 
   @action

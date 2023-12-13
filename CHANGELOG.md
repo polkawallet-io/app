@@ -1,3 +1,7 @@
+# [3.5.8-beta]
+20231213
+1. support bridging to acala EVM address.
+
 # [3.5.6-beta]
 20231102
 1. bump sdk 0.5.6.

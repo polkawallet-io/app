@@ -151,13 +151,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
   final _$websiteAccessAtom = Atom(name: '_SettingsStore.websiteAccess');
 
   @override
-  Map<String, bool> get websiteAccess {
+  Map<String, List> get websiteAccess {
     _$websiteAccessAtom.reportRead();
     return super.websiteAccess;
   }
 
   @override
-  set websiteAccess(Map<String, bool> value) {
+  set websiteAccess(Map<String, List> value) {
     _$websiteAccessAtom.reportWrite(value, super.websiteAccess, () {
       super.websiteAccess = value;
     });
@@ -166,13 +166,13 @@ mixin _$SettingsStore on _SettingsStore, Store {
   final _$websiteAccessEVMAtom = Atom(name: '_SettingsStore.websiteAccessEVM');
 
   @override
-  Map<String, bool> get websiteAccessEVM {
+  Map<String, List> get websiteAccessEVM {
     _$websiteAccessEVMAtom.reportRead();
     return super.websiteAccessEVM;
   }
 
   @override
-  set websiteAccessEVM(Map<String, bool> value) {
+  set websiteAccessEVM(Map<String, List> value) {
     _$websiteAccessEVMAtom.reportWrite(value, super.websiteAccessEVM, () {
       super.websiteAccessEVM = value;
     });
@@ -266,11 +266,11 @@ mixin _$SettingsStore on _SettingsStore, Store {
   }
 
   @override
-  void updateDAppAuth(String url, {bool auth = true, bool isEvm = false}) {
+  void updateDAppAuth(String url, {List<String> accounts, bool isEvm = false}) {
     final _$actionInfo = _$_SettingsStoreActionController.startAction(
         name: '_AccountStore.updateDAppAuth');
     try {
-      return super.updateDAppAuth(url, auth: auth, isEvm: isEvm);
+      return super.updateDAppAuth(url, accounts: accounts, isEvm: isEvm);
     } finally {
       _$_SettingsStoreActionController.endAction(_$actionInfo);
     }
