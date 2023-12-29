@@ -1,3 +1,7 @@
+# [3.5.9-beta]
+20231229
+1. update acala/karura plugin to fix ios crash.
+
 # [3.5.8-beta]
 20231213
 1. support bridging to acala EVM address.

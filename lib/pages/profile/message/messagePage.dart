@@ -287,12 +287,12 @@ class _MessagePageState extends State<MessagePage> {
                                         margin: EdgeInsets.only(top: 10),
                                         child: Html(
                                           data: data.content,
-                                          onLinkTap: (url, context, attributes,
-                                              element) {
+                                          onLinkTap:
+                                              (url, attributes, element) {
                                             UI.launchURL(url);
                                           },
-                                          onAnchorTap: (url, context,
-                                              attributes, element) {
+                                          onAnchorTap:
+                                              (url, attributes, element) {
                                             UI.launchURL(url);
                                           },
                                         ),
