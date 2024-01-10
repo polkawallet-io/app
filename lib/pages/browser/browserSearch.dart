@@ -63,23 +63,24 @@ class SearchBarDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    BrowserApi.addDappSearchHistory(service, query);
+    final input = query.trim();
+    BrowserApi.addDappSearchHistory(service, input);
     var dapps = service.store.settings.dapps;
-    if (query.trim().isNotEmpty) {
+    if (input.isNotEmpty) {
       List<dynamic> _dapps = [];
       dapps.forEach((element) {
-        if (element['name'].contains(query)) {
-          element['nameIndex'] = element['name'].indexOf(query);
+        if (element['name'].contains(input)) {
+          element['nameIndex'] = element['name'].indexOf(input);
           _dapps.add(element);
-        } else if (element['detailUrl'].contains(query)) {
-          element['detailIndex'] = element['detailUrl'].indexOf(query);
+        } else if (element['detailUrl'].contains(input)) {
+          element['detailIndex'] = element['detailUrl'].indexOf(input);
           _dapps.add(element);
         }
       });
       dapps = _dapps;
     }
-    if (dapps.length == 0 && query.trim().length > 0) {
-      final url = query.startsWith("http") ? query : "https://$query";
+    if (dapps.isEmpty && input.isNotEmpty) {
+      final url = input.startsWith("http") ? input : "https://$input";
       Future.delayed(Duration.zero, () {
         BrowserApi.openBrowser(context, {"detailUrl": url}, service);
       });
