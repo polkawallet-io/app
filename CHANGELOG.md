@@ -1,3 +1,8 @@
+# [3.6.0-beta]
+20240112
+1. update DApp browser.
+2. bridge add statemint support.
+
 # [3.5.9-beta]
 20231229
 1. update acala/karura plugin to fix ios crash.

@@ -336,9 +336,8 @@ class WalletApi {
   }
 
   static Future<Map> getEthConfig() async {
-    //TODO:
-    // const url = '$_configEndpoint/config/ethConfig.json';
-    const url = '$_endpoint/devConfiguration/config/ethConfig.json'; //dev
+    const url = '$_configEndpoint/config/ethConfig.json';
+    // const url = '$_endpoint/devConfiguration/config/ethConfig.json'; //dev
     try {
       final res = await get(Uri.parse(url)).timeout(const Duration(seconds: 3));
       return jsonDecode(utf8.decode(res.bodyBytes));
