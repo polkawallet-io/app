@@ -189,7 +189,7 @@ class _BridgePageState extends State<BridgePage> {
             ? _token
             : _tokensMap[_chainFrom + _chainTo].first);
     if (address != null) {
-      _updateAccountTo(address);
+      _updateAccountTo(null, address);
     }
 
     setState(() {
@@ -200,9 +200,11 @@ class _BridgePageState extends State<BridgePage> {
     _subscribeBalance();
   }
 
-  Future<void> _updateAccountTo(String address) async {
-    final acc = KeyPairData();
-    acc.address = address;
+  Future<void> _updateAccountTo(KeyPairData account, String address) async {
+    final acc = account ?? KeyPairData();
+    if (address != null) {
+      acc.address = address;
+    }
     setState(() {
       _accountTo = acc;
     });
@@ -212,8 +214,7 @@ class _BridgePageState extends State<BridgePage> {
       _checkAccountTo(acc),
     ]);
     if (res != null && res[0] != null) {
-      final accWithIcon = KeyPairData();
-      accWithIcon.address = address;
+      final accWithIcon = acc;
 
       final List icon = res[0];
       accWithIcon.icon = icon[0][1];
@@ -327,7 +328,7 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   void _changeChain(String from, String to) {
-    _updateAccountTo(widget.service.keyring.current.address);
+    _updateAccountTo(widget.service.keyring.current, null);
 
     if (_chainFrom != from) _fromChange(from);
     if (_chainTo != to) _toChange(to);
@@ -396,7 +397,7 @@ class _BridgePageState extends State<BridgePage> {
       return null;
     }
 
-    if (!acc.address.startsWith('0x')) {
+    if (acc.address?.startsWith('0x') == false) {
       final error =
           I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
       final res = await widget.service.plugin.sdk.api.bridge
