@@ -112,7 +112,7 @@ dependency_overrides:
 #  polkawallet_plugin_evm:
 #    path: ../../coding/polkawallet/polkawallet_plugin_evm
   polkawallet_ui: ^0.5.5+1
-  polkawallet_sdk: ^0.5.8+8
+  polkawallet_sdk: ^0.5.9
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:

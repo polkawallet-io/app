@@ -778,6 +778,32 @@ class _BridgePageState extends State<BridgePage> {
                                     ],
                                   ),
                                 ),
+                                Visibility(
+                                  visible: _config != null &&
+                                      BigInt.parse(_config?.xcmFee ?? '0') >
+                                          BigInt.zero,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 4),
+                                            child: Text(
+                                                '${dic['hub.xcm.fee']} ($_chainFrom)',
+                                                style: feeStyle),
+                                          ),
+                                        ),
+                                        Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.xcmFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                            style: feeStyle)
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 Padding(
                                     padding:
                                         EdgeInsets.only(top: 150.h, bottom: 38),
