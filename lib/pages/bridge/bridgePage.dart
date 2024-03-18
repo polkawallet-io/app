@@ -696,7 +696,8 @@ class _BridgePageState extends State<BridgePage> {
                                       ),
                                       ErrorMessage(
                                         _accountToWarn ??
-                                            (_accountToFocus
+                                            ((_accountToFocus &&
+                                                    !_useEVMAccount())
                                                 ? dic['bridge.address.warn']
                                                 : null),
                                         margin: const EdgeInsets.only(left: 8),
