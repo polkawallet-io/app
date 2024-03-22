@@ -316,7 +316,13 @@ class _BridgePageState extends State<BridgePage> {
     }
 
     final config = await widget.service.plugin.sdk.api.bridge
-        .getAmountInputConfig(_chainFrom, _chainTo, _token, _accountTo.address,
+        .getAmountInputConfig(
+            _chainFrom,
+            _chainTo,
+            _token,
+            _useEVMAccount()
+                ? '0x0000000000000000000000000000000000000000'
+                : _accountTo.address,
             widget.service.keyring.current.address);
     setState(() {
       _config = config;
@@ -388,6 +394,13 @@ class _BridgePageState extends State<BridgePage> {
   Future<String> _checkAccountTo(KeyPairData acc) async {
     if (_props == null) return null;
 
+    final error =
+        I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
+    if ((_useEVMAccount() && acc.address?.startsWith('0x') == false) ||
+        (!_useEVMAccount() && acc.address?.startsWith('0x') == true)) {
+      return error;
+    }
+
     if (widget.service.keyring.allWithContacts
                 .indexWhere((e) => e.pubKey == acc.pubKey) >
             -1 ||
@@ -398,8 +411,6 @@ class _BridgePageState extends State<BridgePage> {
     }
 
     if (acc.address?.startsWith('0x') == false) {
-      final error =
-          I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
       final res = await widget.service.plugin.sdk.api.bridge
           .checkAddressFormat(acc.address, _chainInfo[_chainTo].ss58Prefix);
       if (res != null && !res) {
@@ -441,6 +452,14 @@ class _BridgePageState extends State<BridgePage> {
 
   Future<XcmTxConfirmParams> _getTxParams(
       Widget chainFromIcon, TokenBalanceData feeToken) async {
+    final toError = await _checkAccountTo(_accountTo);
+    if (toError != null) {
+      setState(() {
+        _accountToWarn = toError;
+      });
+      return null;
+    }
+
     if (_amountError == null &&
         _amountCtrl.text.trim().isNotEmpty &&
         _formKey.currentState.validate() &&
@@ -676,12 +695,11 @@ class _BridgePageState extends State<BridgePage> {
                                         },
                                       ),
                                       ErrorMessage(
-                                        !_useEVMAccount()
-                                            ? _accountToWarn ??
-                                                (_accountToFocus
-                                                    ? dic['bridge.address.warn']
-                                                    : null)
-                                            : null,
+                                        _accountToWarn ??
+                                            ((_accountToFocus &&
+                                                    !_useEVMAccount())
+                                                ? dic['bridge.address.warn']
+                                                : null),
                                         margin: const EdgeInsets.only(left: 8),
                                       ),
                                     ],
@@ -776,6 +794,32 @@ class _BridgePageState extends State<BridgePage> {
                                             style: feeStyle),
                                       )
                                     ],
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: _config != null &&
+                                      BigInt.parse(_config?.xcmFee ?? '0') >
+                                          BigInt.zero,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 4),
+                                            child: Text(
+                                                '${dic['hub.xcm.fee']} ($_chainFrom)',
+                                                style: feeStyle),
+                                          ),
+                                        ),
+                                        Text(
+                                            '${Fmt.priceFloorBigInt(BigInt.parse(_config?.xcmFee ?? '0'), feeToken.decimals ?? 12, lengthMax: 6)} ${AppFmt.tokenView(feeToken.symbol ?? '')}',
+                                            style: feeStyle)
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 Padding(

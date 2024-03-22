@@ -129,6 +129,7 @@ const Map<String, String> enPublic = {
   'hub.selectToken': 'SelectToken',
   'hub.origin.transfer.fee': 'Origin Chain Transfer Fee',
   'hub.destination.transfer.fee': 'Destination Chain Transfer Fee',
+  'hub.xcm.fee': 'Delivery Fee',
   'hub.transfer': 'Transfer',
   'hub.cover.bridge':
       'A Bridge to connect different networks. You can transfer tokens across the parachains.',

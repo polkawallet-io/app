@@ -1,3 +1,13 @@
+# [3.6.2-beta]
+20240318
+1. bridge update.
+2. polkadot/kusama plugin update.
+
+# [3.6.1-beta]
+20240207
+1. bridge update.
+2. acala/karura plugin update.
+
 # [3.6.0-beta]
 20240112
 1. update DApp browser.
