@@ -144,7 +144,7 @@ class TransferPageState extends State<TransferPage> {
       return TxConfirmParams(
         txTitle: '${dic['transfer']} $symbol',
         module: 'balances',
-        call: _keepAlive ? 'transferKeepAlive' : 'transfer',
+        call: _keepAlive ? 'transferKeepAlive' : 'transferAllowDeath',
         txDisplayBold: {
           dic['to']: Row(
             children: [
@@ -181,7 +181,7 @@ class TransferPageState extends State<TransferPage> {
       txParams = TxConfirmParams(
         txTitle: '',
         module: 'balances',
-        call: _keepAlive ? 'transferKeepAlive' : 'transfer',
+        call: _keepAlive ? 'transferKeepAlive' : 'transferAllowDeath',
         txDisplay: {},
         params: [
           widget.service.keyring.allWithContacts[0].address,

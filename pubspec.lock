@@ -1019,8 +1019,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "98afd44f9da52ea073edc54cdfdb83396de10ac0"
-      resolved-ref: "98afd44f9da52ea073edc54cdfdb83396de10ac0"
+      ref: "9c88125ae51c102259a7579a5a0a7784c1970dd3"
+      resolved-ref: "9c88125ae51c102259a7579a5a0a7784c1970dd3"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
     source: git
     version: "0.5.6"
@@ -1064,8 +1064,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1952901b1e2b3a7f8ac954452be8ea41bb8dabfe"
-      resolved-ref: "1952901b1e2b3a7f8ac954452be8ea41bb8dabfe"
+      ref: "7f7c86aa7610baa3aad0863bff676de81978026d"
+      resolved-ref: "7f7c86aa7610baa3aad0863bff676de81978026d"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
     source: git
     version: "0.5.6"
@@ -1073,8 +1073,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f67193f9da6aa2a99d9c45cc1f4aa18f9e9cc33b
-      resolved-ref: f67193f9da6aa2a99d9c45cc1f4aa18f9e9cc33b
+      ref: f2ff2c916faee504f8271afcb487d87268aee182
+      resolved-ref: f2ff2c916faee504f8271afcb487d87268aee182
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.5.2"
@@ -1108,10 +1108,10 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_ui
-      sha256: "4c8c471bd339346cdf521774b27d72ba6a2e6fc24ab7924755537f0d5923121a"
+      sha256: "9cbe970586a5bf250c1153b61bac246d3d7dbf7e9ded8382f312a97fb9e3e847"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5+1"
+    version: "0.5.5+2"
   pool:
     dependency: transitive
     description:
