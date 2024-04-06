@@ -1,3 +1,7 @@
+# [3.6.3-beta]
+20240405
+1. statemint tx submit fix.
+
 # [3.6.2-beta]
 20240318
 1. bridge update.
