@@ -57,8 +57,8 @@ class _AccountBindPageState extends State<AccountBindPage> {
     await widget.service.plugin.sdk.api.bridge.connectFromChains([
       chain
     ], nodeList: {
-      'karura': ['wss://karura-dev.aca-dev.network/rpc/ws'],
-      'acala': ['wss://acala-dev.aca-dev.network/rpc/ws']
+      // 'karura': ['wss://karura-dev.aca-dev.network/rpc/ws'],
+      // 'acala': ['wss://acala-dev.aca-dev.network/rpc/ws']
     });
     _subscribeBalance();
     _queryBindAddress();
@@ -83,12 +83,15 @@ class _AccountBindPageState extends State<AccountBindPage> {
 
   void _queryBindAddress() async {
     final chain = _isAcala ? 'acala' : 'karura';
-    final subAddress = await widget.service.plugin.sdk.api.bridge.service
-        .evalJavascript(
+
+    final subAddress = _ethWalletData.address == null
+        ? null
+        : await widget.service.plugin.sdk.api.bridge.service.evalJavascript(
             'bridge.getApi("$chain").query.evmAccounts.accounts("${_ethWalletData.address}")');
 
-    final evmAddress = await widget.service.plugin.sdk.api.bridge.service
-        .evalJavascript(
+    final evmAddress = _keyPairData.address == null
+        ? null
+        : await widget.service.plugin.sdk.api.bridge.service.evalJavascript(
             'bridge.getApi("$chain").query.evmAccounts.evmAddresses("${_keyPairData.address}")');
 
     if (subAddress == null && evmAddress == null) {
