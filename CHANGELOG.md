@@ -1,3 +1,7 @@
+# [3.6.4-beta]
+20240516
+1. acala EVM address binding fix.
+
 # [3.6.3-beta]
 20240405
 1. statemint tx submit fix.
