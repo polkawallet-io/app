@@ -3,15 +3,15 @@ import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/i18n.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 import 'package:polkawallet_ui/components/v3/button.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_plugin_evm/polkawallet_plugin_evm.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class AccountBindStep2 extends StatefulWidget {
   const AccountBindStep2(
@@ -44,14 +44,8 @@ class _AccountBindStep2State extends State<AccountBindStep2> {
       _submitting = true;
     });
 
-    // todo: remove testnet before release
     Map res = await widget.service.account.evmSignMessage(
-        // isAcala
-        //     ? metamask_acala_params
-        //     : metamask_karura_params,
-        isAcala
-            ? metamask_acala_testnet_params
-            : metamask_karura_testnet_params,
+        isAcala ? metamask_acala_params : metamask_karura_params,
         widget.keyPairData.pubKey,
         widget.ethWalletData.address,
         password);
