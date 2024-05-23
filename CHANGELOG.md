@@ -1,3 +1,7 @@
+# [3.6.5-beta]
+20240521
+1. acala EVM address binding page fix.
+
 # [3.6.4-beta]
 20240516
 1. acala EVM address binding fix.
