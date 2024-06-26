@@ -1018,11 +1018,9 @@ packages:
   polkawallet_plugin_acala:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "92b2fd8cfc0a60695faa3377ad62b23536d35e3a"
-      resolved-ref: "92b2fd8cfc0a60695faa3377ad62b23536d35e3a"
-      url: "https://github.com/AcalaNetwork/polkawallet_plugin_acala.git"
-    source: git
+      path: "../../coding/polkawallet/polkawallet_plugin_acala"
+      relative: true
+    source: path
     version: "0.5.6"
   polkawallet_plugin_bifrost:
     dependency: "direct main"
@@ -1064,8 +1062,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a61773da1e19c0a83cbc3ba8d2d3058fb589e6a0
-      resolved-ref: a61773da1e19c0a83cbc3ba8d2d3058fb589e6a0
+      ref: "4d4400f5742cc8514392267c245d19c529a1ccba"
+      resolved-ref: "4d4400f5742cc8514392267c245d19c529a1ccba"
       url: "https://github.com/AcalaNetwork/polkawallet_plugin_karura.git"
     source: git
     version: "0.5.6"
