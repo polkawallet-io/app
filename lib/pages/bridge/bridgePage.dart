@@ -392,7 +392,7 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   Future<String> _checkAccountTo(KeyPairData acc) async {
-    if (_props == null) return null;
+    if (_props == null || _useAnyAccount()) return null;
 
     final error =
         I18n.of(context).getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
@@ -551,10 +551,12 @@ class _BridgePageState extends State<BridgePage> {
   }
 
   bool _useEVMAccount() {
-    return _chainTo == 'moonriver' ||
-        _chainTo == 'moonbeam' ||
-        ((_chainTo == 'acala' || _chainTo == 'karura') &&
-            _acalaEVMTokens.contains(_token));
+    return _chainTo == 'moonriver' || _chainTo == 'moonbeam';
+  }
+
+  bool _useAnyAccount() {
+    return (_chainTo == 'acala' || _chainTo == 'karura') &&
+        _acalaEVMTokens.contains(_token);
   }
 
   @override
@@ -656,11 +658,12 @@ class _BridgePageState extends State<BridgePage> {
                                         widget.service.plugin.sdk.api,
                                         widget.service.keyring.allWithContacts
                                             .toList(),
-                                        localEthAccounts: _useEVMAccount()
-                                            ? widget.service.keyringEVM
-                                                .allWithContacts
-                                                .toList()
-                                            : null,
+                                        localEthAccounts:
+                                            _useEVMAccount() || _useAnyAccount()
+                                                ? widget.service.keyringEVM
+                                                    .allWithContacts
+                                                    .toList()
+                                                : null,
                                         sdk: widget.service.plugin.sdk,
                                         labelText: dic['hub.to.address'],
                                         labelStyle: Theme.of(context)
