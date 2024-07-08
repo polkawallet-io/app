@@ -51,7 +51,7 @@ dependencies:
   polkawallet_plugin_kusama:
     git:
       url: https://github.com/polkawallet-io/polkawallet_plugin_kusama.git
-      ref: 6693774b1c30731c2e09d77707a74edca3c6d0de
+      ref: 056acdb6ca84846eedae14d18eddd0062e667057
   polkawallet_plugin_acala:
     git:
       url: https://github.com/AcalaNetwork/polkawallet_plugin_acala.git
@@ -112,7 +112,7 @@ dependency_overrides:
 #  polkawallet_plugin_evm:
 #    path: ../../coding/polkawallet/polkawallet_plugin_evm
   polkawallet_ui: ^0.5.5+2
-  polkawallet_sdk: ^0.6.0+1
+  polkawallet_sdk: ^0.6.1
 #  polkawallet_ui:
 #     path: ../../coding/polkawallet/ui
 #  polkawallet_sdk:

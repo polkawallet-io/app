@@ -1,3 +1,9 @@
+# [3.6.6-beta]
+20240708
+1. bridge module update.
+2. acala/karura NFT display fix.
+3. DOT transfer history fix.
+
 # [3.6.5-beta]
 20240521
 1. acala EVM address binding page fix.
