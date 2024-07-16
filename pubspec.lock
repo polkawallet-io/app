@@ -1073,8 +1073,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "056acdb6ca84846eedae14d18eddd0062e667057"
-      resolved-ref: "056acdb6ca84846eedae14d18eddd0062e667057"
+      ref: a247b48399cd28f57e52d589d85aa462d3af3cea
+      resolved-ref: a247b48399cd28f57e52d589d85aa462d3af3cea
       url: "https://github.com/polkawallet-io/polkawallet_plugin_kusama.git"
     source: git
     version: "0.5.2"
@@ -1100,18 +1100,18 @@ packages:
     dependency: "direct main"
     description:
       name: polkawallet_sdk
-      sha256: fab475543adcd772977970ba857ad9adc426afec52f2900ca453d8f3f5122486
+      sha256: "5f50767dd7d897b78779d9293b87c860484d18761a595745007c27ade94ee1a3"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.1+1"
   polkawallet_ui:
     dependency: "direct main"
     description:
       name: polkawallet_ui
-      sha256: "9cbe970586a5bf250c1153b61bac246d3d7dbf7e9ded8382f312a97fb9e3e847"
+      sha256: "5cee86ce34c9414ea3e1fbfff52c9a7d5607db928dd5d7ba86ed480d2a9d39f2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5+2"
+    version: "0.5.6"
   pool:
     dependency: transitive
     description:
