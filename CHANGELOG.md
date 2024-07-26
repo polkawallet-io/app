@@ -1,3 +1,7 @@
+# [3.6.7-beta]
+20240708
+1. polkadot/kusama staking reward display fix.
+
 # [3.6.6-beta]
 20240708
 1. bridge module update.
