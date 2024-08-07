@@ -150,7 +150,8 @@ class _ImportAccountFromRawSeedState extends State<ImportAccountFromRawSeed> {
         passed = true;
       }
     } else {
-      if (input.startsWith('0x') && input.length == 66) {
+      if ((input.startsWith('0x') && input.length == 66) ||
+          (!input.startsWith('0x') && input.length == 64)) {
         passed = true;
       }
     }
