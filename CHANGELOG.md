@@ -1,3 +1,7 @@
+# [3.6.8-beta]
+20240809
+1. evm account import/delete fix.
+
 # [3.6.7-beta]
 20240708
 1. polkadot/kusama staking reward display fix.

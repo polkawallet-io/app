@@ -38,10 +38,10 @@ class _AccountManagePageState extends State<AccountManagePage> {
   BiometricStorageFile _authStorage;
 
   Future<void> _onDeleteAccount(BuildContext context) async {
-    final password = await widget.service.account
-        .getPassword(context, widget.service.keyring.current);
-    if (password != null) {
-      if (widget.service.store.account.accountType == AccountType.Substrate) {
+    if (widget.service.store.account.accountType == AccountType.Substrate) {
+      final password = await widget.service.account
+          .getPassword(context, widget.service.keyring.current);
+      if (password != null) {
         widget.service.plugin.sdk.api.keyring
             .deleteAccount(
                 widget.service.keyring, widget.service.keyring.current)
@@ -50,7 +50,11 @@ class _AccountManagePageState extends State<AccountManagePage> {
           widget.service.account
               .handleAccountChanged(widget.service.keyring.current);
         });
-      } else {
+      }
+    } else {
+      final password = await widget.service.account
+          .getEvmPassword(context, widget.service.keyringEVM.current);
+      if (password != null) {
         widget.service.plugin.sdk.api.eth.keyring
             .deleteAccount(
                 widget.service.keyringEVM, widget.service.keyringEVM.current)
@@ -59,8 +63,8 @@ class _AccountManagePageState extends State<AccountManagePage> {
               widget.service.keyringEVM.current.toKeyPairData());
         });
       }
-      Navigator.of(context).pop();
     }
+    Navigator.of(context).pop();
   }
 
   Future<void> _updateBiometricAuth(bool enable) async {
