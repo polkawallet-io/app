@@ -1,3 +1,7 @@
+# [3.7.0-beta]
+20241105
+1. acala/karura plugin update.
+
 # [3.6.8-beta]
 20240809
 1. evm account import/delete fix.
