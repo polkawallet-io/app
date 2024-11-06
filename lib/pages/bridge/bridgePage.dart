@@ -264,6 +264,18 @@ class _BridgePageState extends State<BridgePage> {
       });
     }
     await widget.service.plugin.sdk.api.bridge.connectFromChains([chainFrom]);
+    // await widget.service.plugin.sdk.api.bridge.connectFromChains([
+    //   chainFrom
+    // ], nodeList: {
+    //   'acala': ['wss://crosschain-dev.polkawallet.io/chopsticksAcala'],
+    //   'karura': ['wss://crosschain-dev.polkawallet.io/chopsticksKarura'],
+    //   'basilisk': ['wss://crosschain-dev.polkawallet.io/chopsticksBasilisk'],
+    //   'assetHubPolkadot': [
+    //     'wss://crosschain-dev.polkawallet.io/chopsticksAssetHub'
+    //   ],
+    //   'kusama': ['wss://crosschain-dev.polkawallet.io/chopsticksKusama'],
+    //   'polkadot': ['wss://crosschain-dev.polkawallet.io/chopsticksPolkadot'],
+    // });
 
     if (chainFrom == _chainFrom) {
       _props = await widget.service.plugin.sdk.api.bridge
