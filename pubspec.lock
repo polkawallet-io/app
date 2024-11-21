@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.3"
-  bip32:
-    dependency: transitive
-    description:
-      name: bip32
-      sha256: "54787cd7a111e9d37394aabbf53d1fc5e2e0e0af2cd01c459147a97c0e3f8a97"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   bip39:
     dependency: transitive
     description:
@@ -89,14 +81,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  bs58check:
-    dependency: transitive
-    description:
-      name: bs58check
-      sha256: c4a164d42b25c2f6bc88a8beccb9fc7d01440f3c60ba23663a20a70faf484ea9
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   build:
     dependency: transitive
     description:
@@ -362,14 +346,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  ethers:
-    dependency: transitive
-    description:
-      name: ethers
-      sha256: e7f06c339a04c626c6df73f6c2559a956810a2c1b7fa32a5a6e198a78cd0c9ff
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1+3"
   fake_async:
     dependency: transitive
     description:
@@ -1099,10 +1075,9 @@ packages:
   polkawallet_sdk:
     dependency: "direct main"
     description:
-      name: polkawallet_sdk
-      sha256: "69d1b782cc0a7d3f8c184970f758940aa9ad455f429b34ea7442e423170ea54d"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../coding/polkawallet/sdk"
+      relative: true
+    source: path
     version: "0.6.3"
   polkawallet_ui:
     dependency: "direct main"

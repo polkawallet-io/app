@@ -1,16 +1,14 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:app/pages/account/accountTypeSelectPage.dart';
 import 'package:app/pages/profile/account/exportResultPage.dart';
 import 'package:app/pages/profile/index.dart';
 import 'package:app/service/index.dart';
 import 'package:app/utils/i18n/index.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/ethers/apiEthers.dart';
+import 'package:polkawallet_sdk/consts/settings.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
