@@ -43,8 +43,8 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final res = await widget.service.plugin.sdk.webView
         .evalJavascript('api.derive.chain.bestNumber()');
     bestNumber = int.parse(res.toString());
-    final List locks = await widget.service.plugin.sdk.api.gov
-        .getDemocracyLocks(widget.service.keyring.current.address);
+    final List locks = await widget.service.plugin.sdk.api.gov2
+        .queryReferendaLocks(widget.service.keyring.current.address);
     if (mounted && locks != null) {
       setState(() {
         _locks = locks;
@@ -52,20 +52,29 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     }
   }
 
-  void _onUnlock(List<String> ids) async {
+  void _onUnlock(List<List<String>> ids) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
-    final txs = ids
-        .map((e) => 'api.tx.democracy.removeVote(${BigInt.parse(e)})')
-        .toList();
-    txs.add(
-        'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
+    final List<String> tracks = [];
+    final txs = ids.map((e) {
+      if (!tracks.contains(e[0])) {
+        tracks.add(e[0]);
+      }
+      return 'api.tx.convictionVoting.removeVote("${e[0]}", "${e[1]}")';
+    }).toList();
+    for (var trackId in tracks) {
+      txs.add(
+          'api.tx.convictionVoting.unlock("$trackId", "${widget.service.keyring.current.address}")');
+    }
     final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
             txTitle: dic['lock.unlock'],
             module: 'utility',
             call: 'batch',
             txDisplay: {
-              "actions": ['democracy.removeVote', 'democracy.unlock'],
+              "actions": [
+                'convictionVoting.removeVote',
+                'convictionVoting.unlock'
+              ],
             },
             params: [],
             rawParams: '[[${txs.join(',')}]]'));
@@ -176,11 +185,11 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final l = widget.service.plugin.balances.native.lockedBreakdown.toList();
     l.retainWhere((e) => BigInt.parse(e.amount.toString()) > BigInt.zero);
     final locks =
-        l.where((element) => element.use.contains('ormlvest')).toList();
-    locks.addAll(
-        l.where((element) => element.use.contains('democrac')).toList());
-    l.retainWhere(
-        (e) => !e.use.contains('ormlvest') && !e.use.contains('democrac'));
+        l.where((element) => element.use.contains('pyconvot')).toList();
+    // locks.addAll(
+    //     l.where((element) => element.use.contains('democrac')).toList());
+    // l.retainWhere(
+    //     (e) => !e.use.contains('ormlvest') && !e.use.contains('democrac'));
     if (l.length > 0) {
       locks.add(BalanceBreakdownData.fromJson({"amount": 0, "use": ""}));
     }
@@ -226,18 +235,23 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                         children: locks.map((e) {
                           final amt = BigInt.parse(e.amount.toString());
                           Widget Democracchild;
-                          final List<String> unLockIds = [];
+                          final List<List<String>> unLockIds = [];
                           double maxLockAmount = 0, maxUnlockAmount = 0;
-                          if (e.use.contains('democrac') && _locks.length > 0) {
+                          if (e.use.contains('pyconvot') && _locks.length > 0) {
                             for (int index = 0;
                                 index < _locks.length;
                                 index++) {
-                              var unlockAt = _locks[index]['unlockAt'];
+                              var unlockAt = _locks[index]['endBlock'];
+                              final amountString = _locks[index]['total']
+                                      .toString()
+                                      .startsWith('0x')
+                                  ? _locks[index]['total']
+                                  : "0x${_locks[index]['total']}";
                               final amount = Fmt.balanceDouble(
-                                _locks[index]['balance'].toString(),
+                                amountString,
                                 decimals,
                               );
-                              if (unlockAt != "0") {
+                              if (unlockAt != "1fffffffffffff") {
                                 BigInt endLeft;
                                 try {
                                   endLeft =
@@ -249,7 +263,10 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                           BigInt.from(bestNumber);
                                 }
                                 if (endLeft.toInt() <= 0) {
-                                  unLockIds.add(_locks[index]['referendumId']);
+                                  unLockIds.add([
+                                    _locks[index]['classId'].toString(),
+                                    _locks[index]['refId']
+                                  ]);
                                   if (amount > maxUnlockAmount) {
                                     maxUnlockAmount = amount;
                                   }
@@ -344,7 +361,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                     claimableAmount, decimals, symbol));
                           } else if (Democracchild != null) {
                             return buildItem(
-                                title: 'Democracy',
+                                title: 'Referenda',
                                 child: Democracchild,
                                 hasClaim: maxUnlockAmount - maxLockAmount > 0,
                                 onRedeem: () => _onUnlock(unLockIds));
