@@ -1,3 +1,7 @@
+# [3.7.1-beta]
+20241211
+1. bridge update.
+
 # [3.7.0-beta]
 20241105
 1. acala/karura plugin update.
