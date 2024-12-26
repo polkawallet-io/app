@@ -36,6 +36,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
 
   bool _submitting = false;
 
+  bool _useReferenda = true;
   List _locks = [];
   int bestNumber = 0;
 
@@ -43,16 +44,44 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     final res = await widget.service.plugin.sdk.webView
         .evalJavascript('api.derive.chain.bestNumber()');
     bestNumber = int.parse(res.toString());
-    final List locks = await widget.service.plugin.sdk.api.gov2
-        .queryReferendaLocks(widget.service.keyring.current.address);
+    final useReferenda = await widget.service.plugin.sdk.webView
+        .evalJavascript('!!api.tx.referenda', wrapPromise: false);
+    final List locks = useReferenda
+        ? (await widget.service.plugin.sdk.api.gov2
+            .queryReferendaLocks(widget.service.keyring.current.address))
+        : (await widget.service.plugin.sdk.api.gov
+            .getDemocracyLocks(widget.service.keyring.current.address));
     if (mounted && locks != null) {
       setState(() {
+        _useReferenda = useReferenda;
         _locks = locks;
       });
     }
   }
 
-  void _onUnlock(List<List<String>> ids) async {
+  void _onUnlock(List<String> ids) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
+    final txs = ids
+        .map((e) => 'api.tx.democracy.removeVote(${BigInt.parse(e)})')
+        .toList();
+    txs.add(
+        'api.tx.democracy.unlock("${widget.service.keyring.current.address}")');
+    final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
+        arguments: TxConfirmParams(
+            txTitle: dic['lock.unlock'],
+            module: 'utility',
+            call: 'batch',
+            txDisplay: {
+              "actions": ['democracy.removeVote', 'democracy.unlock'],
+            },
+            params: [],
+            rawParams: '[[${txs.join(',')}]]'));
+    if (res != null) {
+      _refreshKey.currentState.show();
+    }
+  }
+
+  void _onUnlockReferenda(List<List<String>> ids) async {
     final dic = I18n.of(context).getDic(i18n_full_dic_app, 'assets');
     final List<String> tracks = [];
     final txs = ids.map((e) {
@@ -100,6 +129,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
       widget.service.plugin.sdk.webView.evalJavascript(
           'api.query.vesting.vestingSchedules("${widget.service.keyring.current.address}")')
     ]);
+
     if (res[0] != null && res[1] != null) {
       final blockNow = BigInt.from(res[0]['count']);
       BigInt vestOriginal = BigInt.zero;
@@ -171,7 +201,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _refreshUnlockDatas();
+      _refreshUnlockDatas();
       _refreshKey.currentState.show();
     });
   }
@@ -184,13 +214,17 @@ class LocksDetailPageState extends State<LocksDetailPage> {
 
     final l = widget.service.plugin.balances.native.lockedBreakdown.toList();
     l.retainWhere((e) => BigInt.parse(e.amount.toString()) > BigInt.zero);
-    final locks =
-        l.where((element) => element.use.contains('pyconvot')).toList();
-    // locks.addAll(
-    //     l.where((element) => element.use.contains('democrac')).toList());
-    // l.retainWhere(
-    //     (e) => !e.use.contains('ormlvest') && !e.use.contains('democrac'));
-    if (l.length > 0) {
+    final locks = l
+        .where((element) =>
+            element.use.contains('pyconvot') ||
+            element.use.contains('democrac') ||
+            element.use.contains('ormlvest'))
+        .toList();
+    l.retainWhere((e) =>
+        !e.use.contains('ormlvest') &&
+        !e.use.contains('democrac') &&
+        !e.use.contains('pyconvot'));
+    if (l.isNotEmpty) {
       locks.add(BalanceBreakdownData.fromJson({"amount": 0, "use": ""}));
     }
 
@@ -234,10 +268,15 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                         padding: EdgeInsets.all(16),
                         children: locks.map((e) {
                           final amt = BigInt.parse(e.amount.toString());
-                          Widget Democracchild;
-                          final List<List<String>> unLockIds = [];
+                          Widget DemocracyChild;
+                          bool showDemocracyChild = false;
+                          final List<String> unLockIds = [];
+                          final List<List<String>> referendaUnLockIds = [];
                           double maxLockAmount = 0, maxUnlockAmount = 0;
-                          if (e.use.contains('pyconvot') && _locks.length > 0) {
+                          if (_useReferenda &&
+                              e.use.contains('pyconvot') &&
+                              _locks.length > 0) {
+                            showDemocracyChild = true;
                             for (int index = 0;
                                 index < _locks.length;
                                 index++) {
@@ -263,7 +302,7 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                           BigInt.from(bestNumber);
                                 }
                                 if (endLeft.toInt() <= 0) {
-                                  unLockIds.add([
+                                  referendaUnLockIds.add([
                                     _locks[index]['classId'].toString(),
                                     _locks[index]['refId']
                                   ]);
@@ -277,10 +316,47 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                 maxLockAmount = amount;
                               }
                             }
-                            Democracchild = Column(
+                          } else if (!_useReferenda &&
+                              e.use.contains('democrac') &&
+                              _locks.length > 0) {
+                            showDemocracyChild = true;
+                            for (int index = 0;
+                                index < _locks.length;
+                                index++) {
+                              var unlockAt = _locks[index]['unlockAt'];
+                              final amount = Fmt.balanceDouble(
+                                _locks[index]['balance'].toString(),
+                                decimals,
+                              );
+                              if (unlockAt != "0") {
+                                BigInt endLeft;
+                                try {
+                                  endLeft =
+                                      BigInt.parse("${unlockAt.toString()}") -
+                                          BigInt.from(bestNumber);
+                                } catch (e) {
+                                  endLeft =
+                                      BigInt.parse("0x${unlockAt.toString()}") -
+                                          BigInt.from(bestNumber);
+                                }
+                                if (endLeft.toInt() <= 0) {
+                                  unLockIds.add(_locks[index]['referendumId']);
+                                  if (amount > maxUnlockAmount) {
+                                    maxUnlockAmount = amount;
+                                  }
+                                  continue;
+                                }
+                              }
+                              if (amount > maxLockAmount) {
+                                maxLockAmount = amount;
+                              }
+                            }
+                          }
+                          if (showDemocracyChild) {
+                            DemocracyChild = Column(
                               children: [
                                 InfoItemRow(dic['lock.democrac.total'],
-                                    "${maxLockAmount + maxUnlockAmount}"),
+                                    "$maxLockAmount"),
                                 InfoItemRow(dic['lock.vest.unlocking'],
                                     "$maxLockAmount"),
                                 maxUnlockAmount - maxLockAmount > 0
@@ -359,13 +435,24 @@ class LocksDetailPageState extends State<LocksDetailPage> {
                                 hasClaim: hasClaim,
                                 onRedeem: () => _claimVest(
                                     claimableAmount, decimals, symbol));
-                          } else if (Democracchild != null) {
-                            return buildItem(
-                                title: 'Referenda',
-                                child: Democracchild,
-                                hasClaim: maxUnlockAmount - maxLockAmount > 0,
-                                onRedeem: () => _onUnlock(unLockIds));
-                          } else if (e.use.length == 0) {
+                          } else if (DemocracyChild != null) {
+                            print(maxUnlockAmount);
+                            print(maxLockAmount);
+                            return _useReferenda
+                                ? buildItem(
+                                    title: 'Referenda',
+                                    child: DemocracyChild,
+                                    hasClaim:
+                                        maxUnlockAmount - maxLockAmount > 0,
+                                    onRedeem: () =>
+                                        _onUnlockReferenda(referendaUnLockIds))
+                                : buildItem(
+                                    title: 'Democracy',
+                                    child: DemocracyChild,
+                                    hasClaim:
+                                        maxUnlockAmount - maxLockAmount > 0,
+                                    onRedeem: () => _onUnlock(unLockIds));
+                          } else if (e.use.isNotEmpty) {
                             return buildItem(
                                 title: 'Others',
                                 child: Column(

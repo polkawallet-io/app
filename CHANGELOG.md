@@ -1,3 +1,7 @@
+# [3.7.2-beta]
+20241226
+1. Asset unlock page fix.
+
 # [3.7.1-beta]
 20241211
 1. bridge update.

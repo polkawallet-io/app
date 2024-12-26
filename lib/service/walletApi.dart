@@ -29,7 +29,7 @@ class WalletApi {
   }
 
   static String getSnEndpoint(String relayChainName) {
-    return 'https://$relayChainName.api.subscan.io/api/scan';
+    return 'https://$relayChainName.api.subscan.io/api/v2/scan';
   }
 
   static Future<Map> getMarketPriceList(String token, int totalCount) async {
@@ -228,7 +228,7 @@ class WalletApi {
 
   static Future<Map> getTokenPriceFromSubScan(String network) async {
     final url =
-        'https://${network.toLowerCase()}.api.subscan.io/api/scan/token';
+        'https://${network.toLowerCase()}.api.subscan.io/api/v2/scan/token';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {
